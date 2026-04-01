@@ -4,13 +4,13 @@ import { useMemo } from "react";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
 import WeddingCountdown from "@/components/wedding-countdown";
 import {
-  BackgroundMusicPlayer,
-  FallingHearts,
-  TemplateHeader,
-  templateGallery,
-  templateWishes,
+  HeritageVowsFallingHearts,
+  HeritageVowsHeader,
+  HeritageVowsMusicPlayer,
+  heritageVowsGallery,
+  heritageVowsWishes,
   type TemplatePreviewProps,
-} from "@/components/template-preview-shared";
+} from "@/templates/premium/heritage-vows/support";
 
 export default function HeritageVowsPreview({
   template,
@@ -20,7 +20,7 @@ export default function HeritageVowsPreview({
 }: TemplatePreviewProps) {
   const { language, theme } = useGlobalPreferences();
   const isDarkTheme = theme === "dark";
-  const galleryImages = images.galleryImages.length ? images.galleryImages : templateGallery;
+  const galleryImages = images.galleryImages.length ? images.galleryImages : heritageVowsGallery;
 
   const copy = useMemo(
     () =>
@@ -245,8 +245,8 @@ export default function HeritageVowsPreview({
               : "bg-[radial-gradient(circle_at_top_left,_rgba(198,82,52,0.16),_transparent_24%),linear-gradient(180deg,rgba(255,248,242,0.8),rgba(255,255,255,0))]"
           }`}
         />
-        <FallingHearts color="rgba(213, 82, 52, 0.9)" />
-        <TemplateHeader tier={template.tier} />
+        <HeritageVowsFallingHearts color="rgba(213, 82, 52, 0.9)" />
+        <HeritageVowsHeader tier={template.tier} />
         <div className="relative mx-auto max-w-7xl px-6 pb-12 sm:px-10 lg:px-16 lg:pb-20">
           <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
             <div className={`rounded-[2.6rem] p-8 sm:p-10 ${darkPanelClass}`}>
@@ -265,7 +265,7 @@ export default function HeritageVowsPreview({
                 {copy.heroBody}
               </p>
               <div className="mt-8">
-                <BackgroundMusicPlayer
+                <HeritageVowsMusicPlayer
                   label="Vietnamese wedding theme"
                   accentClassName="bg-[#ffd7c8]"
                 />
@@ -528,7 +528,7 @@ export default function HeritageVowsPreview({
             <p className={`mt-4 text-sm leading-8 ${mutedTextClass}`}>{copy.wishesBody}</p>
             <div className="mt-6 grid gap-4 lg:grid-cols-[0.94fr_1.06fr]">
               <div className="space-y-4">
-                {templateWishes.slice(0, 2).map((wish) => (
+                {heritageVowsWishes.slice(0, 2).map((wish) => (
                   <article key={wish.name} className={`rounded-[1.6rem] p-5 ${softPanelClass}`}>
                     <p className="font-display text-3xl">{wish.name}</p>
                     <p className={`mt-3 text-sm leading-7 ${mutedTextClass}`}>{wish.message}</p>

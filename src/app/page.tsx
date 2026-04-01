@@ -404,9 +404,9 @@ export default function Home() {
               : "bg-[radial-gradient(circle_at_top,_rgba(197,167,161,0.35),_transparent_42%),linear-gradient(135deg,_rgba(255,255,255,0.82),_rgba(233,221,209,0.88))]"
           }`}
         />
-        <div className={`absolute -top-28 right-[-120px] h-80 w-80 rounded-full blur-3xl ${isDark ? "bg-white/8" : "bg-white/40"}`} />
+        <div className={`animate-float-soft absolute -top-28 right-[-120px] h-80 w-80 rounded-full blur-3xl ${isDark ? "bg-white/8" : "bg-white/40"}`} />
         <div
-          className={`absolute bottom-0 left-[-80px] h-64 w-64 rounded-full blur-3xl ${
+          className={`animate-drift-soft absolute bottom-0 left-[-80px] h-64 w-64 rounded-full blur-3xl ${
             isDark ? "bg-[rgba(155,168,150,0.08)]" : "bg-[rgba(125,140,121,0.14)]"
           }`}
         />
@@ -414,34 +414,34 @@ export default function Home() {
         <div className="relative mx-auto flex min-h-screen w-full max-w-7xl flex-col px-6 py-8 sm:px-10 lg:px-16">
           <div className="grid flex-1 items-center gap-14 py-10 lg:grid-cols-[1.05fr_0.95fr] lg:py-16">
             <div className="max-w-2xl">
-              <p className="mb-4 text-sm uppercase tracking-[0.35em] text-[var(--color-sage)]">
+              <p className="animate-fade-up-soft mb-4 text-sm uppercase tracking-[0.35em] text-[var(--color-sage)]">
                 {copy.heroEyebrow}
               </p>
-              <h1 className="font-display text-5xl leading-none sm:text-7xl lg:text-8xl">
+              <h1 className="animate-fade-up-soft-delay-1 font-display text-5xl leading-none sm:text-7xl lg:text-8xl">
                 {copy.heroTitle}
               </h1>
-              <p className={`mt-6 max-w-xl text-base leading-8 sm:text-lg ${isDark ? "text-white/74" : "text-[var(--color-ink)]/75"}`}>
+              <p className={`animate-fade-up-soft-delay-2 mt-6 max-w-xl text-base leading-8 sm:text-lg ${isDark ? "text-white/74" : "text-[var(--color-ink)]/75"}`}>
                 {copy.heroBody}
               </p>
 
-              <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+              <div className="animate-fade-up-soft-delay-3 mt-10 flex flex-col gap-4 sm:flex-row">
                 <a
                   href="#templates"
-                  className="btn-primary inline-flex items-center justify-center rounded-full px-7 py-3 text-sm font-medium transition"
+                  className="btn-primary inline-flex items-center justify-center rounded-full px-7 py-3 text-sm font-medium transition-transform duration-300 hover:-translate-y-0.5"
                 >
                   {copy.heroPrimaryCta}
                 </a>
                 <a
                   href="#contact"
-                  className="btn-secondary inline-flex items-center justify-center rounded-full px-7 py-3 text-sm font-medium backdrop-blur transition"
+                  className="btn-secondary inline-flex items-center justify-center rounded-full px-7 py-3 text-sm font-medium backdrop-blur transition-transform duration-300 hover:-translate-y-0.5"
                 >
                   {copy.heroSecondaryCta}
                 </a>
               </div>
 
-              <div className="mt-12 grid max-w-lg grid-cols-3 gap-4">
+              <div className="animate-fade-up-soft-delay-3 mt-12 grid max-w-lg grid-cols-3 gap-4">
                 <div
-                  className={`rounded-3xl p-4 backdrop-blur ${
+                  className={`rounded-3xl p-4 backdrop-blur transition-transform duration-300 hover:-translate-y-1 ${
                     isDark
                       ? "border border-white/10 bg-white/6 shadow-[0_18px_50px_rgba(0,0,0,0.24)]"
                       : "border border-white/70 bg-white/65 shadow-[0_18px_50px_rgba(49,42,40,0.08)]"
@@ -455,7 +455,7 @@ export default function Home() {
                   </p>
                 </div>
                 <div
-                  className={`rounded-3xl p-4 backdrop-blur ${
+                  className={`rounded-3xl p-4 backdrop-blur transition-transform duration-300 hover:-translate-y-1 ${
                     isDark
                       ? "border border-white/10 bg-white/6 shadow-[0_18px_50px_rgba(0,0,0,0.24)]"
                       : "border border-white/70 bg-white/65 shadow-[0_18px_50px_rgba(49,42,40,0.08)]"
@@ -467,7 +467,7 @@ export default function Home() {
                   <p className="mt-3 font-display text-3xl">48h</p>
                 </div>
                 <div
-                  className={`rounded-3xl p-4 backdrop-blur ${
+                  className={`rounded-3xl p-4 backdrop-blur transition-transform duration-300 hover:-translate-y-1 ${
                     isDark
                       ? "border border-white/10 bg-white/6 shadow-[0_18px_50px_rgba(0,0,0,0.24)]"
                       : "border border-white/70 bg-white/65 shadow-[0_18px_50px_rgba(49,42,40,0.08)]"
@@ -483,7 +483,7 @@ export default function Home() {
 
           </div>
 
-          <div className="pb-6">
+          <div className="animate-fade-up-soft-delay-3 pb-6">
             <HomePremiumControlsPreview />
           </div>
         </div>
@@ -533,10 +533,10 @@ export default function Home() {
 
       <section
         id="features"
-        className="mx-auto w-full max-w-7xl px-6 py-8 sm:px-10 lg:px-16"
+        className="animate-fade-scale-soft-delay-1 mx-auto w-full max-w-7xl px-6 py-8 sm:px-10 lg:px-16"
       >
         <div
-          className={`rounded-[2.5rem] px-6 py-14 sm:px-10 lg:px-14 ${
+          className={`hover-lift-strong rounded-[2.5rem] px-6 py-14 sm:px-10 lg:px-14 ${
             isDark
               ? "border border-white/10 bg-[radial-gradient(circle_at_top,_rgba(209,177,171,0.1),_transparent_28%),linear-gradient(180deg,#111113,#18181b)] text-white shadow-[0_24px_70px_rgba(0,0,0,0.28)]"
               : "border border-[var(--color-ink)]/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(233,221,209,0.82))] text-[var(--color-ink)] shadow-[0_24px_70px_rgba(49,42,40,0.08)]"
@@ -557,7 +557,7 @@ export default function Home() {
           </div>
 
           <div
-            className={`mt-10 overflow-x-auto rounded-[2rem] backdrop-blur ${
+            className={`mt-10 overflow-x-auto rounded-[2rem] backdrop-blur transition-transform duration-500 hover:scale-[1.01] ${
               isDark
                 ? "border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03))] shadow-[0_14px_36px_rgba(0,0,0,0.22)]"
                 : "border border-[var(--color-ink)]/8 bg-white/58 shadow-[0_14px_36px_rgba(49,42,40,0.06)]"
@@ -628,7 +628,7 @@ export default function Home() {
 
       <section
         id="process"
-        className="mx-auto w-full max-w-7xl px-6 py-24 sm:px-10 lg:px-16"
+        className="animate-fade-scale-soft-delay-1 mx-auto w-full max-w-7xl px-6 py-24 sm:px-10 lg:px-16"
       >
         <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -646,7 +646,7 @@ export default function Home() {
           {copy.process.map((item) => (
             <article
               key={item.step}
-              className={`rounded-[2rem] p-6 ${
+              className={`hover-lift-strong rounded-[2rem] p-6 ${
                 isDark
                   ? "border border-white/10 bg-white/6 shadow-[0_16px_40px_rgba(0,0,0,0.24)]"
                   : "border border-[var(--color-ink)]/8 bg-white/75 shadow-[0_16px_40px_rgba(49,42,40,0.06)]"
@@ -664,9 +664,9 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="mx-auto grid w-full max-w-7xl gap-6 px-6 py-8 sm:px-10 lg:grid-cols-[1fr_0.9fr] lg:px-16">
+      <section className="animate-fade-scale-soft-delay-2 mx-auto grid w-full max-w-7xl gap-6 px-6 py-8 sm:px-10 lg:grid-cols-[1fr_0.9fr] lg:px-16">
         <div
-          className={`rounded-[2.4rem] p-8 sm:p-10 ${
+          className={`hover-lift-strong rounded-[2.4rem] p-8 sm:p-10 ${
             isDark
               ? "border border-white/10 bg-white/6 shadow-[0_16px_40px_rgba(0,0,0,0.24)]"
               : "border border-[var(--color-ink)]/8 bg-white/75 shadow-[0_16px_40px_rgba(49,42,40,0.06)]"
@@ -682,7 +682,7 @@ export default function Home() {
             {copy.valuePoints.map((feature) => (
               <div
                 key={feature}
-                className={`rounded-[1.5rem] p-4 text-sm ${
+                className={`hover-lift-strong rounded-[1.5rem] p-4 text-sm ${
                   isDark
                     ? "bg-[rgba(255,255,255,0.04)] text-white/75"
                     : "bg-[var(--color-cream)] text-[var(--color-ink)]/75"
@@ -695,7 +695,7 @@ export default function Home() {
         </div>
 
         <div
-          className={`rounded-[2.4rem] p-8 sm:p-10 ${
+          className={`animate-pulse-glow-soft hover-lift-strong rounded-[2.4rem] p-8 sm:p-10 ${
             isDark
               ? "border border-white/10 bg-[linear-gradient(180deg,rgba(209,177,171,0.08),rgba(255,255,255,0.04))]"
               : "bg-[linear-gradient(180deg,_rgba(197,167,161,0.22),_rgba(255,255,255,0.82))]"
@@ -715,7 +715,7 @@ export default function Home() {
 
       <section
         id="pricing"
-        className="mx-auto w-full max-w-5xl px-6 py-24 sm:px-10"
+        className="animate-fade-scale-soft-delay-2 mx-auto w-full max-w-5xl px-6 py-24 sm:px-10"
       >
         <div className="text-center">
           <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-sage)]">
@@ -731,7 +731,7 @@ export default function Home() {
           {copy.pricing.map((plan) => (
             <article
               key={plan.name}
-              className={`rounded-[2.5rem] p-8 ${
+              className={`hover-lift-strong rounded-[2.5rem] p-8 ${
                 isDark
                   ? "border border-white/10 bg-white/6 shadow-[0_18px_50px_rgba(0,0,0,0.24)]"
                   : "border border-[var(--color-ink)]/8 bg-white/80 shadow-[0_18px_50px_rgba(49,42,40,0.07)]"
@@ -765,10 +765,10 @@ export default function Home() {
 
       <section
         id="contact"
-        className="mx-auto w-full max-w-5xl px-6 pb-24 sm:px-10"
+        className="animate-fade-scale-soft-delay-2 mx-auto w-full max-w-5xl px-6 pb-24 sm:px-10"
       >
         <div
-          className={`rounded-[2.5rem] p-8 sm:p-12 ${
+          className={`animate-pulse-glow-soft hover-lift-strong rounded-[2.5rem] p-8 sm:p-12 ${
             isDark
               ? "border border-white/10 bg-white/6 shadow-[0_18px_50px_rgba(0,0,0,0.24)]"
               : "border border-[var(--color-ink)]/8 bg-white/80 shadow-[0_18px_50px_rgba(49,42,40,0.07)]"
@@ -804,7 +804,7 @@ export default function Home() {
             />
             <button
               type="button"
-              className="btn-primary rounded-full px-7 py-4 text-sm font-medium transition sm:col-span-2"
+              className="btn-primary rounded-full px-7 py-4 text-sm font-medium transition-transform duration-300 hover:-translate-y-1 sm:col-span-2"
             >
               {copy.contactSubmit}
             </button>

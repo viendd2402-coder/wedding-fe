@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import TemplatePreviewExperience from "@/components/template-preview-experience";
-import { weddingTemplates } from "@/lib/templates";
+import TemplateWorkspace from "@/templates/template-workspace";
+import { templateModuleMap, weddingTemplates } from "@/templates/template-registry";
 
 type TemplatePageProps = {
   params: Promise<{
@@ -35,15 +35,19 @@ export async function generateMetadata({
 
 export default async function TemplateDemoPage({ params }: TemplatePageProps) {
   const { slug } = await params;
-  const template = weddingTemplates.find((item) => item.slug === slug);
+  const templateModule = templateModuleMap.get(slug);
 
-  if (!template) {
+  if (!templateModule) {
     notFound();
   }
 
   return (
     <main className="min-h-screen bg-[var(--color-cream)] text-[var(--color-ink)]">
-      <TemplatePreviewExperience template={template} />
+      <TemplateWorkspace
+        template={templateModule.meta}
+        PreviewComponent={templateModule.PreviewComponent}
+        defaultGalleryImages={templateModule.defaultGalleryImages}
+      />
     </main>
   );
 }

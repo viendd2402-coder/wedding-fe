@@ -5,12 +5,12 @@ import Link from "next/link";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
 import WeddingCountdown from "@/components/wedding-countdown";
 import {
-  BackgroundMusicPlayer,
-  TemplateHeader,
-  templateEvents,
-  templateGallery,
+  AzurePromiseHeader,
+  AzurePromiseMusicPlayer,
+  azurePromiseEvents,
+  azurePromiseGallery,
   type TemplatePreviewProps,
-} from "@/components/template-preview-shared";
+} from "@/templates/free/azure-promise/support";
 
 export default function AzurePromisePreview({
   template,
@@ -20,7 +20,7 @@ export default function AzurePromisePreview({
 }: TemplatePreviewProps) {
   const { language, theme } = useGlobalPreferences();
   const isDark = theme === "dark";
-  const galleryImages = images.galleryImages.length ? images.galleryImages : templateGallery;
+  const galleryImages = images.galleryImages.length ? images.galleryImages : azurePromiseGallery;
 
   const copy = useMemo(
     () =>
@@ -196,7 +196,7 @@ export default function AzurePromisePreview({
           : "bg-[linear-gradient(180deg,#edf7fd,#f7fbff)] text-[var(--color-ink)]"
       }
     >
-      <TemplateHeader tier={template.tier} />
+      <AzurePromiseHeader tier={template.tier} />
 
       <section className="mx-auto max-w-4xl px-4 pb-12 sm:px-6 lg:pb-20">
         <div className={`overflow-hidden rounded-[2rem] ${shellClass}`}>
@@ -268,7 +268,7 @@ export default function AzurePromisePreview({
                     </Link>
                   </div>
 
-                  <BackgroundMusicPlayer
+                  <AzurePromiseMusicPlayer
                     label="Wedding march"
                     accentClassName="bg-[#7aa6c2]"
                   />
@@ -344,7 +344,7 @@ export default function AzurePromisePreview({
               <p className="text-xs uppercase tracking-[0.28em] text-[#6f9bb6]">{copy.eventTitle}</p>
               <p className={`mt-4 text-sm leading-7 ${subtleTextClass}`}>{copy.eventLead}</p>
               <div className="mt-5 grid gap-4">
-                {templateEvents.map((event) => (
+                {azurePromiseEvents.map((event) => (
                   <div
                     key={event.label}
                     className={`rounded-[1.4rem] px-5 py-5 ${elevatedCardClass}`}

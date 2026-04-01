@@ -3,56 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
-import type { WeddingTemplate } from "@/lib/templates";
 
-export type TemplatePageData = WeddingTemplate;
+export type { TemplatePreviewProps } from "@/templates/preview-types";
 
-export type PreviewData = {
-  bride: string;
-  groom: string;
-  dateLabel: string;
-  location: string;
-  countdownTarget: string;
-  ceremonyTime: string;
-  partyTime: string;
-  venue: string;
-  bankName: string;
-  accountName: string;
-  accountNumber: string;
-};
-
-export type PreviewImages = {
-  coverImage: string;
-  galleryImages: string[];
-};
-
-export type LightboxImage = {
-  src: string;
-  alt: string;
-};
-
-export type TemplatePreviewProps = {
-  template: TemplatePageData;
-  preview: PreviewData;
-  images: PreviewImages;
-  onPreviewImage: (image: LightboxImage) => void;
-};
-
-export const defaultPreviewData: PreviewData = {
-  bride: "Linh",
-  groom: "Minh",
-  dateLabel: "Chủ nhật, 20 tháng 10 năm 2026",
-  location: "Đà Nẵng",
-  countdownTarget: "2026-10-20T09:00",
-  ceremonyTime: "09:00",
-  partyTime: "18:00",
-  venue: "Riverside Garden, Đà Nẵng",
-  bankName: "ACB - Ngân hàng Á Châu",
-  accountName: "LINH MINH STUDIO",
-  accountNumber: "1234 5678 9999",
-};
-
-export const templateTimeline = [
+export const editorialBloomTimeline = [
   {
     year: "2021",
     title: "Lần đầu gặp nhau",
@@ -73,7 +27,7 @@ export const templateTimeline = [
   },
 ];
 
-export const templateEvents = [
+export const editorialBloomEvents = [
   {
     label: "Lễ thành hôn",
     timeKey: "ceremonyTime" as const,
@@ -88,14 +42,14 @@ export const templateEvents = [
   },
 ];
 
-export const templateGallery = [
+export const editorialBloomGallery = [
   "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1200&q=80",
   "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=80",
   "https://images.unsplash.com/photo-1525258946800-98cfd641d0de?auto=format&fit=crop&w=1200&q=80",
   "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=1200&q=80",
 ];
 
-export const templateWishes = [
+export const editorialBloomWishes = [
   {
     name: "Khánh & Vy",
     message:
@@ -113,7 +67,7 @@ export const templateWishes = [
   },
 ];
 
-export const templateCountdownTimeline = [
+export const editorialBloomCountdownTimeline = [
   {
     label: "Cầu hôn",
     date: "12.03.2026",
@@ -136,11 +90,24 @@ export const templateCountdownTimeline = [
   },
 ];
 
-export function TemplateHeader({ tier }: { tier: string }) {
+const heartParticles = [
+  { left: "4%", delay: "0s", duration: "10s", size: "24px", opacity: 0.28 },
+  { left: "12%", delay: "1.5s", duration: "12s", size: "18px", opacity: 0.22 },
+  { left: "24%", delay: "4s", duration: "11s", size: "28px", opacity: 0.26 },
+  { left: "36%", delay: "2.25s", duration: "13s", size: "20px", opacity: 0.18 },
+  { left: "48%", delay: "6s", duration: "10.5s", size: "30px", opacity: 0.24 },
+  { left: "61%", delay: "3.2s", duration: "12.5s", size: "22px", opacity: 0.22 },
+  { left: "72%", delay: "0.8s", duration: "11.5s", size: "18px", opacity: 0.2 },
+  { left: "83%", delay: "5.4s", duration: "13.5s", size: "26px", opacity: 0.26 },
+  { left: "92%", delay: "2.8s", duration: "10.8s", size: "21px", opacity: 0.18 },
+];
+
+export function EditorialBloomHeader({ tier }: { tier: string }) {
   const { language, theme } = useGlobalPreferences();
   const isDark = theme === "dark";
   const backLabel = language === "vi" ? "Quay lại trang chủ" : "Back to home";
-  const contactLabel = language === "vi" ? "Nhận tư vấn mẫu này" : "Get consultation";
+  const contactLabel =
+    language === "vi" ? "Nhận tư vấn mẫu này" : "Get consultation";
 
   return (
     <div className="relative mx-auto flex max-w-7xl flex-col gap-4 px-6 py-8 sm:px-10 lg:px-16">
@@ -186,7 +153,7 @@ export function TemplateHeader({ tier }: { tier: string }) {
   );
 }
 
-export function BackgroundMusicPlayer({
+export function EditorialBloomMusicPlayer({
   label,
   accentClassName,
 }: {
@@ -199,22 +166,12 @@ export function BackgroundMusicPlayer({
 
   useEffect(() => {
     const audio = audioRef.current;
-
-    if (!audio) {
-      return;
-    }
-
+    if (!audio) return;
     const handlePause = () => setIsPlaying(false);
     const handlePlay = () => setIsPlaying(true);
-
     audio.addEventListener("pause", handlePause);
     audio.addEventListener("play", handlePlay);
-
-    audio
-      .play()
-      .then(() => setIsPlaying(true))
-      .catch(() => setIsPlaying(false));
-
+    audio.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
     return () => {
       audio.removeEventListener("pause", handlePause);
       audio.removeEventListener("play", handlePlay);
@@ -223,21 +180,15 @@ export function BackgroundMusicPlayer({
 
   const togglePlayback = async () => {
     const audio = audioRef.current;
-
-    if (!audio) {
-      return;
-    }
-
+    if (!audio) return;
     if (audio.paused) {
       try {
         await audio.play();
       } catch {
         setIsPlaying(false);
       }
-
       return;
     }
-
     audio.pause();
   };
 
@@ -256,7 +207,9 @@ export function BackgroundMusicPlayer({
         className="inline-flex items-center gap-3 rounded-full border border-white/60 bg-white/82 px-5 py-3 text-sm font-medium text-[var(--color-ink)] shadow-[0_12px_30px_rgba(49,42,40,0.08)] backdrop-blur transition hover:scale-[1.01]"
       >
         <span
-          className={`inline-flex h-2.5 w-2.5 rounded-full ${isPlaying ? accentClassName : "bg-[var(--color-ink)]/20"}`}
+          className={`inline-flex h-2.5 w-2.5 rounded-full ${
+            isPlaying ? accentClassName : "bg-[var(--color-ink)]/20"
+          }`}
         />
         <span>
           {language === "vi"
@@ -275,27 +228,11 @@ export function BackgroundMusicPlayer({
   );
 }
 
-const heartParticles = [
-  { left: "4%", delay: "0s", duration: "10s", size: "24px", opacity: 0.28 },
-  { left: "12%", delay: "1.5s", duration: "12s", size: "18px", opacity: 0.22 },
-  { left: "24%", delay: "4s", duration: "11s", size: "28px", opacity: 0.26 },
-  { left: "36%", delay: "2.25s", duration: "13s", size: "20px", opacity: 0.18 },
-  { left: "48%", delay: "6s", duration: "10.5s", size: "30px", opacity: 0.24 },
-  { left: "61%", delay: "3.2s", duration: "12.5s", size: "22px", opacity: 0.22 },
-  { left: "72%", delay: "0.8s", duration: "11.5s", size: "18px", opacity: 0.2 },
-  { left: "83%", delay: "5.4s", duration: "13.5s", size: "26px", opacity: 0.26 },
-  { left: "92%", delay: "2.8s", duration: "10.8s", size: "21px", opacity: 0.18 },
-];
-
-export function FallingHearts({
-  color,
-}: {
-  color: string;
-}) {
+export function EditorialBloomFallingHearts({ color }: { color: string }) {
   return (
     <>
       <style jsx global>{`
-        @keyframes falling-heart {
+        @keyframes falling-heart-editorial-bloom {
           0% {
             transform: translate3d(0, -12vh, 0) rotate(0deg) scale(0.9);
           }
@@ -311,7 +248,7 @@ export function FallingHearts({
             className="absolute -top-16 select-none"
             style={{
               left: heart.left,
-              animationName: "falling-heart",
+              animationName: "falling-heart-editorial-bloom",
               animationDelay: heart.delay,
               animationDuration: heart.duration,
               animationIterationCount: "infinite",

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import GlobalDashboardControls from "@/components/global-dashboard-controls";
+import AppTopChrome from "@/components/app-top-chrome";
 import {
   GlobalPreferencesProvider,
   type AppLanguage,
@@ -49,11 +49,7 @@ export default async function RootLayout({
           initialLanguage={initialLanguage}
           initialTheme={initialTheme}
         >
-          <div className="sticky top-0 z-[70] px-4 pt-4 sm:px-6 lg:px-8">
-            <div className="mx-auto w-full max-w-7xl">
-              <GlobalDashboardControls />
-            </div>
-          </div>
+          <AppTopChrome />
           {children}
         </GlobalPreferencesProvider>
       </body>

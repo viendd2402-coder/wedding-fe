@@ -1,0 +1,12 @@
+---
+description: Mỗi mẫu thiệp cưới phải thiết kế riêng, không dùng chung layout/component thiệp
+alwaysApply: true
+---
+
+# Wedding templates — một mẫu một thiết kế
+
+- Mỗi template (miễn phí / trả phí) phải có **bố cục và kiến trúc trang riêng**: không được dùng lại cùng một “khung” (cùng thứ tự section, cùng nhịp hero → cột → RSVP, v.v.) giữa hai mẫu.
+- **Không** tách component hay layout dùng chung cho nội dung thiệp giữa các mẫu (không `SharedHeader`, `WeddingHero`, layout dùng lại). Nếu cần giống kỹ thuật, **copy code** vào từng thư mục mẫu thay vì import chéo.
+- Mỗi mẫu nên tự chứa markup + style trong phạm vi module của nó (`src/templates/<tier>/<slug>/` và file preview tương ứng): Tailwind viết trong file đó, hoặc **CSS Module** chỉ dùng cho slug đó (ví dụ `azure-promise.module.css`). **Không** import UI/layout từ thư mục mẫu khác.
+- **Ngoại lệ:** phần “vỏ demo” của app (ví dụ lightbox, panel chỉnh preview trong `template-workspace`) có thể dùng chung vì **không phải** giao diện thiệp gửi khách. Phần **thiệp thật** render trong component preview của từng mẫu vẫn phải độc lập hoàn toàn.
+- Thêm mẫu mới: so sánh trực quan với các mẫu hiện có để chắc chắn không trùng cấu trúc HTML và không trùng “bộ” class/layout.

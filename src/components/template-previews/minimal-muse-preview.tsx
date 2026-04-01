@@ -3,14 +3,14 @@
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
 import WeddingCountdown from "@/components/wedding-countdown";
 import {
-  BackgroundMusicPlayer,
-  FallingHearts,
-  TemplateHeader,
-  templateEvents,
-  templateGallery,
-  templateTimeline,
+  MinimalMuseFallingHearts,
+  MinimalMuseHeader,
+  MinimalMuseMusicPlayer,
+  minimalMuseEvents,
+  minimalMuseGallery,
+  minimalMuseTimeline,
   type TemplatePreviewProps,
-} from "@/components/template-preview-shared";
+} from "@/templates/free/minimal-muse/support";
 
 export default function MinimalMusePreview({
   template,
@@ -20,7 +20,7 @@ export default function MinimalMusePreview({
 }: TemplatePreviewProps) {
   const { language, theme } = useGlobalPreferences();
   const isDark = theme === "dark";
-  const galleryImages = images.galleryImages.length ? images.galleryImages : templateGallery;
+  const galleryImages = images.galleryImages.length ? images.galleryImages : minimalMuseGallery;
   const copy =
     language === "vi"
       ? {
@@ -74,8 +74,8 @@ export default function MinimalMusePreview({
               : "bg-[radial-gradient(circle_at_top,_rgba(125,140,121,0.16),_transparent_34%)]"
           }`}
         />
-        <FallingHearts color="rgba(197, 122, 145, 0.9)" />
-        <TemplateHeader tier={template.tier} />
+        <MinimalMuseFallingHearts color="rgba(197, 122, 145, 0.9)" />
+        <MinimalMuseHeader tier={template.tier} />
         <div className="relative mx-auto max-w-7xl px-6 pb-12 sm:px-10 lg:px-16 lg:pb-20">
           <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
             <div className="max-w-2xl">
@@ -99,7 +99,7 @@ export default function MinimalMusePreview({
                 </div>
               </div>
               <div className="mt-6">
-                <BackgroundMusicPlayer
+                <MinimalMuseMusicPlayer
                   label="Wedding march"
                   accentClassName="bg-[var(--color-sage)]"
                 />
@@ -201,7 +201,7 @@ export default function MinimalMusePreview({
               <p className={`mt-6 text-sm leading-7 ${isDark ? "text-white/66" : "text-[var(--color-ink)]/66"}`}>{copy.valueNote}</p>
             </div>
             <div className="grid gap-4 sm:grid-cols-3">
-              {templateTimeline.map((item) => (
+              {minimalMuseTimeline.map((item) => (
                 <article key={item.year} className={`rounded-[1.8rem] p-5 shadow-[0_16px_40px_rgba(49,42,40,0.05)] ${
                   isDark ? "border border-white/10 bg-white/6" : "bg-white/84"
                 }`}>
@@ -248,7 +248,7 @@ export default function MinimalMusePreview({
               Mỗi mốc được tách rõ để khách chỉ cần lướt một lần là nắm được thời gian, địa điểm và nhịp di chuyển trong ngày.
             </p>
             <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              {templateEvents.map((event) => (
+              {minimalMuseEvents.map((event) => (
                 <article
                   key={event.label}
                   className={`rounded-[1.6rem] p-5 ${

@@ -4,16 +4,16 @@ import { useMemo } from "react";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
 import WeddingCountdown from "@/components/wedding-countdown";
 import {
-  BackgroundMusicPlayer,
-  FallingHearts,
-  TemplateHeader,
-  templateCountdownTimeline,
-  templateEvents,
-  templateGallery,
-  templateTimeline,
-  templateWishes,
+  EditorialBloomFallingHearts,
+  EditorialBloomHeader,
+  EditorialBloomMusicPlayer,
+  editorialBloomCountdownTimeline,
+  editorialBloomEvents,
+  editorialBloomGallery,
+  editorialBloomTimeline,
+  editorialBloomWishes,
   type TemplatePreviewProps,
-} from "@/components/template-preview-shared";
+} from "@/templates/premium/editorial-bloom/support";
 
 export default function EditorialBloomPreview({
   template,
@@ -22,7 +22,7 @@ export default function EditorialBloomPreview({
   onPreviewImage,
 }: TemplatePreviewProps) {
   const { language, theme } = useGlobalPreferences();
-  const galleryImages = images.galleryImages.length ? images.galleryImages : templateGallery;
+  const galleryImages = images.galleryImages.length ? images.galleryImages : editorialBloomGallery;
   const copy = useMemo(
     () =>
       language === "vi"
@@ -273,7 +273,7 @@ export default function EditorialBloomPreview({
   const timelineItems = useMemo(
     () =>
       language === "vi"
-        ? templateTimeline
+        ? editorialBloomTimeline
         : [
             {
               year: "2017",
@@ -299,7 +299,7 @@ export default function EditorialBloomPreview({
   const wishItems = useMemo(
     () =>
       language === "vi"
-        ? templateWishes
+        ? editorialBloomWishes
         : [
             {
               name: "Linh & An",
@@ -351,8 +351,8 @@ export default function EditorialBloomPreview({
               : "bg-[radial-gradient(circle_at_top_right,_rgba(197,167,161,0.22),_transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.12),rgba(255,255,255,0))]"
           }`}
         />
-        <FallingHearts color="rgba(184, 144, 152, 0.92)" />
-        <TemplateHeader tier={template.tier} />
+        <EditorialBloomFallingHearts color="rgba(184, 144, 152, 0.92)" />
+        <EditorialBloomHeader tier={template.tier} />
         <div className="relative mx-auto max-w-7xl px-6 pb-12 sm:px-10 lg:px-16 lg:pb-24">
           <div className="grid gap-6 lg:grid-cols-[0.34fr_0.66fr]">
             <div
@@ -377,7 +377,7 @@ export default function EditorialBloomPreview({
                   {template.heroTitle}
                 </p>
                 <div className="mt-8">
-                  <BackgroundMusicPlayer
+                  <EditorialBloomMusicPlayer
                     label="Wedding march"
                     accentClassName="bg-[var(--color-rose)]"
                   />
@@ -661,11 +661,11 @@ export default function EditorialBloomPreview({
               <WeddingCountdown targetDate={preview.countdownTarget} variant="editorial" />
             </div>
             <div className="mt-8 space-y-4">
-              {templateCountdownTimeline.map((item, index) => (
+              {editorialBloomCountdownTimeline.map((item, index) => (
                 <div key={item.label} className="grid grid-cols-[24px_1fr] gap-4">
                   <div className="flex flex-col items-center">
                     <div className="h-3 w-3 rounded-full bg-[var(--color-rose)]" />
-                    {index < templateCountdownTimeline.length - 1 ? <div className="mt-2 h-full w-px bg-[var(--color-ink)]/12" /> : null}
+                    {index < editorialBloomCountdownTimeline.length - 1 ? <div className="mt-2 h-full w-px bg-[var(--color-ink)]/12" /> : null}
                   </div>
                   <div
                     className={`rounded-[1.5rem] p-4 ${
@@ -706,7 +706,7 @@ export default function EditorialBloomPreview({
                   {copy.eventSchedule}
                 </p>
                 <div className="mt-6 space-y-4">
-                  {templateEvents.map((event) => (
+                  {editorialBloomEvents.map((event) => (
                     <article key={event.label} className="rounded-[1.6rem] border border-white/10 bg-white/6 p-5">
                       <p className="text-xs uppercase tracking-[0.22em] text-white/54">
                         {event.label}

@@ -117,3 +117,132 @@ html[data-theme="dark"] .btn-primary {
 html[data-theme="dark"] .btn-ghost:hover {
   background: linear-gradient(135deg, rgba(209, 177, 171, 0.18), rgba(255, 255, 255, 0.1));
 }
+
+@keyframes fade-up-soft {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate3d(0, -12px, 0) scale(1.02);
+  }
+}
+
+@keyframes drift-soft {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(18px, -14px, 0);
+  }
+}
+
+@keyframes fade-scale-soft {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pulse-glow-soft {
+  0%,
+  100% {
+    box-shadow: 0 0 0 rgba(197, 167, 161, 0);
+  }
+
+  50% {
+    box-shadow: 0 22px 44px rgba(197, 167, 161, 0.18);
+  }
+}
+
+.animate-fade-up-soft {
+  animation: fade-up-soft 0.8s ease-out both;
+}
+
+.animate-fade-up-soft-delay-1 {
+  animation: fade-up-soft 0.8s ease-out 0.12s both;
+}
+
+.animate-fade-up-soft-delay-2 {
+  animation: fade-up-soft 0.8s ease-out 0.24s both;
+}
+
+.animate-fade-up-soft-delay-3 {
+  animation: fade-up-soft 0.8s ease-out 0.36s both;
+}
+
+.animate-float-soft {
+  animation: float-soft 6s ease-in-out infinite;
+}
+
+.animate-drift-soft {
+  animation: drift-soft 10s ease-in-out infinite;
+}
+
+.animate-fade-scale-soft {
+  animation: fade-scale-soft 0.95s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-fade-scale-soft-delay-1 {
+  animation: fade-scale-soft 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.14s both;
+}
+
+.animate-fade-scale-soft-delay-2 {
+  animation: fade-scale-soft 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.28s both;
+}
+
+.animate-pulse-glow-soft {
+  animation: pulse-glow-soft 4.8s ease-in-out infinite;
+}
+
+.hover-lift-strong {
+  transition:
+    transform 360ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 360ms ease,
+    border-color 360ms ease;
+}
+
+.hover-lift-strong:hover {
+  transform: translateY(-10px) scale(1.01);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up-soft,
+  .animate-fade-up-soft-delay-1,
+  .animate-fade-up-soft-delay-2,
+  .animate-fade-up-soft-delay-3,
+  .animate-fade-scale-soft,
+  .animate-fade-scale-soft-delay-1,
+  .animate-fade-scale-soft-delay-2,
+  .animate-pulse-glow-soft,
+  .animate-float-soft,
+  .animate-drift-soft {
+    animation: none;
+  }
+
+  .hover-lift-strong,
+  .hover-lift-strong:hover {
+    transform: none;
+    transition: none;
+  }
+}
