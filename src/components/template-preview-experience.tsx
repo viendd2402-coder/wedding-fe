@@ -3,18 +3,18 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useGlobalPreferences } from "@/components/global-preferences-provider";
 import WeddingCountdown from "@/components/wedding-countdown";
+import CityChicPreview from "@/components/template-previews/city-chic-preview";
+import AzurePromisePreview from "@/components/template-previews/azure-promise-preview";
+import EditorialBloomPreview from "@/components/template-previews/editorial-bloom-preview";
+import GardenNotePreview from "@/components/template-previews/garden-note-preview";
+import HeritageVowsPreview from "@/components/template-previews/heritage-vows-preview";
+import MinimalMusePreview from "@/components/template-previews/minimal-muse-preview";
+import ModernMonogramPreview from "@/components/template-previews/modern-monogram-preview";
+import type { WeddingTemplate } from "@/lib/templates";
 
-type TemplatePageData = {
-  slug: string;
-  name: string;
-  style: string;
-  tier: string;
-  description: string;
-  image: string;
-  heroTitle: string;
-  heroSubtitle: string;
-};
+type TemplatePageData = WeddingTemplate;
 
 type PreviewData = {
   bride: string;
@@ -147,6 +147,22 @@ const calendarDays = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
 const calendarDates = ["13", "14", "15", "16", "17", "18", "19", "20"];
 
 function TemplateHeader({ tier }: { tier: string }) {
+  const { language } = useGlobalPreferences();
+  const copy =
+    language === "vi"
+      ? {
+          back: "Quay lại trang chủ",
+          contact: "Nhận tư vấn mẫu này",
+          free: "Miễn phí",
+          premium: "Trả phí",
+        }
+      : {
+          back: "Back to home",
+          contact: "Get consultation",
+          free: "Free",
+          premium: "Premium",
+        };
+
   return (
     <div className="relative mx-auto flex max-w-7xl flex-col gap-4 px-6 py-8 sm:px-10 lg:px-16">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -154,7 +170,7 @@ function TemplateHeader({ tier }: { tier: string }) {
           href="/"
           className="btn-secondary inline-flex w-fit rounded-full px-5 py-3 text-sm font-medium backdrop-blur"
         >
-          Quay lại trang chủ
+          {copy.back}
         </Link>
         <div className="flex items-center gap-3">
           <span
@@ -170,13 +186,13 @@ function TemplateHeader({ tier }: { tier: string }) {
                   : "var(--color-rose)",
             }}
           >
-            {tier}
+            {tier === "Miễn phí" ? copy.free : copy.premium}
           </span>
           <Link
             href="/#contact"
             className="btn-primary inline-flex rounded-full px-5 py-3 text-sm font-medium"
           >
-            Nhận tư vấn mẫu này
+            {copy.contact}
           </Link>
         </div>
       </div>
@@ -191,6 +207,17 @@ function ImageLightbox({
   image: LightboxImage | null;
   onClose: () => void;
 }) {
+  const { language, theme } = useGlobalPreferences();
+  const isDark = theme === "dark";
+  const copy =
+    language === "vi"
+      ? {
+          close: "Đóng preview",
+        }
+      : {
+          close: "Close preview",
+        };
+
   if (!image) {
     return null;
   }
@@ -211,8 +238,12 @@ function ImageLightbox({
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-3 top-3 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-[var(--color-ink)] shadow transition hover:bg-white cursor-pointer"
-          aria-label="Dong preview"
+          className={`absolute right-3 top-3 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full shadow transition cursor-pointer ${
+            isDark
+              ? "bg-white/12 text-white hover:bg-white/18"
+              : "bg-white/90 text-[var(--color-ink)] hover:bg-white"
+          }`}
+          aria-label={copy.close}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -265,13 +296,68 @@ function PreviewConfigurator({
   isCollapsed: boolean;
   onToggleCollapsed: () => void;
 }) {
+  const { language, theme } = useGlobalPreferences();
+  const isDark = theme === "dark";
+  const copy =
+    language === "vi"
+      ? {
+          openPreview: "Mở phần xem thử thông tin",
+          closePreview: "Ẩn phần xem thử thông tin",
+          titleEyebrow: "Xem thử thông tin",
+          title: "Điền và apply ngay",
+          groomName: "Tên chú rể",
+          brideName: "Tên cô dâu",
+          dateLabel: "Ngày cưới hiển thị",
+          location: "Địa điểm / thành phố",
+          ceremonyTime: "Giờ lễ",
+          partyTime: "Giờ tiệc",
+          venue: "Địa điểm tiệc",
+          bankName: "Tên ngân hàng",
+          accountName: "Tên chủ tài khoản",
+          accountNumber: "Số tài khoản",
+          coverImage: "Ảnh cover",
+          coverSelected: "Đã chọn ảnh cover mới.",
+          coverEmpty: "Chưa chọn ảnh cover.",
+          gallery: "Album gallery",
+          imageLabel: "Ảnh",
+          imageSelected: "Đã chọn ảnh.",
+          imageDefault: "Đang dùng ảnh mặc định.",
+        }
+      : {
+          openPreview: "Open preview configurator",
+          closePreview: "Hide preview configurator",
+          titleEyebrow: "Preview editor",
+          title: "Edit and apply instantly",
+          groomName: "Groom name",
+          brideName: "Bride name",
+          dateLabel: "Displayed wedding date",
+          location: "Location / city",
+          ceremonyTime: "Ceremony time",
+          partyTime: "Reception time",
+          venue: "Reception venue",
+          bankName: "Bank name",
+          accountName: "Account holder",
+          accountNumber: "Account number",
+          coverImage: "Cover image",
+          coverSelected: "New cover image selected.",
+          coverEmpty: "No custom cover image selected.",
+          gallery: "Gallery album",
+          imageLabel: "Image",
+          imageSelected: "Image selected.",
+          imageDefault: "Using default image.",
+        };
+
   if (isCollapsed) {
     return (
       <button
         type="button"
         onClick={onToggleCollapsed}
-        className="fixed bottom-5 right-5 z-50 inline-flex h-14 w-14 cursor-pointer items-center justify-center rounded-full border border-[var(--color-ink)]/10 bg-white/92 text-[var(--color-ink)] shadow-[0_24px_60px_rgba(49,42,40,0.14)] backdrop-blur transition hover:bg-white sm:h-14 sm:w-14"
-        aria-label="Mo xem thu thong tin"
+        className={`fixed bottom-5 right-5 z-50 inline-flex h-14 w-14 cursor-pointer items-center justify-center rounded-full backdrop-blur transition sm:h-14 sm:w-14 ${
+          isDark
+            ? "border border-white/10 bg-white/10 text-white shadow-[0_24px_60px_rgba(0,0,0,0.3)] hover:bg-white/14"
+            : "border border-[var(--color-ink)]/10 bg-white/92 text-[var(--color-ink)] shadow-[0_24px_60px_rgba(49,42,40,0.14)] hover:bg-white"
+        }`}
+        aria-label={copy.openPreview}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -291,19 +377,29 @@ function PreviewConfigurator({
   }
 
   return (
-    <div className="fixed bottom-3 left-3 right-3 z-50 rounded-[1.8rem] border border-[var(--color-ink)]/10 bg-white/92 p-4 shadow-[0_24px_60px_rgba(49,42,40,0.14)] backdrop-blur sm:bottom-5 sm:left-auto sm:right-5 sm:w-[min(380px,calc(100vw-24px))] sm:p-5">
+    <div
+      className={`fixed bottom-3 left-3 right-3 z-50 rounded-[1.8rem] p-4 backdrop-blur sm:bottom-5 sm:left-auto sm:right-5 sm:w-[min(380px,calc(100vw-24px))] sm:p-5 ${
+        isDark
+          ? "border border-white/10 bg-[#0f0f10]/92 text-white shadow-[0_24px_60px_rgba(0,0,0,0.3)]"
+          : "border border-[var(--color-ink)]/10 bg-white/92 shadow-[0_24px_60px_rgba(49,42,40,0.14)]"
+      }`}
+    >
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs uppercase tracking-[0.3em] text-[var(--color-sage)]">
-            Xem thử thông tin
+            {copy.titleEyebrow}
           </p>
-          <h2 className="mt-3 font-display text-3xl">Điền và apply ngay</h2>
+          <h2 className="mt-3 font-display text-3xl">{copy.title}</h2>
         </div>
         <button
           type="button"
           onClick={onToggleCollapsed}
-          className="inline-flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[var(--color-ink)]/10 bg-white/90 text-[var(--color-ink)] shadow transition hover:bg-white"
-          aria-label="An xem thu thong tin"
+          className={`inline-flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full shadow transition ${
+            isDark
+              ? "border border-white/10 bg-white/8 text-white hover:bg-white/12"
+              : "border border-[var(--color-ink)]/10 bg-white/90 text-[var(--color-ink)] hover:bg-white"
+          }`}
+          aria-label={copy.closePreview}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -322,76 +418,122 @@ function PreviewConfigurator({
       </div>
       <div className="mt-4 grid max-h-[55vh] gap-3 overflow-y-auto pr-1 sm:max-h-[60vh]">
         <input
-          className="rounded-2xl border border-[var(--color-ink)]/10 bg-[var(--color-cream)] px-4 py-3 outline-none"
+          className={`rounded-2xl px-4 py-3 outline-none ${
+            isDark
+              ? "border border-white/10 bg-white/6 placeholder:text-white/35"
+              : "border border-[var(--color-ink)]/10 bg-[var(--color-cream)]"
+          }`}
           value={preview.groom}
           onChange={(e) => onChange("groom", e.target.value)}
-          placeholder="Tên chú rể"
+          placeholder={copy.groomName}
         />
         <input
-          className="rounded-2xl border border-[var(--color-ink)]/10 bg-[var(--color-cream)] px-4 py-3 outline-none"
+          className={`rounded-2xl px-4 py-3 outline-none ${
+            isDark
+              ? "border border-white/10 bg-white/6 placeholder:text-white/35"
+              : "border border-[var(--color-ink)]/10 bg-[var(--color-cream)]"
+          }`}
           value={preview.bride}
           onChange={(e) => onChange("bride", e.target.value)}
-          placeholder="Tên cô dâu"
+          placeholder={copy.brideName}
         />
         <input
-          className="rounded-2xl border border-[var(--color-ink)]/10 bg-[var(--color-cream)] px-4 py-3 outline-none"
+          className={`rounded-2xl px-4 py-3 outline-none ${
+            isDark
+              ? "border border-white/10 bg-white/6 placeholder:text-white/35"
+              : "border border-[var(--color-ink)]/10 bg-[var(--color-cream)]"
+          }`}
           value={preview.dateLabel}
           onChange={(e) => onChange("dateLabel", e.target.value)}
-          placeholder="Ngày cưới hiển thị"
+          placeholder={copy.dateLabel}
         />
         <input
           type="datetime-local"
-          className="rounded-2xl border border-[var(--color-ink)]/10 bg-[var(--color-cream)] px-4 py-3 outline-none"
+          className={`rounded-2xl px-4 py-3 outline-none ${
+            isDark ? "border border-white/10 bg-white/6" : "border border-[var(--color-ink)]/10 bg-[var(--color-cream)]"
+          }`}
           value={preview.countdownTarget}
           onChange={(e) => onChange("countdownTarget", e.target.value)}
         />
         <input
-          className="rounded-2xl border border-[var(--color-ink)]/10 bg-[var(--color-cream)] px-4 py-3 outline-none"
+          className={`rounded-2xl px-4 py-3 outline-none ${
+            isDark
+              ? "border border-white/10 bg-white/6 placeholder:text-white/35"
+              : "border border-[var(--color-ink)]/10 bg-[var(--color-cream)]"
+          }`}
           value={preview.location}
           onChange={(e) => onChange("location", e.target.value)}
-          placeholder="Địa điểm / thành phố"
+          placeholder={copy.location}
         />
         <div className="grid grid-cols-2 gap-3">
           <input
-            className="rounded-2xl border border-[var(--color-ink)]/10 bg-[var(--color-cream)] px-4 py-3 outline-none"
+            className={`rounded-2xl px-4 py-3 outline-none ${
+              isDark
+                ? "border border-white/10 bg-white/6 placeholder:text-white/35"
+                : "border border-[var(--color-ink)]/10 bg-[var(--color-cream)]"
+            }`}
             value={preview.ceremonyTime}
             onChange={(e) => onChange("ceremonyTime", e.target.value)}
-            placeholder="Giờ lễ"
+            placeholder={copy.ceremonyTime}
           />
           <input
-            className="rounded-2xl border border-[var(--color-ink)]/10 bg-[var(--color-cream)] px-4 py-3 outline-none"
+            className={`rounded-2xl px-4 py-3 outline-none ${
+              isDark
+                ? "border border-white/10 bg-white/6 placeholder:text-white/35"
+                : "border border-[var(--color-ink)]/10 bg-[var(--color-cream)]"
+            }`}
             value={preview.partyTime}
             onChange={(e) => onChange("partyTime", e.target.value)}
-            placeholder="Giờ tiệc"
+            placeholder={copy.partyTime}
           />
         </div>
         <input
-          className="rounded-2xl border border-[var(--color-ink)]/10 bg-[var(--color-cream)] px-4 py-3 outline-none"
+          className={`rounded-2xl px-4 py-3 outline-none ${
+            isDark
+              ? "border border-white/10 bg-white/6 placeholder:text-white/35"
+              : "border border-[var(--color-ink)]/10 bg-[var(--color-cream)]"
+          }`}
           value={preview.venue}
           onChange={(e) => onChange("venue", e.target.value)}
-          placeholder="Địa điểm tiệc"
+          placeholder={copy.venue}
         />
         <input
-          className="rounded-2xl border border-[var(--color-ink)]/10 bg-[var(--color-cream)] px-4 py-3 outline-none"
+          className={`rounded-2xl px-4 py-3 outline-none ${
+            isDark
+              ? "border border-white/10 bg-white/6 placeholder:text-white/35"
+              : "border border-[var(--color-ink)]/10 bg-[var(--color-cream)]"
+          }`}
           value={preview.bankName}
           onChange={(e) => onChange("bankName", e.target.value)}
-          placeholder="Tên ngân hàng"
+          placeholder={copy.bankName}
         />
         <input
-          className="rounded-2xl border border-[var(--color-ink)]/10 bg-[var(--color-cream)] px-4 py-3 outline-none"
+          className={`rounded-2xl px-4 py-3 outline-none ${
+            isDark
+              ? "border border-white/10 bg-white/6 placeholder:text-white/35"
+              : "border border-[var(--color-ink)]/10 bg-[var(--color-cream)]"
+          }`}
           value={preview.accountName}
           onChange={(e) => onChange("accountName", e.target.value)}
-          placeholder="Tên chủ tài khoản"
+          placeholder={copy.accountName}
         />
         <input
-          className="rounded-2xl border border-[var(--color-ink)]/10 bg-[var(--color-cream)] px-4 py-3 outline-none"
+          className={`rounded-2xl px-4 py-3 outline-none ${
+            isDark
+              ? "border border-white/10 bg-white/6 placeholder:text-white/35"
+              : "border border-[var(--color-ink)]/10 bg-[var(--color-cream)]"
+          }`}
           value={preview.accountNumber}
           onChange={(e) => onChange("accountNumber", e.target.value)}
-          placeholder="Số tài khoản"
+          placeholder={copy.accountNumber}
         />
-        <div className="rounded-[1.4rem] border border-dashed border-[var(--color-ink)]/12 bg-[var(--color-cream)]/80 p-4">
+        <div className={`rounded-[1.4rem] border border-dashed p-4 ${
+          isDark
+            ? "border-white/12 bg-white/4"
+            : "border-[var(--color-ink)]/12 bg-[var(--color-cream)]/80"
+        }`}>
           <p className="text-xs uppercase tracking-[0.24em] text-[var(--color-sage)]">
-            Ảnh cover
+            {copy.coverImage}
           </p>
           <div
             className="mt-3 h-32 rounded-2xl bg-cover bg-center"
@@ -405,22 +547,30 @@ function PreviewConfigurator({
             className="mt-3 block w-full text-sm"
             onChange={(e) => onCoverImageChange(e.target.files?.[0] ?? null)}
           />
-          <p className="mt-2 text-xs text-[var(--color-ink)]/55">
-            {images.coverImage ? "Đã chọn ảnh cover mới." : "Chưa chọn ảnh cover."}
+          <p className={`mt-2 text-xs ${isDark ? "text-white/55" : "text-[var(--color-ink)]/55"}`}>
+            {images.coverImage ? copy.coverSelected : copy.coverEmpty}
           </p>
         </div>
-        <div className="rounded-[1.4rem] border border-dashed border-[var(--color-ink)]/12 bg-[var(--color-cream)]/80 p-4">
+        <div className={`rounded-[1.4rem] border border-dashed p-4 ${
+          isDark
+            ? "border-white/12 bg-white/4"
+            : "border-[var(--color-ink)]/12 bg-[var(--color-cream)]/80"
+        }`}>
           <p className="text-xs uppercase tracking-[0.24em] text-[var(--color-sage)]">
-            Album gallery
+            {copy.gallery}
           </p>
           <div className="mt-3 grid gap-3">
             {[0, 1, 2, 3].map((index) => (
               <label
                 key={index}
-                className="rounded-2xl border border-[var(--color-ink)]/8 bg-white/70 px-4 py-3 text-sm"
+                className={`rounded-2xl px-4 py-3 text-sm ${
+                  isDark
+                    ? "border border-white/10 bg-white/6"
+                    : "border border-[var(--color-ink)]/8 bg-white/70"
+                }`}
               >
-                <span className="block text-xs uppercase tracking-[0.2em] text-[var(--color-ink)]/55">
-                  Ảnh {index + 1}
+                <span className={`block text-xs uppercase tracking-[0.2em] ${isDark ? "text-white/55" : "text-[var(--color-ink)]/55"}`}>
+                  {copy.imageLabel} {index + 1}
                 </span>
                 <div
                   className="mt-3 h-24 rounded-2xl bg-cover bg-center"
@@ -438,10 +588,10 @@ function PreviewConfigurator({
                     onGalleryImageChange(index, e.target.files?.[0] ?? null)
                   }
                 />
-                <span className="mt-2 block text-xs text-[var(--color-ink)]/55">
+                <span className={`mt-2 block text-xs ${isDark ? "text-white/55" : "text-[var(--color-ink)]/55"}`}>
                   {images.galleryImages[index]
-                    ? "Đã chọn ảnh."
-                    : "Đang dùng ảnh mặc định."}
+                    ? copy.imageSelected
+                    : copy.imageDefault}
                 </span>
               </label>
             ))}
@@ -511,8 +661,8 @@ function MinimalTemplate({
             >
               <div className="flex h-full flex-col justify-between rounded-[1.4rem] border border-white/35 bg-[rgba(255,255,255,0.12)] p-6 backdrop-blur-sm">
                 <div className="flex justify-between text-xs uppercase tracking-[0.25em] text-white/76">
-                  <span>Minimal Muse</span>
-                  <span>Wedding Website</span>
+                    <span>{template.name}</span>
+                    <span>{template.previewLabel}</span>
                 </div>
                 <div className="rounded-[1.6rem] bg-white/88 p-6 text-center text-[var(--color-ink)] sm:p-8">
                   <p className="text-xs uppercase tracking-[0.35em] text-[var(--color-sage)]">
@@ -626,20 +776,23 @@ function MinimalTemplate({
 
       <section className="mx-auto max-w-7xl px-6 py-10 sm:px-10 lg:px-16">
         <div className="grid gap-6 lg:grid-cols-[1fr_0.94fr]">
-          <div className="rounded-[2.4rem] bg-[linear-gradient(135deg,#312a28,#556453)] px-6 py-8 text-white sm:px-8 sm:py-10">
-            <p className="text-sm uppercase tracking-[0.35em] text-white/55">Lịch sự kiện</p>
+          <div className="rounded-[2.4rem] border border-white/10 bg-[radial-gradient(circle_at_top,_rgba(209,177,171,0.12),_transparent_28%),linear-gradient(135deg,#211d1c,#364035)] px-6 py-8 text-white shadow-[0_24px_60px_rgba(0,0,0,0.2)] sm:px-8 sm:py-10">
+            <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-rose)]/82">Lịch sự kiện</p>
             <h2 className="mt-4 font-display text-4xl leading-tight sm:text-5xl">Ngày vui của chúng mình</h2>
+            <p className="mt-4 max-w-xl text-sm leading-7 text-white/68">
+              Bố cục ưu tiên sự rõ ràng: khách nhìn nhanh là biết cần đến đâu, lúc nào và theo đúng flow của ngày cưới.
+            </p>
             <div className="mt-8 grid gap-4">
               {events.map((event) => (
-                <article key={event.label} className="rounded-[1.8rem] border border-white/10 bg-white/6 p-6">
+                <article key={event.label} className="rounded-[1.8rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.09),rgba(255,255,255,0.04))] p-6 shadow-[0_16px_36px_rgba(0,0,0,0.14)]">
                   <p className="text-sm uppercase tracking-[0.25em] text-[var(--color-sand)]">{event.label}</p>
                   <p className="mt-4 font-display text-4xl">
                     {event.timeKey === "ceremonyTime" ? preview.ceremonyTime : preview.partyTime}
                   </p>
-                  <p className="mt-4 text-lg text-white/92">
+                  <p className="mt-4 text-lg text-white/88">
                     {event.place === "Riverside Garden" ? preview.venue : event.place}
                   </p>
-                  <p className="mt-2 text-sm leading-7 text-white/65">{event.address}</p>
+                  <p className="mt-3 text-sm leading-7 text-white/58">{event.address}</p>
                 </article>
               ))}
             </div>
@@ -767,8 +920,8 @@ function EditorialTemplate({
               >
                 <div className="flex h-full flex-col justify-between rounded-[1.8rem] border border-white/26 bg-[rgba(255,255,255,0.08)] p-6 backdrop-blur-sm">
                   <div className="flex justify-between text-xs uppercase tracking-[0.25em] text-white/80">
-                    <span>Editorial Bloom</span>
-                    <span>Luxury Demo</span>
+                    <span>{template.name}</span>
+                    <span>{template.previewLabel}</span>
                   </div>
                   <div className="rounded-[1.8rem] border border-white/20 bg-[linear-gradient(180deg,rgba(255,255,255,0.18),rgba(255,255,255,0.06))] p-7 text-white backdrop-blur-md shadow-[0_24px_60px_rgba(0,0,0,0.18)]">
                     <p className="text-sm uppercase tracking-[0.3em] text-white/70">Wedding Editorial</p>
@@ -922,17 +1075,21 @@ function EditorialTemplate({
 
       <section className="mx-auto max-w-7xl px-6 py-10 sm:px-10 lg:px-16">
         <div className="grid gap-6 lg:grid-cols-[1fr_0.94fr]">
-          <div className="rounded-[2.4rem] bg-[linear-gradient(135deg,#2f2a28,#5a4744)] px-6 py-8 text-white sm:px-8 sm:py-10">
-            <p className="text-sm uppercase tracking-[0.35em] text-white/55">Lịch sự kiện</p>
+          <div className="rounded-[2.4rem] border border-white/10 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.06),_transparent_24%),linear-gradient(135deg,#1d181a,#4a3a37)] px-6 py-8 text-white shadow-[0_24px_60px_rgba(0,0,0,0.24)] sm:px-8 sm:py-10">
+            <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-sand)]/82">Lịch sự kiện</p>
+            <h2 className="mt-4 font-display text-4xl leading-tight sm:text-5xl">Ceremony, dinner và nhịp đêm cưới</h2>
+            <p className="mt-4 max-w-xl text-sm leading-7 text-white/68">
+              Cảm giác premium đến từ việc mỗi điểm chạm trong ngày được trình bày rõ, sang và có chủ đích.
+            </p>
             <div className="mt-8 grid gap-4">
               {events.map((event) => (
-                <article key={event.label} className="rounded-[1.8rem] border border-white/12 bg-[linear-gradient(180deg,rgba(255,255,255,0.12),rgba(255,255,255,0.05))] p-6">
+                <article key={event.label} className="rounded-[1.8rem] border border-white/12 bg-[linear-gradient(180deg,rgba(255,255,255,0.14),rgba(255,255,255,0.06))] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.16)]">
                   <p className="text-sm uppercase tracking-[0.25em] text-[var(--color-sand)]">{event.label}</p>
                   <p className="mt-4 font-display text-4xl">
                     {event.timeKey === "ceremonyTime" ? preview.ceremonyTime : preview.partyTime}
                   </p>
-                  <p className="mt-4 text-lg text-white/92">{event.place === "Riverside Garden" ? preview.venue : event.place}</p>
-                  <p className="mt-2 text-sm leading-7 text-white/65">{event.address}</p>
+                  <p className="mt-4 text-lg text-white/90">{event.place === "Riverside Garden" ? preview.venue : event.place}</p>
+                  <p className="mt-3 text-sm leading-7 text-white/60">{event.address}</p>
                 </article>
               ))}
             </div>
@@ -1011,8 +1168,8 @@ function RomanceTemplate({
               >
                 <div className="flex h-full flex-col justify-between rounded-[1.7rem] border border-white/24 bg-[rgba(255,255,255,0.12)] p-6 backdrop-blur-sm">
                   <div className="flex justify-between text-xs uppercase tracking-[0.25em] text-white/78">
-                    <span>Soft Romance</span>
-                    <span>Pastel Demo</span>
+                    <span>{template.name}</span>
+                    <span>{template.previewLabel}</span>
                   </div>
                   <div className="rounded-[2rem] border border-white/24 bg-[linear-gradient(180deg,rgba(255,255,255,0.18),rgba(255,255,255,0.08))] p-8 text-white shadow-[0_24px_60px_rgba(0,0,0,0.16)]">
                     <p className="text-sm uppercase tracking-[0.3em] text-white/72">Save the date</p>
@@ -1192,11 +1349,382 @@ function RomanceTemplate({
   );
 }
 
+function DarkLuxuryTemplate({
+  template,
+  preview,
+  images,
+  onPreviewImage,
+}: {
+  template: TemplatePageData;
+  preview: PreviewData;
+  images: PreviewImages;
+  onPreviewImage: (image: LightboxImage) => void;
+}) {
+  const galleryImages = images.galleryImages.length ? images.galleryImages : gallery;
+
+  return (
+    <>
+      <section className="relative isolate overflow-hidden bg-[linear-gradient(180deg,#171214,#241c20)] text-white">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(122,91,80,0.28),_transparent_36%),radial-gradient(circle_at_bottom_right,_rgba(91,83,102,0.24),_transparent_34%)]" />
+        <TemplateHeader tier={template.tier} />
+        <div className="relative mx-auto max-w-7xl px-6 pb-12 sm:px-10 lg:px-16 lg:pb-20">
+          <div className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-end">
+            <div className="max-w-2xl">
+              <p className="text-sm uppercase tracking-[0.35em] text-[rgba(255,255,255,0.58)]">
+                {template.style}
+              </p>
+              <h1 className="mt-5 font-display text-5xl leading-none sm:text-7xl">
+                {preview.groom}
+                <span className="px-3 text-[rgba(255,255,255,0.58)]">&</span>
+                {preview.bride}
+              </h1>
+              <p className="mt-6 max-w-xl text-lg leading-8 text-white/74">
+                {template.heroTitle}
+              </p>
+              <p className="mt-4 max-w-xl text-sm leading-7 text-white/60">
+                {template.heroSubtitle}
+              </p>
+              <div className="mt-10 flex flex-wrap gap-3">
+                <a href="#weekend-flow" className="btn-primary inline-flex rounded-full px-6 py-3 text-sm font-medium">
+                  Xem lịch tiệc
+                </a>
+                <a href="#rsvp" className="btn-secondary inline-flex rounded-full px-6 py-3 text-sm font-medium">
+                  RSVP cao cấp
+                </a>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() =>
+                onPreviewImage({
+                  src: images.coverImage || template.image,
+                  alt: `Cover ${template.name}`,
+                })
+              }
+              className="block cursor-pointer rounded-[2.4rem] border border-white/10 bg-white/6 p-5 text-left shadow-[0_24px_70px_rgba(0,0,0,0.35)]"
+            >
+              <div
+                className="min-h-[500px] rounded-[2rem] bg-cover bg-center p-6 sm:min-h-[640px]"
+                style={{
+                  backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.5)), url(${images.coverImage || template.image})`,
+                }}
+              >
+                <div className="flex h-full flex-col justify-between rounded-[1.7rem] border border-white/14 bg-black/18 p-6 backdrop-blur-sm">
+                  <div className="flex justify-between text-xs uppercase tracking-[0.25em] text-white/70">
+                    <span>{template.name}</span>
+                    <span>{template.previewLabel}</span>
+                  </div>
+                  <div className="rounded-[1.8rem] border border-white/16 bg-[linear-gradient(180deg,rgba(255,255,255,0.14),rgba(255,255,255,0.06))] p-7 shadow-[0_24px_60px_rgba(0,0,0,0.24)]">
+                    <p className="text-sm uppercase tracking-[0.3em] text-white/62">
+                      Candlelight reception
+                    </p>
+                    <p className="mt-4 font-display text-5xl leading-none sm:text-6xl">
+                      {preview.groom}
+                      <span className="px-3 text-white/66">&</span>
+                      {preview.bride}
+                    </p>
+                    <p className="mt-4 max-w-sm text-sm leading-7 text-white/80">
+                      {template.description}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-6 py-10 sm:px-10 lg:px-16">
+        <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+          <div className="rounded-[2.3rem] bg-[linear-gradient(180deg,#241c20,#34272a)] p-6 text-white shadow-[0_16px_40px_rgba(0,0,0,0.18)] sm:p-8">
+            <p className="text-sm uppercase tracking-[0.35em] text-white/56">Dress code</p>
+            <h2 className="mt-4 font-display text-4xl sm:text-5xl">Black tie, nến ấm và một đêm cưới đầy nhịp điệu</h2>
+            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+              {[
+                "Tông màu đen, champagne hoặc nâu trầm",
+                "Lễ đón khách với cocktail và string quartet",
+                "Dinner seating sang, nhiều điểm nhấn ánh sáng",
+                "After party tinh gọn nhưng có dấu ấn",
+              ].map((item) => (
+                <div key={item} className="rounded-[1.6rem] border border-white/10 bg-white/6 p-5 text-sm leading-7 text-white/80">
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div id="weekend-flow" className="rounded-[2.3rem] border border-[var(--color-ink)]/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(91,83,102,0.12))] p-6 shadow-[0_16px_40px_rgba(49,42,40,0.06)] sm:p-8">
+            <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-rose)]">Countdown</p>
+            <h2 className="mt-4 font-display text-4xl sm:text-5xl">Đếm ngược tới buổi tối trọng đại</h2>
+            <div className="mt-8">
+              <WeddingCountdown targetDate={preview.countdownTarget} variant="dark" />
+            </div>
+            <div className="mt-8 grid gap-4">
+              {[
+                { time: "17:00", title: "Đón khách", copy: "Cocktail, champagne tower và khu chụp hình." },
+                { time: "18:00", title: "Làm lễ", copy: "Ceremony riêng tư với ánh nến và âm nhạc live." },
+                { time: "19:00", title: "Dinner", copy: "Set menu, speeches và phần mời rượu." },
+                { time: "21:00", title: "After party", copy: "Không gian chuyển sang lounge và dance floor." },
+              ].map((item) => (
+                <article key={item.time} className="rounded-[1.6rem] border border-[var(--color-ink)]/8 bg-white/86 p-5">
+                  <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-rose)]">{item.time}</p>
+                  <p className="mt-2 font-display text-3xl">{item.title}</p>
+                  <p className="mt-3 text-sm leading-7 text-[var(--color-ink)]/72">{item.copy}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-6 py-10 sm:px-10 lg:px-16">
+        <div className="grid gap-5 md:grid-cols-2">
+          {galleryImages.map((image, index) => (
+            <button
+              key={image}
+              type="button"
+              onClick={() =>
+                onPreviewImage({
+                  src: image,
+                  alt: `Gallery ${index + 1} ${template.name}`,
+                })
+              }
+              className={`overflow-hidden rounded-[2rem] ${index === 0 ? "md:col-span-2 md:h-[460px]" : "md:h-[280px]"} h-72 cursor-pointer`}
+              style={{
+                backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.42)), url(${image})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            />
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-6 py-10 sm:px-10 lg:px-16">
+        <div className="grid gap-6 lg:grid-cols-[1fr_0.9fr]">
+          <div className="rounded-[2.3rem] border border-[var(--color-ink)]/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(122,91,80,0.08))] p-6 shadow-[0_16px_40px_rgba(49,42,40,0.06)] sm:p-8">
+            <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-rose)]">Section profile</p>
+            <h2 className="mt-4 font-display text-4xl sm:text-5xl">Vì sao đây là mẫu premium</h2>
+            <p className="mt-6 text-sm leading-7 text-[var(--color-ink)]/72">{template.sectionProfile}</p>
+            <div className="mt-8 grid gap-3">
+              {template.sections.map((section) => (
+                <div key={section} className="rounded-[1.5rem] bg-[var(--color-cream)] px-4 py-3 text-sm text-[var(--color-ink)]/78">
+                  {section}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div id="rsvp" className="rounded-[2.3rem] bg-[linear-gradient(180deg,#241c20,#34272a)] p-6 text-white shadow-[0_16px_40px_rgba(0,0,0,0.18)] sm:p-8">
+            <p className="text-sm uppercase tracking-[0.35em] text-white/56">RSVP premium</p>
+            <h2 className="mt-4 font-display text-4xl sm:text-5xl">Xác nhận tham dự</h2>
+            <form className="mt-8 grid gap-4">
+              <input className="rounded-2xl border border-white/12 bg-white/8 px-5 py-4 outline-none placeholder:text-white/42" placeholder="Họ và tên" />
+              <input className="rounded-2xl border border-white/12 bg-white/8 px-5 py-4 outline-none placeholder:text-white/42" placeholder="Số điện thoại" />
+              <select className="rounded-2xl border border-white/12 bg-white/8 px-5 py-4 outline-none">
+                <option>Tôi sẽ tham dự</option>
+                <option>Tôi tham dự cùng người thân</option>
+                <option>Rất tiếc, tôi không thể tham dự</option>
+              </select>
+              <textarea className="min-h-32 rounded-2xl border border-white/12 bg-white/8 px-5 py-4 outline-none placeholder:text-white/42" placeholder="Gửi lời nhắn tới cô dâu chú rể" />
+              <button type="button" className="btn-primary rounded-full px-7 py-4 text-sm font-medium transition">
+                Gửi xác nhận
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
+
+function DestinationTemplate({
+  template,
+  preview,
+  images,
+  onPreviewImage,
+}: {
+  template: TemplatePageData;
+  preview: PreviewData;
+  images: PreviewImages;
+  onPreviewImage: (image: LightboxImage) => void;
+}) {
+  const galleryImages = images.galleryImages.length ? images.galleryImages : gallery;
+
+  return (
+    <>
+      <section className="relative isolate overflow-hidden bg-[linear-gradient(180deg,#f4fbfc,#eef5f6)]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(123,168,184,0.22),_transparent_34%),radial-gradient(circle_at_bottom_left,_rgba(125,140,121,0.16),_transparent_34%)]" />
+        <TemplateHeader tier={template.tier} />
+        <div className="relative mx-auto max-w-7xl px-6 pb-12 sm:px-10 lg:px-16 lg:pb-20">
+          <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+            <div className="max-w-2xl">
+              <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-sage)]">{template.style}</p>
+              <h1 className="mt-5 font-display text-5xl leading-none sm:text-7xl">
+                {preview.groom} & {preview.bride}
+              </h1>
+              <p className="mt-6 max-w-xl text-lg leading-8 text-[var(--color-ink)]/74">{template.heroTitle}</p>
+              <p className="mt-4 max-w-xl text-sm leading-7 text-[var(--color-ink)]/62">{template.heroSubtitle}</p>
+              <div className="mt-10 flex flex-wrap gap-3">
+                <a href="#itinerary" className="btn-primary inline-flex rounded-full px-6 py-3 text-sm font-medium">
+                  Xem lịch trình
+                </a>
+                <a href="#travel" className="btn-secondary inline-flex rounded-full px-6 py-3 text-sm font-medium">
+                  Travel & venue
+                </a>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() =>
+                onPreviewImage({
+                  src: images.coverImage || template.image,
+                  alt: `Cover ${template.name}`,
+                })
+              }
+              className="block cursor-pointer rounded-[2.4rem] border border-white/70 bg-white/72 p-5 text-left shadow-[0_24px_70px_rgba(49,42,40,0.12)]"
+            >
+              <div
+                className="min-h-[500px] rounded-[2rem] bg-cover bg-center p-6 sm:min-h-[640px]"
+                style={{
+                  backgroundImage: `linear-gradient(180deg, rgba(255,255,255,0.06), rgba(49,42,40,0.22)), url(${images.coverImage || template.image})`,
+                }}
+              >
+                <div className="flex h-full flex-col justify-between rounded-[1.7rem] border border-white/24 bg-white/10 p-6 backdrop-blur-sm">
+                  <div className="flex justify-between text-xs uppercase tracking-[0.25em] text-white/76">
+                    <span>{template.name}</span>
+                    <span>{template.previewLabel}</span>
+                  </div>
+                  <div className="rounded-[1.8rem] border border-white/20 bg-white/14 p-7 text-white shadow-[0_24px_60px_rgba(0,0,0,0.16)]">
+                    <p className="text-sm uppercase tracking-[0.3em] text-white/70">Wedding weekend</p>
+                    <p className="mt-4 font-display text-5xl leading-none sm:text-6xl">
+                      {preview.groom}
+                      <span className="px-3 text-white/72">&</span>
+                      {preview.bride}
+                    </p>
+                    <p className="mt-4 max-w-sm text-sm leading-7 text-white/84">{template.description}</p>
+                  </div>
+                </div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-6 py-10 sm:px-10 lg:px-16">
+        <div className="grid gap-6 lg:grid-cols-[1.02fr_0.98fr]">
+          <div id="itinerary" className="rounded-[2.3rem] border border-[var(--color-ink)]/8 bg-white/84 p-6 shadow-[0_16px_40px_rgba(49,42,40,0.06)] sm:p-8">
+            <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-sage)]">Weekend itinerary</p>
+            <h2 className="mt-4 font-display text-4xl sm:text-5xl">Một wedding weekend rõ ràng cho khách ở xa</h2>
+            <div className="mt-8 grid gap-4">
+              {[
+                { day: "Thứ sáu", title: "Welcome dinner", copy: "Đón khách thân thiết tại resort và dùng bữa tối nhẹ." },
+                { day: "Thứ bảy", title: "Ceremony & dinner", copy: "Làm lễ bên bờ biển, sau đó là dinner reception." },
+                { day: "Chủ nhật", title: "Farewell brunch", copy: "Bữa sáng nhẹ và lời cảm ơn trước khi khách trở về." },
+              ].map((item) => (
+                <article key={item.title} className="rounded-[1.6rem] bg-[var(--color-cream)] p-5">
+                  <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-sage)]">{item.day}</p>
+                  <p className="mt-2 font-display text-3xl">{item.title}</p>
+                  <p className="mt-3 text-sm leading-7 text-[var(--color-ink)]/72">{item.copy}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+          <div className="rounded-[2.3rem] border border-[var(--color-ink)]/8 bg-[linear-gradient(180deg,rgba(123,168,184,0.12),rgba(255,255,255,0.94))] p-6 shadow-[0_16px_40px_rgba(49,42,40,0.06)] sm:p-8">
+            <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-sage)]">Countdown</p>
+            <h2 className="mt-4 font-display text-4xl sm:text-5xl">Đếm ngược tới ngày cả cuối tuần bắt đầu</h2>
+            <div className="mt-8">
+              <WeddingCountdown targetDate={preview.countdownTarget} variant="coastal" />
+            </div>
+            <div className="mt-8 rounded-[1.8rem] bg-white/80 p-5">
+              <p className="text-sm leading-7 text-[var(--color-ink)]/72">{template.sectionProfile}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-6 py-10 sm:px-10 lg:px-16">
+        <div className="grid gap-6 lg:grid-cols-[0.96fr_1.04fr]">
+          <div id="travel" className="rounded-[2.3rem] border border-[var(--color-ink)]/8 bg-white/84 p-6 shadow-[0_16px_40px_rgba(49,42,40,0.06)] sm:p-8">
+            <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-sage)]">Travel & venue</p>
+            <div className="mt-8 grid gap-4">
+              {[
+                { title: "Venue", copy: preview.venue },
+                { title: "Lưu trú", copy: "Gợi ý resort, shuttle và check-in time cho khách mời." },
+                { title: "Di chuyển", copy: "Thông tin sân bay, xe đưa đón và chỉ đường nhanh." },
+                { title: "FAQ", copy: "Trang phục, thời tiết, trẻ em và lịch trình cuối tuần." },
+              ].map((item) => (
+                <article key={item.title} className="rounded-[1.6rem] border border-[var(--color-ink)]/8 bg-[var(--color-cream)] p-5">
+                  <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-sage)]">{item.title}</p>
+                  <p className="mt-3 text-sm leading-7 text-[var(--color-ink)]/72">{item.copy}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+          <div className="grid gap-5 md:grid-cols-2">
+            {galleryImages.map((image, index) => (
+              <button
+                key={image}
+                type="button"
+                onClick={() =>
+                  onPreviewImage({
+                    src: image,
+                    alt: `Gallery ${index + 1} ${template.name}`,
+                  })
+                }
+                className={`overflow-hidden rounded-[2rem] ${index === 0 ? "md:col-span-2 md:h-[420px]" : "md:h-[300px]"} h-72 cursor-pointer`}
+                style={{
+                  backgroundImage: `linear-gradient(180deg, rgba(49,42,40,0.06), rgba(49,42,40,0.24)), url(${image})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-6 py-10 sm:px-10 lg:px-16">
+        <div className="grid gap-6 lg:grid-cols-[1fr_0.9fr]">
+          <div className="rounded-[2.3rem] border border-[var(--color-ink)]/8 bg-white/84 p-6 shadow-[0_16px_40px_rgba(49,42,40,0.06)] sm:p-8">
+            <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-sage)]">Included sections</p>
+            <div className="mt-8 grid gap-3 sm:grid-cols-2">
+              {template.sections.map((section) => (
+                <div key={section} className="rounded-[1.5rem] bg-[var(--color-cream)] px-4 py-3 text-sm text-[var(--color-ink)]/78">
+                  {section}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div id="rsvp" className="rounded-[2.3rem] border border-[var(--color-ink)]/8 bg-[linear-gradient(180deg,rgba(123,168,184,0.14),rgba(255,255,255,0.96))] p-6 shadow-[0_16px_40px_rgba(49,42,40,0.06)] sm:p-8">
+            <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-sage)]">RSVP</p>
+            <h2 className="mt-4 font-display text-4xl sm:text-5xl">Xác nhận tham dự</h2>
+            <form className="mt-8 grid gap-4">
+              <input className="rounded-2xl border border-[var(--color-ink)]/10 bg-white/80 px-5 py-4 outline-none placeholder:text-[var(--color-ink)]/35" placeholder="Họ và tên" />
+              <input className="rounded-2xl border border-[var(--color-ink)]/10 bg-white/80 px-5 py-4 outline-none placeholder:text-[var(--color-ink)]/35" placeholder="Số điện thoại" />
+              <select className="rounded-2xl border border-[var(--color-ink)]/10 bg-white/80 px-5 py-4 outline-none">
+                <option>Tôi sẽ tham dự</option>
+                <option>Tôi tham dự cùng người thân</option>
+                <option>Rất tiếc, tôi không thể tham dự</option>
+              </select>
+              <textarea className="min-h-32 rounded-2xl border border-[var(--color-ink)]/10 bg-white/80 px-5 py-4 outline-none placeholder:text-[var(--color-ink)]/35" placeholder="Gửi lời nhắn tới cô dâu chú rể" />
+              <button type="button" className="btn-primary rounded-full px-7 py-4 text-sm font-medium transition">
+                Gửi xác nhận
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
+
 export default function TemplatePreviewExperience({
   template,
 }: {
   template: TemplatePageData;
 }) {
+  const { theme } = useGlobalPreferences();
   const [preview, setPreview] = useState<PreviewData>(defaultPreviewData);
   const [images, setImages] = useState<PreviewImages>(defaultPreviewImages);
   const [lightboxImage, setLightboxImage] = useState<LightboxImage | null>(null);
@@ -1247,40 +1775,40 @@ export default function TemplatePreviewExperience({
   };
 
   const selectedTemplate = useMemo(() => {
-    if (template.slug === "minimal-muse") {
-      return (
-        <MinimalTemplate
-          template={template}
-          preview={preview}
-          images={images}
-          onPreviewImage={handlePreviewImage}
-        />
-      );
+    const templateProps = {
+      template,
+      preview,
+      images,
+      onPreviewImage: handlePreviewImage,
+    };
+
+    const featuredRenderers = {
+      "minimal-muse": <MinimalMusePreview {...templateProps} />,
+      "azure-promise": <AzurePromisePreview {...templateProps} />,
+      "modern-monogram": <ModernMonogramPreview {...templateProps} />,
+      "garden-note": <GardenNotePreview {...templateProps} />,
+      "city-chic": <CityChicPreview {...templateProps} />,
+      "editorial-bloom": <EditorialBloomPreview {...templateProps} />,
+      "heritage-vows": <HeritageVowsPreview {...templateProps} />,
+    } as const;
+
+    if (template.slug in featuredRenderers) {
+      return featuredRenderers[template.slug as keyof typeof featuredRenderers];
     }
 
-    if (template.slug === "editorial-bloom") {
-      return (
-        <EditorialTemplate
-          template={template}
-          preview={preview}
-          images={images}
-          onPreviewImage={handlePreviewImage}
-        />
-      );
-    }
+    const familyRenderers = {
+      minimal: <MinimalTemplate {...templateProps} />,
+      editorial: <EditorialTemplate {...templateProps} />,
+      romance: <RomanceTemplate {...templateProps} />,
+      "dark-luxury": <DarkLuxuryTemplate {...templateProps} />,
+      destination: <DestinationTemplate {...templateProps} />,
+    } as const;
 
-    return (
-      <RomanceTemplate
-        template={template}
-        preview={preview}
-        images={images}
-        onPreviewImage={handlePreviewImage}
-      />
-    );
+    return familyRenderers[template.family];
   }, [images, preview, template]);
 
   return (
-    <>
+    <div className={theme === "dark" ? "text-white" : ""}>
       {selectedTemplate}
       <ImageLightbox image={lightboxImage} onClose={() => setLightboxImage(null)} />
       <PreviewConfigurator
@@ -1296,6 +1824,6 @@ export default function TemplatePreviewExperience({
           setIsConfiguratorCollapsed((current) => !current)
         }
       />
-    </>
+    </div>
   );
 }

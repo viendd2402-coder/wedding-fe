@@ -10,6 +10,16 @@
   --color-ink: #312a28;
 }
 
+html[data-theme="dark"] {
+  --background: #090909;
+  --foreground: #f7f2ec;
+  --color-cream: #111113;
+  --color-sand: #2b2624;
+  --color-rose: #d1b1ab;
+  --color-sage: #9ba896;
+  --color-ink: #f7f2ec;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -47,6 +57,7 @@ a {
 .btn-primary {
   background: linear-gradient(135deg, #c7a29f, #9a737c);
   color: #fffaf8;
+  -webkit-text-fill-color: #fffaf8;
   border: 1px solid rgba(154, 115, 124, 0.18);
   box-shadow: 0 14px 32px rgba(185, 147, 144, 0.3);
 }
@@ -59,6 +70,7 @@ a {
 .btn-secondary {
   background: linear-gradient(135deg, rgba(125, 140, 121, 0.22), rgba(125, 140, 121, 0.12));
   color: #455442;
+  -webkit-text-fill-color: #455442;
   border: 1px solid rgba(125, 140, 121, 0.2);
   box-shadow: 0 10px 24px rgba(125, 140, 121, 0.12);
 }
@@ -70,9 +82,38 @@ a {
 .btn-ghost {
   background: linear-gradient(135deg, rgba(197, 167, 161, 0.16), rgba(233, 221, 209, 0.42));
   color: #6d5954;
+  -webkit-text-fill-color: #6d5954;
   border: 1px solid rgba(197, 167, 161, 0.18);
 }
 
 .btn-ghost:hover {
   background: linear-gradient(135deg, rgba(197, 167, 161, 0.24), rgba(233, 221, 209, 0.56));
+}
+
+html[data-theme="dark"] .btn-secondary {
+  background: linear-gradient(135deg, rgba(155, 168, 150, 0.16), rgba(155, 168, 150, 0.08));
+  color: #edf2ea;
+  -webkit-text-fill-color: #edf2ea;
+  border: 1px solid rgba(155, 168, 150, 0.12);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+}
+
+html[data-theme="dark"] .btn-secondary:hover {
+  background: linear-gradient(135deg, rgba(155, 168, 150, 0.24), rgba(155, 168, 150, 0.14));
+}
+
+html[data-theme="dark"] .btn-ghost {
+  background: linear-gradient(135deg, rgba(209, 177, 171, 0.12), rgba(255, 255, 255, 0.06));
+  color: #f7f2ec;
+  -webkit-text-fill-color: #f7f2ec;
+  border: 1px solid rgba(209, 177, 171, 0.12);
+}
+
+html[data-theme="dark"] .btn-primary {
+  color: #fffaf8;
+  -webkit-text-fill-color: #fffaf8;
+}
+
+html[data-theme="dark"] .btn-ghost:hover {
+  background: linear-gradient(135deg, rgba(209, 177, 171, 0.18), rgba(255, 255, 255, 0.1));
 }

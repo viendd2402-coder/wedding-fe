@@ -1,16 +1,45 @@
 export type TemplateTier = "Miễn phí" | "Trả phí";
+export type TemplateFamily =
+  | "minimal"
+  | "editorial"
+  | "romance"
+  | "dark-luxury"
+  | "destination";
+export type TemplateMood =
+  | "minimal"
+  | "botanical"
+  | "fashion"
+  | "editorial"
+  | "luxury"
+  | "dark"
+  | "destination"
+  | "classic"
+  | "boho"
+  | "pastel";
+export type CountdownVariant =
+  | "minimal"
+  | "editorial"
+  | "romance"
+  | "dark"
+  | "coastal";
 
 export type WeddingTemplate = {
   slug: string;
   name: string;
   style: string;
   tier: TemplateTier;
+  family: TemplateFamily;
+  mood: TemplateMood;
+  badge: string;
   description: string;
   image: string;
   accent: string;
   heroTitle: string;
   heroSubtitle: string;
+  previewLabel: string;
   sections: string[];
+  sectionProfile: string;
+  countdownVariant: CountdownVariant;
 };
 
 export const weddingTemplates: WeddingTemplate[] = [
@@ -19,6 +48,9 @@ export const weddingTemplates: WeddingTemplate[] = [
     name: "Minimal Muse",
     style: "Tối giản hiện đại",
     tier: "Miễn phí",
+    family: "minimal",
+    mood: "minimal",
+    badge: "Dễ bắt đầu",
     description:
       "Tông màu kem, typography thanh lịch, phù hợp các cặp đôi thích giao diện tinh gọn.",
     image:
@@ -27,6 +59,9 @@ export const weddingTemplates: WeddingTemplate[] = [
     heroTitle: "Một website cưới tinh gọn với màu sắc dịu nhẹ và bố cục thanh lịch.",
     heroSubtitle:
       "Mẫu miễn phí để bạn cho khách xem nhanh một website cưới gọn gàng, đẹp và dễ sử dụng trên mobile.",
+    previewLabel: "Tinh gọn, sáng và dễ gửi",
+    sectionProfile: "6-8 section cốt lõi, dễ setup, phù hợp gửi nhanh cho khách mời.",
+    countdownVariant: "minimal",
     sections: [
       "Hero với ảnh cưới lớn",
       "Thiệp mời kỹ thuật số",
@@ -39,10 +74,45 @@ export const weddingTemplates: WeddingTemplate[] = [
     ],
   },
   {
+    slug: "azure-promise",
+    name: "Azure Promise",
+    style: "Tươi sáng, dịu nhẹ",
+    tier: "Miễn phí",
+    family: "minimal",
+    mood: "pastel",
+    badge: "Mobile friendly",
+    description:
+      "Mẫu sáng, nhẹ và dễ dùng với tinh thần trẻ trung, phù hợp các cặp đôi thích cảm giác thân thiện như những template cưới phổ biến.",
+    image:
+      "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=1200&q=80",
+    accent: "#7aa6c2",
+    heroTitle:
+      "Một website cưới sáng sủa, dễ nhìn và phù hợp gửi nhanh cho khách qua Zalo hoặc điện thoại.",
+    heroSubtitle:
+      "Lấy cảm hứng từ các mẫu gallery wedding phổ thông: tươi sáng, gọn gàng, dễ thao tác và ưu tiên hiển thị tốt trên mobile.",
+    previewLabel: "Sáng, trẻ, dễ gửi",
+    sectionProfile:
+      "Bố cục dễ tiếp cận với lịch cưới, album, RSVP và bản đồ rõ ràng cho khách mời xem nhanh.",
+    countdownVariant: "minimal",
+    sections: [
+      "Hero ảnh cưới sáng",
+      "Thiệp mời đơn giản",
+      "Thông tin cô dâu chú rể",
+      "Lịch cưới & countdown",
+      "Album ảnh cơ bản",
+      "Google Maps",
+      "RSVP dễ dùng",
+      "Footer thân thiện",
+    ],
+  },
+  {
     slug: "editorial-bloom",
     name: "Editorial Bloom",
     style: "Editorial cao cấp",
     tier: "Trả phí",
+    family: "editorial",
+    mood: "editorial",
+    badge: "Best seller",
     description:
       "Ảnh lớn, bố cục giống tạp chí, rất hợp phong cách sang trọng và hiện đại.",
     image:
@@ -51,6 +121,9 @@ export const weddingTemplates: WeddingTemplate[] = [
     heroTitle: "Phong cách editorial lãng mạn dành cho các cặp đôi muốn một thiệp cưới số cao cấp.",
     heroSubtitle:
       "Mẫu trả phí hướng đến trải nghiệm cao cấp hơn với gallery đẹp, section sang trọng và bố cục mang tính thương hiệu.",
+    previewLabel: "Magazine wedding",
+    sectionProfile: "Hero lớn, story dạng spread, nhiều khoảng trắng và nhịp ảnh sang.",
+    countdownVariant: "editorial",
     sections: [
       "Hero editorial toàn màn hình",
       "Thiệp mời mở đầu sang trọng",
@@ -63,195 +136,34 @@ export const weddingTemplates: WeddingTemplate[] = [
     ],
   },
   {
-    slug: "soft-romance",
-    name: "Soft Romance",
-    style: "Lãng mạn pastel",
+    slug: "heritage-vows",
+    name: "Heritage Vows",
+    style: "Thiệp cưới Việt sang trọng",
     tier: "Trả phí",
+    family: "romance",
+    mood: "classic",
+    badge: "Premium Việt",
     description:
-      "Màu dusty rose và sage nhẹ nhàng, mang lại cảm giác mềm mại, trẻ trung.",
-    image:
-      "https://images.unsplash.com/photo-1525258946800-98cfd641d0de?auto=format&fit=crop&w=1200&q=80",
-    accent: "#b89098",
-    heroTitle: "Tông pastel nhẹ cho một website cưới mềm mại, trẻ trung và giàu cảm xúc.",
-    heroSubtitle:
-      "Mẫu này phù hợp các cặp đôi thích tông màu mềm, ảnh đẹp và cảm giác lãng mạn nhưng vẫn hiện đại.",
-    sections: [
-      "Hero pastel",
-      "Thiệp mời phong cách lãng mạn",
-      "Calendar & đếm ngược",
-      "Story section mềm mại",
-      "Section đếm ngược",
-      "Album ảnh couple",
-      "RSVP và gửi lời chúc",
-      "Thông tin mừng cưới",
-    ],
-  },
-  {
-    slug: "sage-vows",
-    name: "Sage Vows",
-    style: "Tối giản thiên nhiên",
-    tier: "Miễn phí",
-    description:
-      "Phong cách nhẹ nhàng với tông xanh sage và bố cục thoáng, phù hợp khách thích cảm giác tinh tế.",
-    image:
-      "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1200&q=80",
-    accent: "#8c9b8a",
-    heroTitle: "Một mẫu giao diện dịu mắt, hiện đại và thân thiện với khách xem trên mobile.",
-    heroSubtitle:
-      "Mẫu miễn phí phù hợp để khách thử nhanh trước khi quyết định nâng cấp lên gói cao hơn.",
-    sections: [
-      "Hero ảnh lớn",
-      "Thiệp cưới số",
-      "Countdown",
-      "Calendar",
-      "Story ngắn",
-      "Thông tin sự kiện",
-      "Gallery cơ bản",
-      "RSVP",
-    ],
-  },
-  {
-    slug: "ivory-day",
-    name: "Ivory Day",
-    style: "Kem thanh lịch",
-    tier: "Miễn phí",
-    description:
-      "Tông màu ivory và typography mềm mại, phù hợp các cặp đôi yêu vẻ đẹp cổ điển pha hiện đại.",
-    image:
-      "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1200&q=80",
-    accent: "#d7cab8",
-    heroTitle: "Mẫu website cưới nhẹ nhàng giúp khách cảm nhận sự chỉn chu ngay từ cái nhìn đầu tiên.",
-    heroSubtitle:
-      "Thiết kế tập trung vào ảnh đẹp, lời mời số và các thông tin cần thiết để chia sẻ nhanh.",
-    sections: [
-      "Hero cổ điển",
-      "Invitation card",
-      "Save the date",
-      "Lịch cưới",
-      "Bản đồ",
-      "Gallery",
-      "Wishes",
-      "RSVP cơ bản",
-    ],
-  },
-  {
-    slug: "modern-pearl",
-    name: "Modern Pearl",
-    style: "Hiện đại tinh gọn",
-    tier: "Miễn phí",
-    description:
-      "Bố cục gọn gàng, nhấn mạnh tính dễ xem và dễ gửi cho khách mời trên điện thoại.",
+      "Lấy cảm hứng từ thiệp cưới truyền thống Việt Nam với bố cục hai họ, nghi lễ và cảm giác trang trọng hơn.",
     image:
       "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80",
-    accent: "#cfc8c2",
-    heroTitle: "Thiết kế phù hợp những cặp đôi muốn một website cưới tối giản nhưng vẫn sang trọng.",
+    accent: "#9f2d20",
+    heroTitle:
+      "Một mẫu premium mang tinh thần cưới Việt với sắc son, nhịp nghi lễ và cách trình bày trang trọng.",
     heroSubtitle:
-      "Mẫu miễn phí giúp khách hình dung ngay sản phẩm hoàn chỉnh với các section phổ biến nhất.",
+      "Phù hợp cho cặp đôi muốn một website cưới có cảm giác gần gũi văn hóa Việt nhưng vẫn đủ hiện đại để tạo ấn tượng cao cấp.",
+    previewLabel: "Nét Việt đương đại",
+    sectionProfile:
+      "Thiệp mở đầu trang trọng, timeline nghi lễ, hai bên gia đình, bản đồ nhà trai nhà gái và RSVP cao cấp.",
+    countdownVariant: "romance",
     sections: [
-      "Hero",
-      "Countdown",
-      "Calendar",
-      "Thông tin cặp đôi",
-      "Timeline",
-      "Gallery nhỏ",
-      "Lời chúc",
-      "RSVP",
-    ],
-  },
-  {
-    slug: "golden-letter",
-    name: "Golden Letter",
-    style: "Luxury ánh vàng",
-    tier: "Trả phí",
-    description:
-      "Phù hợp khách hàng cao cấp muốn giao diện có chiều sâu, hình ảnh lớn và cảm giác sang trọng rõ rệt.",
-    image:
-      "https://images.unsplash.com/photo-1513278974582-3e1b4a4fa21d?auto=format&fit=crop&w=1200&q=80",
-    accent: "#b89a62",
-    heroTitle: "Thiệp cưới số cao cấp với cảm hứng ánh vàng, editorial và nhiều khoảng trắng tinh tế.",
-    heroSubtitle:
-      "Mẫu trả phí dành cho các cặp đôi muốn thể hiện phong cách riêng và trải nghiệm mượt trên mọi thiết bị.",
-    sections: [
-      "Hero luxury",
-      "Thiệp mời mở đầu",
-      "Countdown nổi bật",
-      "Story spread",
-      "Event details",
-      "Large gallery",
-      "Gift info",
-      "RSVP nâng cao",
-    ],
-  },
-  {
-    slug: "moonlight-sonnet",
-    name: "Moonlight Sonnet",
-    style: "Đêm lãng mạn",
-    tier: "Trả phí",
-    description:
-      "Tông màu đậm sang trọng, hợp với concept tiệc tối hoặc wedding dinner hiện đại.",
-    image:
-      "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1200&q=80",
-    accent: "#5b5366",
-    heroTitle: "Một mẫu giao diện mang cảm giác huyền ảo, sâu lắng và đậm chất đêm tiệc cưới.",
-    heroSubtitle:
-      "Thích hợp cho khách hàng muốn website khác biệt rõ so với các mẫu phổ thông trên thị trường.",
-    sections: [
-      "Hero dark mood",
-      "Save the date",
-      "Countdown",
-      "Story cột mốc",
-      "Gallery cinematic",
-      "Dress code",
-      "Thông tin tiệc",
-      "RSVP",
-    ],
-  },
-  {
-    slug: "terracotta-notes",
-    name: "Terracotta Notes",
-    style: "Boho hiện đại",
-    tier: "Trả phí",
-    description:
-      "Bảng màu terracotta ấm áp mang lại cảm giác cá tính, nghệ thuật và rất hợp wedding outdoor.",
-    image:
-      "https://images.unsplash.com/photo-1523438885200-e635ba2c371e?auto=format&fit=crop&w=1200&q=80",
-    accent: "#b46f52",
-    heroTitle: "Mẫu website cưới mang cảm hứng boho hiện đại dành cho các cặp đôi thích sự khác biệt.",
-    heroSubtitle:
-      "Thiết kế tập trung vào ảnh lớn, typography rõ và những mảng màu có cá tính mạnh hơn.",
-    sections: [
-      "Hero boho",
-      "Thiệp mời số",
-      "Calendar",
-      "Story section",
-      "Thông tin venue",
-      "Gallery mix layout",
-      "QR mừng cưới",
-      "RSVP",
-    ],
-  },
-  {
-    slug: "blush-signature",
-    name: "Blush Signature",
-    style: "Pastel cao cấp",
-    tier: "Trả phí",
-    description:
-      "Màu blush nhẹ, typography mềm và nhiều card layer giúp giao diện nhìn như một bộ nhận diện mini.",
-    image:
-      "https://images.unsplash.com/photo-1507504031003-b417219a0fde?auto=format&fit=crop&w=1200&q=80",
-    accent: "#d2a1a7",
-    heroTitle: "Thiết kế sang, mềm và giàu cảm xúc cho những wedding website hướng tới trải nghiệm cao cấp.",
-    heroSubtitle:
-      "Mẫu phù hợp để upsell cho khách hàng muốn website vừa đẹp vừa có cảm giác được thiết kế riêng.",
-    sections: [
-      "Hero pastel deluxe",
-      "Invitation layer",
-      "Countdown đẹp",
-      "Album ảnh",
-      "Lịch sự kiện",
-      "Guest wishes",
-      "Gift section",
-      "RSVP cao cấp",
+      "Hero nghi lễ Việt",
+      "Thiệp báo hỷ hai họ",
+      "Lịch trình lễ vu quy - thành hôn - tiệc",
+      "Bản đồ nhà trai / nhà gái",
+      "QR check-in",
+      "Lời chúc & mừng cưới",
+      "RSVP premium",
     ],
   },
 ];

@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useGlobalPreferences } from "@/components/global-preferences-provider";
 
 type WeddingCountdownProps = {
   targetDate: string;
-  variant?: "minimal" | "editorial" | "romance";
+  variant?: "minimal" | "editorial" | "romance" | "dark" | "coastal";
 };
 
 type CountdownPart = {
@@ -12,7 +13,10 @@ type CountdownPart = {
   value: string;
 };
 
-function getCountdownParts(targetDate: string): CountdownPart[] {
+function getCountdownParts(
+  targetDate: string,
+  labels: [string, string, string, string],
+): CountdownPart[] {
   const now = new Date();
   const target = new Date(targetDate);
   const diff = Math.max(target.getTime() - now.getTime(), 0);
@@ -23,10 +27,10 @@ function getCountdownParts(targetDate: string): CountdownPart[] {
   const seconds = Math.floor((diff / 1000) % 60);
 
   return [
-    { label: "Ngày", value: String(days).padStart(2, "0") },
-    { label: "Giờ", value: String(hours).padStart(2, "0") },
-    { label: "Phút", value: String(minutes).padStart(2, "0") },
-    { label: "Giây", value: String(seconds).padStart(2, "0") },
+    { label: labels[0], value: String(days).padStart(2, "0") },
+    { label: labels[1], value: String(hours).padStart(2, "0") },
+    { label: labels[2], value: String(minutes).padStart(2, "0") },
+    { label: labels[3], value: String(seconds).padStart(2, "0") },
   ];
 }
 
@@ -34,17 +38,25 @@ export default function WeddingCountdown({
   targetDate,
   variant = "minimal",
 }: WeddingCountdownProps) {
+  const { language } = useGlobalPreferences();
+  const labels = useMemo<[string, string, string, string]>(
+    () =>
+      language === "vi"
+        ? ["Ngày", "Giờ", "Phút", "Giây"]
+        : ["Days", "Hours", "Minutes", "Seconds"],
+    [language],
+  );
   const [parts, setParts] = useState<CountdownPart[]>(() =>
-    getCountdownParts(targetDate),
+    getCountdownParts(targetDate, labels),
   );
 
   useEffect(() => {
     const timer = window.setInterval(() => {
-      setParts(getCountdownParts(targetDate));
+      setParts(getCountdownParts(targetDate, labels));
     }, 1000);
 
     return () => window.clearInterval(timer);
-  }, [targetDate]);
+  }, [labels, targetDate]);
 
   const itemClassName = useMemo(() => {
     if (variant === "editorial") {
@@ -55,12 +67,22 @@ export default function WeddingCountdown({
       return "bg-[rgba(184,144,152,0.16)]";
     }
 
+    if (variant === "dark") {
+      return "bg-[linear-gradient(180deg,#241c20,#34272a)] text-white";
+    }
+
+    if (variant === "coastal") {
+      return "bg-[rgba(123,168,184,0.16)]";
+    }
+
     return "bg-[var(--color-cream)]";
   }, [variant]);
 
   const labelClassName =
     variant === "editorial"
       ? "text-white/68"
+      : variant === "dark"
+        ? "text-white/62"
       : "text-[var(--color-sage)]";
 
   return (

@@ -1,5 +1,12 @@
 import type { Metadata } from "next";
+import GlobalDashboardControls from "@/components/global-dashboard-controls";
+import {
+  GlobalPreferencesProvider,
+  type AppLanguage,
+  type AppTheme,
+} from "@/components/global-preferences-provider";
 import { Cormorant_Garamond, Inter } from "next/font/google";
+import { cookies } from "next/headers";
 import "./globals.css";
 
 const inter = Inter({
@@ -19,17 +26,37 @@ export const metadata: Metadata = {
     "Dịch vụ thiết kế website cưới hiện đại với nhiều mẫu giao diện đẹp, RSVP, gallery và các gói tuỳ chỉnh.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const savedLanguage = cookieStore.get("lumiere-language")?.value;
+  const savedTheme = cookieStore.get("lumiere-theme")?.value;
+  const initialLanguage: AppLanguage = savedLanguage === "en" ? "en" : "vi";
+  const initialTheme: AppTheme = savedTheme === "dark" ? "dark" : "light";
+
   return (
     <html
-      lang="vi"
+      lang={initialLanguage}
+      data-theme={initialTheme}
+      suppressHydrationWarning
       className={`${inter.variable} ${cormorant.variable} h-full scroll-smooth antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <GlobalPreferencesProvider
+          initialLanguage={initialLanguage}
+          initialTheme={initialTheme}
+        >
+          <div className="sticky top-0 z-[70] px-4 pt-4 sm:px-6 lg:px-8">
+            <div className="mx-auto w-full max-w-7xl">
+              <GlobalDashboardControls />
+            </div>
+          </div>
+          {children}
+        </GlobalPreferencesProvider>
+      </body>
     </html>
   );
 }

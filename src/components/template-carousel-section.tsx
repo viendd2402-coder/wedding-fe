@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRef } from "react";
+import { useGlobalPreferences } from "@/components/global-preferences-provider";
 import type { WeddingTemplate } from "@/lib/templates";
 
 type TemplateCarouselSectionProps = {
@@ -32,6 +33,8 @@ export default function TemplateCarouselSection({
   secondaryActionClassName,
 }: TemplateCarouselSectionProps) {
   const carouselRef = useRef<HTMLDivElement | null>(null);
+  const { theme } = useGlobalPreferences();
+  const isDark = theme === "dark";
   const shouldUseCarousel = templates.length > 2;
 
   const scrollCarousel = (direction: "left" | "right") => {
@@ -56,7 +59,7 @@ export default function TemplateCarouselSection({
           <h3 className="mt-3 font-display text-4xl">{title}</h3>
         </div>
         <div className="flex flex-col gap-4 md:items-end">
-          <p className="max-w-md text-sm leading-7 text-[var(--color-ink)]/70">
+          <p className={`max-w-md text-sm leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/70"}`}>
             {description}
           </p>
           <a
@@ -73,7 +76,11 @@ export default function TemplateCarouselSection({
           <button
             type="button"
             onClick={() => scrollCarousel("left")}
-            className="absolute left-0 top-1/2 z-10 hidden h-12 w-12 -translate-y-1/2 -translate-x-[120%] cursor-pointer items-center justify-center rounded-full border border-white/80 bg-white/88 text-[var(--color-ink)] shadow-[0_18px_40px_rgba(49,42,40,0.16)] backdrop-blur transition hover:scale-105 hover:bg-white md:inline-flex"
+            className={`absolute left-0 top-1/2 z-10 hidden h-12 w-12 -translate-y-1/2 -translate-x-[120%] cursor-pointer items-center justify-center rounded-full backdrop-blur transition hover:scale-105 md:inline-flex ${
+              isDark
+                ? "border border-white/10 bg-white/8 text-white shadow-[0_18px_40px_rgba(0,0,0,0.28)] hover:bg-white/12"
+                : "border border-white/80 bg-white/88 text-[var(--color-ink)] shadow-[0_18px_40px_rgba(49,42,40,0.16)] hover:bg-white"
+            }`}
             aria-label={`Cuon trai ${title}`}
           >
             <svg
@@ -93,7 +100,11 @@ export default function TemplateCarouselSection({
           <button
             type="button"
             onClick={() => scrollCarousel("right")}
-            className="absolute right-0 top-1/2 z-10 hidden h-12 w-12 -translate-y-1/2 translate-x-[120%] cursor-pointer items-center justify-center rounded-full border border-white/80 bg-white/88 text-[var(--color-ink)] shadow-[0_18px_40px_rgba(49,42,40,0.16)] backdrop-blur transition hover:scale-105 hover:bg-white md:inline-flex"
+            className={`absolute right-0 top-1/2 z-10 hidden h-12 w-12 -translate-y-1/2 translate-x-[120%] cursor-pointer items-center justify-center rounded-full backdrop-blur transition hover:scale-105 md:inline-flex ${
+              isDark
+                ? "border border-white/10 bg-white/8 text-white shadow-[0_18px_40px_rgba(0,0,0,0.28)] hover:bg-white/12"
+                : "border border-white/80 bg-white/88 text-[var(--color-ink)] shadow-[0_18px_40px_rgba(49,42,40,0.16)] hover:bg-white"
+            }`}
             aria-label={`Cuon phai ${title}`}
           >
             <svg
@@ -117,7 +128,11 @@ export default function TemplateCarouselSection({
             {templates.map((item) => (
               <article
                 key={item.slug}
-                className="flex w-[320px] shrink-0 flex-col overflow-hidden rounded-[2rem] border border-[var(--color-ink)]/8 bg-white/70 shadow-[0_16px_40px_rgba(49,42,40,0.06)]"
+                className={`flex w-[320px] shrink-0 flex-col overflow-hidden rounded-[2rem] ${
+                  isDark
+                    ? "border border-white/10 bg-white/6 shadow-[0_16px_40px_rgba(0,0,0,0.24)]"
+                    : "border border-[var(--color-ink)]/8 bg-white/70 shadow-[0_16px_40px_rgba(49,42,40,0.06)]"
+                }`}
               >
                 <div
                   className="h-64 bg-cover bg-center"
@@ -130,9 +145,28 @@ export default function TemplateCarouselSection({
                     </p>
                     <span className={badgeClassName}>{item.tier}</span>
                   </div>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <span className={`rounded-full px-3 py-1 text-[11px] uppercase tracking-[0.2em] ${
+                      isDark
+                        ? "bg-white/8 text-white/72"
+                        : "bg-[var(--color-ink)]/6 text-[var(--color-ink)]/62"
+                    }`}>
+                      {item.badge}
+                    </span>
+                    <span className={`rounded-full px-3 py-1 text-[11px] uppercase tracking-[0.2em] ${
+                      isDark
+                        ? "bg-[rgba(255,255,255,0.04)] text-white/68"
+                        : "bg-[var(--color-cream)] text-[var(--color-ink)]/62"
+                    }`}>
+                      {item.mood}
+                    </span>
+                  </div>
                   <h3 className="mt-4 font-display text-3xl">{item.name}</h3>
-                  <p className="mt-4 text-sm leading-7 text-[var(--color-ink)]/70">
+                  <p className={`mt-4 text-sm leading-7 ${isDark ? "text-white/72" : "text-[var(--color-ink)]/70"}`}>
                     {item.description}
+                  </p>
+                  <p className={`mt-3 text-sm leading-7 ${isDark ? "text-white/58" : "text-[var(--color-ink)]/58"}`}>
+                    {item.sectionProfile}
                   </p>
                   <div className="mt-auto flex gap-3 pt-6">
                     <Link
@@ -158,7 +192,11 @@ export default function TemplateCarouselSection({
           {templates.map((item) => (
             <article
               key={item.slug}
-              className="flex h-full flex-col overflow-hidden rounded-[2rem] border border-[var(--color-ink)]/8 bg-white/70 shadow-[0_16px_40px_rgba(49,42,40,0.06)]"
+              className={`flex h-full flex-col overflow-hidden rounded-[2rem] ${
+                isDark
+                  ? "border border-white/10 bg-white/6 shadow-[0_16px_40px_rgba(0,0,0,0.24)]"
+                  : "border border-[var(--color-ink)]/8 bg-white/70 shadow-[0_16px_40px_rgba(49,42,40,0.06)]"
+              }`}
             >
               <div
                 className="h-64 bg-cover bg-center"
@@ -171,9 +209,28 @@ export default function TemplateCarouselSection({
                   </p>
                   <span className={badgeClassName}>{item.tier}</span>
                 </div>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <span className={`rounded-full px-3 py-1 text-[11px] uppercase tracking-[0.2em] ${
+                    isDark
+                      ? "bg-white/8 text-white/72"
+                      : "bg-[var(--color-ink)]/6 text-[var(--color-ink)]/62"
+                  }`}>
+                    {item.badge}
+                  </span>
+                  <span className={`rounded-full px-3 py-1 text-[11px] uppercase tracking-[0.2em] ${
+                    isDark
+                      ? "bg-[rgba(255,255,255,0.04)] text-white/68"
+                      : "bg-[var(--color-cream)] text-[var(--color-ink)]/62"
+                  }`}>
+                    {item.mood}
+                  </span>
+                </div>
                 <h3 className="mt-4 font-display text-3xl">{item.name}</h3>
-                <p className="mt-4 text-sm leading-7 text-[var(--color-ink)]/70">
+                <p className={`mt-4 text-sm leading-7 ${isDark ? "text-white/72" : "text-[var(--color-ink)]/70"}`}>
                   {item.description}
+                </p>
+                <p className={`mt-3 text-sm leading-7 ${isDark ? "text-white/58" : "text-[var(--color-ink)]/58"}`}>
+                  {item.sectionProfile}
                 </p>
                 <div className="mt-auto flex gap-3 pt-6">
                   <Link
