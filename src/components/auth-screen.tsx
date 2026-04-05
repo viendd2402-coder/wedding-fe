@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { useMemo, useState, type FormEvent } from "react";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
+import { loginRequest } from "@/lib/auth-client";
 
 type AuthMode = "login" | "register";
 
@@ -11,8 +13,41 @@ type AuthScreenProps = {
 };
 
 export default function AuthScreen({ mode }: AuthScreenProps) {
+  const router = useRouter();
   const { language, theme } = useGlobalPreferences();
   const isDark = theme === "dark";
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+    if (mode !== "login") return;
+
+    if (!email.trim()) {
+      setError(language === "vi" ? "Vui lòng nhập email." : "Please enter your email.");
+      return;
+    }
+    if (!password) {
+      setError(language === "vi" ? "Vui lòng nhập mật khẩu." : "Please enter your password.");
+      return;
+    }
+
+    setLoading(true);
+    const result = await loginRequest({ email, password });
+    setLoading(false);
+
+    if (!result.ok) {
+      setError(result.message);
+      return;
+    }
+
+    router.push("/profile");
+    router.refresh();
+  }
 
   const copy = useMemo(
     () =>
@@ -45,6 +80,7 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
             feature1: "Lưu mẫu giao diện bạn đã chọn",
             feature2: "Theo dõi yêu cầu chỉnh sửa và phản hồi",
             feature3: "Xem tiến độ hoàn thiện minh bạch",
+            submitting: "Đang đăng nhập…",
           }
         : {
             backHome: "Back to home",
@@ -71,6 +107,7 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
             feature1: "Save the templates you love",
             feature2: "Follow revision requests and feedback",
             feature3: "See clear, transparent delivery progress",
+            submitting: "Signing in…",
           },
     [language, mode],
   );
@@ -125,28 +162,59 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
               {copy.body}
             </p>
 
-            <form className="mt-10 grid gap-4">
+            <form className="mt-10 grid gap-4" onSubmit={handleSubmit} noValidate>
               <input
                 type="email"
+                name="email"
+                autoComplete="email"
+                value={email}
+                onChange={(ev) => setEmail(ev.target.value)}
                 placeholder={copy.email}
-                className={`rounded-2xl border px-5 py-4 outline-none transition ${inputClassName}`}
+                disabled={mode === "login" && loading}
+                className={`rounded-2xl border px-5 py-4 outline-none transition ${inputClassName} disabled:opacity-60`}
               />
               <input
                 type="password"
+                name="password"
+                autoComplete={mode === "login" ? "current-password" : "new-password"}
+                value={password}
+                onChange={(ev) => setPassword(ev.target.value)}
                 placeholder={copy.password}
-                className={`rounded-2xl border px-5 py-4 outline-none transition ${inputClassName}`}
+                disabled={mode === "login" && loading}
+                className={`rounded-2xl border px-5 py-4 outline-none transition ${inputClassName} disabled:opacity-60`}
               />
               {mode === "register" ? (
                 <input
                   type="password"
+                  name="confirmPassword"
+                  autoComplete="new-password"
+                  value={confirmPassword}
+                  onChange={(ev) => setConfirmPassword(ev.target.value)}
                   placeholder={copy.confirmPassword}
                   className={`rounded-2xl border px-5 py-4 outline-none transition ${inputClassName}`}
                 />
               ) : null}
 
+              {error ? (
+                <p
+                  role="alert"
+                  className={`rounded-2xl border px-5 py-3 text-sm ${
+                    isDark
+                      ? "border-red-400/35 bg-red-500/10 text-red-200"
+                      : "border-red-200 bg-red-50 text-red-800"
+                  }`}
+                >
+                  {error}
+                </p>
+              ) : null}
+
               <div className={`flex items-center justify-between gap-4 text-sm ${mutedTextClassName}`}>
                 <label className="inline-flex items-center gap-2">
-                  <input type="checkbox" className="h-4 w-4 rounded border-current" />
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 rounded border-current"
+                    disabled={mode === "login" && loading}
+                  />
                   <span>{copy.rememberMe}</span>
                 </label>
                 {mode === "login" ? (
@@ -157,10 +225,11 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
               </div>
 
               <button
-                type="button"
-                className="btn-primary mt-2 inline-flex items-center justify-center rounded-full px-7 py-4 text-sm font-medium transition"
+                type="submit"
+                disabled={mode === "login" && loading}
+                className="btn-primary mt-2 inline-flex items-center justify-center rounded-full px-7 py-4 text-sm font-medium transition disabled:pointer-events-none disabled:opacity-55"
               >
-                {copy.submit}
+                {mode === "login" && loading ? copy.submitting : copy.submit}
               </button>
             </form>
 

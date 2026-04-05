@@ -55,8 +55,8 @@ export default function HomeHeroSpotlight() {
   };
 
   const cardClass = isDark
-    ? "border-white/10 bg-white/[0.05] shadow-[0_16px_40px_rgba(0,0,0,0.22)] hover:border-white/16 hover:bg-white/[0.08]"
-    : "border-[var(--color-ink)]/10 bg-white/75 shadow-[0_16px_40px_rgba(49,42,40,0.06)] hover:border-[var(--color-ink)]/14 hover:bg-white/90";
+    ? "border-white/10 bg-white/[0.05] shadow-[0_16px_40px_rgba(0,0,0,0.22)] ring-1 ring-[color-mix(in_srgb,var(--color-rose)_12%,transparent)] hover:border-white/16 hover:bg-white/[0.08]"
+    : "border-[var(--color-ink)]/10 bg-white/75 shadow-[0_16px_40px_rgba(49,42,40,0.06)] ring-1 ring-[color-mix(in_srgb,var(--color-rose)_14%,transparent)] hover:border-[var(--color-ink)]/14 hover:bg-white/90";
 
   const tierClass = isDark
     ? "bg-white/10 text-white/78"

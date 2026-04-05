@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useMemo, type MouseEvent } from "react";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
+import { IconZaloBrand } from "@/components/icons-social-brands";
 import { forceDocumentScrollTop } from "@/lib/force-document-scroll-top";
 import { siteContact, siteZaloUrl } from "@/lib/site-contact";
 import { weddingTemplates } from "@/lib/templates";
@@ -15,19 +16,6 @@ function pathnameIsTemplateDemo(pathname: string | null): boolean {
   const slug = pathname.slice("/templates/".length).split("/")[0];
   if (!slug) return false;
   return templateDemoSlugs.has(slug);
-}
-
-function IconZalo({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M12 21a9 9 0 1 0-8.05-4.95L3 21l4.55-1.35A8.96 8.96 0 0 0 12 21Z"
-      />
-      <path strokeLinecap="round" d="M8.5 10.5h.01M12 10.5h.01M15.5 10.5h.01" />
-    </svg>
-  );
 }
 
 function IconMail({ className }: { className?: string }) {
@@ -227,7 +215,7 @@ export default function SiteFooter() {
             <div className="mt-6 flex flex-col gap-3">
               <a href={siteZaloUrl} className={contactCardClass} target="_blank" rel="noopener noreferrer">
                 <span className={iconWrap}>
-                  <IconZalo className="h-5 w-5" />
+                  <IconZaloBrand className="h-5 w-5" />
                 </span>
                 <div className="min-w-0 pt-0.5">
                   <p className={`text-[10px] font-semibold uppercase tracking-[0.22em] ${isDark ? "text-white/42" : "text-[var(--color-ink)]/45"}`}>

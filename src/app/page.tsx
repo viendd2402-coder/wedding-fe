@@ -15,23 +15,24 @@ import {
 const FEATURE_TABLE_PREVIEW_COUNT = 6;
 
 type WhyUsIconId = "envelope" | "users" | "list" | "globe" | "pricing" | "heart";
-type WhyUsTone = "amber" | "rose" | "violet" | "indigo" | "sage" | "crimson";
+/** Tông thiệp cưới: champagne / blush / sage / hồng — tránh violet-indigo “app công nghệ”. */
+type WhyUsTone = "amber" | "rose" | "blush" | "champagne" | "sage" | "warmRose";
 
 function whyUsIconGradient(tone: WhyUsTone, isDark: boolean): string {
   const d = isDark;
   switch (tone) {
     case "amber":
-      return d ? "from-amber-500/85 to-orange-600/90" : "from-amber-500 to-orange-500";
+      return d ? "from-amber-200/45 to-rose-400/35" : "from-amber-200 to-rose-100";
     case "rose":
-      return d ? "from-rose-500/85 to-pink-600/90" : "from-rose-500 to-pink-500";
-    case "violet":
-      return d ? "from-violet-500/85 to-purple-600/90" : "from-violet-500 to-purple-600";
-    case "indigo":
-      return d ? "from-indigo-400/85 to-blue-600/90" : "from-indigo-500 to-blue-600";
+      return d ? "from-rose-500/85 to-pink-600/90" : "from-rose-400 to-pink-400";
+    case "blush":
+      return d ? "from-[#b8939a]/90 to-[#8f6b73]/90" : "from-[#e8d4d0] to-[#d1b1ab]";
+    case "champagne":
+      return d ? "from-[#c4a574]/40 to-[#9a737c]/45" : "from-[#e9ddd1] to-[#c5a7a1]";
     case "sage":
-      return d ? "from-emerald-600/85 to-teal-700/90" : "from-emerald-500 to-teal-600";
-    case "crimson":
-      return d ? "from-rose-600/85 to-red-700/90" : "from-rose-600 to-red-600";
+      return d ? "from-emerald-700/80 to-teal-800/85" : "from-[#7d8c79] to-[#5c6b58]";
+    case "warmRose":
+      return d ? "from-[#c97b7b]/90 to-[#8b4049]/90" : "from-[#c7a29f] to-[#9a737c]";
     default:
       return d ? "from-zinc-500 to-zinc-700" : "from-zinc-500 to-zinc-600";
   }
@@ -41,34 +42,34 @@ function whyUsTitleClass(tone: WhyUsTone, isDark: boolean): string {
   if (isDark) {
     switch (tone) {
       case "amber":
-        return "text-amber-300";
+        return "text-amber-200";
       case "rose":
         return "text-rose-300";
-      case "violet":
-        return "text-violet-300";
-      case "indigo":
-        return "text-indigo-300";
+      case "blush":
+        return "text-[#e8cfc9]";
+      case "champagne":
+        return "text-[#e9ddd1]";
       case "sage":
-        return "text-emerald-300";
-      case "crimson":
-        return "text-rose-300";
+        return "text-[#b8c9b0]";
+      case "warmRose":
+        return "text-[#f0c4c4]";
       default:
         return "text-white/88";
     }
   }
   switch (tone) {
     case "amber":
-      return "text-amber-800";
+      return "text-amber-900";
     case "rose":
-      return "text-rose-800";
-    case "violet":
-      return "text-violet-800";
-    case "indigo":
-      return "text-indigo-800";
+      return "text-rose-900";
+    case "blush":
+      return "text-[#6d4c52]";
+    case "champagne":
+      return "text-[#5c4a42]";
     case "sage":
-      return "text-emerald-800";
-    case "crimson":
-      return "text-rose-800";
+      return "text-[#3d4a38]";
+    case "warmRose":
+      return "text-[#6d3d45]";
     default:
       return "text-[var(--color-ink)]";
   }
@@ -126,6 +127,26 @@ function WhyUsGlyph({ id }: { id: WhyUsIconId }) {
   }
 }
 
+/** Họa tiết chia nhỏ — gợi thiệp / trang trí tiệc. */
+function WeddingFlourish({
+  align = "center",
+  className = "",
+}: {
+  align?: "center" | "start";
+  className?: string;
+}) {
+  return (
+    <div
+      className={`flex w-full items-center gap-3 ${align === "start" ? "justify-start" : "justify-center"} ${className}`}
+      aria-hidden="true"
+    >
+      <span className="h-px w-10 max-w-[28vw] shrink bg-[color-mix(in_srgb,var(--color-rose)_42%,transparent)] sm:w-14" />
+      <span className="font-display text-[0.95rem] leading-none text-[var(--color-rose)]/72">✦</span>
+      <span className="h-px w-10 max-w-[28vw] shrink bg-[color-mix(in_srgb,var(--color-rose)_42%,transparent)] sm:w-14" />
+    </div>
+  );
+}
+
 export default function Home() {
   const { language, theme } = useGlobalPreferences();
   const isDark = theme === "dark";
@@ -139,6 +160,8 @@ export default function Home() {
               "Website cưới thanh lịch — từ những mẫu tinh giản đến bản thiết kế dành riêng hai bạn.",
             heroBody:
               "Mỗi bộ sưu tập được chọn lọc theo phong cách: tối giản, hoa lá, editorial, sang trọng tối hay tiệc xa. Hai bạn có thể bắt đầu với mẫu miễn phí; khi muốn thêm chiều sâu, hãy chọn bản cao cấp với trải nghiệm trọn vẹn hơn.",
+            heroTagline:
+              "Một link cho ngày trọng đại — gửi như thiệp, chỉnh theo gu hai bạn.",
             heroPrimaryCta: "Xem mẫu giao diện",
             heroSecondaryCta: "Nhận tư vấn ngay",
             statTemplates: "Mẫu có sẵn",
@@ -183,7 +206,7 @@ export default function Home() {
               },
               {
                 icon: "list",
-                tone: "violet",
+                tone: "blush",
                 title: "Lịch lễ & địa điểm",
                 description:
                   "Thời gian lễ, tiệc, bản đồ và gợi ý chỉ đường được trình bày rõ — mọi người mở một lần là nắm được toàn bộ hành trình trong ngày.",
@@ -192,7 +215,7 @@ export default function Home() {
             whyUsRight: [
               {
                 icon: "globe",
-                tone: "indigo",
+                tone: "champagne",
                 title: "Trang thông tin cưới trọn vẹn",
                 description:
                   "Giới thiệu hai bạn, câu chuyện, album ảnh và các sự kiện — một nơi lưu kỷ niệm và chia sẻ với bạn bè, người thân.",
@@ -206,7 +229,7 @@ export default function Home() {
               },
               {
                 icon: "heart",
-                tone: "crimson",
+                tone: "warmRose",
                 title: "Sổ lưu lời chúc",
                 description:
                   "Ở gói Premium, khách để lại lời chúc trên trang — những dòng kỷ niệm hai bạn có thể mở lại sau nhiều năm.",
@@ -409,6 +432,7 @@ export default function Home() {
             pricingTitle: "Bảng giá thiệp mời online & website cưới Lumiere",
             pricingBody:
               "Lựa chọn gói dịch vụ phù hợp với nhu cầu và ngân sách để có một thiệp mời online và website cưới rõ ràng, dễ gửi và đúng phong cách hai bạn. Gói Miễn phí để bắt đầu; gói Premium gộp toàn bộ tính năng trả phí — chi tiết từng hạng mục nằm ở bảng so sánh phía trên.",
+            pricingCompareCta: "Cuộn lên xem bảng so sánh Miễn phí & Premium",
             pricingPopularBadge: "Phổ biến",
             pricing: [
               {
@@ -473,6 +497,8 @@ export default function Home() {
               "Elegant wedding websites—from understated layouts to a design that feels unmistakably yours.",
             heroBody:
               "Each collection is curated around a mood: minimal, floral, editorial, dark luxury, or destination. Start with a complimentary template, then move to a premium experience when you want more depth and polish.",
+            heroTagline:
+              "One link for your day—shared like a proper invitation, tailored to both of you.",
             heroPrimaryCta: "Browse templates",
             heroSecondaryCta: "Get consultation",
             statTemplates: "Ready-made designs",
@@ -517,7 +543,7 @@ export default function Home() {
               },
               {
                 icon: "list",
-                tone: "violet",
+                tone: "blush",
                 title: "Schedule & venues",
                 description:
                   "Ceremony, reception, maps, and directions in one place—family and friends understand the full day at a single glance.",
@@ -526,7 +552,7 @@ export default function Home() {
             whyUsRight: [
               {
                 icon: "globe",
-                tone: "indigo",
+                tone: "champagne",
                 title: "A complete wedding story page",
                 description:
                   "Introductions, your story, gallery, and events—a single link to remember and share with people you love.",
@@ -540,7 +566,7 @@ export default function Home() {
               },
               {
                 icon: "heart",
-                tone: "crimson",
+                tone: "warmRose",
                 title: "Guest book of wishes",
                 description:
                   "On premium, guests can leave wishes on your page—lines you can reopen years later.",
@@ -743,6 +769,7 @@ export default function Home() {
             pricingTitle: "Lumiere online invitation & wedding website pricing",
             pricingBody:
               "Choose a plan that matches your needs and budget for a clear, shareable invitation experience. Start on Free; Premium bundles every paid feature in one upgrade. For a line-by-line breakdown, use the comparison table in the section above.",
+            pricingCompareCta: "Scroll up to the Free & Premium comparison",
             pricingPopularBadge: "Popular",
             pricing: [
               {
@@ -850,33 +877,43 @@ export default function Home() {
   }`;
 
   return (
-    <main className={`text-[var(--color-ink)] transition-colors ${isDark ? "bg-[#090909]" : "bg-[var(--color-cream)]"}`}>
+    <main className="home-wedding-main-backdrop text-[var(--color-ink)] transition-colors">
       <section className="relative isolate overflow-hidden">
         <div
           className={`absolute inset-0 ${
             isDark
-              ? "bg-[radial-gradient(circle_at_top,_rgba(209,177,171,0.12),_transparent_32%),linear-gradient(135deg,_rgba(9,9,9,0.96),_rgba(17,17,19,0.94))]"
-              : "bg-[radial-gradient(circle_at_top,_rgba(197,167,161,0.35),_transparent_42%),linear-gradient(135deg,_rgba(255,255,255,0.82),_rgba(233,221,209,0.88))]"
+              ? "bg-[radial-gradient(ellipse_75%_48%_at_50%_-10%,rgba(209,177,171,0.18),transparent_46%),linear-gradient(145deg,rgba(10,9,9,0.98),rgba(14,12,13,0.96))]"
+              : "bg-[radial-gradient(ellipse_82%_50%_at_50%_-14%,rgba(197,167,161,0.45),transparent_48%),radial-gradient(circle_at_92%_18%,rgba(233,221,209,0.85),transparent_52%),linear-gradient(168deg,rgba(255,253,251,0.96),rgba(247,242,236,0.99))]"
           }`}
         />
-        <div className={`animate-float-soft absolute -top-28 right-[-120px] h-80 w-80 rounded-full blur-3xl ${isDark ? "bg-white/8" : "bg-white/40"}`} />
+        <div
+          className={`animate-float-soft absolute -top-28 right-[-120px] h-80 w-80 rounded-full blur-3xl ${
+            isDark ? "bg-[rgba(209,177,171,0.1)]" : "bg-[color-mix(in_srgb,var(--color-rose)_24%,white)]"
+          }`}
+        />
         <div
           className={`animate-drift-soft absolute bottom-0 left-[-80px] h-64 w-64 rounded-full blur-3xl ${
-            isDark ? "bg-[rgba(155,168,150,0.08)]" : "bg-[rgba(125,140,121,0.14)]"
+            isDark ? "bg-[rgba(155,168,150,0.1)]" : "bg-[color-mix(in_srgb,var(--color-sage)_18%,white)]"
           }`}
         />
 
         <div className="relative mx-auto flex min-h-screen w-full max-w-7xl flex-col px-6 py-8 sm:px-10 lg:px-16">
           <div className="grid flex-1 items-center gap-14 py-10 lg:grid-cols-[1.05fr_0.95fr] lg:py-16">
             <div className="max-w-2xl">
-              <p className="animate-fade-up-soft mb-4 text-sm uppercase tracking-[0.35em] text-[var(--color-sage)]">
+              <p className="animate-fade-up-soft mb-3 text-sm uppercase tracking-[0.35em] text-[var(--color-sage)]">
                 {copy.heroEyebrow}
               </p>
-              <h1 className="animate-fade-up-soft-delay-1 font-display text-5xl leading-none sm:text-7xl lg:text-8xl">
+              <WeddingFlourish align="start" className="animate-fade-up-soft mb-5" />
+              <h1 className="animate-fade-up-soft-delay-1 font-display text-5xl leading-[1.05] sm:text-7xl lg:text-8xl">
                 {copy.heroTitle}
               </h1>
               <p className={`animate-fade-up-soft-delay-2 mt-6 max-w-xl text-base leading-8 sm:text-lg ${isDark ? "text-white/74" : "text-[var(--color-ink)]/75"}`}>
                 {copy.heroBody}
+              </p>
+              <p
+                className={`animate-fade-up-soft-delay-2 mt-5 max-w-xl font-display text-lg italic leading-relaxed sm:text-xl ${isDark ? "text-[var(--color-rose)]/80" : "text-[color-mix(in_srgb,var(--color-rose)_88%,var(--color-ink)_12%)]"}`}
+              >
+                {copy.heroTagline}
               </p>
 
               <div className="animate-fade-up-soft-delay-3 mt-10 flex flex-col gap-4 sm:flex-row">
@@ -896,7 +933,7 @@ export default function Home() {
 
               <div className="animate-fade-up-soft-delay-3 mt-12 grid max-w-lg grid-cols-3 gap-4">
                 <div
-                  className={`rounded-3xl p-4 backdrop-blur transition-transform duration-300 hover:-translate-y-1 ${
+                  className={`rounded-3xl p-4 ring-1 ring-[color-mix(in_srgb,var(--color-rose)_20%,transparent)] backdrop-blur transition-transform duration-300 hover:-translate-y-1 ${
                     isDark
                       ? "border border-white/10 bg-white/6 shadow-[0_18px_50px_rgba(0,0,0,0.24)]"
                       : "border border-white/70 bg-white/65 shadow-[0_18px_50px_rgba(49,42,40,0.08)]"
@@ -910,7 +947,7 @@ export default function Home() {
                   </p>
                 </div>
                 <div
-                  className={`rounded-3xl p-4 backdrop-blur transition-transform duration-300 hover:-translate-y-1 ${
+                  className={`rounded-3xl p-4 ring-1 ring-[color-mix(in_srgb,var(--color-rose)_20%,transparent)] backdrop-blur transition-transform duration-300 hover:-translate-y-1 ${
                     isDark
                       ? "border border-white/10 bg-white/6 shadow-[0_18px_50px_rgba(0,0,0,0.24)]"
                       : "border border-white/70 bg-white/65 shadow-[0_18px_50px_rgba(49,42,40,0.08)]"
@@ -922,7 +959,7 @@ export default function Home() {
                   <p className="mt-3 font-display text-2xl leading-tight sm:text-3xl">{copy.statDeliveryValue}</p>
                 </div>
                 <div
-                  className={`rounded-3xl p-4 backdrop-blur transition-transform duration-300 hover:-translate-y-1 ${
+                  className={`rounded-3xl p-4 ring-1 ring-[color-mix(in_srgb,var(--color-rose)_20%,transparent)] backdrop-blur transition-transform duration-300 hover:-translate-y-1 ${
                     isDark
                       ? "border border-white/10 bg-white/6 shadow-[0_18px_50px_rgba(0,0,0,0.24)]"
                       : "border border-white/70 bg-white/65 shadow-[0_18px_50px_rgba(49,42,40,0.08)]"
@@ -943,9 +980,10 @@ export default function Home() {
 
       <section
         id="templates"
-        className="mx-auto w-full max-w-7xl px-6 py-24 sm:px-10 lg:px-16"
+        className="mx-auto w-full max-w-7xl border-t border-[color-mix(in_srgb,var(--color-rose)_14%,transparent)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--color-rose)_6%,transparent),transparent)] px-6 py-24 sm:px-10 lg:px-16"
       >
         <div className="max-w-3xl">
+          <WeddingFlourish align="start" className="mb-4" />
           <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-sage)]">
             {copy.templatesEyebrow}
           </p>
@@ -1197,7 +1235,7 @@ export default function Home() {
             </p>
             <h2 className="mt-4 font-display text-4xl sm:text-5xl">{copy.processTitle}</h2>
           </div>
-          <p className="max-w-md text-sm leading-7 text-[var(--color-ink)]/70">
+          <p className={`max-w-md text-sm leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/70"}`}>
             {copy.processBody}
           </p>
         </div>
@@ -1285,6 +1323,28 @@ export default function Home() {
           <p className={`mx-auto mt-4 max-w-2xl text-sm leading-7 ${isDark ? "text-white/68" : "text-[var(--color-ink)]/70"}`}>
             {copy.pricingBody}
           </p>
+          <div className="mt-8 flex justify-center">
+            <a
+              href="#features"
+              onClick={() => setFeaturesTableExpanded(true)}
+              className="btn-secondary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium backdrop-blur transition-transform duration-300 hover:-translate-y-0.5"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-4 w-4 shrink-0"
+                aria-hidden="true"
+              >
+                <path d="M12 19V5M5 12l7-7 7 7" />
+              </svg>
+              {copy.pricingCompareCta}
+            </a>
+          </div>
         </div>
 
         <div className="mx-auto mt-10 grid max-w-4xl gap-6 lg:grid-cols-2">
@@ -1427,10 +1487,11 @@ export default function Home() {
           className={`animate-pulse-glow-soft hover-lift-strong rounded-[2.5rem] p-8 sm:p-12 ${
             isDark
               ? "border border-white/10 bg-white/6 shadow-[0_18px_50px_rgba(0,0,0,0.24)]"
-              : "border border-[var(--color-ink)]/8 bg-white/80 shadow-[0_18px_50px_rgba(49,42,40,0.07)]"
+              : "border border-[color-mix(in_srgb,var(--color-rose)_12%,var(--color-ink)_8%)] bg-white/80 shadow-[0_18px_50px_rgba(49,42,40,0.07)]"
           }`}
         >
           <div className="text-center">
+            <WeddingFlourish className="mb-4" />
             <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-sage)]">{copy.contactEyebrow}</p>
             <h2 className="mt-4 font-display text-4xl sm:text-5xl">{copy.contactTitle}</h2>
             <p className={`mx-auto mt-4 max-w-2xl text-sm leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/70"}`}>

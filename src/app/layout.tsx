@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import AppTopChrome from "@/components/app-top-chrome";
+import FloatingContactRail from "@/components/floating-contact-rail";
 import SiteFooter from "@/components/site-footer";
 import {
   GlobalPreferencesProvider,
@@ -53,6 +54,7 @@ export default async function RootLayout({
           <AppTopChrome />
           <div className="flex min-h-0 flex-1 flex-col">{children}</div>
           <SiteFooter />
+          <FloatingContactRail />
         </GlobalPreferencesProvider>
       </body>
     </html>
