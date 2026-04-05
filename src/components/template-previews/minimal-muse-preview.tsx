@@ -1,5 +1,12 @@
 "use client";
 
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ComponentPropsWithoutRef,
+  type ElementRef,
+} from "react";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
 import WeddingCountdown from "@/components/wedding-countdown";
 import {
@@ -11,6 +18,94 @@ import {
   minimalMuseTimeline,
   type TemplatePreviewProps,
 } from "@/templates/free/minimal-muse/support";
+import scroll from "./minimal-muse-preview.module.css";
+
+const ioOpts: IntersectionObserverInit = {
+  root: null,
+  rootMargin: "0px 0px -18% 0px",
+  threshold: 0.12,
+};
+
+type RevealAxis = "up" | "left" | "right";
+
+function mediaPendingClass(axis: RevealAxis): string {
+  if (axis === "left") return scroll.scrollMediaPendingLeft;
+  if (axis === "right") return scroll.scrollMediaPendingRight;
+  return scroll.scrollMediaPending;
+}
+
+function titlePendingClass(axis: RevealAxis): string {
+  if (axis === "left") return scroll.scrollTitlePendingLeft;
+  if (axis === "right") return scroll.scrollTitlePendingRight;
+  return scroll.scrollTitlePending;
+}
+
+function ScrollRevealDiv({
+  variant = "media",
+  className = "",
+  children,
+  revealAxis = "up",
+  ...rest
+}: ComponentPropsWithoutRef<"div"> & {
+  variant?: "media" | "title";
+  revealAxis?: RevealAxis;
+}) {
+  const ref = useRef<ElementRef<"div">>(null);
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          setShown(true);
+          io.unobserve(e.target);
+        }
+      }
+    }, ioOpts);
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  const p = variant === "title" ? titlePendingClass(revealAxis) : mediaPendingClass(revealAxis);
+  const d = variant === "title" ? scroll.scrollTitleShown : scroll.scrollMediaShown;
+  return (
+    <div ref={ref} {...rest} className={`${className} ${shown ? d : p}`.trim()}>
+      {children}
+    </div>
+  );
+}
+
+function ScrollRevealButton(
+  props: ComponentPropsWithoutRef<"button"> & { revealAxis?: RevealAxis },
+) {
+  const { className = "", children, revealAxis = "up", ...rest } = props;
+  const ref = useRef<ElementRef<"button">>(null);
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          setShown(true);
+          io.unobserve(e.target);
+        }
+      }
+    }, ioOpts);
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  const pending = mediaPendingClass(revealAxis);
+  return (
+    <button
+      ref={ref}
+      {...rest}
+      className={`${className} ${shown ? scroll.scrollMediaShown : pending}`.trim()}
+    >
+      {children}
+    </button>
+  );
+}
 
 export default function MinimalMusePreview({
   template,
@@ -78,6 +173,7 @@ export default function MinimalMusePreview({
         <MinimalMuseHeader tier={template.tier} />
         <div className="relative mx-auto max-w-7xl px-6 pb-12 sm:px-10 lg:px-16 lg:pb-20">
           <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+            <ScrollRevealDiv revealAxis="left" className={scroll.block}>
             <div className="max-w-2xl">
               <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-sage)]">{template.style}</p>
               <h1 className="mt-5 font-display text-6xl leading-none sm:text-8xl">
@@ -105,6 +201,8 @@ export default function MinimalMusePreview({
                 />
               </div>
             </div>
+            </ScrollRevealDiv>
+            <ScrollRevealDiv revealAxis="right" className={scroll.block}>
             <div className="grid gap-5">
               <button
                 type="button"
@@ -155,12 +253,14 @@ export default function MinimalMusePreview({
                 </div>
               </div>
             </div>
+            </ScrollRevealDiv>
           </div>
         </div>
       </section>
 
       <section className="mx-auto max-w-7xl px-6 py-10 sm:px-10 lg:px-16">
         <div className="grid gap-6 lg:grid-cols-[0.92fr_1.08fr]">
+          <ScrollRevealDiv revealAxis="left" className={scroll.block}>
           <div className={`rounded-[2.2rem] p-6 shadow-[0_16px_40px_rgba(49,42,40,0.06)] sm:p-8 ${
             isDark ? "border border-white/10 bg-white/6" : "bg-white"
           }`}>
@@ -177,7 +277,9 @@ export default function MinimalMusePreview({
               <p className={`mt-5 text-sm leading-7 ${isDark ? "text-white/68" : "text-[var(--color-ink)]/68"}`}>{template.heroSubtitle}</p>
             </div>
           </div>
+          </ScrollRevealDiv>
           <div className="grid gap-4">
+            <ScrollRevealDiv revealAxis="right" className={scroll.block}>
             <div className={`rounded-[2.2rem] p-6 shadow-[0_16px_40px_rgba(49,42,40,0.05)] sm:p-8 ${
               isDark ? "border border-white/10 bg-white/6" : "bg-white/84"
             }`}>
@@ -200,15 +302,22 @@ export default function MinimalMusePreview({
               </div>
               <p className={`mt-6 text-sm leading-7 ${isDark ? "text-white/66" : "text-[var(--color-ink)]/66"}`}>{copy.valueNote}</p>
             </div>
+            </ScrollRevealDiv>
             <div className="grid gap-4 sm:grid-cols-3">
-              {minimalMuseTimeline.map((item) => (
-                <article key={item.year} className={`rounded-[1.8rem] p-5 shadow-[0_16px_40px_rgba(49,42,40,0.05)] ${
+              {minimalMuseTimeline.map((item, ti) => (
+                <ScrollRevealDiv
+                  key={item.year}
+                  revealAxis={ti % 2 === 0 ? "left" : "right"}
+                  className={scroll.block}
+                >
+                <article className={`rounded-[1.8rem] p-5 shadow-[0_16px_40px_rgba(49,42,40,0.05)] ${
                   isDark ? "border border-white/10 bg-white/6" : "bg-white/84"
                 }`}>
                   <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-sage)]">{item.year}</p>
                   <p className="mt-3 font-display text-3xl">{item.title}</p>
                   <p className={`mt-3 text-sm leading-7 ${isDark ? "text-white/72" : "text-[var(--color-ink)]/72"}`}>{item.description}</p>
                 </article>
+                </ScrollRevealDiv>
               ))}
             </div>
           </div>
@@ -218,8 +327,9 @@ export default function MinimalMusePreview({
       <section className="mx-auto max-w-7xl px-6 py-10 sm:px-10 lg:px-16">
         <div className="grid gap-5 md:grid-cols-4">
           {galleryImages.map((image, index) => (
-            <button
+            <ScrollRevealButton
               key={image}
+              revealAxis={index % 2 === 0 ? "left" : "right"}
               type="button"
               onClick={() => onPreviewImage({ src: image, alt: `Gallery ${index + 1} ${template.name}` })}
               className={`overflow-hidden rounded-[1.8rem] ${index === 0 ? "md:col-span-2 md:row-span-2 md:h-[420px]" : "md:h-[200px]"} h-72 cursor-pointer`}
@@ -235,6 +345,7 @@ export default function MinimalMusePreview({
 
       <section className="mx-auto max-w-7xl px-6 py-10 sm:px-10 lg:px-16">
         <div className="grid gap-6 lg:grid-cols-[1fr_0.96fr]">
+          <ScrollRevealDiv revealAxis="left" className={scroll.block}>
           <div
             className={`rounded-[2.1rem] px-6 py-8 text-white sm:p-8 ${
               isDark
@@ -269,7 +380,9 @@ export default function MinimalMusePreview({
               ))}
             </div>
           </div>
+          </ScrollRevealDiv>
 
+          <ScrollRevealDiv revealAxis="right" className={scroll.block}>
           <div id="rsvp" className={`rounded-[2.1rem] p-6 shadow-[0_16px_40px_rgba(49,42,40,0.06)] sm:p-8 ${
             isDark ? "border border-white/10 bg-white/6" : "bg-white"
           }`}>
@@ -297,6 +410,7 @@ export default function MinimalMusePreview({
               </p>
             </div>
           </div>
+          </ScrollRevealDiv>
         </div>
       </section>
 

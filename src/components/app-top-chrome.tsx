@@ -2,11 +2,21 @@
 
 import { usePathname } from "next/navigation";
 import GlobalDashboardControls from "@/components/global-dashboard-controls";
+import { weddingTemplates } from "@/lib/templates";
 
-/** Ẩn nav studio trên trang xem thiệp (demo / detail) để preview full đầu trang. */
+const templateDemoSlugs = new Set(weddingTemplates.map((t) => t.slug));
+
+function pathnameIsTemplateDemo(pathname: string | null): boolean {
+  if (!pathname?.startsWith("/templates/")) return false;
+  const slug = pathname.slice("/templates/".length).split("/")[0];
+  if (!slug) return false;
+  return templateDemoSlugs.has(slug);
+}
+
+/** Ẩn nav studio trên trang xem demo từng mẫu; giữ nav ở các trang như /templates/free. */
 export default function AppTopChrome() {
   const pathname = usePathname();
-  if (pathname?.startsWith("/templates")) {
+  if (pathnameIsTemplateDemo(pathname)) {
     return null;
   }
 

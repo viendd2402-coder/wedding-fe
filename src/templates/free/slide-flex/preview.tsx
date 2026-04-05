@@ -34,35 +34,92 @@ const quicksand = Quicksand({
   variable: "--font-slideflex",
 });
 
+/**
+ * Giao toàn bộ viewport (rootMargin 0): cuộn từ đầu trang, khối chỉ cần chạm mép dưới viewport là bật —
+ * không đợi kéo tới “giữa màn” như rootMargin âm đáy.
+ * threshold 0 + đo fallback trùng logic giao viewport.
+ */
 const ioOpts: IntersectionObserverInit = {
   root: null,
-  rootMargin: "0px 0px -6% 0px",
-  threshold: 0.04,
+  rootMargin: "0px",
+  threshold: 0,
 };
 
-function ScrollRevealButton(props: ComponentPropsWithoutRef<"button">) {
-  const { className = "", children, ...rest } = props;
+function subscribeScrollReveal(el: Element, onVisible: () => void): () => void {
+  let finished = false;
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          if (finished) return;
+          finished = true;
+          io.unobserve(el);
+          onVisible();
+          return;
+        }
+      }
+    },
+    ioOpts,
+  );
+
+  io.observe(el);
+
+  let raf1 = 0;
+  let raf2 = 0;
+  const measure = () => {
+    if (finished) return;
+    const rect = el.getBoundingClientRect();
+    const vh = window.innerHeight;
+    if (vh <= 0) return;
+    if (rect.bottom > 0 && rect.top < vh) {
+      finished = true;
+      io.unobserve(el);
+      onVisible();
+    }
+  };
+  raf1 = requestAnimationFrame(() => {
+    raf2 = requestAnimationFrame(measure);
+  });
+
+  return () => {
+    finished = true;
+    cancelAnimationFrame(raf1);
+    cancelAnimationFrame(raf2);
+    io.disconnect();
+  };
+}
+
+type RevealAxis = "up" | "left" | "right";
+
+function mediaPendingClass(axis: RevealAxis): string {
+  if (axis === "left") return styles.scrollMediaPendingLeft;
+  if (axis === "right") return styles.scrollMediaPendingRight;
+  return styles.scrollMediaPending;
+}
+
+function titlePendingClass(axis: RevealAxis): string {
+  if (axis === "left") return styles.scrollTitlePendingLeft;
+  if (axis === "right") return styles.scrollTitlePendingRight;
+  return styles.scrollTitlePending;
+}
+
+function ScrollRevealButton(
+  props: ComponentPropsWithoutRef<"button"> & { revealAxis?: RevealAxis },
+) {
+  const { className = "", children, revealAxis = "up", ...rest } = props;
   const ref = useRef<ElementRef<"button">>(null);
   const [shown, setShown] = useState(false);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const io = new IntersectionObserver((entries) => {
-      for (const e of entries) {
-        if (e.isIntersecting) {
-          setShown(true);
-          io.unobserve(e.target);
-        }
-      }
-    }, ioOpts);
-    io.observe(el);
-    return () => io.disconnect();
+    return subscribeScrollReveal(el, () => setShown(true));
   }, []);
+  const pending = mediaPendingClass(revealAxis);
   return (
     <button
       ref={ref}
       {...rest}
-      className={`${className} ${shown ? styles.scrollMediaShown : styles.scrollMediaPending}`.trim()}
+      className={`${className} ${shown ? styles.scrollMediaShown : pending}`.trim()}
     >
       {children}
     </button>
@@ -73,25 +130,21 @@ function ScrollRevealDiv({
   variant = "media",
   className = "",
   children,
+  revealAxis = "up",
   ...rest
-}: ComponentPropsWithoutRef<"div"> & { variant?: "media" | "title" }) {
+}: ComponentPropsWithoutRef<"div"> & {
+  variant?: "media" | "title";
+  revealAxis?: RevealAxis;
+}) {
   const ref = useRef<ElementRef<"div">>(null);
   const [shown, setShown] = useState(false);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const io = new IntersectionObserver((entries) => {
-      for (const e of entries) {
-        if (e.isIntersecting) {
-          setShown(true);
-          io.unobserve(e.target);
-        }
-      }
-    }, ioOpts);
-    io.observe(el);
-    return () => io.disconnect();
+    return subscribeScrollReveal(el, () => setShown(true));
   }, []);
-  const p = variant === "title" ? styles.scrollTitlePending : styles.scrollMediaPending;
+  const p =
+    variant === "title" ? titlePendingClass(revealAxis) : mediaPendingClass(revealAxis);
   const d = variant === "title" ? styles.scrollTitleShown : styles.scrollMediaShown;
   return (
     <div ref={ref} {...rest} className={`${className} ${shown ? d : p}`.trim()}>
@@ -100,29 +153,23 @@ function ScrollRevealDiv({
   );
 }
 
-function ScrollRevealArticle(props: ComponentPropsWithoutRef<"article">) {
-  const { className = "", children, ...rest } = props;
+function ScrollRevealArticle(
+  props: ComponentPropsWithoutRef<"article"> & { revealAxis?: RevealAxis },
+) {
+  const { className = "", children, revealAxis = "up", ...rest } = props;
   const ref = useRef<ElementRef<"article">>(null);
   const [shown, setShown] = useState(false);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const io = new IntersectionObserver((entries) => {
-      for (const e of entries) {
-        if (e.isIntersecting) {
-          setShown(true);
-          io.unobserve(e.target);
-        }
-      }
-    }, ioOpts);
-    io.observe(el);
-    return () => io.disconnect();
+    return subscribeScrollReveal(el, () => setShown(true));
   }, []);
+  const pending = mediaPendingClass(revealAxis);
   return (
     <article
       ref={ref}
       {...rest}
-      className={`${className} ${shown ? styles.scrollMediaShown : styles.scrollMediaPending}`.trim()}
+      className={`${className} ${shown ? styles.scrollMediaShown : pending}`.trim()}
     >
       {children}
     </article>
@@ -385,17 +432,42 @@ export default function SlideFlexPreview({
           </button>
         </div>
         <div className={styles.heroContent}>
-          <p className={styles.heroEyebrow}>{copy.heroEyebrow}</p>
-          <h1 className={styles.heroNames}>
-            {preview.groom}
-            <span className={styles.heroAmp}>&amp;</span>
-            {preview.bride}
-          </h1>
-          <p className={styles.heroSub}>{copy.gettingMarried}</p>
-          <p className={styles.heroSub}>{preview.dateLabel}</p>
-          <a href="#rsvp" className={styles.btnGradient}>
-            {copy.rsvp}
-          </a>
+          <ScrollRevealDiv
+            revealAxis="left"
+            className={`${styles.heroRevealWrap} ${styles.heroRevealStagger0}`}
+          >
+            <p className={styles.heroEyebrow}>{copy.heroEyebrow}</p>
+          </ScrollRevealDiv>
+          <ScrollRevealDiv
+            revealAxis="right"
+            className={`${styles.heroRevealWrap} ${styles.heroRevealStagger1}`}
+          >
+            <h1 className={styles.heroNames}>
+              {preview.groom}
+              <span className={styles.heroAmp}>&amp;</span>
+              {preview.bride}
+            </h1>
+          </ScrollRevealDiv>
+          <ScrollRevealDiv
+            revealAxis="left"
+            className={`${styles.heroRevealWrap} ${styles.heroRevealStagger2}`}
+          >
+            <p className={styles.heroSub}>{copy.gettingMarried}</p>
+          </ScrollRevealDiv>
+          <ScrollRevealDiv
+            revealAxis="right"
+            className={`${styles.heroRevealWrap} ${styles.heroRevealStagger3}`}
+          >
+            <p className={styles.heroSub}>{preview.dateLabel}</p>
+          </ScrollRevealDiv>
+          <ScrollRevealDiv
+            revealAxis="up"
+            className={`${styles.heroRevealWrap} ${styles.heroRevealStagger4}`}
+          >
+            <a href="#rsvp" className={styles.btnGradient}>
+              {copy.rsvp}
+            </a>
+          </ScrollRevealDiv>
         </div>
         {slides.length > 1 ? (
           <div className={styles.sliderDots} role="tablist" aria-label="Slides">
@@ -416,11 +488,11 @@ export default function SlideFlexPreview({
       <main>
         <section id="couple" className={`${styles.section} ${styles.sectionAlt}`}>
           <div className={styles.container}>
-            <ScrollRevealDiv variant="title">
+            <ScrollRevealDiv variant="title" revealAxis="left">
               <h2 className={styles.sectionTitle}>{copy.coupleTitle}</h2>
             </ScrollRevealDiv>
             <div className={styles.coupleGrid}>
-              <ScrollRevealArticle className={styles.coupleCard}>
+              <ScrollRevealArticle className={styles.coupleCard} revealAxis="left">
                 <div
                   className={styles.coupleImg}
                   style={{ backgroundImage: `url(${cover})` }}
@@ -436,7 +508,7 @@ export default function SlideFlexPreview({
                   <p className={styles.coupleBio}>{groomBio}</p>
                 </div>
               </ScrollRevealArticle>
-              <ScrollRevealArticle className={styles.coupleCard}>
+              <ScrollRevealArticle className={styles.coupleCard} revealAxis="right">
                 <div
                   className={styles.coupleImg}
                   style={{
@@ -460,31 +532,34 @@ export default function SlideFlexPreview({
 
         <section id="story" className={styles.section}>
           <div className={styles.container}>
-            <ScrollRevealDiv variant="title">
+            <ScrollRevealDiv variant="title" revealAxis="right">
               <h2 className={styles.sectionTitle}>{copy.storyTitle}</h2>
             </ScrollRevealDiv>
-            <ScrollRevealDiv variant="title">
-              <div className={styles.timeline}>
-                {timeline.map((item) => (
-                  <div key={item.title} className={styles.tlItem}>
+            <div className={styles.timeline}>
+              {timeline.map((item, i) => (
+                <ScrollRevealDiv
+                  key={item.title}
+                  revealAxis={i % 2 === 0 ? "left" : "right"}
+                >
+                  <div className={styles.tlItem}>
                     <div className={styles.tlDate}>{item.date}</div>
                     <h3 className={styles.tlTitle}>{item.title}</h3>
                     <p className={styles.tlBody}>{item.body}</p>
                   </div>
-                ))}
-              </div>
-            </ScrollRevealDiv>
+                </ScrollRevealDiv>
+              ))}
+            </div>
           </div>
         </section>
 
         <section id="party" className={`${styles.section} ${styles.sectionAlt}`}>
           <div className={styles.container}>
-            <ScrollRevealDiv variant="title">
+            <ScrollRevealDiv variant="title" revealAxis="left">
               <h2 className={styles.sectionTitle}>{copy.partyTitle}</h2>
               <p className={styles.sectionLead}>{copy.partyLead}</p>
             </ScrollRevealDiv>
             <div className={styles.partyGrid}>
-              <ScrollRevealDiv className={styles.partyCol}>
+              <ScrollRevealDiv className={styles.partyCol} revealAxis="left">
                 <div>
                   <h3>{copy.partyBrides}</h3>
                   {party.bridesmaids.map((p) => (
@@ -495,7 +570,7 @@ export default function SlideFlexPreview({
                   ))}
                 </div>
               </ScrollRevealDiv>
-              <ScrollRevealDiv className={styles.partyCol}>
+              <ScrollRevealDiv className={styles.partyCol} revealAxis="right">
                 <div>
                   <h3>{copy.partyGrooms}</h3>
                   {party.groomsmen.map((p) => (
@@ -512,12 +587,12 @@ export default function SlideFlexPreview({
 
         <section id="events" className={styles.section}>
           <div className={styles.container}>
-            <ScrollRevealDiv variant="title">
+            <ScrollRevealDiv variant="title" revealAxis="right">
               <h2 className={styles.sectionTitle}>{copy.eventsTitle}</h2>
               <p className={styles.sectionLead}>{copy.eventsLead}</p>
             </ScrollRevealDiv>
             <div className={styles.eventsList}>
-              <ScrollRevealDiv>
+              <ScrollRevealDiv revealAxis="left">
                 <article className={styles.eventCard}>
                   <h3 className={styles.eventTitle}>{copy.ceremony}</h3>
                   <p className={styles.eventMeta}>
@@ -543,7 +618,7 @@ export default function SlideFlexPreview({
                   </div>
                 </article>
               </ScrollRevealDiv>
-              <ScrollRevealDiv>
+              <ScrollRevealDiv revealAxis="right">
                 <article className={styles.eventCard}>
                   <h3 className={styles.eventTitle}>{copy.reception}</h3>
                   <p className={styles.eventMeta}>
@@ -567,7 +642,7 @@ export default function SlideFlexPreview({
 
         <section id="gallery" className={`${styles.section} ${styles.sectionAlt}`}>
           <div className={styles.container}>
-            <ScrollRevealDiv variant="title">
+            <ScrollRevealDiv variant="title" revealAxis="left">
               <h2 className={styles.sectionTitle}>{copy.galleryTitle}</h2>
             </ScrollRevealDiv>
             <div className={styles.galleryGrid}>
@@ -576,6 +651,7 @@ export default function SlideFlexPreview({
                   key={`${src}-${i}`}
                   type="button"
                   className={styles.galleryBtn}
+                  revealAxis={i % 2 === 0 ? "left" : "right"}
                   onClick={() =>
                     onPreviewImage({ src, alt: `${copy.galleryTitle} ${i + 1}` })
                   }
@@ -590,10 +666,10 @@ export default function SlideFlexPreview({
 
         <section id="video" className={styles.section}>
           <div className={styles.container}>
-            <ScrollRevealDiv variant="title">
+            <ScrollRevealDiv variant="title" revealAxis="right">
               <h2 className={styles.sectionTitle}>{copy.videoTitle}</h2>
             </ScrollRevealDiv>
-            <ScrollRevealDiv>
+            <ScrollRevealDiv revealAxis="left">
               <div>
                 <div className={styles.videoBlock}>
                   <button type="button" className={styles.videoPlay} aria-label="Play">
@@ -608,11 +684,11 @@ export default function SlideFlexPreview({
 
         <section id="rsvp" className={`${styles.section} ${styles.sectionAlt}`}>
           <div className={styles.container}>
-            <ScrollRevealDiv variant="title">
+            <ScrollRevealDiv variant="title" revealAxis="left">
               <h2 className={styles.sectionTitle}>{copy.guestbook}</h2>
               <p className={styles.sectionLead}>{copy.guestLead}</p>
             </ScrollRevealDiv>
-            <ScrollRevealDiv>
+            <ScrollRevealDiv revealAxis="right">
               <form
                 className={styles.formCard}
                 onSubmit={(e) => {
@@ -661,11 +737,11 @@ export default function SlideFlexPreview({
 
         <section id="gift" className={styles.section}>
           <div className={styles.container}>
-            <ScrollRevealDiv variant="title">
+            <ScrollRevealDiv variant="title" revealAxis="right">
               <h2 className={styles.sectionTitle}>{copy.giftTitle}</h2>
             </ScrollRevealDiv>
             <div className={styles.giftGrid}>
-              <ScrollRevealDiv>
+              <ScrollRevealDiv revealAxis="left">
                 <div className={styles.giftCard}>
                   <h4>{copy.giftBride}</h4>
                   <p>
@@ -683,7 +759,7 @@ export default function SlideFlexPreview({
                   </button>
                 </div>
               </ScrollRevealDiv>
-              <ScrollRevealDiv>
+              <ScrollRevealDiv revealAxis="right">
                 <div className={styles.giftCard}>
                   <h4>{copy.giftGroom}</h4>
                   <p>

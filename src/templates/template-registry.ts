@@ -5,8 +5,6 @@ import { minimalMuseModule } from "@/templates/free/minimal-muse";
 import { azurePromiseModule } from "@/templates/free/azure-promise";
 import { brightlyBasicModule } from "@/templates/free/brightly-basic";
 import { slideFlexModule } from "@/templates/free/slide-flex";
-import { editorialBloomModule } from "@/templates/premium/editorial-bloom";
-import { heritageVowsModule } from "@/templates/premium/heritage-vows";
 
 export type TemplateModule = {
   meta: WeddingTemplate;
@@ -19,8 +17,6 @@ export const templateModules: TemplateModule[] = [
   azurePromiseModule,
   brightlyBasicModule,
   slideFlexModule,
-  editorialBloomModule,
-  heritageVowsModule,
 ];
 
 export const weddingTemplates = templateModules.map((module) => module.meta);

@@ -17,9 +17,9 @@
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out-soft: cubic-bezier(0.33, 1, 0.68, 1);
   --ease-spring-soft: cubic-bezier(0.34, 1.2, 0.52, 1);
-  --reveal-shift: 1.125rem;
-  --reveal-dur: 1s;
-  --reveal-opacity-dur: 1.12s;
+  --reveal-shift: 2.25rem;
+  --reveal-dur: 1.05s;
+  --reveal-opacity-dur: 1.05s;
 
   isolation: isolate;
   color: var(--text);
@@ -269,6 +269,34 @@
   font-style: italic;
   font-weight: 300;
   margin: 0 0 2.25rem;
+}
+
+.heroRevealWrap {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.heroRevealStagger0 {
+  --sf-hero-stagger: 0s;
+}
+
+.heroRevealStagger1 {
+  --sf-hero-stagger: 0.14s;
+}
+
+.heroRevealStagger2 {
+  --sf-hero-stagger: 0.28s;
+}
+
+.heroRevealStagger3 {
+  --sf-hero-stagger: 0.42s;
+}
+
+.donateTitleWrap,
+.donateCardWrap {
+  display: block;
+  width: 100%;
 }
 
 /* .btn.btn-light — viền trắng, chữ trắng, trong suốt */
@@ -1280,25 +1308,10 @@
     animation: neelaOverlayIn 1.35s var(--ease-out-soft) 0.08s both;
   }
 
-  /* Typography hero: blur nhẹ → rõ, nhịp lệch dễ đọc */
-  .heroKicker {
-    animation: neelaFadeInUp 0.95s var(--ease-out-soft) 0.12s both;
-  }
-
-  .heroTitle {
-    animation: neelaFadeInUpHero 1.12s var(--ease-out-expo) 0.22s both;
-  }
-
-  .heroDate {
-    animation: neelaFadeInUp 1.02s var(--ease-out-soft) 0.4s both;
-  }
-
-  .btnHero {
-    animation: neelaFadeInUp 1s var(--ease-out-expo) 0.52s both;
-  }
-
-  .heroInner::after {
-    animation: neelaFadeIn 0.95s var(--ease-out-soft) 0.72s both;
+  .heroRevealWrap.scrollMediaShown {
+    transition:
+      opacity 1.12s cubic-bezier(0.28, 1, 0.52, 1) var(--sf-hero-stagger, 0s),
+      transform 1.18s cubic-bezier(0.08, 1, 0.22, 1) var(--sf-hero-stagger, 0s);
   }
 }
 
@@ -1306,7 +1319,19 @@
 @media (prefers-reduced-motion: no-preference) {
   .scrollMediaPending {
     opacity: 0;
-    transform: translate3d(0, 1.35rem, 0) scale(0.96);
+    transform: translate3d(0, 2.5rem, 0) scale(0.93);
+    pointer-events: none;
+  }
+
+  .scrollMediaPendingLeft {
+    opacity: 0;
+    transform: translate3d(clamp(-4.5rem, -16vw, -1.75rem), 0, 0) scale(0.93);
+    pointer-events: none;
+  }
+
+  .scrollMediaPendingRight {
+    opacity: 0;
+    transform: translate3d(clamp(1.75rem, 16vw, 4.5rem), 0, 0) scale(0.93);
     pointer-events: none;
   }
 
@@ -1315,13 +1340,25 @@
     transform: translate3d(0, 0, 0) scale(1);
     pointer-events: auto;
     transition:
-      opacity 0.78s var(--ease-out-soft),
-      transform 0.82s var(--ease-out-expo);
+      opacity 0.95s cubic-bezier(0.28, 1, 0.52, 1),
+      transform 1s cubic-bezier(0.1, 1, 0.26, 1);
   }
 
   .scrollTitlePending {
     opacity: 0;
-    transform: translate3d(0, 0.9rem, 0);
+    transform: translate3d(0, 1.35rem, 0);
+    pointer-events: none;
+  }
+
+  .scrollTitlePendingLeft {
+    opacity: 0;
+    transform: translate3d(clamp(-3.75rem, -12vw, -1.1rem), 0, 0);
+    pointer-events: none;
+  }
+
+  .scrollTitlePendingRight {
+    opacity: 0;
+    transform: translate3d(clamp(1.1rem, 12vw, 3.75rem), 0, 0);
     pointer-events: none;
   }
 
@@ -1330,13 +1367,13 @@
     transform: translate3d(0, 0, 0);
     pointer-events: auto;
     transition:
-      opacity 0.88s var(--ease-out-soft),
-      transform 0.82s var(--ease-out-expo);
+      opacity 1s cubic-bezier(0.28, 1, 0.52, 1),
+      transform 1.02s cubic-bezier(0.1, 1, 0.26, 1);
   }
 
   .scrollPopPending {
     opacity: 0;
-    transform: scale(0.7);
+    transform: scale(0.66);
     pointer-events: none;
   }
 
@@ -1345,8 +1382,8 @@
     transform: scale(1);
     pointer-events: auto;
     transition:
-      opacity 0.75s var(--ease-out-soft),
-      transform 1s var(--ease-spring-soft);
+      opacity 0.85s var(--ease-out-soft),
+      transform 1.05s var(--ease-spring-soft);
   }
 }
 
@@ -1391,10 +1428,6 @@
   .navBar,
   .heroBg,
   .heroOverlay,
-  .heroKicker,
-  .heroTitle,
-  .heroDate,
-  .btnHero,
   .heroInner::after {
     animation: none !important;
   }
@@ -1404,13 +1437,13 @@
     transform: none;
   }
 
-  .heroTitle {
-    filter: none;
-  }
-
   .scrollMediaPending,
+  .scrollMediaPendingLeft,
+  .scrollMediaPendingRight,
   .scrollMediaShown,
   .scrollTitlePending,
+  .scrollTitlePendingLeft,
+  .scrollTitlePendingRight,
   .scrollTitleShown,
   .scrollPopPending,
   .scrollPopShown {

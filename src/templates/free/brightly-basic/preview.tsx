@@ -40,6 +40,26 @@ const ooohBaby = Oooh_Baby({
   variable: "--font-neela-script",
 });
 
+const ioOpts: IntersectionObserverInit = {
+  root: null,
+  rootMargin: "0px 0px -18% 0px",
+  threshold: 0.12,
+};
+
+type RevealAxis = "up" | "left" | "right";
+
+function mediaPendingClass(axis: RevealAxis): string {
+  if (axis === "left") return styles.scrollMediaPendingLeft;
+  if (axis === "right") return styles.scrollMediaPendingRight;
+  return styles.scrollMediaPending;
+}
+
+function titlePendingClass(axis: RevealAxis): string {
+  if (axis === "left") return styles.scrollTitlePendingLeft;
+  if (axis === "right") return styles.scrollTitlePendingRight;
+  return styles.scrollTitlePending;
+}
+
 /** Fade-in khi cả section vào viewport (invitation, events, …). */
 function RevealSection({
   className = "",
@@ -60,7 +80,7 @@ function RevealSection({
           }
         }
       },
-      { rootMargin: "0px 0px -2% 0px", threshold: 0.02 },
+      ioOpts,
     );
     io.observe(el);
     return () => io.disconnect();
@@ -77,18 +97,11 @@ function RevealSection({
   );
 }
 
-const scrollMediaIo: IntersectionObserverInit = {
-  root: null,
-  rootMargin: "0px 0px -6% 0px",
-  threshold: 0.02,
-};
-
 /** Ảnh / ô hiện dần khi từng phần tử vào viewport (kéo tới đâu chạy tới đó). */
-function ScrollRevealButton({
-  className = "",
-  children,
-  ...rest
-}: ComponentPropsWithoutRef<"button">) {
+function ScrollRevealButton(
+  props: ComponentPropsWithoutRef<"button"> & { revealAxis?: RevealAxis },
+) {
+  const { className = "", children, revealAxis = "up", ...rest } = props;
   const ref = useRef<ElementRef<"button">>(null);
   const [shown, setShown] = useState(false);
   useEffect(() => {
@@ -101,26 +114,26 @@ function ScrollRevealButton({
           io.unobserve(e.target);
         }
       }
-    }, scrollMediaIo);
+    }, ioOpts);
     io.observe(el);
     return () => io.disconnect();
   }, []);
+  const pending = mediaPendingClass(revealAxis);
   return (
     <button
       ref={ref}
       {...rest}
-      className={`${className} ${shown ? styles.scrollMediaShown : styles.scrollMediaPending}`.trim()}
+      className={`${className} ${shown ? styles.scrollMediaShown : pending}`.trim()}
     >
       {children}
     </button>
   );
 }
 
-function ScrollRevealArticle({
-  className = "",
-  children,
-  ...rest
-}: ComponentPropsWithoutRef<"article">) {
+function ScrollRevealArticle(
+  props: ComponentPropsWithoutRef<"article"> & { revealAxis?: RevealAxis },
+) {
+  const { className = "", children, revealAxis = "up", ...rest } = props;
   const ref = useRef<ElementRef<"article">>(null);
   const [shown, setShown] = useState(false);
   useEffect(() => {
@@ -133,15 +146,16 @@ function ScrollRevealArticle({
           io.unobserve(e.target);
         }
       }
-    }, scrollMediaIo);
+    }, ioOpts);
     io.observe(el);
     return () => io.disconnect();
   }, []);
+  const pending = mediaPendingClass(revealAxis);
   return (
     <article
       ref={ref}
       {...rest}
-      className={`${className} ${shown ? styles.scrollMediaShown : styles.scrollMediaPending}`.trim()}
+      className={`${className} ${shown ? styles.scrollMediaShown : pending}`.trim()}
     >
       {children}
     </article>
@@ -154,8 +168,12 @@ function ScrollRevealDiv({
   variant = "media",
   className = "",
   children,
+  revealAxis = "up",
   ...rest
-}: ComponentPropsWithoutRef<"div"> & { variant?: ScrollRevealDivVariant }) {
+}: ComponentPropsWithoutRef<"div"> & {
+  variant?: ScrollRevealDivVariant;
+  revealAxis?: RevealAxis;
+}) {
   const ref = useRef<ElementRef<"div">>(null);
   const [shown, setShown] = useState(false);
   useEffect(() => {
@@ -168,22 +186,22 @@ function ScrollRevealDiv({
           io.unobserve(e.target);
         }
       }
-    }, scrollMediaIo);
+    }, ioOpts);
     io.observe(el);
     return () => io.disconnect();
   }, []);
-  const pending =
-    variant === "title"
-      ? styles.scrollTitlePending
-      : variant === "pop"
-        ? styles.scrollPopPending
-        : styles.scrollMediaPending;
-  const done =
-    variant === "title"
-      ? styles.scrollTitleShown
-      : variant === "pop"
-        ? styles.scrollPopShown
-        : styles.scrollMediaShown;
+  let pending: string;
+  let done: string;
+  if (variant === "pop") {
+    pending = styles.scrollPopPending;
+    done = styles.scrollPopShown;
+  } else if (variant === "title") {
+    pending = titlePendingClass(revealAxis);
+    done = styles.scrollTitleShown;
+  } else {
+    pending = mediaPendingClass(revealAxis);
+    done = styles.scrollMediaShown;
+  }
   return (
     <div ref={ref} {...rest} className={`${className} ${shown ? done : pending}`.trim()}>
       {children}
@@ -210,7 +228,7 @@ function RevealFooter({
           }
         }
       },
-      { rootMargin: "0px 0px -2% 0px", threshold: 0.03 },
+      ioOpts,
     );
     io.observe(el);
     return () => io.disconnect();
@@ -418,16 +436,36 @@ export default function BrightlyBasicPreview({
           <div className={styles.heroOverlay} />
           <div className={styles.container}>
             <div className={styles.heroInner}>
-              <p className={styles.heroKicker}>{copy.saveDate}</p>
-              <h1 className={styles.heroTitle}>
-                <span className={styles.heroNameBlock}>{preview.groom}</span>
-                <small className={styles.heroAnd}>&amp;</small>
-                <span className={styles.heroNameBlock}>{preview.bride}</span>
-              </h1>
-              <p className={styles.heroDate}>{preview.dateLabel}</p>
-              <a href="#rsvp" className={styles.btnHero}>
-                {copy.sendWish}
-              </a>
+              <ScrollRevealDiv
+                revealAxis="left"
+                className={`${styles.heroRevealWrap} ${styles.heroRevealStagger0}`}
+              >
+                <p className={styles.heroKicker}>{copy.saveDate}</p>
+              </ScrollRevealDiv>
+              <ScrollRevealDiv
+                revealAxis="right"
+                className={`${styles.heroRevealWrap} ${styles.heroRevealStagger1}`}
+              >
+                <h1 className={styles.heroTitle}>
+                  <span className={styles.heroNameBlock}>{preview.groom}</span>
+                  <small className={styles.heroAnd}>&amp;</small>
+                  <span className={styles.heroNameBlock}>{preview.bride}</span>
+                </h1>
+              </ScrollRevealDiv>
+              <ScrollRevealDiv
+                revealAxis="left"
+                className={`${styles.heroRevealWrap} ${styles.heroRevealStagger2}`}
+              >
+                <p className={styles.heroDate}>{preview.dateLabel}</p>
+              </ScrollRevealDiv>
+              <ScrollRevealDiv
+                revealAxis="up"
+                className={`${styles.heroRevealWrap} ${styles.heroRevealStagger3}`}
+              >
+                <a href="#rsvp" className={styles.btnHero}>
+                  {copy.sendWish}
+                </a>
+              </ScrollRevealDiv>
             </div>
           </div>
         </section>
@@ -436,7 +474,7 @@ export default function BrightlyBasicPreview({
           <div className={styles.container}>
             <div className={styles.coupleGrid}>
               <div className={styles.coupleRow}>
-                <ScrollRevealArticle className={styles.coupleCard}>
+                <ScrollRevealArticle className={styles.coupleCard} revealAxis="left">
                   <div className={styles.coupleImgWrap}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={cover} alt="" className={styles.coupleImg} />
@@ -453,7 +491,7 @@ export default function BrightlyBasicPreview({
                     </div>
                   </div>
                 </ScrollRevealArticle>
-                <ScrollRevealArticle className={styles.coupleCard}>
+                <ScrollRevealArticle className={styles.coupleCard} revealAxis="right">
                   <div className={styles.coupleImgWrap}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -483,7 +521,7 @@ export default function BrightlyBasicPreview({
               </div>
             </div>
 
-            <ScrollRevealDiv variant="title" className={styles.aboutBlock}>
+            <ScrollRevealDiv variant="title" revealAxis="left" className={styles.aboutBlock}>
               <h3 className={styles.aboutTitle}>{copy.gettingMarried}</h3>
               <p className={styles.aboutText}>{copy.thanksBody}</p>
               <p className={styles.signature}>
@@ -571,7 +609,7 @@ export default function BrightlyBasicPreview({
 
         <section id="gallery" className={`${styles.section} ${styles.gallerySection}`}>
           <div className={styles.container}>
-            <ScrollRevealDiv variant="title">
+            <ScrollRevealDiv variant="title" revealAxis="left">
               <h2 className={styles.sectionTitle}>{copy.galleryTitle}</h2>
             </ScrollRevealDiv>
           </div>
@@ -581,6 +619,7 @@ export default function BrightlyBasicPreview({
                 key={`${src}-${i}`}
                 type="button"
                 className={styles.galleryItem}
+                revealAxis={i % 2 === 0 ? "left" : "right"}
                 onClick={() =>
                   onPreviewImage({ src, alt: `${copy.galleryTitle} ${i + 1}` })
                 }
@@ -742,8 +781,11 @@ export default function BrightlyBasicPreview({
 
         <RevealSection id="donate" className={styles.section}>
           <div className={styles.container}>
-            <h2 className={styles.sectionTitle}>{copy.giftTitle}</h2>
+            <ScrollRevealDiv variant="title" revealAxis="right" className={styles.donateTitleWrap}>
+              <h2 className={styles.sectionTitle}>{copy.giftTitle}</h2>
+            </ScrollRevealDiv>
             <div className={styles.donateGrid}>
+              <ScrollRevealDiv revealAxis="left" className={styles.donateCardWrap}>
               <div className={styles.donateCard}>
                 <span className={styles.hLines} aria-hidden />
                 <span className={styles.vLines} aria-hidden />
@@ -764,6 +806,7 @@ export default function BrightlyBasicPreview({
                   </button>
                 </div>
               </div>
+              </ScrollRevealDiv>
             </div>
           </div>
         </RevealSection>

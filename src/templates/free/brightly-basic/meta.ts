@@ -4,10 +4,10 @@ export const brightlyBasicTemplate: WeddingTemplate = {
   slug: "brightly-basic",
   name: "Neela Classic",
   style: "iWedding · Neela template",
-  tier: "Miễn phí",
+  tier: "Trả phí",
   family: "romance",
   mood: "classic",
-  badge: "Giống iWedding",
+  badge: "Premium",
   description:
     "Bố cục và màu Neela (#8eaeba) như template iWedding phổ biến: hero full màn, cặp đôi hai cột, thiệp Save the Date, album, sự kiện parallax, sổ lưu bút và hộp mừng cưới.",
   image:

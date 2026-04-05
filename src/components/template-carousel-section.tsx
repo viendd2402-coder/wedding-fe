@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useRef } from "react";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
+import { TemplateListCard } from "@/components/template-list-card";
 import type { WeddingTemplate } from "@/lib/templates";
 
 type TemplateCarouselSectionProps = {
@@ -17,6 +17,8 @@ type TemplateCarouselSectionProps = {
   secondaryActionHref: string;
   secondaryActionLabel: string;
   secondaryActionClassName: string;
+  /** Nhãn nút demo (thẻ có thể bấm cả vùng; nút chỉ là gợi ý). */
+  demoLinkLabel?: string;
 };
 
 export default function TemplateCarouselSection({
@@ -31,6 +33,7 @@ export default function TemplateCarouselSection({
   secondaryActionHref,
   secondaryActionLabel,
   secondaryActionClassName,
+  demoLinkLabel = "Xem demo",
 }: TemplateCarouselSectionProps) {
   const carouselRef = useRef<HTMLDivElement | null>(null);
   const { theme } = useGlobalPreferences();
@@ -126,128 +129,34 @@ export default function TemplateCarouselSection({
             className="flex gap-5 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {templates.map((item) => (
-              <article
+              <TemplateListCard
                 key={item.slug}
-                className={`flex w-[320px] shrink-0 flex-col overflow-hidden rounded-[2rem] ${
-                  isDark
-                    ? "border border-white/10 bg-white/6 shadow-[0_16px_40px_rgba(0,0,0,0.24)]"
-                    : "border border-[var(--color-ink)]/8 bg-white/70 shadow-[0_16px_40px_rgba(49,42,40,0.06)]"
-                }`}
-              >
-                <div
-                  className="h-64 bg-cover bg-center"
-                  style={{ backgroundImage: `url(${item.image})` }}
-                />
-                <div className="flex flex-1 flex-col p-6">
-                  <div className="flex min-h-[52px] items-start justify-between gap-3">
-                    <p className="max-w-[180px] text-sm uppercase tracking-[0.28em] text-[var(--color-sage)]">
-                      {item.style}
-                    </p>
-                    <span className={badgeClassName}>{item.tier}</span>
-                  </div>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    <span className={`rounded-full px-3 py-1 text-[11px] uppercase tracking-[0.2em] ${
-                      isDark
-                        ? "bg-white/8 text-white/72"
-                        : "bg-[var(--color-ink)]/6 text-[var(--color-ink)]/62"
-                    }`}>
-                      {item.badge}
-                    </span>
-                    <span className={`rounded-full px-3 py-1 text-[11px] uppercase tracking-[0.2em] ${
-                      isDark
-                        ? "bg-[rgba(255,255,255,0.04)] text-white/68"
-                        : "bg-[var(--color-cream)] text-[var(--color-ink)]/62"
-                    }`}>
-                      {item.mood}
-                    </span>
-                  </div>
-                  <h3 className="mt-4 font-display text-3xl">{item.name}</h3>
-                  <p className={`mt-4 text-sm leading-7 ${isDark ? "text-white/72" : "text-[var(--color-ink)]/70"}`}>
-                    {item.description}
-                  </p>
-                  <p className={`mt-3 text-sm leading-7 ${isDark ? "text-white/58" : "text-[var(--color-ink)]/58"}`}>
-                    {item.sectionProfile}
-                  </p>
-                  <div className="mt-auto flex gap-3 pt-6">
-                    <Link
-                      href={`/templates/${item.slug}`}
-                      className="btn-primary inline-flex h-12 min-w-0 flex-1 items-center justify-center rounded-full px-4 py-3 text-center text-sm font-medium whitespace-nowrap transition"
-                    >
-                      Xem demo
-                    </Link>
-                    <a
-                      href={secondaryActionHref}
-                      className={`${secondaryActionClassName} inline-flex h-12 min-w-0 flex-1 items-center justify-center px-4 text-center text-[13px] font-medium whitespace-nowrap`}
-                    >
-                      {secondaryActionLabel}
-                    </a>
-                  </div>
-                </div>
-              </article>
+                item={item}
+                isDark={isDark}
+                badgeClassName={badgeClassName}
+                demoLabel={demoLinkLabel}
+                secondaryHref={secondaryActionHref}
+                secondaryLabel={secondaryActionLabel}
+                secondaryClassName={secondaryActionClassName}
+                cardClassName="w-[320px] shrink-0"
+              />
             ))}
           </div>
         </div>
       ) : (
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {templates.map((item) => (
-            <article
+            <TemplateListCard
               key={item.slug}
-              className={`flex h-full flex-col overflow-hidden rounded-[2rem] ${
-                isDark
-                  ? "border border-white/10 bg-white/6 shadow-[0_16px_40px_rgba(0,0,0,0.24)]"
-                  : "border border-[var(--color-ink)]/8 bg-white/70 shadow-[0_16px_40px_rgba(49,42,40,0.06)]"
-              }`}
-            >
-              <div
-                className="h-64 bg-cover bg-center"
-                style={{ backgroundImage: `url(${item.image})` }}
-              />
-              <div className="flex flex-1 flex-col p-6">
-                <div className="flex min-h-[52px] items-start justify-between gap-3">
-                  <p className="max-w-[180px] text-sm uppercase tracking-[0.28em] text-[var(--color-sage)]">
-                    {item.style}
-                  </p>
-                  <span className={badgeClassName}>{item.tier}</span>
-                </div>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <span className={`rounded-full px-3 py-1 text-[11px] uppercase tracking-[0.2em] ${
-                    isDark
-                      ? "bg-white/8 text-white/72"
-                      : "bg-[var(--color-ink)]/6 text-[var(--color-ink)]/62"
-                  }`}>
-                    {item.badge}
-                  </span>
-                  <span className={`rounded-full px-3 py-1 text-[11px] uppercase tracking-[0.2em] ${
-                    isDark
-                      ? "bg-[rgba(255,255,255,0.04)] text-white/68"
-                      : "bg-[var(--color-cream)] text-[var(--color-ink)]/62"
-                  }`}>
-                    {item.mood}
-                  </span>
-                </div>
-                <h3 className="mt-4 font-display text-3xl">{item.name}</h3>
-                <p className={`mt-4 text-sm leading-7 ${isDark ? "text-white/72" : "text-[var(--color-ink)]/70"}`}>
-                  {item.description}
-                </p>
-                <p className={`mt-3 text-sm leading-7 ${isDark ? "text-white/58" : "text-[var(--color-ink)]/58"}`}>
-                  {item.sectionProfile}
-                </p>
-                <div className="mt-auto flex gap-3 pt-6">
-                  <Link
-                    href={`/templates/${item.slug}`}
-                    className="btn-primary inline-flex h-12 min-w-0 flex-1 items-center justify-center rounded-full px-4 py-3 text-center text-sm font-medium whitespace-nowrap transition"
-                  >
-                    Xem demo
-                  </Link>
-                  <a
-                    href={secondaryActionHref}
-                    className={`${secondaryActionClassName} inline-flex h-12 min-w-0 flex-1 items-center justify-center px-4 text-center text-[13px] font-medium whitespace-nowrap`}
-                  >
-                    {secondaryActionLabel}
-                  </a>
-                </div>
-              </div>
-            </article>
+              item={item}
+              isDark={isDark}
+              badgeClassName={badgeClassName}
+              demoLabel={demoLinkLabel}
+              secondaryHref={secondaryActionHref}
+              secondaryLabel={secondaryActionLabel}
+              secondaryClassName={secondaryActionClassName}
+              cardClassName="h-full"
+            />
           ))}
         </div>
       )}

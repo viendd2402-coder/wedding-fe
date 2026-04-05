@@ -154,12 +154,17 @@
   background-size: cover;
   background-position: center;
   opacity: 0;
-  transition: opacity 1s ease-in-out;
+  transform: translate3d(3rem, 0, 0) scale(1.06);
+  transition:
+    opacity 1.05s ease-in-out,
+    transform 1.15s cubic-bezier(0.08, 1, 0.22, 1);
   pointer-events: none;
+  will-change: opacity, transform;
 }
 
 .slideActive {
   opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
   pointer-events: auto;
 }
 
@@ -191,6 +196,7 @@
 }
 
 .heroEyebrow {
+  --sf-hero-end-opacity: 0.9;
   font-size: 0.75rem;
   letter-spacing: 0.35em;
   text-transform: uppercase;
@@ -214,10 +220,38 @@
 }
 
 .heroSub {
+  --sf-hero-end-opacity: 0.92;
   font-size: clamp(1rem, 3vw, 1.2rem);
   font-weight: 500;
   opacity: 0.92;
   margin: 0 0 2rem;
+}
+
+/* Hero — cùng logic scroll-reveal (IO), stagger transition-delay */
+.heroRevealWrap {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.heroRevealStagger0 {
+  --sf-hero-stagger: 0s;
+}
+
+.heroRevealStagger1 {
+  --sf-hero-stagger: 0.14s;
+}
+
+.heroRevealStagger2 {
+  --sf-hero-stagger: 0.28s;
+}
+
+.heroRevealStagger3 {
+  --sf-hero-stagger: 0.42s;
+}
+
+.heroRevealStagger4 {
+  --sf-hero-stagger: 0.54s;
 }
 
 .btnGradient {
@@ -736,11 +770,23 @@
   border: 0;
 }
 
-/* Scroll reveal (từng khối) */
+/* Scroll reveal (từng khối) — dọc / trái / phải → giữa, biên độ & thời gian lớn hơn */
 @media (prefers-reduced-motion: no-preference) {
   .scrollMediaPending {
     opacity: 0;
-    transform: translate3d(0, 1.1rem, 0) scale(0.98);
+    transform: translate3d(0, 2.5rem, 0) scale(0.93);
+    pointer-events: none;
+  }
+
+  .scrollMediaPendingLeft {
+    opacity: 0;
+    transform: translate3d(clamp(-4.5rem, -16vw, -1.75rem), 0, 0) scale(0.93);
+    pointer-events: none;
+  }
+
+  .scrollMediaPendingRight {
+    opacity: 0;
+    transform: translate3d(clamp(1.75rem, 16vw, 4.5rem), 0, 0) scale(0.93);
     pointer-events: none;
   }
 
@@ -749,13 +795,31 @@
     transform: translate3d(0, 0, 0) scale(1);
     pointer-events: auto;
     transition:
-      opacity 0.75s cubic-bezier(0.33, 1, 0.68, 1),
-      transform 0.78s cubic-bezier(0.16, 1, 0.3, 1);
+      opacity 0.95s cubic-bezier(0.28, 1, 0.52, 1),
+      transform 1s cubic-bezier(0.1, 1, 0.26, 1);
+  }
+
+  .heroRevealWrap.scrollMediaShown {
+    transition:
+      opacity 1.12s cubic-bezier(0.28, 1, 0.52, 1) var(--sf-hero-stagger, 0s),
+      transform 1.18s cubic-bezier(0.08, 1, 0.22, 1) var(--sf-hero-stagger, 0s);
   }
 
   .scrollTitlePending {
     opacity: 0;
-    transform: translate3d(0, 0.75rem, 0);
+    transform: translate3d(0, 1.35rem, 0);
+    pointer-events: none;
+  }
+
+  .scrollTitlePendingLeft {
+    opacity: 0;
+    transform: translate3d(clamp(-3.75rem, -12vw, -1.1rem), 0, 0);
+    pointer-events: none;
+  }
+
+  .scrollTitlePendingRight {
+    opacity: 0;
+    transform: translate3d(clamp(1.1rem, 12vw, 3.75rem), 0, 0);
     pointer-events: none;
   }
 
@@ -764,19 +828,28 @@
     transform: none;
     pointer-events: auto;
     transition:
-      opacity 0.85s cubic-bezier(0.33, 1, 0.68, 1),
-      transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      opacity 1s cubic-bezier(0.28, 1, 0.52, 1),
+      transform 1.02s cubic-bezier(0.1, 1, 0.26, 1);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .scrollMediaPending,
+  .scrollMediaPendingLeft,
+  .scrollMediaPendingRight,
   .scrollMediaShown,
   .scrollTitlePending,
+  .scrollTitlePendingLeft,
+  .scrollTitlePendingRight,
   .scrollTitleShown {
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
     pointer-events: auto !important;
+  }
+
+  .slide {
+    transform: none !important;
+    transition: opacity 1s ease-in-out !important;
   }
 }

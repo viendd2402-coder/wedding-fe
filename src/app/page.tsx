@@ -1,14 +1,130 @@
 "use client";
 
-import { useMemo } from "react";
+import Image from "next/image";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
-import HomePremiumControlsPreview from "@/components/home-premium-controls-preview";
+import HomeHeroSpotlight from "@/components/home-hero-spotlight";
 import TemplateCarouselSection from "@/components/template-carousel-section";
 import {
   freeTemplates,
   premiumTemplates,
   weddingTemplates,
 } from "@/lib/templates";
+
+/** Số dòng bảng so sánh hiển thị trước khi bấm "Xem thêm". */
+const FEATURE_TABLE_PREVIEW_COUNT = 6;
+
+type WhyUsIconId = "envelope" | "users" | "list" | "globe" | "pricing" | "heart";
+type WhyUsTone = "amber" | "rose" | "violet" | "indigo" | "sage" | "crimson";
+
+function whyUsIconGradient(tone: WhyUsTone, isDark: boolean): string {
+  const d = isDark;
+  switch (tone) {
+    case "amber":
+      return d ? "from-amber-500/85 to-orange-600/90" : "from-amber-500 to-orange-500";
+    case "rose":
+      return d ? "from-rose-500/85 to-pink-600/90" : "from-rose-500 to-pink-500";
+    case "violet":
+      return d ? "from-violet-500/85 to-purple-600/90" : "from-violet-500 to-purple-600";
+    case "indigo":
+      return d ? "from-indigo-400/85 to-blue-600/90" : "from-indigo-500 to-blue-600";
+    case "sage":
+      return d ? "from-emerald-600/85 to-teal-700/90" : "from-emerald-500 to-teal-600";
+    case "crimson":
+      return d ? "from-rose-600/85 to-red-700/90" : "from-rose-600 to-red-600";
+    default:
+      return d ? "from-zinc-500 to-zinc-700" : "from-zinc-500 to-zinc-600";
+  }
+}
+
+function whyUsTitleClass(tone: WhyUsTone, isDark: boolean): string {
+  if (isDark) {
+    switch (tone) {
+      case "amber":
+        return "text-amber-300";
+      case "rose":
+        return "text-rose-300";
+      case "violet":
+        return "text-violet-300";
+      case "indigo":
+        return "text-indigo-300";
+      case "sage":
+        return "text-emerald-300";
+      case "crimson":
+        return "text-rose-300";
+      default:
+        return "text-white/88";
+    }
+  }
+  switch (tone) {
+    case "amber":
+      return "text-amber-800";
+    case "rose":
+      return "text-rose-800";
+    case "violet":
+      return "text-violet-800";
+    case "indigo":
+      return "text-indigo-800";
+    case "sage":
+      return "text-emerald-800";
+    case "crimson":
+      return "text-rose-800";
+    default:
+      return "text-[var(--color-ink)]";
+  }
+}
+
+function WhyUsGlyph({ id }: { id: WhyUsIconId }) {
+  const c = "h-5 w-5 text-white";
+  switch (id) {
+    case "envelope":
+      return (
+        <svg className={c} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16v12H4V6Z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="m4 7 8 5.5L20 7" />
+        </svg>
+      );
+    case "users":
+      return (
+        <svg className={c} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+      );
+    case "list":
+      return (
+        <svg className={c} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+        </svg>
+      );
+    case "globe":
+      return (
+        <svg className={c} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+          <circle cx="12" cy="12" r="10" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20" />
+        </svg>
+      );
+    case "pricing":
+      return (
+        <svg className={c} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+        </svg>
+      );
+    case "heart":
+      return (
+        <svg className={c} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M7.5 4.21C5.43 4.21 3.78 5.88 3.78 8c0 2.85 3.72 5.23 5.22 7.47.26.4.72.4.98 0 1.5-2.24 5.22-4.62 5.22-7.47 0-2.12-1.65-3.79-3.72-3.79-1.12 0-2.14.52-2.78 1.34-.64-.82-1.66-1.34-2.78-1.34Z"
+          />
+        </svg>
+      );
+    default:
+      return null;
+  }
+}
 
 export default function Home() {
   const { language, theme } = useGlobalPreferences();
@@ -18,381 +134,720 @@ export default function Home() {
     () =>
       language === "vi"
         ? {
-            heroEyebrow: "Website cưới hiện đại cho thị trường Việt Nam",
+            heroEyebrow: "Thiệp mời online, tinh tế và đúng gu",
             heroTitle:
-              "Bộ template wedding đủ free và premium để khách thấy đúng gu ngay từ lần xem đầu.",
+              "Website cưới thanh lịch — từ những mẫu tinh giản đến bản thiết kế dành riêng hai bạn.",
             heroBody:
-              "Danh mục mới được mở rộng theo nhiều mood như minimal, floral, editorial, dark luxury và destination. Free để khách bắt đầu nhanh, premium để upsell bằng cảm giác thiết kế riêng.",
+              "Mỗi bộ sưu tập được chọn lọc theo phong cách: tối giản, hoa lá, editorial, sang trọng tối hay tiệc xa. Hai bạn có thể bắt đầu với mẫu miễn phí; khi muốn thêm chiều sâu, hãy chọn bản cao cấp với trải nghiệm trọn vẹn hơn.",
             heroPrimaryCta: "Xem mẫu giao diện",
             heroSecondaryCta: "Nhận tư vấn ngay",
-            statTemplates: "Templates",
+            statTemplates: "Mẫu có sẵn",
             statDelivery: "Bàn giao",
-            statMobile: "Di động",
+            statDeliveryValue: "1 vài phút",
+            statMobile: "Mọi thiết bị",
             templatesEyebrow: "Mẫu giao diện",
             templatesTitle:
-              "Chọn theo gu trước, rồi để khách đi từ bản free sang các mẫu premium có cảm giác được thiết kế riêng.",
+              "Dạo qua các phong cách, chọn điều gần gũi nhất — rồi tùy chỉnh cho ngày trọng đại của hai bạn.",
             freeEyebrow: "Mẫu miễn phí",
             freeTitle: "Mẫu miễn phí",
             freeDescription:
-              "Nhóm entry-level để hút lead: dễ chọn, dễ gửi, đủ RSVP và lịch cưới, hợp để khách chốt nhanh mẫu nền.",
+              "Thanh nhã, rõ ràng, sẵn sàng gửi đi: đủ phần giới thiệu, lịch cưới và xác nhận tham dự để mời khách mà không rối.",
             freeCta: "Xem tất cả mẫu miễn phí",
             freeSecondary: "Dùng mẫu này",
+            templateCardDemo: "Xem demo",
             premiumEyebrow: "Mẫu trả phí",
             premiumTitle: "Mẫu trả phí",
             premiumDescription:
-              "Nhóm upsell: editorial, classic, dark luxury và destination với nhiều section hơn, visual mạnh hơn và cảm giác cao cấp rõ rệt.",
+              "Dành cho cặp đôi muốn thêm chiều sâu: bố cục ấn tượng, thư viện ảnh phong phú và những chi tiết khiến trang mời cưới giống một lời mời thật sự.",
             premiumCta: "Xem tất cả mẫu trả phí",
             premiumSecondary: "Xem bảng giá",
-            featuresEyebrow: "Tính năng",
-            featuresTitle:
-              "Đây là các điểm làm khách thấy website cưới không chỉ đẹp mà còn đáng tiền.",
+            whyUsEyebrow: "Vì sao chọn chúng tôi",
+            whyUsTitle: "Tại sao nên làm thiệp mời online & website cưới với Lumiere?",
+            whyUsBody:
+              "Đủ tính năng cho một lời mời hiện đại — gọn trên điện thoại, dễ gửi Zalo hay in QR, và thể hiện đúng phong cách của hai bạn.",
+            whyUsImageAlt: "Ảnh minh hoạ nhẫn cưới và chi tiết trang trí thanh lịch",
+            whyUsLeft: [
+              {
+                icon: "envelope",
+                tone: "amber",
+                title: "Thiệp mời online & website cưới",
+                description:
+                  "Chọn mẫu chỉn chu hoặc nâng cấp lên gói Premium — tiết kiệm thời gian in ấn, vẫn trang trọng và ấm áp với khách mời.",
+              },
+              {
+                icon: "users",
+                tone: "rose",
+                title: "Xác nhận tham dự (RSVP)",
+                description:
+                  "Khách ghi nhận nhanh ngay trên trang; hai bạn hình dung số người tham dự thuận tiện hơn cho khâu lên kế hoạch tiệc.",
+              },
+              {
+                icon: "list",
+                tone: "violet",
+                title: "Lịch lễ & địa điểm",
+                description:
+                  "Thời gian lễ, tiệc, bản đồ và gợi ý chỉ đường được trình bày rõ — mọi người mở một lần là nắm được toàn bộ hành trình trong ngày.",
+              },
+            ],
+            whyUsRight: [
+              {
+                icon: "globe",
+                tone: "indigo",
+                title: "Trang thông tin cưới trọn vẹn",
+                description:
+                  "Giới thiệu hai bạn, câu chuyện, album ảnh và các sự kiện — một nơi lưu kỷ niệm và chia sẻ với bạn bè, người thân.",
+              },
+              {
+                icon: "pricing",
+                tone: "sage",
+                title: "Gói dịch vụ rõ ràng",
+                description:
+                  "Miễn phí để bắt đầu; một gói Premium gộp đủ tính năng trả phí — ngân sách rõ ràng, không lắt léo.",
+              },
+              {
+                icon: "heart",
+                tone: "crimson",
+                title: "Sổ lưu lời chúc",
+                description:
+                  "Ở gói Premium, khách để lại lời chúc trên trang — những dòng kỷ niệm hai bạn có thể mở lại sau nhiều năm.",
+              },
+            ],
+            featuresEyebrow: "Trải nghiệm",
+            featuresTitle: "Bảng so sánh tính năng đầy đủ — Miễn phí & Premium",
             featuresBody:
-              "Không chỉ đẹp, sản phẩm cần giải quyết nhu cầu gửi lời mời, xem lịch, chỉ đường và nhận RSVP nhanh gọn.",
-            featureTableHeaders: ["Tính năng", "Free", "Premium"],
+              "Lựa chọn gói phù hợp nhu cầu và ngân sách: dưới đây là danh sách chi tiết từng hạng mục cho thiệp mời online và website cưới, tương tự cách bạn đối chiếu trên các nền tảng chuyên dụng — Lumiere gói gọn trong hai mức Miễn phí và Premium.",
+            featuresExpand: "Xem thêm toàn bộ bảng so sánh",
+            featuresCollapse: "Thu gọn bảng",
+            featureTableHeaders: ["Tính năng", "Miễn phí", "Premium"],
             featureRows: [
               {
-                label: "Giới thiệu cô dâu chú rể",
-                free: "Có",
-                premium: "Có, tuỳ biến bố cục sâu hơn",
+                label: "Thời hạn website được công khai",
+                free: "6 tháng",
+                premium: "24 tháng",
               },
               {
-                label: "Timeline câu chuyện",
-                free: "Bản cơ bản",
-                premium: "Layout kể chuyện nhiều điểm nhấn hơn",
+                label: "Giới hạn số lượng hình ảnh album cưới",
+                free: "Tới ~15 ảnh",
+                premium: "Tới ~120 ảnh",
               },
               {
-                label: "Lịch cưới và địa điểm",
-                free: "Có",
-                premium: "Có, trình bày cao cấp hơn",
+                label: "Tính năng cốt lõi (giới thiệu, lịch, địa điểm, album, RSVP)",
+                free: "Có — trong khung mẫu miễn phí",
+                premium: "Có — mở rộng, nhiều khối & bố cục nâng cao",
               },
               {
-                label: "RSVP",
-                free: "Form cơ bản",
-                premium: "Form nâng cao, nhiều điểm chạm hơn",
-              },
-              {
-                label: "Gallery ảnh cưới",
-                free: "Cơ bản",
-                premium: "Đầy đủ và linh hoạt hơn",
-              },
-              {
-                label: "Gửi lời chúc cô dâu chú rể",
-                free: "Không",
+                label: "Loại bỏ quảng cáo / nội dung chen giữa trải nghiệm khách",
+                free: "—",
                 premium: "Có",
+              },
+              {
+                label: "Đếm lượt truy cập / thống kê xem trang",
+                free: "—",
+                premium: "Có",
+              },
+              {
+                label: "Album ảnh dạng photobook / trình chiếu online",
+                free: "Dạng lưới cơ bản",
+                premium: "Bố cục phong phú, nhiều mẫu trình bày",
+              },
+              {
+                label: "Hộp lời chúc & phản hồi lời chúc từ bạn bè",
+                free: "—",
+                premium: "Có",
+              },
+              {
+                label: "Khối mừng cưới tới cô dâu chú rể (QR chuyển khoản ngân hàng)",
+                free: "—",
+                premium: "Có",
+              },
+              {
+                label: "Hiển thị thông tin song thân (bố mẹ hai bên)",
+                free: "Theo ô cố định trên mẫu",
+                premium: "Có — tuỳ bố cục mẫu Premium",
+              },
+              {
+                label: "Tải lên nhạc nền cá nhân",
+                free: "—",
+                premium: "Có (theo mẫu hỗ trợ)",
+              },
+              {
+                label: "Thay đổi giao diện đã chọn sau khi tạo",
+                free: "Hạn chế / trong phạm vi kho miễn phí",
+                premium: "Nhiều lần theo gói & kho mẫu trả phí",
+              },
+              {
+                label: "Loại bỏ logo và thông tin Lumiere trên website",
+                free: "—",
+                premium: "Có (theo gói)",
+              },
+              {
+                label: "Tuỳ chỉnh mã nguồn (custom HTML / CSS)",
+                free: "—",
+                premium: "Tuỳ chọn — liên hệ phạm vi",
+              },
+              {
+                label: "Tính năng quản lý danh sách khách mời",
+                free: "—",
+                premium: "Có (theo lộ trình sản phẩm)",
+              },
+              {
+                label: "Tuỳ chỉnh mã QR (nội dung, màu sắc)",
+                free: "—",
+                premium: "Có",
+              },
+              {
+                label: "Thiết lập thông báo / nhắc cho người xem website",
+                free: "—",
+                premium: "Tuỳ chọn — liên hệ",
+              },
+              {
+                label: "Sử dụng mẫu Save the Date",
+                free: "—",
+                premium: "Có trên mẫu hỗ trợ",
+              },
+              {
+                label: "Tạo và gửi thiệp / link mời riêng cho từng khách",
+                free: "—",
+                premium: "Tuỳ chọn — liên hệ triển khai",
+              },
+              {
+                label: "Tải xuống danh sách lời chúc (xuất file)",
+                free: "—",
+                premium: "Có",
+              },
+              {
+                label: "Sử dụng giao diện cao cấp (mẫu Premium / editorial)",
+                free: "—",
+                premium: "Có",
+              },
+              {
+                label: "Tuỳ chỉnh hiệu ứng (tim bay, hạt, v.v.)",
+                free: "—",
+                premium: "Có trên mẫu hỗ trợ",
+              },
+              {
+                label: "Tuỳ chọn kiểu hiển thị logo / favicon cho website",
+                free: "—",
+                premium: "Có (theo mẫu)",
+              },
+              {
+                label: "Cho phép tích hợp tên miền riêng (custom domain)",
+                free: "—",
+                premium: "Tuỳ chọn — liên hệ triển khai",
+              },
+              {
+                label: "Xác nhận tham dự (RSVP) — độ sâu tuỳ chỉnh",
+                free: "Ghi nhận nhanh, biểu mẫu đơn giản",
+                premium: "Tuỳ chỉnh câu hỏi & luồng đăng ký",
+              },
+              {
+                label: "Bản đồ & chỉ đường (tiệc, nhà thờ, tiệc cưới…)",
+                free: "Có — Google Maps",
+                premium: "Có — thêm chỉ đường nhà cô dâu / chú rể",
               },
               {
                 label: "Song ngữ Việt / Anh",
-                free: "Không",
+                free: "—",
                 premium: "Có",
               },
               {
-                label: "QR check-in / QR mừng cưới",
-                free: "Không",
-                premium: "Có",
+                label: "Tuỳ chỉnh màu sắc & bố cục theo brand tiệc",
+                free: "Theo khung mẫu miễn phí",
+                premium: "Tuỳ chỉnh sâu",
               },
               {
-                label: "Bản đồ tới nhà cô dâu / chú rể",
-                free: "Không",
-                premium: "Có",
-              },
-              {
-                label: "Tuỳ biến giao diện",
-                free: "Mức cơ bản",
-                premium: "Mạnh hơn theo mood / concept",
+                label: "Vòng chỉnh sửa nội dung & hỗ trợ vận hành",
+                free: "Tự phục vụ theo hướng dẫn",
+                premium: "Tới 3 vòng + hỗ trợ ưu tiên",
               },
             ],
             processEyebrow: "Quy trình",
-            processTitle: "Quy trình làm việc rõ ràng",
+            processTitle: "Bốn bước gọn, rõ ràng",
             processBody:
-              "Một landing page kinh doanh tốt cần cho khách thấy rằng việc đặt website cưới là nhanh, dễ và minh bạch.",
+              "Chúng tôi giữ quy trình ngắn gọn: chọn mẫu, bổ sung thông tin, chỉnh theo ý bạn và bàn giao link để chia sẻ.",
             process: [
               {
                 step: "01",
                 title: "Chọn mẫu giao diện",
                 description:
-                  "Khách chọn một mẫu có sẵn hoặc gửi style yêu thích để được gợi ý concept phù hợp.",
+                  "Hai bạn chọn mẫu có sẵn hoặc gửi hình ảnh tham khảo — chúng tôi gợi ý phong cách phù hợp.",
               },
               {
                 step: "02",
                 title: "Gửi nội dung và hình ảnh",
                 description:
-                  "Thu thập tên cô dâu chú rể, lịch cưới, địa điểm, ảnh cưới, màu sắc và các thông tin cần hiển thị.",
+                  "Tên, lịch cưới, địa điểm, album ảnh, tông màu và mọi chi tiết muốn hiển thị cho khách mời.",
               },
               {
                 step: "03",
-                title: "Thiết kế và chỉnh sửa",
+                title: "Hoàn thiện và tinh chỉnh",
                 description:
-                  "Bản demo được tạo nhanh để khách xem trước, sau đó tinh chỉnh theo mong muốn cho đến khi ưng ý.",
+                  "Bản xem thử được dựng nhanh; sau đó chỉnh sửa theo ý hai bạn cho đến khi mọi thứ vừa ý.",
               },
               {
                 step: "04",
-                title: "Bàn giao website",
+                title: "Bàn giao và chia sẻ",
                 description:
-                  "Bàn giao link website để gửi qua Zalo, Messenger, Instagram hoặc gắn QR trên thiệp in.",
+                  "Nhận link website để gửi qua Zalo, Messenger, Instagram hoặc in kèm mã QR trên thiệp giấy.",
               },
             ],
-            valueEyebrow: "Giá trị bán hàng",
+            valueEyebrow: "Điểm nhấn",
             valueTitle:
-              "Free giúp mở cuộc trò chuyện, premium giúp chốt giá trị cao hơn.",
+              "Một nền tảng được nghĩ cho ngày cưới — không chỉ là một trang web.",
             valuePoints: [
-              "Catalog rộng hơn để chạy ads và gửi demo",
-              "Có mood rõ ràng: minimal, floral, editorial, dark, destination",
-              "Dễ bán thêm gói premium hoặc custom",
-              "Tối ưu mobile để chia sẻ qua Zalo và Messenger",
+              "Nhiều phong cách để hai bạn tìm được bản thể hiện đúng mình",
+              "Tối ưu trên điện thoại — gửi Zalo, Messenger hay in QR đều thuận tiện",
+              "Bắt đầu với gói miễn phí; nâng lên Premium khi cần đủ tính năng trả phí",
+              "Chuyển ngôn ngữ và giao diện sáng / tối theo sở thích",
             ],
-            positioningEyebrow: "Định vị",
+            positioningEyebrow: "Triết lý",
             positioningQuote:
-              "Bạn không chỉ đang bán một website cưới. Bạn đang bán trải nghiệm mời cưới hiện đại, đúng gu và có thể nâng cấp theo ngân sách.",
+              "Thiệp mời hiện đại không chỉ là thông báo — đó là lời mời đầu tiên về phong cách và sự trân trọng của hai bạn.",
             positioningBody:
-              "Cách trình bày tinh tế, đẹp và rõ giá trị sẽ giúp thương hiệu của bạn nhìn chuyên nghiệp hơn trong mắt khách hàng.",
+              "Chúng tôi tin trải nghiệm mời cưới nên chừng mực, ấm áp và trung thực với câu chuyện của hai bạn.",
             pricingEyebrow: "Bảng giá",
-            pricingTitle: "Bảng giá để bán hàng",
+            pricingTitle: "Bảng giá thiệp mời online & website cưới Lumiere",
             pricingBody:
-              "Có thể dùng cấu trúc này để phân tầng rõ giữa mẫu free làm lead magnet, mẫu premium để upsell và gói custom cho khách cần concept riêng.",
+              "Lựa chọn gói dịch vụ phù hợp với nhu cầu và ngân sách để có một thiệp mời online và website cưới rõ ràng, dễ gửi và đúng phong cách hai bạn. Gói Miễn phí để bắt đầu; gói Premium gộp toàn bộ tính năng trả phí — chi tiết từng hạng mục nằm ở bảng so sánh phía trên.",
+            pricingPopularBadge: "Phổ biến",
             pricing: [
               {
-                name: "Basic",
-                price: "1.290.000",
+                name: "Miễn phí",
+                tagline: "Bắt đầu không tốn phí — đủ để mời khách xem thông tin cốt lõi",
+                price: "0đ",
                 note:
-                  "Cho cặp đôi cần website đẹp, nhanh, dễ gửi từ bộ mẫu free hoặc entry-level",
-                items: [
-                  "1 mẫu giao diện có sẵn",
-                  "Tối đa 6 section",
-                  "RSVP cơ bản",
-                  "Google Maps",
-                  "1 lần chỉnh sửa",
-                ],
+                  "Dùng mẫu trong kho miễn phí: giới thiệu, lịch, bản đồ, album nhỏ và RSVP đơn giản — phù hợp thử nghiệm hoặc tiệc gọn.",
+                featured: false,
               },
               {
                 name: "Premium",
-                price: "2.490.000",
+                tagline: "Trải nghiệm nâng cao — gộp mọi tính năng trả phí",
+                price: "2.490.000đ",
                 note:
-                  "Lựa chọn phù hợp nhất để bán cho đa số khách muốn cảm giác cao cấp hơn",
-                items: [
-                  "Tuỳ biến màu sắc và bố cục",
-                  "Đầy đủ gallery, wishes, RSVP",
-                  "Chọn các mood premium như editorial, dark luxury, destination",
-                  "Thêm QR mừng cưới",
-                  "Xem bản đồ tới nhà cô dâu / chú rể",
-                  "3 lần chỉnh sửa",
-                  "Ưu tiên hỗ trợ nhanh",
-                ],
+                  "Gồm toàn bộ hạng mục đánh dấu Có / nâng cao ở cột Premium trong bảng so sánh: thời hạn dài, album lớn, không quảng cáo chen ngang, thống kê truy cập, photobook đẹp hơn, sổ chúc & phản hồi, QR mừng cưới, song thân, nhạc nền, đổi giao diện linh hoạt, gỡ branding, QR tuỳ chỉnh, Save the Date, mẫu cao cấp, hiệu ứng, favicon/logo, tên miền (tuỳ chọn), RSVP sâu, chỉ đường nhà, song ngữ, tuỳ chỉnh sâu & hỗ trợ ưu tiên.",
+                featured: true,
+              },
+            ],
+            testimonialsEyebrow: "Phản hồi",
+            testimonialsTitle: "Khách hàng chia sẻ",
+            testimonialsBody:
+              "Vài dòng cảm ơn sau khi hai bạn nhận bàn giao website mời cưới. Dùng nút hai bên hoặc vuốt ngang khi có nhiều phản hồi.",
+            feedbackScrollPrev: "Xem phản hồi trước",
+            feedbackScrollNext: "Xem phản hồi sau",
+            testimonials: [
+              {
+                quote:
+                  "Khách mở một link là thấy đủ giờ lễ, tiệc và RSVP — bố mẹ hai bên đều khen gọn và trang trọng.",
+                name: "Minh & Lan",
+                detail: "Gói Premium · Hà Nội",
               },
               {
-                name: "Custom",
-                price: "Liên hệ",
-                note: "Dành cho khách muốn giao diện riêng hoàn toàn",
-                items: [
-                  "Thiết kế theo concept riêng",
-                  "Thêm animation và section đặc biệt",
-                  "Hỗ trợ nội dung nâng cao",
-                  "Tối ưu theo brand cá nhân",
-                  "Báo giá theo yêu cầu",
-                ],
+                quote:
+                  "Chúng tôi thích mẫu tối giản, chỉnh màu theo tone tiệc xong là gửi Zalo cho bạn bè rất nhanh.",
+                name: "Hùng & Thu",
+                detail: "Mẫu Minimal Muse · TP.HCM",
+              },
+              {
+                quote:
+                  "Bạn thân bảo trang mời cưới nhìn như tạp chí — đúng gu editorial chúng tôi mong muốn từ đầu.",
+                name: "An & Chi",
+                detail: "Neela Classic · Đà Nẵng",
               },
             ],
             contactEyebrow: "Liên hệ",
-            contactTitle: "Nhận tư vấn hoặc xem demo",
+            contactTitle: "Chúng tôi lắng nghe",
             contactBody:
-              "Đây là khu vực CTA cuối trang để lấy lead từ khách quan tâm website cưới.",
-            contactName: "Tên khách hàng",
+              "Để lại thông tin — đội ngũ sẽ liên hệ tư vấn mẫu phù hợp và thời gian triển khai.",
+            contactName: "Họ và tên",
             contactPhone: "Số điện thoại hoặc Zalo",
             contactOption1: "Tôi muốn xem các mẫu có sẵn",
             contactOption2: "Tôi muốn đặt website theo mẫu",
-            contactOption3: "Tôi muốn thiết kế website riêng",
+            contactOption3: "Tôi muốn tư vấn thêm (gói, tên miền, v.v.)",
             contactMessage:
-              "Mô tả nhanh nhu cầu, phong cách mong muốn hoặc ngày cần website",
-            contactSubmit: "Nhận tư vấn miễn phí",
+              "Chia sẻ ngắn gọn phong cách mong muốn, ngày cưới hoặc thời điểm cần bàn giao",
+            contactSubmit: "Gửi yêu cầu tư vấn",
           }
         : {
-            heroEyebrow: "Modern wedding websites for Vietnam",
+            heroEyebrow: "Refined online wedding invitations",
             heroTitle:
-              "A wedding template library with free and premium options so couples instantly see a style that fits.",
+              "Elegant wedding websites—from understated layouts to a design that feels unmistakably yours.",
             heroBody:
-              "The catalog now spans minimal, floral, editorial, dark luxury, and destination moods. Free templates help couples start quickly, while premium concepts create a custom-designed feel.",
+              "Each collection is curated around a mood: minimal, floral, editorial, dark luxury, or destination. Start with a complimentary template, then move to a premium experience when you want more depth and polish.",
             heroPrimaryCta: "Browse templates",
             heroSecondaryCta: "Get consultation",
-            statTemplates: "Templates",
-            statDelivery: "Delivery",
-            statMobile: "Mobile",
+            statTemplates: "Ready-made designs",
+            statDelivery: "Handoff",
+            statDeliveryValue: "Instant",
+            statMobile: "Every device",
             templatesEyebrow: "Templates",
             templatesTitle:
-              "Lead with style first, then guide couples from free picks to premium concepts that feel custom-made.",
+              "Explore the moods, choose what feels closest to you, then tailor it for your celebration.",
             freeEyebrow: "Free templates",
             freeTitle: "Free templates",
             freeDescription:
-              "Entry-level options designed to capture leads: easy to choose, easy to share, with RSVP and schedule essentials built in.",
+              "Light, clear, and ready to send: introductions, schedule, and RSVP so guests know what to expect—without clutter.",
             freeCta: "View all free templates",
             freeSecondary: "Use this template",
+            templateCardDemo: "View demo",
             premiumEyebrow: "Premium templates",
             premiumTitle: "Premium templates",
             premiumDescription:
-              "Upsell-ready concepts including editorial, classic, dark luxury, and destination layouts with stronger visuals and richer sections.",
+              "For couples who want more presence: striking layouts, a richer gallery, and details that make your page feel like a true invitation.",
             premiumCta: "View all premium templates",
             premiumSecondary: "See pricing",
-            featuresEyebrow: "Features",
-            featuresTitle:
-              "These are the details that make a wedding website feel valuable, not just beautiful.",
+            whyUsEyebrow: "Why Lumiere",
+            whyUsTitle: "Why build your online invitation and wedding website with Lumiere?",
+            whyUsBody:
+              "Everything you need for a modern invitation—mobile-friendly, easy to share on chat or with a QR code, and true to your style.",
+            whyUsImageAlt: "Wedding rings and elegant celebration details—illustrative photo",
+            whyUsLeft: [
+              {
+                icon: "envelope",
+                tone: "amber",
+                title: "Online invitation & wedding site",
+                description:
+                  "Start from polished templates or go premium—save printing time while keeping the moment respectful and warm for every guest.",
+              },
+              {
+                icon: "users",
+                tone: "rose",
+                title: "RSVP on the page",
+                description:
+                  "Guests respond in a few taps so you can estimate attendance more calmly when planning seating and catering.",
+              },
+              {
+                icon: "list",
+                tone: "violet",
+                title: "Schedule & venues",
+                description:
+                  "Ceremony, reception, maps, and directions in one place—family and friends understand the full day at a single glance.",
+              },
+            ],
+            whyUsRight: [
+              {
+                icon: "globe",
+                tone: "indigo",
+                title: "A complete wedding story page",
+                description:
+                  "Introductions, your story, gallery, and events—a single link to remember and share with people you love.",
+              },
+              {
+                icon: "pricing",
+                tone: "sage",
+                title: "Transparent packages",
+                description:
+                  "Start free; one Premium tier bundles every paid feature—clear budgeting without surprise add-ons.",
+              },
+              {
+                icon: "heart",
+                tone: "crimson",
+                title: "Guest book of wishes",
+                description:
+                  "On premium, guests can leave wishes on your page—lines you can reopen years later.",
+              },
+            ],
+            featuresEyebrow: "Experience",
+            featuresTitle: "Full feature comparison — Free & Premium",
             featuresBody:
-              "Great design is not enough. The product also needs to help guests view the schedule, navigate quickly, and RSVP with ease.",
+              "Pick the plan that fits your needs and budget. Below is a line-by-line checklist for your online invitation and wedding site—similar to dedicated invitation platforms—summarized in two tiers: Free and Premium.",
+            featuresExpand: "Show full comparison table",
+            featuresCollapse: "Collapse table",
             featureTableHeaders: ["Feature", "Free", "Premium"],
             featureRows: [
               {
-                label: "Bride and groom introduction",
-                free: "Yes",
-                premium: "Yes, with deeper layout customization",
+                label: "Public website duration",
+                free: "6 months",
+                premium: "24 months",
               },
               {
-                label: "Story timeline",
-                free: "Basic version",
-                premium: "More editorial storytelling layout",
+                label: "Wedding gallery photo limit",
+                free: "Up to ~15 photos",
+                premium: "Up to ~120 photos",
               },
               {
-                label: "Schedule and venue details",
-                free: "Yes",
-                premium: "Yes, with richer presentation",
+                label: "Core features (intro, schedule, venues, gallery, RSVP)",
+                free: "Yes — within free templates",
+                premium: "Yes — expanded blocks & advanced layouts",
               },
               {
-                label: "RSVP",
-                free: "Basic form",
-                premium: "Enhanced RSVP flow",
-              },
-              {
-                label: "Wedding gallery",
-                free: "Basic",
-                premium: "Full and more flexible",
-              },
-              {
-                label: "Guest wishes for the couple",
-                free: "No",
+                label: "No third-party ads cluttering the guest experience",
+                free: "—",
                 premium: "Yes",
               },
               {
-                label: "Vietnamese / English bilingual",
-                free: "No",
+                label: "Visit analytics / traffic insights",
+                free: "—",
                 premium: "Yes",
               },
               {
-                label: "QR check-in / gift QR",
-                free: "No",
+                label: "Photobook-style gallery / slideshow presentation",
+                free: "Basic grid",
+                premium: "Rich layouts & presentation options",
+              },
+              {
+                label: "Guest wish box & reply to wishes",
+                free: "—",
                 premium: "Yes",
               },
               {
-                label: "Map to the bride / groom family home",
-                free: "No",
+                label: "Gift-to-couple block (bank transfer QR)",
+                free: "—",
                 premium: "Yes",
               },
               {
-                label: "Design customization",
-                free: "Basic level",
-                premium: "Stronger mood / concept customization",
+                label: "Parents-of-the-couple information",
+                free: "Fixed slots on template",
+                premium: "Yes — layout varies by premium template",
+              },
+              {
+                label: "Custom background music upload",
+                free: "—",
+                premium: "Yes (supported templates)",
+              },
+              {
+                label: "Change the selected theme after launch",
+                free: "Limited / within free library",
+                premium: "Multiple changes per package & paid library",
+              },
+              {
+                label: "Remove Lumiere logo and footer credit",
+                free: "—",
+                premium: "Yes (per package)",
+              },
+              {
+                label: "Custom code (HTML / CSS)",
+                free: "—",
+                premium: "Optional — contact us for scope",
+              },
+              {
+                label: "Guest list management",
+                free: "—",
+                premium: "Yes (per product roadmap)",
+              },
+              {
+                label: "Custom QR styling (content & colors)",
+                free: "—",
+                premium: "Yes",
+              },
+              {
+                label: "Notifications / reminders for site visitors",
+                free: "—",
+                premium: "Optional — contact us",
+              },
+              {
+                label: "Save the Date templates",
+                free: "—",
+                premium: "Yes on supported templates",
+              },
+              {
+                label: "Per-guest invitation links or cards",
+                free: "—",
+                premium: "Optional — contact us to enable",
+              },
+              {
+                label: "Download wish list as a file",
+                free: "—",
+                premium: "Yes",
+              },
+              {
+                label: "Premium / editorial template access",
+                free: "—",
+                premium: "Yes",
+              },
+              {
+                label: "Motion effects (hearts, particles, etc.)",
+                free: "—",
+                premium: "Yes on supported templates",
+              },
+              {
+                label: "Logo / favicon display options",
+                free: "—",
+                premium: "Yes (template-dependent)",
+              },
+              {
+                label: "Custom domain integration",
+                free: "—",
+                premium: "Optional — contact us to enable",
+              },
+              {
+                label: "RSVP depth & customization",
+                free: "Quick, simple form",
+                premium: "Custom questions & registration flow",
+              },
+              {
+                label: "Maps & directions (venues, ceremony, reception)",
+                free: "Yes — Google Maps",
+                premium: "Yes — plus family-home directions",
+              },
+              {
+                label: "Vietnamese / English bilingual pages",
+                free: "—",
+                premium: "Yes",
+              },
+              {
+                label: "Color & layout tuning to match your celebration",
+                free: "Within free template frame",
+                premium: "Deep customization",
+              },
+              {
+                label: "Content revision rounds & operational support",
+                free: "Self-serve guidance",
+                premium: "Up to 3 rounds + priority support",
               },
             ],
             processEyebrow: "Process",
-            processTitle: "A clear workflow",
+            processTitle: "Four calm, transparent steps",
             processBody:
-              "A strong landing page should show customers that ordering a wedding website is fast, simple, and transparent.",
+              "We keep it short: choose a template, share your details, refine together, then receive a link you can share anywhere.",
             process: [
               {
                 step: "01",
                 title: "Choose a template",
                 description:
-                  "Couples can pick an available design or share inspiration to get a recommended concept.",
+                  "Pick a design from the gallery or send reference images—we suggest a mood that fits your day.",
               },
               {
                 step: "02",
-                title: "Send content and photos",
+                title: "Share content and photos",
                 description:
-                  "Collect names, wedding schedule, venue, photos, color direction, and every detail that needs to appear.",
+                  "Names, schedule, venues, gallery, palette, and every line you want guests to read.",
               },
               {
                 step: "03",
-                title: "Design and refine",
+                title: "Refine together",
                 description:
-                  "A demo is prepared quickly for review, then refined until the couple is happy with the final result.",
+                  "We build a preview quickly, then adjust with you until every detail feels right.",
               },
               {
                 step: "04",
-                title: "Website handoff",
+                title: "Handoff and share",
                 description:
-                  "The final website link is delivered for sharing through Zalo, Messenger, Instagram, or printed QR cards.",
+                  "Receive your link for Zalo, Messenger, Instagram, or a printed QR on paper invitations.",
               },
             ],
-            valueEyebrow: "Sales value",
+            valueEyebrow: "Highlights",
             valueTitle:
-              "Free templates open the conversation, premium templates close higher-value deals.",
+              "Built around the wedding day—not just another generic site.",
             valuePoints: [
-              "A broader catalog for ads and demos",
-              "Distinct moods: minimal, floral, editorial, dark, and destination",
-              "Easier premium and custom upsells",
-              "Mobile-first sharing for Zalo and Messenger",
+              "Many moods so you can find a look that feels like you",
+              "Optimized for phones—easy to share on chat apps or with a QR code",
+              "Start on the free tier; upgrade to Premium for every paid feature",
+              "Language and light / dark styling to match your taste",
             ],
-            positioningEyebrow: "Positioning",
+            positioningEyebrow: "Our belief",
             positioningQuote:
-              "You are not just selling a wedding website. You are selling a modern invitation experience that matches the couple's style and budget.",
+              "A modern invitation is more than information—it is the first impression of your taste and care.",
             positioningBody:
-              "Elegant presentation and clear value positioning make the brand feel more professional to customers.",
+              "We believe the experience should feel restrained, warm, and true to your story.",
             pricingEyebrow: "Pricing",
-            pricingTitle: "Pricing built for selling",
+            pricingTitle: "Lumiere online invitation & wedding website pricing",
             pricingBody:
-              "This structure clearly separates free templates as lead magnets, premium concepts for upselling, and custom packages for couples who want something unique.",
+              "Choose a plan that matches your needs and budget for a clear, shareable invitation experience. Start on Free; Premium bundles every paid feature in one upgrade. For a line-by-line breakdown, use the comparison table in the section above.",
+            pricingPopularBadge: "Popular",
             pricing: [
               {
-                name: "Basic",
-                price: "1.290.000",
+                name: "Free",
+                tagline: "No cost to start—enough for a clear, shareable invite",
+                price: "0đ",
                 note:
-                  "For couples who want a beautiful, quick, easy-to-share website from the free or entry-level catalog",
-                items: [
-                  "1 ready-made template",
-                  "Up to 6 sections",
-                  "Basic RSVP",
-                  "Google Maps",
-                  "1 revision",
-                ],
+                  "Use free templates with introductions, schedule, maps, a small gallery, and simple RSVP—ideal to try the flow or for a minimal celebration.",
+                featured: false,
               },
               {
                 name: "Premium",
-                price: "2.490.000",
+                tagline: "Advanced experience—all paid features in one tier",
+                price: "2.490.000đ",
                 note:
-                  "The best fit for most couples who want a more elevated and premium feel",
-                items: [
-                  "Customized colors and layout",
-                  "Full gallery, wishes, and RSVP",
-                  "Premium moods like editorial, dark luxury, and destination",
-                  "Gift QR support",
-                  "Maps to the bride and groom family homes",
-                  "3 revisions",
-                  "Priority support",
-                ],
+                  "Every row marked Yes or advanced in the Premium column: longer hosting, large gallery, clean guest experience without third-party ads, analytics, richer photobook, wishes + replies, gift QR, parents section, custom music, flexible theme changes, remove Lumiere branding, custom QR, Save the Date, premium templates, motion effects, logo/favicon options, optional domain & custom code, deeper RSVP, family-home maps, bilingual support, deep layout tuning, and priority support.",
+                featured: true,
+              },
+            ],
+            testimonialsEyebrow: "Feedback",
+            testimonialsTitle: "What couples say",
+            testimonialsBody:
+              "Short notes from couples after their invitation websites went live. Use the side arrows or swipe when there are more stories.",
+            feedbackScrollPrev: "Previous testimonial",
+            feedbackScrollNext: "Next testimonial",
+            testimonials: [
+              {
+                quote:
+                  "One link showed the schedule, venues, and RSVP—our parents on both sides called it clear and elegant.",
+                name: "Minh & Lan",
+                detail: "Premium package · Hanoi",
               },
               {
-                name: "Custom",
-                price: "Contact us",
-                note: "For couples who want a fully custom concept",
-                items: [
-                  "Custom concept design",
-                  "Special animations and unique sections",
-                  "Advanced content support",
-                  "Personal brand alignment",
-                  "Custom quotation",
-                ],
+                quote:
+                  "We wanted something minimal, matched the palette to our reception, and shared it on chat in minutes.",
+                name: "Hùng & Thu",
+                detail: "Minimal Muse · Ho Chi Minh City",
+              },
+              {
+                quote:
+                  "Friends told us it felt like a magazine—exactly the editorial mood we had in mind from day one.",
+                name: "An & Chi",
+                detail: "Neela Classic · Da Nang",
               },
             ],
             contactEyebrow: "Contact",
-            contactTitle: "Get consultation or request a demo",
+            contactTitle: "We would love to hear from you",
             contactBody:
-              "This final CTA section is designed to capture leads from couples interested in wedding websites.",
-            contactName: "Customer name",
-            contactPhone: "Phone number or Zalo",
+              "Leave your details—we will follow up with template suggestions and a realistic timeline.",
+            contactName: "Full name",
+            contactPhone: "Phone or Zalo",
             contactOption1: "I want to browse ready-made templates",
             contactOption2: "I want a website based on a template",
-            contactOption3: "I want a fully custom website",
+            contactOption3: "I want more guidance (plans, domain, etc.)",
             contactMessage:
-              "Briefly describe your needs, preferred style, or delivery timeline",
-            contactSubmit: "Get free consultation",
+              "Share your preferred style, wedding date, or when you need the site ready",
+            contactSubmit: "Send my request",
           },
     [language],
   );
+
+  const [featuresTableExpanded, setFeaturesTableExpanded] = useState(false);
+
+  const featureRowsForTable = useMemo(() => {
+    const all = copy.featureRows;
+    if (featuresTableExpanded || all.length <= FEATURE_TABLE_PREVIEW_COUNT) {
+      return all;
+    }
+    return all.slice(0, FEATURE_TABLE_PREVIEW_COUNT);
+  }, [copy.featureRows, featuresTableExpanded]);
+
+  const featureTableHasMore = copy.featureRows.length > FEATURE_TABLE_PREVIEW_COUNT;
+
+  const featuresExpandButtonRef = useRef<HTMLButtonElement>(null);
+  const featuresExpandAnchorTopRef = useRef<number | null>(null);
+
+  useLayoutEffect(() => {
+    const anchorTop = featuresExpandAnchorTopRef.current;
+    if (anchorTop === null) return;
+    const btn = featuresExpandButtonRef.current;
+    featuresExpandAnchorTopRef.current = null;
+    if (!btn) return;
+    const delta = btn.getBoundingClientRect().top - anchorTop;
+    if (delta !== 0) {
+      window.scrollBy({ top: delta, left: 0, behavior: "auto" });
+    }
+  }, [featuresTableExpanded]);
+
+  const feedbackStripRef = useRef<HTMLDivElement>(null);
+
+  const scrollFeedbackStrip = (direction: "left" | "right") => {
+    const el = feedbackStripRef.current;
+    if (!el) return;
+    const step = Math.min(360, Math.max(280, el.clientWidth * 0.75));
+    el.scrollBy({
+      left: direction === "left" ? -step : step,
+      behavior: "smooth",
+    });
+  };
+
+  const feedbackNavBtnClass = `flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full border backdrop-blur transition hover:scale-105 sm:h-12 sm:w-12 ${
+    isDark
+      ? "border-white/12 bg-white/12 text-white shadow-[0_8px_24px_rgba(0,0,0,0.35)] hover:bg-white/18"
+      : "border-[var(--color-ink)]/12 bg-white/95 text-[var(--color-ink)] shadow-[0_8px_24px_rgba(49,42,40,0.1)] hover:bg-white"
+  }`;
 
   return (
     <main className={`text-[var(--color-ink)] transition-colors ${isDark ? "bg-[#090909]" : "bg-[var(--color-cream)]"}`}>
@@ -464,7 +919,7 @@ export default function Home() {
                   <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-sage)]">
                     {copy.statDelivery}
                   </p>
-                  <p className="mt-3 font-display text-3xl">48h</p>
+                  <p className="mt-3 font-display text-2xl leading-tight sm:text-3xl">{copy.statDeliveryValue}</p>
                 </div>
                 <div
                   className={`rounded-3xl p-4 backdrop-blur transition-transform duration-300 hover:-translate-y-1 ${
@@ -481,10 +936,7 @@ export default function Home() {
               </div>
             </div>
 
-          </div>
-
-          <div className="animate-fade-up-soft-delay-3 pb-6">
-            <HomePremiumControlsPreview />
+            <HomeHeroSpotlight />
           </div>
         </div>
       </section>
@@ -507,13 +959,14 @@ export default function Home() {
           title={copy.freeTitle}
           description={copy.freeDescription}
           eyebrowColorClassName="text-[var(--color-sage)]"
-          ctaHref="#contact"
+          ctaHref="/templates/free"
           ctaLabel={copy.freeCta}
           templates={freeTemplates}
           badgeClassName="rounded-full bg-[var(--color-sage)]/10 px-3 py-1 text-xs font-medium text-[var(--color-sage)]"
           secondaryActionHref="#contact"
           secondaryActionLabel={copy.freeSecondary}
           secondaryActionClassName="btn-ghost inline-flex rounded-full px-5 py-3 text-sm font-medium transition"
+          demoLinkLabel={copy.templateCardDemo}
         />
 
         <TemplateCarouselSection
@@ -521,14 +974,87 @@ export default function Home() {
           title={copy.premiumTitle}
           description={copy.premiumDescription}
           eyebrowColorClassName="text-[var(--color-rose)]"
-          ctaHref="#pricing"
+          ctaHref="/templates/premium"
           ctaLabel={copy.premiumCta}
           templates={premiumTemplates}
           badgeClassName="rounded-full bg-[var(--color-rose)]/12 px-3 py-1 text-xs font-medium text-[var(--color-rose)]"
           secondaryActionHref="#pricing"
           secondaryActionLabel={copy.premiumSecondary}
           secondaryActionClassName="btn-secondary inline-flex rounded-full px-5 py-3 text-sm font-medium transition"
+          demoLinkLabel={copy.templateCardDemo}
         />
+      </section>
+
+      <section
+        id="why-us"
+        className="animate-fade-scale-soft mx-auto w-full max-w-7xl px-6 py-20 sm:px-10 sm:py-24 lg:px-16"
+      >
+        <div className="mx-auto max-w-4xl text-center">
+          <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-rose)]">{copy.whyUsEyebrow}</p>
+          <h2 className="mt-4 font-display text-3xl leading-[1.15] sm:text-4xl lg:text-[2.65rem]">
+            {copy.whyUsTitle}
+          </h2>
+          <p className={`mx-auto mt-5 max-w-2xl text-base leading-8 sm:text-lg ${isDark ? "text-white/68" : "text-[var(--color-ink)]/68"}`}>
+            {copy.whyUsBody}
+          </p>
+        </div>
+
+        <div className="mt-14 grid gap-12 lg:mt-20 lg:grid-cols-[1fr_minmax(220px,340px)_1fr] lg:items-center lg:gap-8 xl:gap-12">
+          <div className="order-2 flex flex-col gap-10 lg:order-1 lg:gap-12">
+            {copy.whyUsLeft.map((item) => (
+              <div key={item.title} className="flex flex-row-reverse items-start gap-4 sm:gap-5 lg:ml-auto lg:max-w-md">
+                <div
+                  className={`shrink-0 rounded-xl bg-gradient-to-br p-3.5 shadow-lg ${whyUsIconGradient(item.tone as WhyUsTone, isDark)}`}
+                >
+                  <WhyUsGlyph id={item.icon as WhyUsIconId} />
+                </div>
+                <div className="min-w-0 flex-1 text-right">
+                  <h3 className={`text-base font-semibold tracking-tight sm:text-lg ${whyUsTitleClass(item.tone as WhyUsTone, isDark)}`}>
+                    {item.title}
+                  </h3>
+                  <p className={`mt-2 text-sm leading-7 ${isDark ? "text-white/60" : "text-[var(--color-ink)]/64"}`}>
+                    {item.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="order-1 flex justify-center px-2 lg:order-2 lg:px-0">
+            <div className="relative w-full max-w-[min(100%,420px)] sm:max-w-[440px] lg:max-w-[380px]">
+              {/* Unsplash — photo-1519741497674-611481863552 (Unsplash License) */}
+              <Image
+                src="/marketing/why-us-phones.jpg"
+                alt={copy.whyUsImageAlt}
+                width={1200}
+                height={800}
+                className="h-auto w-full select-none rounded-2xl object-cover object-center shadow-[0_20px_50px_rgba(49,42,40,0.12)] ring-1 ring-black/5 dark:shadow-[0_24px_60px_rgba(0,0,0,0.45)] dark:ring-white/10"
+                sizes="(max-width: 1024px) min(100vw, 420px), 380px"
+                priority={false}
+              />
+            </div>
+          </div>
+
+          <div className="order-3 flex flex-col gap-10 lg:gap-12">
+            {copy.whyUsRight.map((item) => (
+              <div key={item.title} className="flex items-start gap-4 sm:gap-5 lg:max-w-md">
+                <div
+                  className={`shrink-0 rounded-xl bg-gradient-to-br p-3.5 shadow-lg ${whyUsIconGradient(item.tone as WhyUsTone, isDark)}`}
+                >
+                  <WhyUsGlyph id={item.icon as WhyUsIconId} />
+                </div>
+                <div className="min-w-0 flex-1 text-left">
+                  <h3 className={`text-base font-semibold tracking-tight sm:text-lg ${whyUsTitleClass(item.tone as WhyUsTone, isDark)}`}>
+                    {item.title}
+                  </h3>
+                  <p className={`mt-2 text-sm leading-7 ${isDark ? "text-white/60" : "text-[var(--color-ink)]/64"}`}>
+                    {item.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
 
       <section
@@ -563,7 +1089,7 @@ export default function Home() {
                 : "border border-[var(--color-ink)]/8 bg-white/58 shadow-[0_14px_36px_rgba(49,42,40,0.06)]"
             }`}
           >
-            <div className="min-w-[760px]">
+            <div id="features-comparison-table" className="min-w-[920px]">
               <div className={`grid grid-cols-[1.5fr_0.8fr_1fr] border-b ${isDark ? "border-white/10" : "border-[var(--color-ink)]/10"}`}>
                 {copy.featureTableHeaders.map((header, index) => (
                   <div
@@ -582,11 +1108,11 @@ export default function Home() {
                   </div>
                 ))}
               </div>
-              {copy.featureRows.map((row, index) => (
+              {featureRowsForTable.map((row, index) => (
                 <div
                   key={row.label}
                   className={`grid grid-cols-[1.5fr_0.8fr_1fr] ${
-                    index < copy.featureRows.length - 1
+                    index < featureRowsForTable.length - 1
                       ? isDark
                         ? "border-b border-white/8"
                         : "border-b border-[var(--color-ink)]/10"
@@ -622,6 +1148,40 @@ export default function Home() {
                 </div>
               ))}
             </div>
+            {featureTableHasMore ? (
+              <div className={`flex justify-center border-t px-4 py-4 ${isDark ? "border-white/10" : "border-[var(--color-ink)]/10"}`}>
+                <button
+                  ref={featuresExpandButtonRef}
+                  type="button"
+                  aria-expanded={featuresTableExpanded}
+                  aria-controls="features-comparison-table"
+                  onClick={() => {
+                    const el = featuresExpandButtonRef.current;
+                    if (el) {
+                      featuresExpandAnchorTopRef.current = el.getBoundingClientRect().top;
+                    }
+                    setFeaturesTableExpanded((v) => !v);
+                  }}
+                  className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                    isDark
+                      ? "text-white/85 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-rose)]/70"
+                      : "text-[var(--color-ink)]/85 hover:bg-[var(--color-ink)]/[0.06] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-rose)]/50"
+                  }`}
+                >
+                  <svg
+                    className={`h-4 w-4 shrink-0 transition-transform duration-200 ${featuresTableExpanded ? "rotate-180" : ""}`}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.75"
+                    aria-hidden="true"
+                  >
+                    <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  {featuresTableExpanded ? copy.featuresCollapse : copy.featuresExpand}
+                </button>
+              </div>
+            ) : null}
           </div>
         </div>
       </section>
@@ -722,44 +1282,140 @@ export default function Home() {
             {copy.pricingEyebrow}
           </p>
           <h2 className="mt-4 font-display text-4xl sm:text-5xl">{copy.pricingTitle}</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-[var(--color-ink)]/70">
+          <p className={`mx-auto mt-4 max-w-2xl text-sm leading-7 ${isDark ? "text-white/68" : "text-[var(--color-ink)]/70"}`}>
             {copy.pricingBody}
           </p>
         </div>
 
-        <div className="mt-10 grid gap-5 lg:grid-cols-3">
+        <div className="mx-auto mt-10 grid max-w-4xl gap-6 lg:grid-cols-2">
           {copy.pricing.map((plan) => (
             <article
               key={plan.name}
-              className={`hover-lift-strong rounded-[2.5rem] p-8 ${
-                isDark
-                  ? "border border-white/10 bg-white/6 shadow-[0_18px_50px_rgba(0,0,0,0.24)]"
-                  : "border border-[var(--color-ink)]/8 bg-white/80 shadow-[0_18px_50px_rgba(49,42,40,0.07)]"
+              className={`hover-lift-strong rounded-[2.5rem] p-8 transition ${
+                plan.featured
+                  ? isDark
+                    ? "border-2 border-[var(--color-rose)]/45 bg-white/[0.07] shadow-[0_22px_56px_rgba(0,0,0,0.28)] ring-1 ring-[var(--color-rose)]/20"
+                    : "border-2 border-[var(--color-rose)]/35 bg-white shadow-[0_22px_56px_rgba(49,42,40,0.1)] ring-1 ring-[var(--color-rose)]/15"
+                  : isDark
+                    ? "border border-white/10 bg-white/6 shadow-[0_18px_50px_rgba(0,0,0,0.24)]"
+                    : "border border-[var(--color-ink)]/8 bg-white/80 shadow-[0_18px_50px_rgba(49,42,40,0.07)]"
               }`}
             >
-              <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-sage)]">
-                {plan.name}
-              </p>
-              <h3 className="mt-4 font-display text-5xl">{plan.price}</h3>
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-sage)]">{plan.name}</p>
+                {plan.featured ? (
+                  <span className="rounded-full bg-[var(--color-rose)]/15 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--color-rose)]">
+                    {copy.pricingPopularBadge}
+                  </span>
+                ) : null}
+              </div>
+              {plan.tagline ? (
+                <p className={`mt-2 text-sm font-medium ${isDark ? "text-white/55" : "text-[var(--color-ink)]/58"}`}>
+                  {plan.tagline}
+                </p>
+              ) : null}
+              <h3 className="mt-4 font-display text-4xl sm:text-5xl">{plan.price}</h3>
               <p className={`mt-4 text-sm leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/70"}`}>
                 {plan.note}
               </p>
-              <div className="mt-6 space-y-3">
-                {plan.items.map((item) => (
-                  <p
-                    key={item}
-                    className={`rounded-2xl px-4 py-3 text-sm ${
-                      isDark
-                        ? "bg-[rgba(255,255,255,0.04)] text-white/78"
-                        : "bg-[var(--color-cream)] text-[var(--color-ink)]/78"
-                    }`}
-                  >
-                    {item}
-                  </p>
-                ))}
-              </div>
             </article>
           ))}
+        </div>
+      </section>
+
+      <section
+        id="feedback"
+        className="animate-fade-scale-soft-delay-2 mx-auto w-full max-w-7xl px-6 py-24 sm:px-10 lg:px-16"
+      >
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-rose)]">
+            {copy.testimonialsEyebrow}
+          </p>
+          <h2 className="mt-4 font-display text-4xl leading-tight sm:text-5xl">
+            {copy.testimonialsTitle}
+          </h2>
+          <p className={`mt-4 text-sm leading-7 ${isDark ? "text-white/68" : "text-[var(--color-ink)]/68"}`}>
+            {copy.testimonialsBody}
+          </p>
+        </div>
+
+        <div className="mt-12 flex items-center gap-2 sm:gap-4">
+          <button
+            type="button"
+            className={feedbackNavBtnClass}
+            onClick={() => scrollFeedbackStrip("left")}
+            aria-label={copy.feedbackScrollPrev}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-5 w-5"
+              aria-hidden="true"
+            >
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+
+          <div
+            ref={feedbackStripRef}
+            className="min-w-0 flex-1 flex gap-5 overflow-x-auto scroll-smooth pb-3 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] snap-x snap-mandatory [&::-webkit-scrollbar]:hidden"
+          >
+            {copy.testimonials.map((item) => (
+              <figure
+                key={item.name}
+                className={`hover-lift-strong flex w-[min(19rem,100%)] shrink-0 snap-start flex-col rounded-[2rem] p-6 sm:w-[22rem] sm:p-7 ${
+                  isDark
+                    ? "border border-white/10 bg-white/[0.05] shadow-[0_16px_40px_rgba(0,0,0,0.22)]"
+                    : "border border-[var(--color-ink)]/8 bg-white/80 shadow-[0_16px_40px_rgba(49,42,40,0.06)]"
+                }`}
+              >
+                <span className="font-display text-4xl leading-none text-[var(--color-rose)]/55" aria-hidden="true">
+                  &ldquo;
+                </span>
+                <blockquote
+                  className={`mt-2 min-h-0 flex-1 text-base leading-7 [overflow-wrap:normal] [word-break:normal] ${isDark ? "text-white/88" : "text-[var(--color-ink)]/88"}`}
+                >
+                  {item.quote}
+                </blockquote>
+                <figcaption className={`mt-6 min-w-0 border-t pt-5 ${isDark ? "border-white/10" : "border-[var(--color-ink)]/10"}`}>
+                  <p className="font-display text-xl break-words">{item.name}</p>
+                  <div
+                    className={`mt-2 max-w-full overflow-x-auto overflow-y-hidden pb-0.5 [-webkit-overflow-scrolling:touch] ${isDark ? "text-white/50" : "text-[var(--color-ink)]/50"}`}
+                  >
+                    <p className="w-max min-w-full whitespace-nowrap text-xs uppercase tracking-[0.2em]">
+                      {item.detail}
+                    </p>
+                  </div>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            className={feedbackNavBtnClass}
+            onClick={() => scrollFeedbackStrip("right")}
+            aria-label={copy.feedbackScrollNext}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-5 w-5"
+              aria-hidden="true"
+            >
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </button>
         </div>
       </section>
 
@@ -775,9 +1431,7 @@ export default function Home() {
           }`}
         >
           <div className="text-center">
-            <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-sage)]">
-            {copy.contactEyebrow}
-            </p>
+            <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-sage)]">{copy.contactEyebrow}</p>
             <h2 className="mt-4 font-display text-4xl sm:text-5xl">{copy.contactTitle}</h2>
             <p className={`mx-auto mt-4 max-w-2xl text-sm leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/70"}`}>
               {copy.contactBody}

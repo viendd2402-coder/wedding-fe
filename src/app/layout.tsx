@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import AppTopChrome from "@/components/app-top-chrome";
+import SiteFooter from "@/components/site-footer";
 import {
   GlobalPreferencesProvider,
   type AppLanguage,
@@ -23,7 +24,7 @@ const cormorant = Cormorant_Garamond({
 export const metadata: Metadata = {
   title: "Lumiere Wedding Websites",
   description:
-    "Dịch vụ thiết kế website cưới hiện đại với nhiều mẫu giao diện đẹp, RSVP, gallery và các gói tuỳ chỉnh.",
+    "Thiệp mời trực tuyến tinh tế — chọn phong cách phù hợp, chia sẻ dễ dàng và hoàn thiện cùng đội ngũ Lumiere.",
 };
 
 export default async function RootLayout({
@@ -44,13 +45,14 @@ export default async function RootLayout({
       suppressHydrationWarning
       className={`${inter.variable} ${cormorant.variable} h-full scroll-smooth antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="flex min-h-full flex-col">
         <GlobalPreferencesProvider
           initialLanguage={initialLanguage}
           initialTheme={initialTheme}
         >
           <AppTopChrome />
-          {children}
+          <div className="flex min-h-0 flex-1 flex-col">{children}</div>
+          <SiteFooter />
         </GlobalPreferencesProvider>
       </body>
     </html>

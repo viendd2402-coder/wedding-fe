@@ -4,10 +4,10 @@ export const slideFlexTemplate: WeddingTemplate = {
   slug: "slide-flex",
   name: "SlideFlex",
   style: "Slider hero, gradient, hiện đại",
-  tier: "Miễn phí",
+  tier: "Trả phí",
   family: "romance",
   mood: "pastel",
-  badge: "iWedding-style",
+  badge: "Premium",
   description:
     "Hero trình chiếu ảnh linh hoạt, nút gradient cyan–tím, font Quicksand và layout đầy đủ section như mẫu SlideFlex (Biihappy / iWedding).",
   image:

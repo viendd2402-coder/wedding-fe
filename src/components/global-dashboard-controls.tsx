@@ -1,14 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { usePathname } from "next/navigation";
+import { useCallback, useMemo, useState, type MouseEvent } from "react";
 import {
   useGlobalPreferences,
   type AppLanguage,
   type AppTheme,
 } from "@/components/global-preferences-provider";
+import { forceDocumentScrollTop } from "@/lib/force-document-scroll-top";
 
 export default function GlobalDashboardControls() {
+  const pathname = usePathname();
   const { language, theme, setLanguage, setTheme } = useGlobalPreferences();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -16,12 +19,14 @@ export default function GlobalDashboardControls() {
     () =>
       language === "vi"
         ? {
-            brandEyebrow: "Studio Website Cưới",
+            brandEyebrow: "Thiệp mời trực tuyến",
             brandName: "Lumiere",
             navHome: "Trang chủ",
             navTemplates: "Mẫu giao diện",
-            navFeatures: "Tính năng",
+            navWhyUs: "Vì sao chọn chúng tôi",
+            navFeatures: "Trải nghiệm",
             navPricing: "Bảng giá",
+            navFeedback: "Phản hồi",
             navContact: "Liên hệ",
             navLogin: "Đăng nhập",
             lightLabel: "Trắng",
@@ -30,12 +35,14 @@ export default function GlobalDashboardControls() {
             closeMenu: "Đóng menu",
           }
         : {
-            brandEyebrow: "Wedding Website Studio",
+            brandEyebrow: "Online wedding invitations",
             brandName: "Lumiere",
             navHome: "Home",
             navTemplates: "Templates",
-            navFeatures: "Features",
+            navWhyUs: "Why Lumiere",
+            navFeatures: "Experience",
             navPricing: "Pricing",
+            navFeedback: "Feedback",
             navContact: "Contact",
             navLogin: "Login",
             lightLabel: "Light",
@@ -55,6 +62,20 @@ export default function GlobalDashboardControls() {
     theme === "dark"
       ? "border-white/10 bg-white/6 text-white/72"
       : "border-[var(--color-ink)]/10 bg-[var(--color-cream)] text-[var(--color-ink)]/56";
+
+  /** Đang ở trang chủ: click logo / Trang chủ → về đầu trang (và bỏ hash). */
+  const handleHomeLinkClick = useCallback(
+    (e: MouseEvent<HTMLAnchorElement>) => {
+      if (pathname === "/") {
+        e.preventDefault();
+        if (typeof window !== "undefined" && window.location.hash) {
+          window.history.replaceState(null, "", "/");
+        }
+        forceDocumentScrollTop();
+      }
+    },
+    [pathname],
+  );
 
   const renderOption = <T extends AppLanguage | AppTheme>(
     value: T,
@@ -84,7 +105,7 @@ export default function GlobalDashboardControls() {
       <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <div className="flex flex-col gap-4 xl:flex-1">
           <div className="flex items-start justify-between gap-4 lg:items-center">
-            <Link href="/" className="min-w-0 shrink-0">
+            <Link href="/" className="min-w-0 shrink-0" onClick={handleHomeLinkClick}>
               <p className="text-[11px] uppercase tracking-[0.35em] text-[var(--color-sage)]">
                 {copy.brandEyebrow}
               </p>
@@ -131,10 +152,14 @@ export default function GlobalDashboardControls() {
               </button>
             </div>
             <nav className={`hidden items-center gap-6 text-sm lg:flex ${theme === "dark" ? "text-white/72" : "text-[var(--color-ink)]/70"}`}>
-              <Link href="/">{copy.navHome}</Link>
+              <Link href="/" onClick={handleHomeLinkClick}>
+                {copy.navHome}
+              </Link>
               <Link href="/#templates">{copy.navTemplates}</Link>
+              {/* <Link href="/#why-us">{copy.navWhyUs}</Link> */}
               <Link href="/#features">{copy.navFeatures}</Link>
               <Link href="/#pricing">{copy.navPricing}</Link>
+              {/* <Link href="/#feedback">{copy.navFeedback}</Link> */}
               <Link href="/#contact">{copy.navContact}</Link>
               <Link
                 href="/login"
@@ -202,7 +227,10 @@ export default function GlobalDashboardControls() {
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           <Link
             href="/"
-            onClick={() => setIsMobileMenuOpen(false)}
+            onClick={(e) => {
+              handleHomeLinkClick(e);
+              setIsMobileMenuOpen(false);
+            }}
             className={`rounded-[1rem] px-3 py-2 text-center ${theme === "dark" ? "bg-white/6" : "bg-[var(--color-cream)]"}`}
           >
             {copy.navHome}
@@ -213,6 +241,13 @@ export default function GlobalDashboardControls() {
             className={`rounded-[1rem] px-3 py-2 text-center ${theme === "dark" ? "bg-white/6" : "bg-[var(--color-cream)]"}`}
           >
             {copy.navTemplates}
+          </Link>
+          <Link
+            href="/#why-us"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className={`rounded-[1rem] px-3 py-2 text-center ${theme === "dark" ? "bg-white/6" : "bg-[var(--color-cream)]"}`}
+          >
+            {copy.navWhyUs}
           </Link>
           <Link
             href="/#features"
@@ -227,6 +262,13 @@ export default function GlobalDashboardControls() {
             className={`rounded-[1rem] px-3 py-2 text-center ${theme === "dark" ? "bg-white/6" : "bg-[var(--color-cream)]"}`}
           >
             {copy.navPricing}
+          </Link>
+          <Link
+            href="/#feedback"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className={`rounded-[1rem] px-3 py-2 text-center ${theme === "dark" ? "bg-white/6" : "bg-[var(--color-cream)]"}`}
+          >
+            {copy.navFeedback}
           </Link>
           <Link
             href="/#contact"

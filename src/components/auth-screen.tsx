@@ -21,16 +21,16 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
             backHome: "Quay về trang chủ",
             badge:
               mode === "login"
-                ? "Đăng nhập hệ thống"
+                ? "Đăng nhập tài khoản"
                 : "Tạo tài khoản mới",
             title:
               mode === "login"
-                ? "Đăng nhập để quản lý website cưới của bạn."
-                : "Tạo tài khoản để bắt đầu thiết kế website cưới.",
+                ? "Đăng nhập để tiếp tục hoàn thiện website cưới của bạn."
+                : "Tạo tài khoản để bắt đầu hành trình thiệp mời trực tuyến.",
             body:
               mode === "login"
-                ? "Theo dõi đơn hàng, chỉnh sửa nội dung và quản lý các mẫu wedding website trong một nơi."
-                : "Tạo tài khoản để lưu mẫu yêu thích, bắt đầu dự án mới và theo dõi tiến độ bàn giao.",
+                ? "Cập nhật nội dung, theo dõi yêu cầu chỉnh sửa và xem tiến độ hoàn thiện — tất cả tại một nơi."
+                : "Lưu mẫu yêu thích, khởi tạo dự án mới và nhận thông tin tiến độ bàn giao rõ ràng.",
             email: "Email",
             password: "Mật khẩu",
             confirmPassword: "Nhập lại mật khẩu",
@@ -42,21 +42,21 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
             switchAction:
               mode === "login" ? "Đăng ký ngay" : "Đăng nhập ngay",
             switchHref: mode === "login" ? "/register" : "/login",
-            feature1: "Lưu mẫu giao diện đã chọn",
-            feature2: "Quản lý lead và yêu cầu chỉnh sửa",
-            feature3: "Theo dõi tiến độ triển khai",
+            feature1: "Lưu mẫu giao diện bạn đã chọn",
+            feature2: "Theo dõi yêu cầu chỉnh sửa và phản hồi",
+            feature3: "Xem tiến độ hoàn thiện minh bạch",
           }
         : {
             backHome: "Back to home",
-            badge: mode === "login" ? "Account login" : "Create account",
+            badge: mode === "login" ? "Sign in" : "Create account",
             title:
               mode === "login"
-                ? "Sign in to manage your wedding website."
-                : "Create an account to start building your wedding website.",
+                ? "Sign in to continue shaping your wedding website."
+                : "Create an account to begin your online invitation journey.",
             body:
               mode === "login"
-                ? "Track orders, edit content, and manage wedding website templates from one place."
-                : "Create an account to save favorite templates, launch new projects, and track delivery progress.",
+                ? "Update your copy, follow revision requests, and see delivery progress—all in one calm workspace."
+                : "Save favorite templates, start new projects, and stay informed as your site comes together.",
             email: "Email",
             password: "Password",
             confirmPassword: "Confirm password",
@@ -68,9 +68,9 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
             switchAction:
               mode === "login" ? "Register now" : "Sign in now",
             switchHref: mode === "login" ? "/register" : "/login",
-            feature1: "Save chosen templates",
-            feature2: "Manage leads and revisions",
-            feature3: "Track production progress",
+            feature1: "Save the templates you love",
+            feature2: "Follow revision requests and feedback",
+            feature3: "See clear, transparent delivery progress",
           },
     [language, mode],
   );
@@ -178,8 +178,8 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
             </p>
             <h2 className="mt-4 font-display text-4xl leading-tight sm:text-5xl">
               {language === "vi"
-                ? "Một không gian quản lý gọn gàng cho studio website cưới."
-                : "A focused workspace for your wedding website studio."}
+                ? "Không gian riêng để hoàn thiện thiệp mời trực tuyến của hai bạn."
+                : "A private space to refine your online wedding invitation."}
             </h2>
             <div className="mt-8 space-y-4">
               {[copy.feature1, copy.feature2, copy.feature3].map((item) => (

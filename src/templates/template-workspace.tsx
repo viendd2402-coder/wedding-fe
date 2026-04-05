@@ -1,8 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
+import { usePathname } from "next/navigation";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
+import { siteContact } from "@/lib/site-contact";
 import {
   defaultPreviewData,
   defaultPreviewImages,
@@ -12,6 +14,7 @@ import {
   type TemplatePreviewProps,
 } from "@/templates/preview-types";
 import type { WeddingTemplate } from "@/lib/templates/types";
+import { forceDocumentScrollTop } from "@/lib/force-document-scroll-top";
 
 function ImageLightbox({
   image,
@@ -83,6 +86,7 @@ function ImageLightbox({
 }
 
 function PreviewConfigurator({
+  template,
   preview,
   onChange,
   images,
@@ -91,6 +95,7 @@ function PreviewConfigurator({
   isCollapsed,
   onToggleCollapsed,
 }: {
+  template: WeddingTemplate;
   preview: PreviewData;
   onChange: (key: keyof PreviewData, value: string) => void;
   images: PreviewImages;
@@ -104,10 +109,10 @@ function PreviewConfigurator({
   const copy =
     language === "vi"
       ? {
-          openPreview: "Mở phần xem thử thông tin",
-          closePreview: "Ẩn phần xem thử thông tin",
-          titleEyebrow: "Xem thử thông tin",
-          title: "Điền và apply ngay",
+          openPreview: "Mở bảng tuỳ chỉnh xem thử",
+          closePreview: "Thu gọn bảng tuỳ chỉnh",
+          titleEyebrow: "Xem thử",
+          title: "Nhập thông tin — cập nhật ngay trên thiệp",
           groomName: "Tên chú rể",
           brideName: "Tên cô dâu",
           dateLabel: "Ngày cưới hiển thị",
@@ -118,19 +123,32 @@ function PreviewConfigurator({
           bankName: "Tên ngân hàng",
           accountName: "Tên chủ tài khoản",
           accountNumber: "Số tài khoản",
-          coverImage: "Ảnh cover",
-          coverSelected: "Đã chọn ảnh cover mới.",
-          coverEmpty: "Chưa chọn ảnh cover.",
-          gallery: "Album gallery",
+          coverImage: "Ảnh bìa",
+          coverSelected: "Đã chọn ảnh bìa mới.",
+          coverEmpty: "Chưa chọn ảnh bìa.",
+          gallery: "Album ảnh",
           imageLabel: "Ảnh",
           imageSelected: "Đã chọn ảnh.",
           imageDefault: "Đang dùng ảnh mặc định.",
+          paymentEyebrow: "Thanh toán",
+          paymentTitle: "Thanh toán gói Premium",
+          paymentBuyerLine: "Tên trên đơn thanh toán:",
+          paymentBuyerUnset:
+            "Chưa nhập tên cô dâu / chú rể ở các ô phía trên — bạn vẫn có thể thanh toán; hệ thống ghi nhận theo tên mẫu.",
+          paymentPay: "Thanh toán — 2.490.000đ",
+          paymentLoading: "Đang tạo link…",
+          paymentNotConfigured: "Cổng thanh toán chưa được cấu hình trên máy chủ. Vui lòng thử lại sau hoặc liên hệ hỗ trợ.",
+          paymentFailed: "Không tạo được link. Thử lại sau.",
+          paymentFreeHint:
+            "Đây là mẫu miễn phí — không cần thanh toán. Gửi nội dung đã nhập phía trên qua email để được tư vấn.",
+          paymentEmailCta: "Gửi yêu cầu qua email",
+          paymentMailSubject: "Yêu cầu mẫu Lumiere",
         }
       : {
-          openPreview: "Open preview configurator",
-          closePreview: "Hide preview configurator",
-          titleEyebrow: "Preview editor",
-          title: "Edit and apply instantly",
+          openPreview: "Open preview panel",
+          closePreview: "Collapse preview panel",
+          titleEyebrow: "Live preview",
+          title: "Adjust details — your invitation updates instantly",
           groomName: "Groom name",
           brideName: "Bride name",
           dateLabel: "Displayed wedding date",
@@ -144,18 +162,99 @@ function PreviewConfigurator({
           coverImage: "Cover image",
           coverSelected: "New cover image selected.",
           coverEmpty: "No custom cover image selected.",
-          gallery: "Gallery album",
+          gallery: "Photo album",
           imageLabel: "Image",
           imageSelected: "Image selected.",
           imageDefault: "Using default image.",
+          paymentEyebrow: "Payment",
+          paymentTitle: "Premium checkout",
+          paymentBuyerLine: "Name on the payment request:",
+          paymentBuyerUnset:
+            "You have not filled in bride/groom names above — you can still pay; we will label the order from the template name.",
+          paymentPay: "Pay — 2,490,000đ",
+          paymentLoading: "Creating link…",
+          paymentNotConfigured: "Checkout is not configured on the server yet. Please try again later or contact support.",
+          paymentFailed: "Could not create the payment link.",
+          paymentFreeHint:
+            "This is a free template — no payment. Email us the details you entered above for setup help.",
+          paymentEmailCta: "Send request by email",
+          paymentMailSubject: "Lumiere template request",
         };
+
+  const [payLoading, setPayLoading] = useState(false);
+  const [payError, setPayError] = useState<string | null>(null);
+
+  const isPremium = template.tier === "Trả phí";
+
+  const clientNote = useMemo(
+    () =>
+      [
+        `Template: ${template.name} (${template.slug})`,
+        preview.groom && preview.bride ? `${preview.groom} & ${preview.bride}` : "",
+        preview.dateLabel,
+        preview.location,
+      ]
+        .filter(Boolean)
+        .join(" · "),
+    [preview.bride, preview.dateLabel, preview.groom, preview.location, template.name, template.slug],
+  );
+
+  const payBuyerName = useMemo(() => {
+    const g = preview.groom.trim();
+    const b = preview.bride.trim();
+    if (g && b) return `${g} & ${b}`;
+    if (g) return g;
+    if (b) return b;
+    return "";
+  }, [preview.bride, preview.groom]);
+
+  const sendConsultEmail = useCallback(() => {
+    const body = [`Template: ${template.name} (${template.slug})`, "", clientNote].join("\n");
+    window.location.href = `mailto:${siteContact.email}?subject=${encodeURIComponent(copy.paymentMailSubject)}&body=${encodeURIComponent(body)}`;
+  }, [clientNote, copy.paymentMailSubject, template.name, template.slug]);
+
+  const startPremiumCheckout = useCallback(async () => {
+    setPayError(null);
+    setPayLoading(true);
+    try {
+      const res = await fetch("/api/payos/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          buyerName: payBuyerName,
+          templateSlug: template.slug,
+          clientNote,
+        }),
+      });
+      const data = (await res.json()) as { checkoutUrl?: string; error?: string };
+      if (!res.ok) {
+        if (data.error === "payment_config") {
+          setPayError(copy.paymentNotConfigured);
+        } else if (data.error === "not_premium") {
+          setPayError(copy.paymentFailed);
+        } else {
+          setPayError(copy.paymentFailed);
+        }
+        return;
+      }
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+        return;
+      }
+      setPayError(copy.paymentFailed);
+    } catch {
+      setPayError(copy.paymentFailed);
+    } finally {
+      setPayLoading(false);
+    }
+  }, [clientNote, copy.paymentFailed, copy.paymentNotConfigured, payBuyerName, template.slug]);
 
   if (isCollapsed) {
     return (
       <button
         type="button"
         onClick={onToggleCollapsed}
-        className={`fixed bottom-5 right-5 z-50 inline-flex h-14 w-14 cursor-pointer items-center justify-center rounded-full backdrop-blur transition ${
+        className={`fixed bottom-1 right-1 z-50 inline-flex h-14 w-14 cursor-pointer items-center justify-center rounded-full backdrop-blur transition ${
           isDark
             ? "border border-white/10 bg-white/10 text-white shadow-[0_24px_60px_rgba(0,0,0,0.3)] hover:bg-white/14"
             : "border border-[var(--color-ink)]/10 bg-white/92 text-[var(--color-ink)] shadow-[0_24px_60px_rgba(49,42,40,0.14)] hover:bg-white"
@@ -169,7 +268,7 @@ function PreviewConfigurator({
     );
   }
 
-  const inputClass = `rounded-2xl px-4 py-3 outline-none ${
+  const inputClass = `rounded-2xl px-4 py-3.5 outline-none ${
     isDark
       ? "border border-white/10 bg-white/6 text-white placeholder:text-white/35"
       : "border border-[var(--color-ink)]/10 bg-[var(--color-cream)] placeholder:text-[var(--color-ink)]/35"
@@ -177,13 +276,13 @@ function PreviewConfigurator({
 
   return (
     <div
-      className={`fixed bottom-3 left-3 right-3 z-50 rounded-[1.8rem] p-4 backdrop-blur sm:bottom-5 sm:left-auto sm:right-5 sm:w-[min(380px,calc(100vw-24px))] sm:p-5 ${
+      className={`fixed bottom-1 left-2 right-1 z-50 flex max-h-[min(90vh,calc(100dvh-0.5rem))] flex-col rounded-[1.8rem] p-5 backdrop-blur sm:bottom-1 sm:left-auto sm:right-0 sm:w-[min(440px,100vw)] sm:rounded-l-[1.8rem] sm:rounded-r-none sm:p-6 md:w-[min(480px,100vw)] ${
         isDark
           ? "border border-white/10 bg-[#0f0f10]/92 text-white shadow-[0_24px_60px_rgba(0,0,0,0.3)]"
           : "border border-[var(--color-ink)]/10 bg-white/92 shadow-[0_24px_60px_rgba(49,42,40,0.14)]"
       }`}
     >
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex shrink-0 items-start justify-between gap-3">
         <div>
           <p className="text-xs uppercase tracking-[0.3em] text-[var(--color-sage)]">
             {copy.titleEyebrow}
@@ -205,12 +304,13 @@ function PreviewConfigurator({
           </svg>
         </button>
       </div>
-      <div className="mt-4 grid max-h-[55vh] gap-3 overflow-y-auto pr-1 sm:max-h-[60vh]">
+      <div className="mt-4 min-h-0 flex-1 overflow-y-auto pr-1">
+        <div className="grid gap-3.5">
         <input className={inputClass} value={preview.groom} onChange={(event) => onChange("groom", event.target.value)} placeholder={copy.groomName} />
         <input className={inputClass} value={preview.bride} onChange={(event) => onChange("bride", event.target.value)} placeholder={copy.brideName} />
         <input className={inputClass} value={preview.dateLabel} onChange={(event) => onChange("dateLabel", event.target.value)} placeholder={copy.dateLabel} />
         <input className={inputClass} value={preview.location} onChange={(event) => onChange("location", event.target.value)} placeholder={copy.location} />
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3.5">
           <input className={inputClass} value={preview.ceremonyTime} onChange={(event) => onChange("ceremonyTime", event.target.value)} placeholder={copy.ceremonyTime} />
           <input className={inputClass} value={preview.partyTime} onChange={(event) => onChange("partyTime", event.target.value)} placeholder={copy.partyTime} />
         </div>
@@ -227,7 +327,7 @@ function PreviewConfigurator({
         </label>
         <div className="rounded-2xl border border-dashed px-4 py-3 text-sm">
           <span className="block font-medium">{copy.gallery}</span>
-          <div className="mt-3 grid gap-3">
+          <div className="mt-3 grid gap-3.5">
             {[0, 1, 2, 3].map((index) => (
               <label key={index} className={`rounded-xl border px-3 py-2 text-xs ${isDark ? "border-white/14 bg-white/4" : "border-[var(--color-ink)]/10 bg-[var(--color-cream)]"}`}>
                 <span className="block font-medium">
@@ -241,6 +341,58 @@ function PreviewConfigurator({
             ))}
           </div>
         </div>
+        </div>
+      </div>
+
+      <div
+        className={`shrink-0 space-y-3 border-t pt-4 ${isDark ? "border-white/10" : "border-[var(--color-ink)]/10"}`}
+      >
+        <p className="text-xs uppercase tracking-[0.28em] text-[var(--color-rose)]">{copy.paymentEyebrow}</p>
+        <p className={`text-sm font-medium ${isDark ? "text-white/90" : "text-[var(--color-ink)]"}`}>
+          {copy.paymentTitle}
+        </p>
+        <p className={`text-xs leading-relaxed ${isDark ? "text-white/70" : "text-[var(--color-ink)]/72"}`}>
+          {payBuyerName ? (
+            <>
+              {copy.paymentBuyerLine}{" "}
+              <span className="font-medium text-[var(--color-rose)]/95">{payBuyerName}</span>
+            </>
+          ) : (
+            copy.paymentBuyerUnset
+          )}
+        </p>
+        {payError ? (
+          <p className="text-xs text-red-600 dark:text-red-400" role="alert">
+            {payError}
+          </p>
+        ) : null}
+        {isPremium ? (
+          <button
+            type="button"
+            disabled={payLoading}
+            onClick={startPremiumCheckout}
+            className="btn-primary w-full rounded-full px-4 py-3 text-sm font-medium disabled:opacity-60"
+          >
+            {payLoading ? copy.paymentLoading : copy.paymentPay}
+          </button>
+        ) : (
+          <>
+            <p className={`text-xs leading-relaxed ${isDark ? "text-white/65" : "text-[var(--color-ink)]/65"}`}>
+              {copy.paymentFreeHint}
+            </p>
+            <button
+              type="button"
+              onClick={sendConsultEmail}
+              className={`w-full rounded-full border px-4 py-3 text-sm font-medium transition ${
+                isDark
+                  ? "border-white/15 text-white/88 hover:bg-white/8"
+                  : "border-[var(--color-ink)]/15 text-[var(--color-ink)]/88 hover:bg-[var(--color-ink)]/[0.04]"
+              }`}
+            >
+              {copy.paymentEmailCta}
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
@@ -255,11 +407,34 @@ export default function TemplateWorkspace({
   PreviewComponent: React.ComponentType<TemplatePreviewProps>;
   defaultGalleryImages: string[];
 }) {
+  const pathname = usePathname();
   const { theme } = useGlobalPreferences();
   const [preview, setPreview] = useState<PreviewData>(defaultPreviewData);
   const [images, setImages] = useState<PreviewImages>(defaultPreviewImages);
   const [lightboxImage, setLightboxImage] = useState<LightboxImage | null>(null);
   const [isConfiguratorCollapsed, setIsConfiguratorCollapsed] = useState(false);
+
+  useLayoutEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.location.hash) return;
+    forceDocumentScrollTop();
+  }, [pathname, template.slug]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.location.hash) return;
+    forceDocumentScrollTop();
+    const t0 = window.setTimeout(forceDocumentScrollTop, 0);
+    const raf = requestAnimationFrame(forceDocumentScrollTop);
+    const t1 = window.setTimeout(forceDocumentScrollTop, 50);
+    const t2 = window.setTimeout(forceDocumentScrollTop, 200);
+    return () => {
+      window.clearTimeout(t0);
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+      cancelAnimationFrame(raf);
+    };
+  }, [pathname, template.slug]);
 
   const handlePreviewChange = (key: keyof PreviewData, value: string) => {
     setPreview((current) => ({ ...current, [key]: value }));
@@ -299,6 +474,7 @@ export default function TemplateWorkspace({
       <PreviewComponent {...previewProps} />
       <ImageLightbox image={lightboxImage} onClose={() => setLightboxImage(null)} />
       <PreviewConfigurator
+        template={template}
         preview={preview}
         onChange={handlePreviewChange}
         images={images}

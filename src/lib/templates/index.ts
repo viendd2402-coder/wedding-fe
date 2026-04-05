@@ -11,3 +11,8 @@ export {
   premiumTemplates,
   weddingTemplates,
 } from "@/templates/template-registry";
+
+export {
+  TOP_TEMPLATE_SLUGS_BY_USAGE,
+  TOP_TEMPLATE_SPOTLIGHT_LIMIT,
+} from "./popularity";

@@ -1,6 +1,13 @@
 "use client";
 
-import { useMemo } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ComponentPropsWithoutRef,
+  type ElementRef,
+} from "react";
 import Link from "next/link";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
 import WeddingCountdown from "@/components/wedding-countdown";
@@ -11,6 +18,83 @@ import {
   azurePromiseGallery,
   type TemplatePreviewProps,
 } from "@/templates/free/azure-promise/support";
+import scroll from "./azure-promise-preview.module.css";
+
+const ioOpts: IntersectionObserverInit = {
+  root: null,
+  rootMargin: "0px 0px -18% 0px",
+  threshold: 0.12,
+};
+
+type RevealAxis = "up" | "left" | "right";
+
+function mediaPendingClass(axis: RevealAxis): string {
+  if (axis === "left") return scroll.scrollMediaPendingLeft;
+  if (axis === "right") return scroll.scrollMediaPendingRight;
+  return scroll.scrollMediaPending;
+}
+
+function ScrollRevealDiv({
+  className = "",
+  children,
+  revealAxis = "up",
+  ...rest
+}: ComponentPropsWithoutRef<"div"> & { revealAxis?: RevealAxis }) {
+  const ref = useRef<ElementRef<"div">>(null);
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          setShown(true);
+          io.unobserve(e.target);
+        }
+      }
+    }, ioOpts);
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  const p = mediaPendingClass(revealAxis);
+  return (
+    <div ref={ref} {...rest} className={`${className} ${shown ? scroll.scrollMediaShown : p}`.trim()}>
+      {children}
+    </div>
+  );
+}
+
+function ScrollRevealButton(
+  props: ComponentPropsWithoutRef<"button"> & { revealAxis?: RevealAxis },
+) {
+  const { className = "", children, revealAxis = "up", ...rest } = props;
+  const ref = useRef<ElementRef<"button">>(null);
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          setShown(true);
+          io.unobserve(e.target);
+        }
+      }
+    }, ioOpts);
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  const pending = mediaPendingClass(revealAxis);
+  return (
+    <button
+      ref={ref}
+      {...rest}
+      className={`${className} ${shown ? scroll.scrollMediaShown : pending}`.trim()}
+    >
+      {children}
+    </button>
+  );
+}
 
 export default function AzurePromisePreview({
   template,
@@ -291,6 +375,7 @@ export default function AzurePromisePreview({
           </div>
 
           <div className="space-y-5 p-4 sm:p-6">
+            <ScrollRevealDiv revealAxis="left" className={scroll.block}>
             <div className={`rounded-[1.7rem] p-6 sm:p-7 ${elevatedCardClass}`}>
               <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
                 <div>
@@ -302,7 +387,9 @@ export default function AzurePromisePreview({
                 <p className={`text-sm leading-7 ${subtleTextClass}`}>{copy.invitationBody}</p>
               </div>
             </div>
+            </ScrollRevealDiv>
 
+            <ScrollRevealDiv revealAxis="right" className={scroll.block}>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className={`rounded-[1.6rem] p-6 ${softCardClass}`}>
                 <p className="text-xs uppercase tracking-[0.28em] text-[#6f9bb6]">{copy.aboutTitle}</p>
@@ -315,7 +402,9 @@ export default function AzurePromisePreview({
                 </div>
               </div>
             </div>
+            </ScrollRevealDiv>
 
+            <ScrollRevealDiv revealAxis="left" className={scroll.block}>
             <div className={`rounded-[1.7rem] p-6 sm:p-7 ${softCardClass}`}>
               <p className="text-xs uppercase tracking-[0.28em] text-[#6f9bb6]">{copy.storyTitle}</p>
               <div className="mt-5 grid gap-4 md:grid-cols-3">
@@ -328,7 +417,9 @@ export default function AzurePromisePreview({
                 ))}
               </div>
             </div>
+            </ScrollRevealDiv>
 
+            <ScrollRevealDiv revealAxis="right" className={scroll.block}>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className={`rounded-[1.6rem] p-6 ${softCardClass}`}>
                 <p className="text-xs uppercase tracking-[0.28em] text-[#6f9bb6]">{copy.dateTitle}</p>
@@ -339,7 +430,9 @@ export default function AzurePromisePreview({
                 <p className={`mt-4 text-sm leading-7 ${subtleTextClass}`}>{preview.venue}</p>
               </div>
             </div>
+            </ScrollRevealDiv>
 
+            <ScrollRevealDiv revealAxis="left" className={scroll.block}>
             <div className={`rounded-[1.7rem] p-6 sm:p-7 ${softCardClass}`}>
               <p className="text-xs uppercase tracking-[0.28em] text-[#6f9bb6]">{copy.eventTitle}</p>
               <p className={`mt-4 text-sm leading-7 ${subtleTextClass}`}>{copy.eventLead}</p>
@@ -366,7 +459,9 @@ export default function AzurePromisePreview({
                 ))}
               </div>
             </div>
+            </ScrollRevealDiv>
 
+            <ScrollRevealDiv revealAxis="right" className={scroll.block}>
             <div className="grid gap-4 lg:grid-cols-[0.92fr_1.08fr]">
               <div className={`rounded-[1.7rem] p-6 sm:p-7 ${softCardClass}`}>
                 <p className="text-xs uppercase tracking-[0.28em] text-[#6f9bb6]">{copy.mapTitle}</p>
@@ -401,8 +496,9 @@ export default function AzurePromisePreview({
                 </div>
                 <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-3">
                 {extendedGalleryImages.map((image, index) => (
-                  <button
+                  <ScrollRevealButton
                     key={`${image}-${index}`}
+                    revealAxis={index % 2 === 0 ? "left" : "right"}
                     type="button"
                     onClick={() =>
                       onPreviewImage({
@@ -421,7 +517,9 @@ export default function AzurePromisePreview({
                 </div>
               </div>
             </div>
+            </ScrollRevealDiv>
 
+            <ScrollRevealDiv revealAxis="left" className={scroll.block}>
             <div className="grid gap-4 lg:grid-cols-[1fr_0.95fr]">
               <div className={`rounded-[1.7rem] p-6 sm:p-7 ${softCardClass}`}>
                 <p className="text-xs uppercase tracking-[0.28em] text-[#6f9bb6]">{copy.infoTitle}</p>
@@ -447,7 +545,9 @@ export default function AzurePromisePreview({
                 </div>
               </div>
             </div>
+            </ScrollRevealDiv>
 
+            <ScrollRevealDiv revealAxis="right" className={scroll.block}>
             <div className={`rounded-[1.7rem] p-6 sm:p-7 ${elevatedCardClass}`}>
               <div className="grid gap-6 lg:grid-cols-[0.78fr_1.22fr]">
                 <div>
@@ -477,10 +577,13 @@ export default function AzurePromisePreview({
                 </form>
               </div>
             </div>
+            </ScrollRevealDiv>
 
+            <ScrollRevealDiv revealAxis="up" className={scroll.block}>
             <div className={`rounded-[1.7rem] p-6 text-center ${softCardClass}`}>
               <p className="font-display text-4xl leading-tight">{copy.footerTitle}</p>
             </div>
+            </ScrollRevealDiv>
           </div>
         </div>
       </section>
