@@ -2,9 +2,19 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState, type FormEvent } from "react";
+import { useCallback, useMemo, useState, type FormEvent } from "react";
+import {
+  IconAppleBrand,
+  IconFacebookBrand,
+  IconGoogleColor,
+} from "@/components/icons-auth-social";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
-import { loginRequest } from "@/lib/auth-client";
+import {
+  getSocialAuthStartUrl,
+  isFakeAuthEnabled,
+  loginRequest,
+  type SocialAuthProvider,
+} from "@/lib/auth-client";
 
 type AuthMode = "login" | "register";
 
@@ -60,17 +70,23 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
                 : "Tạo tài khoản mới",
             title:
               mode === "login"
+                ? "Chào mừng trở lại"
+                : "Bắt đầu cùng Lumiere",
+            lead:
+              mode === "login"
                 ? "Đăng nhập để tiếp tục hoàn thiện website cưới của bạn."
                 : "Tạo tài khoản để bắt đầu hành trình thiệp mời trực tuyến.",
             body:
               mode === "login"
-                ? "Cập nhật nội dung, theo dõi yêu cầu chỉnh sửa và xem tiến độ hoàn thiện — tất cả tại một nơi."
-                : "Lưu mẫu yêu thích, khởi tạo dự án mới và nhận thông tin tiến độ bàn giao rõ ràng.",
+                ? "Cập nhật nội dung, theo dõi chỉnh sửa và tiến độ — gọn trong một không gian."
+                : "Lưu mẫu yêu thích, khởi tạo dự án và nhận thông tin bàn giao rõ ràng.",
+            asideKicker: "Lumiere",
+            asideTitle: "Không gian riêng cho thiệp mời trực tuyến của hai bạn.",
             email: "Email",
             password: "Mật khẩu",
             confirmPassword: "Nhập lại mật khẩu",
             forgotPassword: "Quên mật khẩu?",
-            rememberMe: "Ghi nhớ tôi",
+            rememberMe: "Ghi nhớ đăng nhập",
             submit: mode === "login" ? "Đăng nhập" : "Tạo tài khoản",
             switchPrompt:
               mode === "login" ? "Chưa có tài khoản?" : "Đã có tài khoản?",
@@ -81,23 +97,33 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
             feature2: "Theo dõi yêu cầu chỉnh sửa và phản hồi",
             feature3: "Xem tiến độ hoàn thiện minh bạch",
             submitting: "Đang đăng nhập…",
+            socialContinue: "Hoặc tiếp tục với",
+            socialEmail: "Hoặc dùng email",
+            socialGoogle: "Google",
+            socialFacebook: "Facebook",
+            socialApple: "Apple",
+            socialNeedApi:
+              "Chưa cấu hình API. Đặt NEXT_PUBLIC_API_URL để bật đăng nhập mạng xã hội (hoặc bật chế độ demo).",
           }
         : {
             backHome: "Back to home",
             badge: mode === "login" ? "Sign in" : "Create account",
-            title:
+            title: mode === "login" ? "Welcome back" : "Start with Lumiere",
+            lead:
               mode === "login"
                 ? "Sign in to continue shaping your wedding website."
                 : "Create an account to begin your online invitation journey.",
             body:
               mode === "login"
-                ? "Update your copy, follow revision requests, and see delivery progress—all in one calm workspace."
-                : "Save favorite templates, start new projects, and stay informed as your site comes together.",
+                ? "Update copy, follow revisions, and see delivery progress in one calm workspace."
+                : "Save favorite templates, start projects, and stay informed as your site comes together.",
+            asideKicker: "Lumiere",
+            asideTitle: "A private space to refine your online wedding invitation.",
             email: "Email",
             password: "Password",
             confirmPassword: "Confirm password",
             forgotPassword: "Forgot password?",
-            rememberMe: "Remember me",
+            rememberMe: "Keep me signed in",
             submit: mode === "login" ? "Sign in" : "Create account",
             switchPrompt:
               mode === "login" ? "Don't have an account?" : "Already have an account?",
@@ -108,163 +134,333 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
             feature2: "Follow revision requests and feedback",
             feature3: "See clear, transparent delivery progress",
             submitting: "Signing in…",
+            socialContinue: "Or continue with",
+            socialEmail: "Or use email",
+            socialGoogle: "Google",
+            socialFacebook: "Facebook",
+            socialApple: "Apple",
+            socialNeedApi:
+              "API base URL is not set. Add NEXT_PUBLIC_API_URL to enable social sign-in (or enable demo mode).",
           },
     [language, mode],
   );
 
-  const shellClassName = isDark
-    ? "border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))] text-white shadow-[0_24px_70px_rgba(0,0,0,0.28)]"
-    : "border border-white/70 bg-white/70 text-[var(--color-ink)] shadow-[0_24px_70px_rgba(49,42,40,0.08)]";
+  const startSocialLogin = useCallback(
+    (provider: SocialAuthProvider) => {
+      setError(null);
+      const url = getSocialAuthStartUrl(provider);
+      if (url) {
+        window.location.assign(url);
+        return;
+      }
+      if (isFakeAuthEnabled()) {
+        router.push("/profile");
+        router.refresh();
+        return;
+      }
+      setError(copy.socialNeedApi);
+    },
+    [copy.socialNeedApi, router],
+  );
 
-  const inputClassName = isDark
-    ? "border-white/10 bg-white/6 text-white placeholder:text-white/35"
-    : "border-[var(--color-ink)]/10 bg-[var(--color-cream)] text-[var(--color-ink)] placeholder:text-[var(--color-ink)]/35";
+  const muted = isDark ? "text-white/62" : "text-[var(--color-ink)]/62";
+  const mutedSoft = isDark ? "text-white/48" : "text-[var(--color-ink)]/48";
 
-  const mutedTextClassName = isDark ? "text-white/68" : "text-[var(--color-ink)]/72";
-  const asideClassName = isDark
-    ? "border border-white/10 bg-[radial-gradient(circle_at_top,rgba(209,177,171,0.12),transparent_45%),rgba(255,255,255,0.04)]"
-    : "border border-[var(--color-ink)]/8 bg-[linear-gradient(180deg,rgba(197,167,161,0.16),rgba(255,255,255,0.84))]";
+  const panelOuter = isDark
+    ? "border border-white/[0.09] shadow-[0_4px_0_0_rgba(0,0,0,0.2),0_32px_80px_rgba(0,0,0,0.42),inset_0_1px_0_0_rgba(255,255,255,0.06)]"
+    : "border border-[var(--color-ink)]/[0.06] shadow-[0_4px_0_0_rgba(49,42,40,0.03),0_28px_70px_rgba(49,42,40,0.09),inset_0_1px_0_0_rgba(255,255,255,0.85)]";
+
+  const panelInner = isDark
+    ? "bg-[linear-gradient(168deg,rgba(255,255,255,0.09)_0%,rgba(255,255,255,0.03)_38%,rgba(22,22,24,0.96)_72%)] backdrop-blur-xl"
+    : "bg-[linear-gradient(168deg,rgba(255,255,255,0.98)_0%,rgba(255,252,248,0.96)_35%,rgba(247,242,236,0.92)_100%)] backdrop-blur-sm";
+
+  const heroBanner = isDark
+    ? "bg-[linear-gradient(135deg,rgba(232,196,190,0.42)_0%,rgba(125,140,121,0.24)_40%,rgba(24,24,26,0.96)_85%,#121214_100%)]"
+    : "bg-[linear-gradient(135deg,rgba(214,180,174,0.58)_0%,rgba(255,245,238,0.78)_38%,rgba(252,248,242,0.96)_72%,#faf6f1_100%)]";
+
+  const heroShine = isDark
+    ? "bg-[linear-gradient(105deg,transparent_40%,rgba(255,255,255,0.07)_48%,transparent_58%)]"
+    : "bg-[linear-gradient(105deg,transparent_35%,rgba(255,255,255,0.7)_50%,transparent_65%)]";
+
+  const inputClass =
+    `w-full rounded-2xl border px-4 py-3.5 text-[15px] outline-none transition duration-200 ` +
+    `focus:border-[var(--color-rose)]/55 focus:ring-[3px] focus:ring-[var(--color-rose)]/14 ` +
+    (isDark
+      ? "border-white/10 bg-white/[0.05] text-white placeholder:text-white/28 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)]"
+      : "border-[var(--color-ink)]/[0.07] bg-white text-[var(--color-ink)] placeholder:text-[var(--color-ink)]/30 shadow-[0_1px_2px_rgba(49,42,40,0.04)]");
+
+  const labelClass = `text-[13px] font-semibold tracking-tight ${isDark ? "text-white/88" : "text-[var(--color-ink)]"}`;
+
+  const featureDot =
+    "mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-rose)] shadow-[0_0_0_3px_rgba(197,167,161,0.2)]";
+
+  const features = [copy.feature1, copy.feature2, copy.feature3];
 
   return (
-    <main className={`relative isolate min-h-screen overflow-hidden transition-colors ${isDark ? "bg-[#090909]" : "bg-[var(--color-cream)]"}`}>
+    <main
+      className={`relative isolate min-h-screen overflow-hidden transition-colors ${
+        isDark ? "bg-[#090909]" : "bg-[var(--color-cream)]"
+      }`}
+    >
       <div
-        className={`absolute inset-0 ${
+        className={`pointer-events-none absolute inset-0 ${
           isDark
-            ? "bg-[radial-gradient(circle_at_top,_rgba(209,177,171,0.12),_transparent_32%),linear-gradient(135deg,_rgba(9,9,9,0.96),_rgba(17,17,19,0.94))]"
-            : "bg-[radial-gradient(circle_at_top,_rgba(197,167,161,0.35),_transparent_42%),linear-gradient(135deg,_rgba(255,255,255,0.82),_rgba(233,221,209,0.88))]"
+            ? "bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(209,177,171,0.14),transparent),radial-gradient(circle_at_100%_0%,rgba(125,140,121,0.08),transparent_40%),linear-gradient(180deg,#0a0a0b,#111113)]"
+            : "bg-[radial-gradient(ellipse_70%_55%_at_50%_-15%,rgba(197,167,161,0.45),transparent),radial-gradient(circle_at_90%_10%,rgba(255,255,255,0.9),transparent_45%),linear-gradient(180deg,#fffcf8,#f7f2ec)]"
         }`}
       />
-      <div className={`absolute -top-24 right-[-100px] h-72 w-72 rounded-full blur-3xl ${isDark ? "bg-white/8" : "bg-white/40"}`} />
       <div
-        className={`absolute bottom-[-30px] left-[-60px] h-64 w-64 rounded-full blur-3xl ${
-          isDark ? "bg-[rgba(155,168,150,0.08)]" : "bg-[rgba(125,140,121,0.14)]"
+        className={`pointer-events-none absolute -top-24 right-[-18%] h-72 w-72 rounded-full blur-3xl ${
+          isDark ? "bg-[var(--color-rose)]/10" : "bg-white/60"
+        }`}
+      />
+      <div
+        className={`pointer-events-none absolute bottom-[-10%] left-[-12%] h-80 w-80 rounded-full blur-3xl ${
+          isDark ? "bg-[var(--color-sage)]/8" : "bg-[var(--color-sage)]/12"
         }`}
       />
 
-      <div className="relative mx-auto flex min-h-screen w-full max-w-7xl items-center px-6 py-10 sm:px-10 lg:px-16">
-        <div className="grid w-full gap-8 lg:grid-cols-[1.05fr_0.95fr]">
-          <section className={`rounded-[2.5rem] p-8 sm:p-10 lg:p-12 ${shellClassName}`}>
+      <div className="relative mx-auto flex min-h-screen w-full max-w-lg items-center px-5 py-12 sm:max-w-2xl sm:px-8 lg:max-w-5xl lg:py-16 xl:max-w-6xl xl:px-12">
+        <div className={`w-full overflow-hidden rounded-[2rem] lg:rounded-[2.25rem] ${panelOuter} ${panelInner} lg:grid lg:min-h-[min(32rem,85vh)] lg:grid-cols-[minmax(17rem,42%)_1fr]`}>
+          {/* Cột thương hiệu */}
+          <div className="relative flex flex-col lg:min-h-0">
+            <div
+              className={`relative h-40 shrink-0 overflow-hidden sm:h-44 lg:absolute lg:inset-0 lg:h-full ${heroBanner}`}
+              aria-hidden="true"
+            >
+              <div className={`pointer-events-none absolute inset-0 ${heroShine}`} />
+              <div
+                className={`pointer-events-none absolute -bottom-12 left-1/2 h-28 w-[130%] -translate-x-1/2 rounded-[100%] blur-2xl ${
+                  isDark ? "bg-[var(--color-rose)]/14" : "bg-white/75"
+                }`}
+              />
+            </div>
+            <div className="relative z-[1] flex flex-col justify-end px-6 pb-8 pt-4 sm:px-8 lg:flex-1 lg:justify-center lg:px-10 lg:pb-12 lg:pt-12 xl:px-12">
+              <p
+                className={`text-[11px] font-semibold uppercase tracking-[0.28em] ${
+                  isDark ? "text-white/55" : "text-[var(--color-ink)]/55"
+                }`}
+              >
+                {copy.asideKicker}
+              </p>
+              <h2
+                className={`mt-3 font-display text-2xl leading-tight tracking-tight sm:text-3xl lg:text-[1.85rem] lg:leading-snug ${
+                  isDark ? "text-white/[0.94]" : "text-[var(--color-ink)]"
+                }`}
+              >
+                {copy.asideTitle}
+              </h2>
+              <ul className={`mt-6 hidden space-y-3.5 text-sm leading-relaxed lg:block ${muted}`}>
+                {features.map((item) => (
+                  <li key={item} className="flex gap-3">
+                    <span className={featureDot} aria-hidden="true" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Form */}
+          <div
+            className={`border-t px-6 py-9 sm:px-8 sm:py-10 lg:border-l lg:border-t-0 lg:px-10 lg:py-12 xl:px-14 ${
+              isDark ? "border-white/[0.08]" : "border-[var(--color-ink)]/[0.07]"
+            }`}
+          >
             <Link
               href="/"
-              className={`inline-flex items-center gap-2 text-sm ${mutedTextClassName}`}
+              className={`inline-flex items-center gap-2 text-sm font-medium transition hover:opacity-80 ${muted}`}
             >
-              <span aria-hidden="true">←</span>
+              <span aria-hidden="true" className="text-base opacity-70">
+                ←
+              </span>
               {copy.backHome}
             </Link>
 
-            <p className="mt-8 text-sm uppercase tracking-[0.35em] text-[var(--color-sage)]">
+            <p className="mt-8 text-[11px] font-semibold uppercase tracking-[0.32em] text-[var(--color-sage)]">
               {copy.badge}
             </p>
-            <h1 className="mt-4 max-w-xl font-display text-5xl leading-none sm:text-6xl">
-              {copy.title}
-            </h1>
-            <p className={`mt-6 max-w-xl text-base leading-8 ${mutedTextClassName}`}>
-              {copy.body}
+            <h1 className="mt-3 font-display text-3xl tracking-tight sm:text-4xl">{copy.title}</h1>
+            <p className={`mt-2 text-[15px] font-medium ${isDark ? "text-white/80" : "text-[var(--color-ink)]/85"}`}>
+              {copy.lead}
             </p>
+            <p className={`mt-3 max-w-md text-sm leading-relaxed ${mutedSoft}`}>{copy.body}</p>
 
-            <form className="mt-10 grid gap-4" onSubmit={handleSubmit} noValidate>
-              <input
-                type="email"
-                name="email"
-                autoComplete="email"
-                value={email}
-                onChange={(ev) => setEmail(ev.target.value)}
-                placeholder={copy.email}
-                disabled={mode === "login" && loading}
-                className={`rounded-2xl border px-5 py-4 outline-none transition ${inputClassName} disabled:opacity-60`}
-              />
-              <input
-                type="password"
-                name="password"
-                autoComplete={mode === "login" ? "current-password" : "new-password"}
-                value={password}
-                onChange={(ev) => setPassword(ev.target.value)}
-                placeholder={copy.password}
-                disabled={mode === "login" && loading}
-                className={`rounded-2xl border px-5 py-4 outline-none transition ${inputClassName} disabled:opacity-60`}
-              />
-              {mode === "register" ? (
+            <ul className={`mt-6 space-y-2.5 text-sm lg:hidden ${muted}`}>
+              {features.map((item) => (
+                <li key={item} className="flex gap-2.5">
+                  <span className={featureDot} aria-hidden="true" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+
+            <form className="mt-8 space-y-5" onSubmit={handleSubmit} noValidate>
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className={`h-px flex-1 ${isDark ? "bg-white/10" : "bg-[var(--color-ink)]/10"}`} />
+                  <span
+                    className={`shrink-0 text-center text-[10px] font-semibold uppercase tracking-[0.22em] ${mutedSoft}`}
+                  >
+                    {copy.socialContinue}
+                  </span>
+                  <div className={`h-px flex-1 ${isDark ? "bg-white/10" : "bg-[var(--color-ink)]/10"}`} />
+                </div>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                  <button
+                    type="button"
+                    disabled={mode === "login" && loading}
+                    onClick={() => startSocialLogin("google")}
+                    className={`flex w-full items-center justify-center gap-2.5 rounded-2xl border py-3.5 text-sm font-semibold transition hover:opacity-95 disabled:pointer-events-none disabled:opacity-55 ${
+                      isDark
+                        ? "border-white/12 bg-white/[0.06] text-white"
+                        : "border-[var(--color-ink)]/10 bg-white text-[var(--color-ink)] shadow-sm"
+                    }`}
+                  >
+                    <IconGoogleColor className="h-5 w-5 shrink-0" />
+                    {copy.socialGoogle}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={mode === "login" && loading}
+                    onClick={() => startSocialLogin("facebook")}
+                    className="flex w-full items-center justify-center gap-2.5 rounded-2xl border border-transparent bg-[#1877F2] py-3.5 text-sm font-semibold text-white transition hover:brightness-110 disabled:pointer-events-none disabled:opacity-55"
+                  >
+                    <IconFacebookBrand className="h-5 w-5 shrink-0 text-white" />
+                    {copy.socialFacebook}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={mode === "login" && loading}
+                    onClick={() => startSocialLogin("apple")}
+                    className={`flex w-full items-center justify-center gap-2.5 rounded-2xl border border-transparent py-3.5 text-sm font-semibold transition hover:opacity-90 disabled:pointer-events-none disabled:opacity-55 ${
+                      isDark
+                        ? "bg-white text-black"
+                        : "bg-[#1a1a1a] text-white"
+                    }`}
+                  >
+                    <IconAppleBrand className="h-5 w-5 shrink-0" />
+                    {copy.socialApple}
+                  </button>
+                </div>
+                <div className="flex items-center gap-3 pt-1">
+                  <div className={`h-px flex-1 ${isDark ? "bg-white/10" : "bg-[var(--color-ink)]/10"}`} />
+                  <span
+                    className={`shrink-0 text-center text-[10px] font-semibold uppercase tracking-[0.22em] ${mutedSoft}`}
+                  >
+                    {copy.socialEmail}
+                  </span>
+                  <div className={`h-px flex-1 ${isDark ? "bg-white/10" : "bg-[var(--color-ink)]/10"}`} />
+                </div>
+              </div>
+
+              <div>
+                <label className={labelClass} htmlFor="auth-email">
+                  {copy.email}
+                </label>
                 <input
-                  type="password"
-                  name="confirmPassword"
-                  autoComplete="new-password"
-                  value={confirmPassword}
-                  onChange={(ev) => setConfirmPassword(ev.target.value)}
-                  placeholder={copy.confirmPassword}
-                  className={`rounded-2xl border px-5 py-4 outline-none transition ${inputClassName}`}
+                  id="auth-email"
+                  type="email"
+                  name="email"
+                  autoComplete="email"
+                  value={email}
+                  onChange={(ev) => setEmail(ev.target.value)}
+                  placeholder="name@email.com"
+                  disabled={mode === "login" && loading}
+                  className={`${inputClass} mt-2 disabled:opacity-55`}
                 />
+              </div>
+              <div>
+                <label className={labelClass} htmlFor="auth-password">
+                  {copy.password}
+                </label>
+                <input
+                  id="auth-password"
+                  type="password"
+                  name="password"
+                  autoComplete={mode === "login" ? "current-password" : "new-password"}
+                  value={password}
+                  onChange={(ev) => setPassword(ev.target.value)}
+                  placeholder="••••••••"
+                  disabled={mode === "login" && loading}
+                  className={`${inputClass} mt-2 disabled:opacity-55`}
+                />
+              </div>
+              {mode === "register" ? (
+                <div>
+                  <label className={labelClass} htmlFor="auth-confirm">
+                    {copy.confirmPassword}
+                  </label>
+                  <input
+                    id="auth-confirm"
+                    type="password"
+                    name="confirmPassword"
+                    autoComplete="new-password"
+                    value={confirmPassword}
+                    onChange={(ev) => setConfirmPassword(ev.target.value)}
+                    placeholder="••••••••"
+                    className={`${inputClass} mt-2`}
+                  />
+                </div>
               ) : null}
 
               {error ? (
                 <p
                   role="alert"
-                  className={`rounded-2xl border px-5 py-3 text-sm ${
+                  className={`rounded-2xl border px-4 py-3.5 text-sm ${
                     isDark
-                      ? "border-red-400/35 bg-red-500/10 text-red-200"
-                      : "border-red-200 bg-red-50 text-red-800"
+                      ? "border-red-400/30 bg-red-500/[0.1] text-red-100"
+                      : "border-red-200/90 bg-red-50 text-red-900"
                   }`}
                 >
                   {error}
                 </p>
               ) : null}
 
-              <div className={`flex items-center justify-between gap-4 text-sm ${mutedTextClassName}`}>
-                <label className="inline-flex items-center gap-2">
+              <div className={`flex flex-wrap items-center justify-between gap-3 text-sm ${muted}`}>
+                <label className="inline-flex cursor-pointer items-center gap-2.5">
                   <input
                     type="checkbox"
-                    className="h-4 w-4 rounded border-current"
+                    className={`h-4 w-4 rounded border shadow-sm ${
+                      isDark
+                        ? "border-white/20 bg-white/5 accent-[var(--color-rose)]"
+                        : "border-[var(--color-ink)]/15 bg-white accent-[var(--color-rose)]"
+                    }`}
                     disabled={mode === "login" && loading}
                   />
                   <span>{copy.rememberMe}</span>
                 </label>
                 {mode === "login" ? (
-                  <button type="button" className="text-[var(--color-sage)] transition hover:opacity-80">
+                  <button
+                    type="button"
+                    className="font-medium text-[var(--color-sage)] transition hover:opacity-80"
+                  >
                     {copy.forgotPassword}
                   </button>
-                ) : <span />}
+                ) : (
+                  <span className="min-w-[1px]" aria-hidden="true" />
+                )}
               </div>
 
               <button
                 type="submit"
                 disabled={mode === "login" && loading}
-                className="btn-primary mt-2 inline-flex items-center justify-center rounded-full px-7 py-4 text-sm font-medium transition disabled:pointer-events-none disabled:opacity-55"
+                className="btn-primary mt-1 w-full rounded-full px-8 py-3.5 text-sm font-semibold shadow-[0_14px_36px_rgba(197,167,161,0.38)] transition hover:brightness-[1.03] disabled:pointer-events-none disabled:opacity-55 dark:shadow-[0_16px_40px_rgba(0,0,0,0.38)] sm:w-auto sm:min-w-[12rem]"
               >
                 {mode === "login" && loading ? copy.submitting : copy.submit}
               </button>
             </form>
 
-            <p className={`mt-8 text-sm ${mutedTextClassName}`}>
+            <p className={`mt-8 text-sm ${muted}`}>
               {copy.switchPrompt}{" "}
-              <Link href={copy.switchHref} className="font-medium text-[var(--color-sage)]">
+              <Link
+                href={copy.switchHref}
+                className="font-semibold text-[var(--color-sage)] underline decoration-current/20 underline-offset-4 transition hover:decoration-current/40"
+              >
                 {copy.switchAction}
               </Link>
             </p>
-          </section>
-
-          <aside className={`rounded-[2.5rem] p-8 sm:p-10 lg:p-12 ${asideClassName}`}>
-            <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-rose)]">
-              Lumiere account
-            </p>
-            <h2 className="mt-4 font-display text-4xl leading-tight sm:text-5xl">
-              {language === "vi"
-                ? "Không gian riêng để hoàn thiện thiệp mời trực tuyến của hai bạn."
-                : "A private space to refine your online wedding invitation."}
-            </h2>
-            <div className="mt-8 space-y-4">
-              {[copy.feature1, copy.feature2, copy.feature3].map((item) => (
-                <div
-                  key={item}
-                  className={`rounded-[1.75rem] px-5 py-4 text-sm ${
-                    isDark
-                      ? "bg-[rgba(255,255,255,0.05)] text-white/78"
-                      : "bg-white/72 text-[var(--color-ink)]/78"
-                  }`}
-                >
-                  {item}
-                </div>
-              ))}
-            </div>
-          </aside>
+          </div>
         </div>
       </div>
     </main>

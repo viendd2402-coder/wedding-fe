@@ -176,6 +176,49 @@ function ScrollRevealArticle(
   );
 }
 
+/** Khối cảm ơn cuối trang — ảnh nền + thẻ sáng (khác glass panel cũ). */
+function SlideFlexThanksFooter({
+  cover,
+  headline,
+  body,
+  groom,
+  bride,
+  tier,
+}: {
+  cover: string;
+  headline: string;
+  body: string;
+  groom: string;
+  bride: string;
+  tier: string;
+}) {
+  const titleId = "slideflex-footer-thanks";
+  return (
+    <footer className={styles.thanksFooter} aria-labelledby={titleId}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img className={styles.thanksFooterBg} src={cover} alt="" />
+      <div className={styles.thanksFooterDim} aria-hidden="true" />
+      <div className={styles.thanksFooterShell}>
+        <div className={styles.thanksCard}>
+          <h2 id={titleId} className={styles.thanksHeadline}>
+            {headline}
+          </h2>
+          <p className={styles.thanksBody}>{body}</p>
+          <div className={styles.thanksRule} aria-hidden="true" />
+          <p className={styles.thanksCouple}>
+            <span>{groom}</span>
+            <span className={styles.thanksHeart} aria-hidden="true">
+              ♥
+            </span>
+            <span>{bride}</span>
+          </p>
+          <p className={styles.thanksTier}>{tier}</p>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
 export default function SlideFlexPreview({
   template,
   preview,
@@ -196,6 +239,12 @@ export default function SlideFlexPreview({
   const [slideIdx, setSlideIdx] = useState(0);
   const [navOpen, setNavOpen] = useState(false);
   const [giftCopied, setGiftCopied] = useState(false);
+  const [countdownTick, setCountdownTick] = useState(0);
+
+  useEffect(() => {
+    const id = window.setInterval(() => setCountdownTick((n) => n + 1), 1000);
+    return () => window.clearInterval(id);
+  }, []);
 
   useEffect(() => {
     if (slides.length <= 1) return;
@@ -240,6 +289,14 @@ export default function SlideFlexPreview({
             eventsTitle: "Sự kiện cưới",
             eventsLead:
               "…tình yêu không phải là nhìn nhau, mà là cùng nhìn về một hướng…",
+            countdownEyebrow: "Đếm ngược đến ngày vui",
+            countdownDays: "ngày",
+            countdownHours: "giờ",
+            countdownMinutes: "phút",
+            countdownSeconds: "giây",
+            countdownDone: "Hôm nay là ngày trọng đại của chúng mình!",
+            calendarWeekTitle: "Một tuần quanh ngày cưới",
+            calendarWeekHint: "Vòng được tô sáng là ngày trọng đại",
             galleryTitle: "Album hình cưới",
             videoTitle: "Video cưới",
             videoCap: "Khoảnh khắc của hai chúng mình — demo preview.",
@@ -268,6 +325,9 @@ export default function SlideFlexPreview({
             sonOf: "Con ông",
             dauOf: "Con bà",
             tbd: "—",
+            footerThanksHeadline: "Cảm ơn bạn rất nhiều",
+            footerThanksBody:
+              "Chúng mình thật hạnh phúc khi được đón bạn trong ngày trọng đại. Sự hiện diện của bạn là món quà ý nghĩa nhất — hẹn gặp bạn trong niềm vui của lễ cưới.",
           }
         : {
             back: "Back to studio",
@@ -292,6 +352,14 @@ export default function SlideFlexPreview({
             eventsTitle: "Wedding events",
             eventsLead:
               "Love isn’t just gazing at each other—it’s looking in the same direction.",
+            countdownEyebrow: "Counting down to our day",
+            countdownDays: "days",
+            countdownHours: "hours",
+            countdownMinutes: "min",
+            countdownSeconds: "sec",
+            countdownDone: "Today is our wedding day!",
+            calendarWeekTitle: "The week of our wedding",
+            calendarWeekHint: "The ring marks our big day",
             galleryTitle: "Wedding album",
             videoTitle: "Wedding film",
             videoCap: "A glimpse of our day — preview placeholder.",
@@ -319,6 +387,9 @@ export default function SlideFlexPreview({
             sonOf: "Daughter of",
             dauOf: "Son of",
             tbd: "—",
+            footerThanksHeadline: "Thank you so much",
+            footerThanksBody:
+              "We’re truly grateful you’re sharing this day with us. Your presence is the greatest gift—and we can’t wait to celebrate together.",
           },
     [language],
   );
@@ -347,6 +418,54 @@ export default function SlideFlexPreview({
     });
     return `https://calendar.google.com/calendar/render?${params.toString()}`;
   }, [preview.bride, preview.countdownTarget, preview.groom, preview.location, preview.venue]);
+
+  const countdownLive = useMemo(() => {
+    const target = new Date(preview.countdownTarget).getTime();
+    if (Number.isNaN(target)) {
+      return { past: true, days: 0, hours: 0, minutes: 0, seconds: 0 };
+    }
+    const now = Date.now();
+    const diff = target - now;
+    if (diff <= 0) {
+      return { past: true, days: 0, hours: 0, minutes: 0, seconds: 0 };
+    }
+    return {
+      past: false,
+      days: Math.floor(diff / 86400000),
+      hours: Math.floor((diff / 3600000) % 24),
+      minutes: Math.floor((diff / 60000) % 60),
+      seconds: Math.floor((diff / 1000) % 60),
+    };
+  }, [preview.countdownTarget, countdownTick]);
+
+  const slideCalendarWeek = useMemo(() => {
+    const d = new Date(preview.countdownTarget);
+    if (Number.isNaN(d.getTime())) return null;
+    const dow = d.getDay();
+    const monOffset = dow === 0 ? -6 : 1 - dow;
+    const start = new Date(d);
+    start.setDate(d.getDate() + monOffset);
+    start.setHours(0, 0, 0, 0);
+    const days: { n: number; isWedding: boolean }[] = [];
+    for (let i = 0; i < 7; i++) {
+      const x = new Date(start);
+      x.setDate(start.getDate() + i);
+      const isWedding =
+        x.getFullYear() === d.getFullYear() &&
+        x.getMonth() === d.getMonth() &&
+        x.getDate() === d.getDate();
+      days.push({ n: x.getDate(), isWedding });
+    }
+    const monthShort = d.toLocaleDateString(language === "vi" ? "vi-VN" : "en-US", {
+      month: "short",
+    });
+    const year = d.getFullYear();
+    const shortWd =
+      language === "vi"
+        ? ["T2", "T3", "T4", "T5", "T6", "T7", "CN"]
+        : ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+    return { days, monthShort, year, dom: d.getDate(), shortWd };
+  }, [language, preview.countdownTarget]);
 
   const copyAccount = useCallback(async () => {
     try {
@@ -591,6 +710,88 @@ export default function SlideFlexPreview({
               <h2 className={styles.sectionTitle}>{copy.eventsTitle}</h2>
               <p className={styles.sectionLead}>{copy.eventsLead}</p>
             </ScrollRevealDiv>
+            <ScrollRevealDiv revealAxis="up" className={styles.eventsCountWrap}>
+              <div className={styles.eventsCountAccent} aria-hidden="true" />
+              <p className={styles.eventsCountEyebrow}>{copy.countdownEyebrow}</p>
+              {countdownLive.past ? (
+                <p className={styles.eventsCountDone}>{copy.countdownDone}</p>
+              ) : (
+                <div
+                  className={styles.eventsCountUnits}
+                  role="group"
+                  aria-label={copy.countdownEyebrow}
+                >
+                  <div className={styles.eventsCountUnit}>
+                    <span className={styles.eventsCountVal} aria-live="polite">
+                      {countdownLive.days}
+                    </span>
+                    <span className={styles.eventsCountLbl}>{copy.countdownDays}</span>
+                  </div>
+                  <div className={styles.eventsCountUnit}>
+                    <span className={styles.eventsCountVal}>
+                      {String(countdownLive.hours).padStart(2, "0")}
+                    </span>
+                    <span className={styles.eventsCountLbl}>{copy.countdownHours}</span>
+                  </div>
+                  <div className={styles.eventsCountUnit}>
+                    <span className={styles.eventsCountVal}>
+                      {String(countdownLive.minutes).padStart(2, "0")}
+                    </span>
+                    <span className={styles.eventsCountLbl}>{copy.countdownMinutes}</span>
+                  </div>
+                  <div
+                    className={`${styles.eventsCountUnit} ${styles.eventsCountUnitLive}`.trim()}
+                  >
+                    <span className={styles.eventsCountVal} aria-live="polite">
+                      {String(countdownLive.seconds).padStart(2, "0")}
+                    </span>
+                    <span className={styles.eventsCountLbl}>{copy.countdownSeconds}</span>
+                  </div>
+                </div>
+              )}
+            </ScrollRevealDiv>
+            {slideCalendarWeek ? (
+              <ScrollRevealDiv revealAxis="left" className={styles.eventsWeekCal}>
+                <div className={styles.eventsWeekCalHead}>
+                  <div className={styles.eventsWeekCalBadge}>
+                    <span className={styles.eventsWeekCalDom}>{slideCalendarWeek.dom}</span>
+                    <span className={styles.eventsWeekCalMy}>
+                      {slideCalendarWeek.monthShort} · {slideCalendarWeek.year}
+                    </span>
+                  </div>
+                  <div className={styles.eventsWeekCalHeadText}>
+                    <p className={styles.eventsWeekCalTitle}>{copy.calendarWeekTitle}</p>
+                    <p className={styles.eventsWeekCalDate}>{preview.dateLabel}</p>
+                  </div>
+                </div>
+                <div className={styles.eventsWeekTrack}>
+                  <ul className={styles.eventsWeekStops} role="list">
+                    {slideCalendarWeek.days.map((day, i) => (
+                      <li
+                        key={`${day.n}-${i}`}
+                        className={`${styles.eventsWeekStop} ${day.isWedding ? styles.eventsWeekStopWed : ""}`.trim()}
+                      >
+                        <span className={styles.eventsWeekWd}>{slideCalendarWeek.shortWd[i]}</span>
+                        <span
+                          className={`${styles.eventsWeekOrb} ${day.isWedding ? styles.eventsWeekOrbWed : ""}`.trim()}
+                        >
+                          <span className={styles.eventsWeekOrbNum}>{day.n}</span>
+                          {day.isWedding ? (
+                            <span className={styles.eventsWeekHeart} aria-hidden="true">
+                              ♥
+                            </span>
+                          ) : null}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <p className={styles.eventsWeekHint}>
+                  <span className={styles.eventsWeekHintDot} aria-hidden="true" />
+                  {copy.calendarWeekHint}
+                </p>
+              </ScrollRevealDiv>
+            ) : null}
             <div className={styles.eventsList}>
               <ScrollRevealDiv revealAxis="left">
                 <article className={styles.eventCard}>
@@ -782,9 +983,14 @@ export default function SlideFlexPreview({
         </section>
       </main>
 
-      <footer className={styles.footer}>
-        {preview.groom} &amp; {preview.bride} · {template.tier}
-      </footer>
+      <SlideFlexThanksFooter
+        cover={cover}
+        headline={copy.footerThanksHeadline}
+        body={copy.footerThanksBody}
+        groom={preview.groom}
+        bride={preview.bride}
+        tier={template.tier}
+      />
     </div>
   );
 }

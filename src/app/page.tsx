@@ -1062,10 +1062,10 @@ export default function Home() {
             <div className="relative w-full max-w-[min(100%,420px)] sm:max-w-[440px] lg:max-w-[380px]">
               {/* Unsplash — photo-1519741497674-611481863552 (Unsplash License) */}
               <Image
-                src="/marketing/why-us-phones.jpg"
+                src="/marketing/wedding-animation.jpg"
                 alt={copy.whyUsImageAlt}
                 width={1200}
-                height={800}
+                height={1000}
                 className="h-auto w-full select-none rounded-2xl object-cover object-center shadow-[0_20px_50px_rgba(49,42,40,0.12)] ring-1 ring-black/5 dark:shadow-[0_24px_60px_rgba(0,0,0,0.45)] dark:ring-white/10"
                 sizes="(max-width: 1024px) min(100vw, 420px), 380px"
                 priority={false}

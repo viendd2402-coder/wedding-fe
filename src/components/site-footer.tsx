@@ -4,19 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useMemo, type MouseEvent } from "react";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
-import { IconZaloBrand } from "@/components/icons-social-brands";
+import { IconTiktokBrand, IconZaloBrand } from "@/components/icons-social-brands";
 import { forceDocumentScrollTop } from "@/lib/force-document-scroll-top";
-import { siteContact, siteZaloUrl } from "@/lib/site-contact";
-import { weddingTemplates } from "@/lib/templates";
-
-const templateDemoSlugs = new Set(weddingTemplates.map((t) => t.slug));
-
-function pathnameIsTemplateDemo(pathname: string | null): boolean {
-  if (!pathname?.startsWith("/templates/")) return false;
-  const slug = pathname.slice("/templates/".length).split("/")[0];
-  if (!slug) return false;
-  return templateDemoSlugs.has(slug);
-}
+import { isTemplateDetailPath } from "@/lib/is-template-detail-path";
+import { siteContact, siteTiktokUrl, siteZaloUrl } from "@/lib/site-contact";
 
 function IconMail({ className }: { className?: string }) {
   return (
@@ -66,6 +57,7 @@ export default function SiteFooter() {
             rights: "Bảo lưu mọi quyền.",
             contactTitle: "Liên hệ trực tiếp",
             labelZalo: "Zalo",
+            labelTiktok: "TikTok",
             labelEmail: "Email",
             labelPhone: "Điện thoại",
             tagline: "Tinh tế trên mọi thiết bị.",
@@ -89,6 +81,7 @@ export default function SiteFooter() {
             rights: "All rights reserved.",
             contactTitle: "Get in touch",
             labelZalo: "Zalo",
+            labelTiktok: "TikTok",
             labelEmail: "Email",
             labelPhone: "Phone",
             tagline: "Refined on every screen.",
@@ -133,7 +126,7 @@ export default function SiteFooter() {
     [pathname],
   );
 
-  if (pathnameIsTemplateDemo(pathname)) {
+  if (isTemplateDetailPath(pathname)) {
     return null;
   }
 
@@ -226,6 +219,21 @@ export default function SiteFooter() {
                   </p>
                 </div>
               </a>
+              {siteTiktokUrl ? (
+                <a href={siteTiktokUrl} className={contactCardClass} target="_blank" rel="noopener noreferrer">
+                  <span className={iconWrap}>
+                    <IconTiktokBrand className="h-5 w-5" />
+                  </span>
+                  <div className="min-w-0 pt-0.5">
+                    <p className={`text-[10px] font-semibold uppercase tracking-[0.22em] ${isDark ? "text-white/42" : "text-[var(--color-ink)]/45"}`}>
+                      {copy.labelTiktok}
+                    </p>
+                    <p className={`mt-1 text-sm font-medium ${isDark ? "text-white/88" : "text-[var(--color-ink)]/88"}`}>
+                      {siteContact.tiktokDisplay}
+                    </p>
+                  </div>
+                </a>
+              ) : null}
               <a href={`mailto:${siteContact.email}`} className={contactCardClass}>
                 <span className={iconWrap}>
                   <IconMail className="h-5 w-5" />

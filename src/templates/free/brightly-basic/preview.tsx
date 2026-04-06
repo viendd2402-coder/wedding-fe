@@ -254,10 +254,16 @@ export default function BrightlyBasicPreview({
   const gallery = images.galleryImages.length ? images.galleryImages : brightlyBasicGallery;
   const cover = images.coverImage || template.image;
 
+  const [countdownTick, setCountdownTick] = useState(0);
+  useEffect(() => {
+    const id = window.setInterval(() => setCountdownTick((n) => n + 1), 1000);
+    return () => window.clearInterval(id);
+  }, []);
+
   const countdown = useMemo(() => {
-    const now = new Date();
-    const target = new Date(preview.countdownTarget);
-    const diff = Math.max(target.getTime() - now.getTime(), 0);
+    const now = Date.now();
+    const target = new Date(preview.countdownTarget).getTime();
+    const diff = Math.max(target - now, 0);
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
     const minutes = Math.floor((diff / (1000 * 60)) % 60);
@@ -268,7 +274,7 @@ export default function BrightlyBasicPreview({
       { v: String(minutes).padStart(2, "0"), l: language === "vi" ? "Phút" : "Min" },
       { v: String(seconds).padStart(2, "0"), l: language === "vi" ? "Giây" : "Sec" },
     ];
-  }, [language, preview.countdownTarget]);
+  }, [language, preview.countdownTarget, countdownTick]);
 
   const copy = useMemo(
     () =>
@@ -317,6 +323,11 @@ export default function BrightlyBasicPreview({
             sonOf: "Con ông",
             dauOf: "Con bà",
             tbd: "—",
+            calendarEyebrow: "Lịch tháng",
+            calendarWeddingDay: "Ngày cưới",
+            footerThanksEyebrow: "Trân trọng cảm ơn",
+            footerThanks:
+              "Cảm ơn bạn đã dành thời gian cho chúng mình. Sự hiện diện và lời chúc của bạn là món quà quý giá nhất trong ngày trọng đại này — hẹn gặp bạn trong niềm vui của lễ cưới.",
           }
         : {
             back: "Back home",
@@ -362,9 +373,38 @@ export default function BrightlyBasicPreview({
             sonOf: "Son of",
             dauOf: "Daughter of",
             tbd: "—",
+            calendarEyebrow: "Month at a glance",
+            calendarWeddingDay: "Wedding day",
+            footerThanksEyebrow: "With gratitude",
+            footerThanks:
+              "Thank you for sharing this moment with us. Your presence and your wishes mean more than any gift — we can’t wait to celebrate with you.",
           },
     [language],
   );
+
+  const neelaCalendar = useMemo(() => {
+    const d = new Date(preview.countdownTarget);
+    if (Number.isNaN(d.getTime())) return null;
+    const y = d.getFullYear();
+    const m = d.getMonth();
+    const dom = d.getDate();
+    const firstDow = new Date(y, m, 1).getDay();
+    const lastDate = new Date(y, m + 1, 0).getDate();
+    const cells: ({ n: number } | null)[] = [];
+    for (let i = 0; i < firstDow; i++) cells.push(null);
+    for (let n = 1; n <= lastDate; n++) cells.push({ n });
+    const tail = cells.length % 7;
+    if (tail !== 0) for (let i = 0; i < 7 - tail; i++) cells.push(null);
+    const monthTitle = new Date(y, m, 1).toLocaleDateString(
+      language === "vi" ? "vi-VN" : "en-US",
+      { month: "long", year: "numeric" },
+    );
+    const weekdays =
+      language === "vi"
+        ? ["CN", "T2", "T3", "T4", "T5", "T6", "T7"]
+        : ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+    return { dom, cells, monthTitle, weekdays };
+  }, [language, preview.countdownTarget]);
 
   const wishOptions = language === "vi" ? wishSuggestionsVi : wishSuggestionsEn;
 
@@ -593,9 +633,60 @@ export default function BrightlyBasicPreview({
                     ) : null}
                   </div>
                   <div className={styles.inviteDate}>{preview.dateLabel}</div>
+                  {neelaCalendar ? (
+                    <div className={styles.weddingCalShell}>
+                      <div className={styles.weddingCalFrame}>
+                        <span className={styles.weddingCalCorner} aria-hidden="true" />
+                        <span className={styles.weddingCalCorner} aria-hidden="true" />
+                        <span className={styles.weddingCalCorner} aria-hidden="true" />
+                        <span className={styles.weddingCalCorner} aria-hidden="true" />
+                        <p className={styles.weddingCalEyebrow}>{copy.calendarEyebrow}</p>
+                        <p className={styles.weddingCalMonth}>{neelaCalendar.monthTitle}</p>
+                        <div className={styles.weddingCalWeekdays}>
+                          {neelaCalendar.weekdays.map((w) => (
+                            <span key={w} className={styles.weddingCalWd}>
+                              {w}
+                            </span>
+                          ))}
+                        </div>
+                        <div className={styles.weddingCalGrid}>
+                          {neelaCalendar.cells.map((cell, idx) => {
+                            const isWed = cell?.n === neelaCalendar.dom;
+                            return (
+                              <div
+                                key={idx}
+                                className={`${styles.weddingCalCell} ${!cell ? styles.weddingCalCellMuted : ""} ${isWed ? styles.weddingCalCellWed : ""}`.trim()}
+                                aria-current={isWed ? "date" : undefined}
+                              >
+                                {cell ? (
+                                  <>
+                                    <span className={styles.weddingCalNum}>{cell.n}</span>
+                                    {isWed ? (
+                                      <span className={styles.weddingCalHeart} aria-hidden="true">
+                                        ♥
+                                      </span>
+                                    ) : null}
+                                  </>
+                                ) : null}
+                              </div>
+                            );
+                          })}
+                        </div>
+                        {neelaCalendar.dom ? (
+                          <p className={styles.weddingCalCaption}>
+                            <span className={styles.weddingCalDot} aria-hidden="true" />
+                            {copy.calendarWeddingDay}
+                          </p>
+                        ) : null}
+                      </div>
+                    </div>
+                  ) : null}
                   <div className={styles.clockRow}>
-                    {countdown.map((c) => (
-                      <div key={c.l} className={styles.clockCell}>
+                    {countdown.map((c, i) => (
+                      <div
+                        key={c.l}
+                        className={`${styles.clockCell} ${i === countdown.length - 1 ? styles.clockCellLive : ""}`.trim()}
+                      >
                         <span className={styles.clockNum}>{c.v}</span>
                         <span className={styles.clockLbl}>{c.l}</span>
                       </div>
@@ -813,12 +904,19 @@ export default function BrightlyBasicPreview({
       </main>
 
       <RevealFooter className={styles.footer}>
-        <div className={styles.footerLogo}>
-          {preview.groom}
-          <small>&amp;</small>
-          {preview.bride}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img className={styles.footerBgImg} src={cover} alt="" />
+        <div className={styles.footerVeil} aria-hidden="true" />
+        <div className={styles.footerFrame}>
+          <p className={styles.footerEyebrow}>{copy.footerThanksEyebrow}</p>
+          <p className={styles.footerThanks}>{copy.footerThanks}</p>
+          <div className={styles.footerLogo}>
+            {preview.groom}
+            <small>&amp;</small>
+            {preview.bride}
+          </div>
+          <p className={styles.footerTier}>{template.tier}</p>
         </div>
-        <p className={styles.footerTier}>{template.tier}</p>
       </RevealFooter>
     </div>
   );

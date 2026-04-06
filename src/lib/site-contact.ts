@@ -5,6 +5,8 @@ export const siteContact = {
   email: "hello@lumierewedding.vn",
   /** TikTok mặc định (nút nổi). Để `""` nếu chưa có kênh. `NEXT_PUBLIC_TIKTOK_URL` ghi đè khi có. */
   tiktokUrl: "https://www.tiktok.com/@lumierewedding",
+  /** Dòng phụ dưới nhãn TikTok ở footer (đổi khi đổi @). */
+  tiktokDisplay: "@lumierewedding",
 } as const;
 
 export const siteZaloUrl = `https://zalo.me/${siteContact.phoneE164.replace("+", "")}`;

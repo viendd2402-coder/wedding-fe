@@ -46,7 +46,7 @@ export default async function RootLayout({
       suppressHydrationWarning
       className={`${inter.variable} ${cormorant.variable} h-full scroll-smooth antialiased`}
     >
-      <body className="flex min-h-full flex-col">
+      <body className="flex min-h-full flex-col" suppressHydrationWarning>
         <GlobalPreferencesProvider
           initialLanguage={initialLanguage}
           initialTheme={initialTheme}

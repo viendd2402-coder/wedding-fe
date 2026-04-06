@@ -412,6 +412,13 @@ function extractErrorMessage(body: unknown, fallback: string): string {
 
 /** Gọi backend: `POST {NEXT_PUBLIC_API_URL}/auth/login` */
 export async function loginRequest(payload: LoginPayload): Promise<LoginResult> {
+  if (isFakeAuthEnabled()) {
+    if (typeof window !== "undefined") {
+      notifyAuthSessionChanged();
+    }
+    return { ok: true, token: null };
+  }
+
   const base = getPublicApiBaseUrl();
   if (!base) {
     return {
@@ -485,4 +492,17 @@ export function clearStoredAuthToken(): void {
 export function getStoredAuthToken(): string | null {
   if (typeof window === "undefined") return null;
   return window.localStorage.getItem(AUTH_TOKEN_KEY);
+}
+
+/** Google / Facebook / Apple — backend bắt đầu luồng OAuth (redirect). */
+export type SocialAuthProvider = "google" | "facebook" | "apple";
+
+/**
+ * URL GET để bắt đầu OAuth: `{NEXT_PUBLIC_API_URL}/auth/oauth/{provider}`.
+ * Backend redirect sang nhà cung cấp, xử lý callback, set cookie hoặc trả token.
+ */
+export function getSocialAuthStartUrl(provider: SocialAuthProvider): string | null {
+  const base = getPublicApiBaseUrl();
+  if (!base) return null;
+  return `${base}/auth/oauth/${provider}`;
 }
