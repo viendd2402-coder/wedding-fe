@@ -44,6 +44,8 @@ export default function ProfileScreen() {
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
+  /** Tránh coi là chưa đăng nhập trong lúc hydrate (SSR snapshot rỗng → signedIn false một nhịp). */
+  const [clientReady, setClientReady] = useState(false);
 
   const copy = useMemo(
     () =>
@@ -58,6 +60,7 @@ export default function ProfileScreen() {
             demoPill: "Demo",
             sectionDetails: "Thông tin tài khoản",
             sectionOptional: "Liên hệ thêm",
+            additionalContact: "Liên hệ bổ sung",
             email: "Email",
             name: "Họ tên",
             phone: "Điện thoại",
@@ -94,6 +97,7 @@ export default function ProfileScreen() {
             demoPill: "Demo",
             sectionDetails: "Account details",
             sectionOptional: "Extra contact",
+            additionalContact: "Additional contact",
             email: "Email",
             name: "Full name",
             phone: "Phone",
@@ -142,12 +146,17 @@ export default function ProfileScreen() {
   }, []);
 
   useEffect(() => {
+    setClientReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!clientReady) return;
     if (!signedIn) {
       router.replace("/login");
       return;
     }
     void loadProfile();
-  }, [signedIn, router, loadProfile]);
+  }, [clientReady, signedIn, router, loadProfile]);
 
   const muted = isDark ? "text-white/62" : "text-[var(--color-ink)]/62";
   const mutedSoft = isDark ? "text-white/48" : "text-[var(--color-ink)]/48";
@@ -266,6 +275,18 @@ export default function ProfileScreen() {
       ] as const,
     [copy.genderFemale, copy.genderMale, copy.genderOther, copy.genderUnspecified],
   );
+
+  if (!clientReady) {
+    return (
+      <main className={`relative isolate min-h-screen ${isDark ? "bg-[#090909]" : "bg-[var(--color-cream)]"}`}>
+        <div className="mx-auto flex max-w-md flex-col items-center justify-center gap-4 px-6 py-28 text-center">
+          <p className={`text-sm font-medium ${isDark ? "text-white/70" : "text-[var(--color-ink)]/70"}`}>
+            {copy.loading}
+          </p>
+        </div>
+      </main>
+    );
+  }
 
   if (!signedIn) {
     return (
@@ -634,25 +655,52 @@ export default function ProfileScreen() {
                 <div
                   className={`overflow-hidden rounded-2xl border border-dashed ${formSheetBorder} ${formSheetBg} ${formSheetRing}`}
                 >
-                  <div className={`${formRowGrid} ${formRowPad}`}>
-                    <div>
-                      <p className={rowLabel}>{copy.sectionOptional}</p>
-                      <p className={rowHint}>{language === "vi" ? "Không bắt buộc." : "Optional."}</p>
+                  <div className={`divide-y ${formDivide}`}>
+                    <div className={`${formRowGrid} ${formRowPad}`}>
+                      <div>
+                        <p className={rowLabel}>{copy.sectionOptional}</p>
+                        <p className={rowHint}>{language === "vi" ? "Không bắt buộc." : "Optional."}</p>
+                      </div>
+                      <div>
+                        <label className="sr-only" htmlFor="profile-phone">
+                          {copy.phone}
+                        </label>
+                        <input
+                          id="profile-phone"
+                          type="tel"
+                          value={draft.phone ?? ""}
+                          onChange={(e) => setDraft((d) => (d ? { ...d, phone: e.target.value } : d))}
+                          disabled={saveState === "saving"}
+                          className={inputSheet}
+                          autoComplete="tel"
+                          placeholder={copy.phone}
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <label className="sr-only" htmlFor="profile-phone">
-                        {copy.phone}
-                      </label>
-                      <input
-                        id="profile-phone"
-                        type="tel"
-                        value={draft.phone ?? ""}
-                        onChange={(e) => setDraft((d) => (d ? { ...d, phone: e.target.value } : d))}
-                        disabled={saveState === "saving"}
-                        className={inputSheet}
-                        autoComplete="tel"
-                        placeholder={copy.phone}
-                      />
+                    <div className={`${formRowGrid} ${formRowPad}`}>
+                      <div>
+                        <p className={rowLabel}>{copy.additionalContact}</p>
+                        <p className={rowHint}>{language === "vi" ? "Ví dụ Zalo, Telegram." : "e.g. Zalo, Telegram."}</p>
+                      </div>
+                      <div>
+                        <label className="sr-only" htmlFor="profile-additional-contact">
+                          {copy.additionalContact}
+                        </label>
+                        <input
+                          id="profile-additional-contact"
+                          type="text"
+                          value={draft.additionalContact ?? ""}
+                          onChange={(e) =>
+                            setDraft((d) =>
+                              d ? { ...d, additionalContact: e.target.value.trim() || null } : d,
+                            )
+                          }
+                          disabled={saveState === "saving"}
+                          className={inputSheet}
+                          autoComplete="off"
+                          placeholder={copy.additionalContact}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>

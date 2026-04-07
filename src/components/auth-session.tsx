@@ -3,8 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useSyncExternalStore } from "react";
 import {
-  clearStoredAuthToken,
   getAuthSessionMarker,
+  logoutClient,
   LUMIERE_AUTH_CHANGE_EVENT,
 } from "@/lib/auth-client";
 
@@ -28,7 +28,7 @@ export function useAuthSession() {
 export function useLogout() {
   const router = useRouter();
   return useCallback(() => {
-    clearStoredAuthToken();
+    logoutClient();
     router.push("/");
     router.refresh();
   }, [router]);

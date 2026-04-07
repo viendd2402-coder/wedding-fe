@@ -92,6 +92,8 @@ export type UserProfile = {
   gender: ProfileGender | null;
   /** URL tuyệt đối hoặc data URL (ảnh đại diện). */
   avatarUrl: string | null;
+  /** Khớp backend (ví dụ Zalo / liên hệ phụ). */
+  additionalContact: string | null;
 };
 
 const FAKE_PROFILE: UserProfile = {
@@ -101,6 +103,7 @@ const FAKE_PROFILE: UserProfile = {
   age: 28,
   gender: "unspecified",
   avatarUrl: null,
+  additionalContact: null,
 };
 
 const PROFILE_LOCAL_KEY = "lumiere-profile-local";
@@ -157,6 +160,7 @@ export function normalizeProfileInput(p: UserProfile): UserProfile {
         : null,
     gender: gg,
     avatarUrl: av ? av.slice(0, MAX_AVATAR_DATA_URL_CHARS) : null,
+    additionalContact: p.additionalContact?.trim().slice(0, 255) || null,
   };
 }
 
@@ -187,6 +191,10 @@ function readFakeStoredProfile(): UserProfile | null {
         typeof r.avatarUrl === "string" || r.avatarUrl === null
           ? (r.avatarUrl as string | null)
           : pickString(r.avatarUrl),
+      additionalContact:
+        typeof r.additionalContact === "string" || r.additionalContact === null
+          ? (r.additionalContact as string | null)
+          : pickString(r.additionalContact),
     };
     return normalizeProfileInput(profile);
   } catch {
@@ -201,6 +209,16 @@ function pickString(...vals: unknown[]): string | null {
   return null;
 }
 
+/** Backend bọc JSON trong `{ success, message, data }` (ResponseInterceptor). */
+function unwrapApiPayload(body: unknown): Record<string, unknown> | null {
+  if (body === null || body === undefined || typeof body !== "object") return null;
+  const o = body as Record<string, unknown>;
+  if ("data" in o && o.data !== null && typeof o.data === "object") {
+    return o.data as Record<string, unknown>;
+  }
+  return o;
+}
+
 export function parseUserProfile(body: unknown): UserProfile {
   const empty: UserProfile = {
     email: null,
@@ -209,41 +227,60 @@ export function parseUserProfile(body: unknown): UserProfile {
     age: null,
     gender: null,
     avatarUrl: null,
+    additionalContact: null,
   };
-  if (!body || typeof body !== "object") {
+  const layer = unwrapApiPayload(body);
+  if (!layer) {
     return empty;
   }
-  const o = body as Record<string, unknown>;
   const user =
-    o.user && typeof o.user === "object"
-      ? (o.user as Record<string, unknown>)
-      : o;
-  const g = normalizeGender(user.gender ?? o.gender) ?? null;
+    layer.user && typeof layer.user === "object"
+      ? (layer.user as Record<string, unknown>)
+      : layer;
+  const g = normalizeGender(user.gender ?? layer.gender) ?? null;
   return {
-    email: pickString(user.email, user.mail, o.email),
+    email: pickString(
+      user.email,
+      user.mail,
+      layer.email,
+      user.email_address,
+      layer.email_address,
+    ),
     name: pickString(
       user.name,
       user.fullName,
+      user.full_name,
       user.displayName,
+      user.display_name,
       user.username,
-      o.name,
-      o.fullName,
+      layer.name,
+      layer.fullName,
+      layer.full_name,
     ),
     phone: pickString(
       user.phone,
       user.phoneNumber,
+      user.phone_number,
       user.mobile,
-      o.phone,
+      layer.phone,
     ),
-    age: pickNumber(user.age, o.age),
+    age: pickNumber(user.age, layer.age),
     gender: g,
     avatarUrl: pickString(
       user.avatarUrl,
+      user.avatar_url,
       user.avatar,
       user.photo,
       user.image,
-      o.avatarUrl,
-      o.avatar,
+      layer.avatarUrl,
+      layer.avatar_url,
+      layer.avatar,
+    ),
+    additionalContact: pickString(
+      user.additionalContact,
+      user.additional_contact,
+      layer.additionalContact,
+      layer.additional_contact,
     ),
   };
 }
@@ -252,7 +289,7 @@ export type ProfileResult =
   | { ok: true; profile: UserProfile }
   | { ok: false; status: number; message: string };
 
-/** Gọi backend: `GET {NEXT_PUBLIC_API_URL}/auth/me` — Bearer token nếu có trong localStorage; luôn gửi cookie. */
+/** Gọi backend: `GET {NEXT_PUBLIC_API_URL}/auth/profile` — Bearer nếu có; luôn gửi cookie. */
 export async function fetchProfileRequest(): Promise<ProfileResult> {
   if (isFakeAuthEnabled()) {
     const stored = readFakeStoredProfile();
@@ -277,7 +314,7 @@ export async function fetchProfileRequest(): Promise<ProfileResult> {
 
   let res: Response;
   try {
-    res = await fetch(`${base}/auth/me`, {
+    res = await fetch(`${base}/auth/profile`, {
       method: "GET",
       headers,
       credentials: "include",
@@ -322,7 +359,7 @@ export type UpdateProfileResult =
 
 /**
  * Cập nhật hồ sơ: fake auth → lưu toàn bộ vào `localStorage`.
- * Thật → `PATCH {NEXT_PUBLIC_API_URL}/auth/me` (JSON), sau đó nên gọi lại `fetchProfileRequest`.
+ * Thật → `PATCH {NEXT_PUBLIC_API_URL}/auth/profile` (multipart fields khớp UpdateProfileDto).
  */
 export async function updateProfileRequest(profile: UserProfile): Promise<UpdateProfileResult> {
   const sanitized = normalizeProfileInput(profile);
@@ -340,19 +377,27 @@ export async function updateProfileRequest(profile: UserProfile): Promise<Update
   }
 
   const token = getStoredAuthToken();
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-  };
+  const headers: Record<string, string> = { Accept: "application/json" };
   if (token) headers.Authorization = `Bearer ${token}`;
+
+  const fd = new FormData();
+  if (sanitized.name) fd.append("fullName", sanitized.name);
+  if (sanitized.phone) fd.append("phone", sanitized.phone);
+  if (sanitized.age !== null && Number.isFinite(sanitized.age)) {
+    fd.append("age", String(Math.min(120, Math.max(0, Math.round(sanitized.age)))));
+  }
+  if (sanitized.gender && sanitized.gender !== "unspecified") {
+    fd.append("gender", sanitized.gender);
+  }
+  if (sanitized.additionalContact) fd.append("additionalContact", sanitized.additionalContact);
 
   let res: Response;
   try {
-    res = await fetch(`${base}/auth/me`, {
+    res = await fetch(`${base}/auth/profile`, {
       method: "PATCH",
       headers,
       credentials: "include",
-      body: JSON.stringify(sanitized),
+      body: fd,
     });
   } catch {
     return { ok: false, message: "Network error" };
@@ -482,6 +527,7 @@ export async function loginRequest(payload: LoginPayload): Promise<LoginResult> 
   return { ok: true, token };
 }
 
+/** Xóa JWT + hint session (cookie-only) — dùng khi 401 hoặc hết hạn. */
 export function clearStoredAuthToken(): void {
   if (typeof window === "undefined") return;
   window.localStorage.removeItem(AUTH_TOKEN_KEY);
@@ -489,20 +535,246 @@ export function clearStoredAuthToken(): void {
   notifyAuthSessionChanged();
 }
 
+/**
+ * Đăng xuất đầy đủ phía client: JWT không lưu server (API stateless).
+ * — Xóa token, session hint
+ * — Demo: xóa profile lưu localStorage
+ * — Báo UI cập nhật (header / profile)
+ */
+export function logoutClient(): void {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(AUTH_TOKEN_KEY);
+  clearSessionHint();
+  if (isFakeAuthEnabled()) {
+    try {
+      window.localStorage.removeItem(PROFILE_LOCAL_KEY);
+    } catch {
+      /* ignore */
+    }
+  }
+  notifyAuthSessionChanged();
+  notifyProfileUpdated();
+}
+
 export function getStoredAuthToken(): string | null {
   if (typeof window === "undefined") return null;
   return window.localStorage.getItem(AUTH_TOKEN_KEY);
 }
 
-/** Google / Facebook / Apple — backend bắt đầu luồng OAuth (redirect). */
-export type SocialAuthProvider = "google" | "facebook" | "apple";
+/** Google / Facebook — OAuth trên trình duyệt, token gửi BE verify. */
+export type SocialAuthProvider = "google" | "facebook";
+
+export function getPublicGoogleOAuthClientId(): string | null {
+  const v = process.env.NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID?.trim();
+  return v || null;
+}
+
+export function getPublicFacebookAppId(): string | null {
+  const v = process.env.NEXT_PUBLIC_FACEBOOK_APP_ID?.trim();
+  return v || null;
+}
+
+function sanitizeRedirectPath(input: string | null | undefined): string {
+  const raw = (input ?? "").trim();
+  if (!raw.startsWith("/") || raw.startsWith("//")) return "/";
+  return raw;
+}
+
+function parseHashParams(hash: string): URLSearchParams {
+  const h = hash.startsWith("#") ? hash.slice(1) : hash;
+  return new URLSearchParams(h);
+}
+
+function readTokenFromParams(params: URLSearchParams): string | null {
+  const token =
+    params.get("accessToken") ??
+    params.get("token") ??
+    params.get("access_token") ??
+    params.get("jwt");
+  if (!token) return null;
+  const normalized = token.trim();
+  return normalized.length > 0 ? normalized : null;
+}
+
+function readErrorFromParams(params: URLSearchParams): string | null {
+  const raw =
+    params.get("error_description") ??
+    params.get("error_message") ??
+    params.get("error") ??
+    params.get("message");
+  if (!raw) return null;
+  const normalized = raw.trim();
+  return normalized.length > 0 ? normalized : null;
+}
+
+export type SocialAuthCompleteResult =
+  | { ok: true; redirectTo: string }
+  | { ok: false; message: string; redirectTo: string };
+
+type SocialVerifyPayload = {
+  provider: SocialAuthProvider;
+  token?: string | null;
+  redirectTo?: string;
+};
+
+function readProviderFromParams(params: URLSearchParams): SocialAuthProvider | null {
+  const p = (params.get("provider") ?? "").trim().toLowerCase();
+  if (p === "google" || p === "facebook") return p;
+  return null;
+}
+
+async function verifySocialTokenRequest(
+  payload: SocialVerifyPayload,
+): Promise<
+  | { ok: true; token: string | null; redirectTo: string }
+  | { ok: false; status: number; message: string; redirectTo: string }
+> {
+  const base = getPublicApiBaseUrl();
+  const redirectTo = sanitizeRedirectPath(payload.redirectTo);
+  if (!base) {
+    return {
+      ok: false,
+      status: 0,
+      message: "Missing NEXT_PUBLIC_API_URL",
+      redirectTo: "/login",
+    };
+  }
+
+  let res: Response;
+  try {
+    res = await fetch(`${base}/auth/social-login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({
+        provider: payload.provider,
+        token: payload.token ?? undefined,
+      }),
+    });
+  } catch {
+    return {
+      ok: false,
+      status: 0,
+      message: "Network error",
+      redirectTo: "/login",
+    };
+  }
+
+  const text = await res.text();
+  let json: unknown = null;
+  if (text) {
+    try {
+      json = JSON.parse(text) as unknown;
+    } catch {
+      /* plain text body */
+    }
+  }
+
+  if (!res.ok) {
+    return {
+      ok: false,
+      status: res.status,
+      message: extractErrorMessage(json, `Request failed (${res.status})`),
+      redirectTo: "/login",
+    };
+  }
+
+  const token = extractToken(json);
+  return { ok: true, token, redirectTo };
+}
+
+function persistSocialAuthSession(token: string | null): void {
+  if (typeof window === "undefined") return;
+  if (token) {
+    window.localStorage.setItem(AUTH_TOKEN_KEY, token);
+    clearSessionHint();
+  } else {
+    setSessionHint();
+  }
+  notifyAuthSessionChanged();
+}
 
 /**
- * URL GET để bắt đầu OAuth: `{NEXT_PUBLIC_API_URL}/auth/oauth/{provider}`.
- * Backend redirect sang nhà cung cấp, xử lý callback, set cookie hoặc trả token.
+ * Sau khi FE đã có access token / id token từ nhà cung cấp — gọi BE verify và lưu session.
  */
-export function getSocialAuthStartUrl(provider: SocialAuthProvider): string | null {
-  const base = getPublicApiBaseUrl();
-  if (!base) return null;
-  return `${base}/auth/oauth/${provider}`;
+export async function verifySocialLoginWithBackend(opts: {
+  provider: SocialAuthProvider;
+  accessToken?: string | null;
+  idToken?: string | null;
+  redirectTo?: string;
+}): Promise<SocialAuthCompleteResult> {
+  if (isFakeAuthEnabled()) {
+    notifyAuthSessionChanged();
+    return { ok: true, redirectTo: sanitizeRedirectPath(opts.redirectTo) };
+  }
+
+  const verified = await verifySocialTokenRequest({
+    provider: opts.provider,
+    token: opts.idToken ?? opts.accessToken,
+    redirectTo: opts.redirectTo,
+  });
+  if (!verified.ok) {
+    return { ok: false, message: verified.message, redirectTo: verified.redirectTo };
+  }
+
+  persistSocialAuthSession(verified.token);
+  return { ok: true, redirectTo: verified.redirectTo };
+}
+
+/**
+ * FE hoàn tất social login: lấy token từ query/hash callback rồi gửi BE verify.
+ */
+export async function completeSocialAuthFromLocation(
+  search: string,
+  hash: string,
+): Promise<SocialAuthCompleteResult> {
+  if (isFakeAuthEnabled()) {
+    notifyAuthSessionChanged();
+    return { ok: true, redirectTo: "/" };
+  }
+
+  const queryParams = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
+  const hashParams = parseHashParams(hash);
+  const redirectTo = sanitizeRedirectPath(
+    queryParams.get("redirectTo") ??
+      queryParams.get("returnTo") ??
+      hashParams.get("redirectTo") ??
+      hashParams.get("returnTo"),
+  );
+
+  const error = readErrorFromParams(queryParams) ?? readErrorFromParams(hashParams);
+  if (error) {
+    return { ok: false, message: error, redirectTo: "/login" };
+  }
+
+  const provider = readProviderFromParams(queryParams) ?? readProviderFromParams(hashParams);
+  if (!provider) {
+    return {
+      ok: false,
+      message: "Missing social provider",
+      redirectTo: "/login",
+    };
+  }
+
+  const accessToken = readTokenFromParams(queryParams) ?? readTokenFromParams(hashParams);
+  const idToken =
+    queryParams.get("idToken") ??
+    queryParams.get("id_token") ??
+    hashParams.get("idToken") ??
+    hashParams.get("id_token");
+
+  if (!accessToken && !idToken) {
+    return {
+      ok: false,
+      message: "Missing social token",
+      redirectTo: "/login",
+    };
+  }
+
+  const result = await verifySocialLoginWithBackend({
+    provider,
+    accessToken,
+    idToken,
+    redirectTo,
+  });
+  return result;
 }

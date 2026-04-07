@@ -2,19 +2,28 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useMemo, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
+import { useAuthSession } from "@/components/auth-session";
 import {
-  IconAppleBrand,
   IconFacebookBrand,
   IconGoogleColor,
 } from "@/components/icons-auth-social";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
+import { getPublicApiBaseUrl } from "@/lib/api-base";
 import {
-  getSocialAuthStartUrl,
+  getPublicFacebookAppId,
+  getPublicGoogleOAuthClientId,
   isFakeAuthEnabled,
   loginRequest,
+  verifySocialLoginWithBackend,
   type SocialAuthProvider,
 } from "@/lib/auth-client";
+import {
+  ensureFacebookSdk,
+  ensureGoogleIdentityScript,
+  requestFacebookAccessToken,
+  requestGoogleIdToken,
+} from "@/lib/social-oauth-browser";
 
 type AuthMode = "login" | "register";
 
@@ -24,6 +33,7 @@ type AuthScreenProps = {
 
 export default function AuthScreen({ mode }: AuthScreenProps) {
   const router = useRouter();
+  const { signedIn } = useAuthSession();
   const { language, theme } = useGlobalPreferences();
   const isDark = theme === "dark";
   const [email, setEmail] = useState("");
@@ -31,6 +41,13 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [socialBusy, setSocialBusy] = useState(false);
+
+  useEffect(() => {
+    if (mode !== "login" || !signedIn) return;
+    router.replace("/");
+    router.refresh();
+  }, [mode, router, signedIn]);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -55,7 +72,7 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
       return;
     }
 
-    router.push("/profile");
+    router.push("/");
     router.refresh();
   }
 
@@ -101,9 +118,12 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
             socialEmail: "Hoặc dùng email",
             socialGoogle: "Google",
             socialFacebook: "Facebook",
-            socialApple: "Apple",
             socialNeedApi:
               "Chưa cấu hình API. Đặt NEXT_PUBLIC_API_URL để bật đăng nhập mạng xã hội (hoặc bật chế độ demo).",
+            socialNeedGoogleClientId:
+              "Chưa cấu hình Google: đặt NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID (OAuth 2.0 Client ID kiểu Web).",
+            socialNeedFacebookAppId:
+              "Chưa cấu hình Facebook: đặt NEXT_PUBLIC_FACEBOOK_APP_ID.",
           }
         : {
             backHome: "Back to home",
@@ -138,30 +158,87 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
             socialEmail: "Or use email",
             socialGoogle: "Google",
             socialFacebook: "Facebook",
-            socialApple: "Apple",
             socialNeedApi:
               "API base URL is not set. Add NEXT_PUBLIC_API_URL to enable social sign-in (or enable demo mode).",
+            socialNeedGoogleClientId:
+              "Google is not configured: set NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID (Web OAuth 2.0 client ID).",
+            socialNeedFacebookAppId:
+              "Facebook is not configured: set NEXT_PUBLIC_FACEBOOK_APP_ID.",
           },
     [language, mode],
   );
 
   const startSocialLogin = useCallback(
-    (provider: SocialAuthProvider) => {
+    async (provider: SocialAuthProvider) => {
       setError(null);
-      const url = getSocialAuthStartUrl(provider);
-      if (url) {
-        window.location.assign(url);
-        return;
-      }
       if (isFakeAuthEnabled()) {
-        router.push("/profile");
+        router.push("/");
         router.refresh();
         return;
       }
-      setError(copy.socialNeedApi);
+      if (!getPublicApiBaseUrl()) {
+        setError(copy.socialNeedApi);
+        return;
+      }
+
+      setSocialBusy(true);
+      try {
+        if (provider === "google") {
+          const clientId = getPublicGoogleOAuthClientId();
+          if (!clientId) {
+            setError(copy.socialNeedGoogleClientId);
+            return;
+          }
+          await ensureGoogleIdentityScript();
+          const idToken = await requestGoogleIdToken(clientId);
+          const result = await verifySocialLoginWithBackend({
+            provider: "google",
+            idToken,
+            redirectTo: "/",
+          });
+          if (!result.ok) {
+            setError(result.message);
+            return;
+          }
+          router.push(result.redirectTo);
+          router.refresh();
+          return;
+        }
+
+        const appId = getPublicFacebookAppId();
+        if (!appId) {
+          setError(copy.socialNeedFacebookAppId);
+          return;
+        }
+        await ensureFacebookSdk(appId);
+        const accessToken = await requestFacebookAccessToken();
+        const result = await verifySocialLoginWithBackend({
+          provider: "facebook",
+          accessToken,
+          redirectTo: "/",
+        });
+        if (!result.ok) {
+          setError(result.message);
+          return;
+        }
+        router.push(result.redirectTo);
+        router.refresh();
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        setError(msg);
+      } finally {
+        setSocialBusy(false);
+      }
     },
-    [copy.socialNeedApi, router],
+    [
+      copy.socialNeedApi,
+      copy.socialNeedGoogleClientId,
+      copy.socialNeedFacebookAppId,
+      router,
+    ],
   );
+
+  const formBusy = (mode === "login" && loading) || socialBusy;
 
   const muted = isDark ? "text-white/62" : "text-[var(--color-ink)]/62";
   const mutedSoft = isDark ? "text-white/48" : "text-[var(--color-ink)]/48";
@@ -306,12 +383,14 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
                   </span>
                   <div className={`h-px flex-1 ${isDark ? "bg-white/10" : "bg-[var(--color-ink)]/10"}`} />
                 </div>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <button
                     type="button"
-                    disabled={mode === "login" && loading}
-                    onClick={() => startSocialLogin("google")}
-                    className={`flex w-full items-center justify-center gap-2.5 rounded-2xl border py-3.5 text-sm font-semibold transition hover:opacity-95 disabled:pointer-events-none disabled:opacity-55 ${
+                    disabled={formBusy}
+                    onClick={() => {
+                      void startSocialLogin("google");
+                    }}
+                    className={`flex w-full cursor-pointer items-center justify-center gap-2.5 rounded-2xl border py-3.5 text-sm font-semibold transition hover:opacity-95 disabled:cursor-not-allowed disabled:pointer-events-none disabled:opacity-55 ${
                       isDark
                         ? "border-white/12 bg-white/[0.06] text-white"
                         : "border-[var(--color-ink)]/10 bg-white text-[var(--color-ink)] shadow-sm"
@@ -322,25 +401,14 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
                   </button>
                   <button
                     type="button"
-                    disabled={mode === "login" && loading}
-                    onClick={() => startSocialLogin("facebook")}
-                    className="flex w-full items-center justify-center gap-2.5 rounded-2xl border border-transparent bg-[#1877F2] py-3.5 text-sm font-semibold text-white transition hover:brightness-110 disabled:pointer-events-none disabled:opacity-55"
+                    disabled={formBusy}
+                    onClick={() => {
+                      void startSocialLogin("facebook");
+                    }}
+                    className="flex w-full cursor-pointer items-center justify-center gap-2.5 rounded-2xl border border-transparent bg-[#1877F2] py-3.5 text-sm font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:pointer-events-none disabled:opacity-55"
                   >
                     <IconFacebookBrand className="h-5 w-5 shrink-0 text-white" />
                     {copy.socialFacebook}
-                  </button>
-                  <button
-                    type="button"
-                    disabled={mode === "login" && loading}
-                    onClick={() => startSocialLogin("apple")}
-                    className={`flex w-full items-center justify-center gap-2.5 rounded-2xl border border-transparent py-3.5 text-sm font-semibold transition hover:opacity-90 disabled:pointer-events-none disabled:opacity-55 ${
-                      isDark
-                        ? "bg-white text-black"
-                        : "bg-[#1a1a1a] text-white"
-                    }`}
-                  >
-                    <IconAppleBrand className="h-5 w-5 shrink-0" />
-                    {copy.socialApple}
                   </button>
                 </div>
                 <div className="flex items-center gap-3 pt-1">
@@ -366,7 +434,7 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
                   value={email}
                   onChange={(ev) => setEmail(ev.target.value)}
                   placeholder="name@email.com"
-                  disabled={mode === "login" && loading}
+                  disabled={formBusy}
                   className={`${inputClass} mt-2 disabled:opacity-55`}
                 />
               </div>
@@ -382,7 +450,7 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
                   value={password}
                   onChange={(ev) => setPassword(ev.target.value)}
                   placeholder="••••••••"
-                  disabled={mode === "login" && loading}
+                  disabled={formBusy}
                   className={`${inputClass} mt-2 disabled:opacity-55`}
                 />
               </div>
@@ -426,14 +494,14 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
                         ? "border-white/20 bg-white/5 accent-[var(--color-rose)]"
                         : "border-[var(--color-ink)]/15 bg-white accent-[var(--color-rose)]"
                     }`}
-                    disabled={mode === "login" && loading}
+                    disabled={formBusy}
                   />
                   <span>{copy.rememberMe}</span>
                 </label>
                 {mode === "login" ? (
                   <button
                     type="button"
-                    className="font-medium text-[var(--color-sage)] transition hover:opacity-80"
+                    className="cursor-pointer font-medium text-[var(--color-sage)] transition hover:opacity-80"
                   >
                     {copy.forgotPassword}
                   </button>
@@ -444,8 +512,8 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
 
               <button
                 type="submit"
-                disabled={mode === "login" && loading}
-                className="btn-primary mt-1 w-full rounded-full px-8 py-3.5 text-sm font-semibold shadow-[0_14px_36px_rgba(197,167,161,0.38)] transition hover:brightness-[1.03] disabled:pointer-events-none disabled:opacity-55 dark:shadow-[0_16px_40px_rgba(0,0,0,0.38)] sm:w-auto sm:min-w-[12rem]"
+                disabled={formBusy}
+                className="btn-primary mt-1 w-full cursor-pointer rounded-full px-8 py-3.5 text-sm font-semibold shadow-[0_14px_36px_rgba(197,167,161,0.38)] transition hover:brightness-[1.03] disabled:cursor-not-allowed disabled:pointer-events-none disabled:opacity-55 dark:shadow-[0_16px_40px_rgba(0,0,0,0.38)] sm:w-auto sm:min-w-[12rem]"
               >
                 {mode === "login" && loading ? copy.submitting : copy.submit}
               </button>
