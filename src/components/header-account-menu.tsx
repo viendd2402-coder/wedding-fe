@@ -74,13 +74,13 @@ export default function HeaderAccountMenu({
 
   useEffect(() => {
     if (!open) return;
-    const onDown = (e: MouseEvent) => {
+    const onDown = (e: PointerEvent) => {
       if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
         setOpen(false);
       }
     };
-    document.addEventListener("mousedown", onDown);
-    return () => document.removeEventListener("mousedown", onDown);
+    document.addEventListener("pointerdown", onDown);
+    return () => document.removeEventListener("pointerdown", onDown);
   }, [open]);
 
   useEffect(() => {
@@ -92,15 +92,15 @@ export default function HeaderAccountMenu({
     return () => document.removeEventListener("keydown", onKey);
   }, [open]);
 
-  const btnClass = `relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border transition ${
+  const btnClass = `relative flex h-11 w-11 shrink-0 touch-manipulation items-center justify-center overflow-hidden rounded-full border transition sm:h-10 sm:w-10 ${
     isDark
       ? "border-white/16 bg-white/[0.08] text-white shadow-[0_4px_16px_rgba(0,0,0,0.25)] hover:border-white/24 hover:bg-white/[0.12]"
-      : "border-[var(--color-ink)]/10 bg-white text-[var(--color-ink)] shadow-[0_4px_14px_rgba(49,42,40,0.08)] hover:border-[var(--color-ink)]/16"
-  } ${open ? (isDark ? "ring-2 ring-white/25" : "ring-2 ring-[var(--color-rose)]/35") : ""}`;
+      : "border-[var(--color-ink)]/16 bg-white text-[var(--color-ink)] shadow-[0_2px_8px_rgba(49,42,40,0.1)] hover:border-[var(--color-ink)]/22 max-lg:border-[var(--color-ink)]/22 max-lg:shadow-[0_3px_12px_rgba(49,42,40,0.14)]"
+  } ${open ? (isDark ? "ring-2 ring-white/25" : "ring-2 ring-[var(--color-rose)]/45") : ""}`;
 
   const panelClass = isDark
     ? "border border-white/12 bg-[linear-gradient(180deg,rgba(28,28,30,0.98),rgba(18,18,20,0.98))] text-white shadow-[0_20px_50px_rgba(0,0,0,0.45)]"
-    : "border border-[var(--color-ink)]/8 bg-white text-[var(--color-ink)] shadow-[0_20px_48px_rgba(49,42,40,0.12)]";
+    : "border border-[var(--color-ink)]/14 bg-white text-[var(--color-ink)] shadow-[0_16px_40px_rgba(49,42,40,0.14)] max-lg:border-[var(--color-ink)]/18 max-lg:shadow-[0_12px_32px_rgba(49,42,40,0.16)]";
 
   return (
     <div className={`relative ${className}`.trim()} ref={wrapRef}>
@@ -125,7 +125,7 @@ export default function HeaderAccountMenu({
           id={menuId}
           role="menu"
           aria-orientation="vertical"
-          className={`absolute right-0 z-[100] mt-2 min-w-[11.5rem] overflow-hidden rounded-2xl py-1.5 ${panelClass}`}
+          className={`absolute right-0 z-[120] mt-2 min-w-[11.5rem] overflow-hidden rounded-2xl py-1.5 ${panelClass}`}
         >
           <Link
             role="menuitem"

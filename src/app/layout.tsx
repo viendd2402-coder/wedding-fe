@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import AppTopChrome from "@/components/app-top-chrome";
 import FloatingContactRail from "@/components/floating-contact-rail";
 import SiteFooter from "@/components/site-footer";
@@ -26,6 +26,12 @@ export const metadata: Metadata = {
   title: "Lumiere Wedding Websites",
   description:
     "Thiệp mời trực tuyến tinh tế — chọn phong cách phù hợp, chia sẻ dễ dàng và hoàn thiện cùng đội ngũ Lumiere.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default async function RootLayout({

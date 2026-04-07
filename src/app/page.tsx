@@ -219,6 +219,10 @@ export default function Home() {
   const homeOuter =
     "mx-auto w-full max-w-[min(100%,92rem)] px-4 sm:px-6 lg:px-10";
 
+  const contactFieldClass = isDark
+    ? "w-full min-w-0 rounded-2xl border border-white/16 bg-white/[0.07] px-4 py-3.5 text-base leading-normal text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] outline-none transition-[border-color,box-shadow] placeholder:text-white/42 focus-visible:border-white/28 focus-visible:ring-2 focus-visible:ring-white/15 sm:px-5 sm:py-4"
+    : "w-full min-w-0 rounded-2xl border border-[var(--color-ink)]/14 bg-[var(--color-cream)] px-4 py-3.5 text-base leading-normal text-[var(--color-ink)] outline-none transition-[border-color,box-shadow] placeholder:text-[var(--color-ink)]/38 focus-visible:border-[var(--color-ink)]/25 focus-visible:ring-2 focus-visible:ring-[var(--color-rose)]/20 sm:px-5 sm:py-4";
+
   const copy = useMemo(
     () =>
       language === "vi"
@@ -969,25 +973,25 @@ export default function Home() {
 
         <HeroBotanicalMotif isDark={isDark} />
 
-        <div className={`relative z-10 flex min-h-screen flex-col py-8 sm:py-10 lg:py-12 ${homeOuter}`}>
-          <div className="grid flex-1 items-center gap-14 py-10 lg:grid-cols-[1.05fr_0.95fr] lg:py-16">
+        <div className={`relative z-10 flex min-h-screen flex-col py-6 sm:py-10 lg:py-12 ${homeOuter}`}>
+          <div className="grid flex-1 items-center gap-8 py-8 sm:gap-14 sm:py-10 lg:grid-cols-[1.05fr_0.95fr] lg:py-16">
             <div className="max-w-2xl">
-              <p className="animate-fade-up-soft mb-3 text-sm font-semibold uppercase tracking-[0.38em] text-[color-mix(in_srgb,var(--luxury-gold)_32%,var(--color-sage))]">
+              <p className="animate-fade-up-soft mb-2 text-xs font-semibold uppercase tracking-[0.32em] text-[color-mix(in_srgb,var(--luxury-gold)_32%,var(--color-sage))] sm:mb-3 sm:text-sm sm:tracking-[0.38em]">
                 {copy.heroEyebrow}
               </p>
-              <WeddingFlourish align="start" className="animate-fade-up-soft mb-5" luxury={!isDark} />
+              <WeddingFlourish align="start" className="animate-fade-up-soft mb-4 sm:mb-5" luxury={!isDark} />
               <h1
-                className={`animate-fade-up-soft-delay-1 font-display text-5xl leading-[1.06] tracking-[-0.015em] sm:text-7xl lg:text-8xl ${
+                className={`animate-fade-up-soft-delay-1 font-display text-3xl leading-[1.08] tracking-[-0.02em] sm:text-5xl sm:leading-[1.06] sm:tracking-[-0.015em] md:text-7xl lg:text-8xl ${
                   isDark ? "" : "text-[var(--color-ink)]"
                 }`}
               >
                 {copy.heroTitle}
               </h1>
-              <p className={`animate-fade-up-soft-delay-2 mt-6 max-w-xl text-base leading-8 sm:text-lg ${isDark ? "text-white/74" : "text-[var(--color-ink)]/88"}`}>
+              <p className={`animate-fade-up-soft-delay-2 mt-4 max-w-xl text-sm leading-7 sm:mt-6 sm:text-base sm:leading-8 md:text-lg ${isDark ? "text-white/74" : "text-[var(--color-ink)]/88"}`}>
                 {copy.heroBody}
               </p>
               <p
-                className={`animate-fade-up-soft-delay-2 mt-5 max-w-xl font-display text-lg italic leading-relaxed sm:text-xl ${
+                className={`animate-fade-up-soft-delay-2 mt-4 max-w-xl font-display text-base italic leading-relaxed sm:mt-5 sm:text-lg md:text-xl ${
                   isDark
                     ? "text-[var(--color-rose)]/80"
                     : "text-[color-mix(in_srgb,var(--color-rose)_78%,var(--luxury-gold)_22%)]"
@@ -996,7 +1000,7 @@ export default function Home() {
                 {copy.heroTagline}
               </p>
 
-              <div className="animate-fade-up-soft-delay-3 mt-10 flex flex-col gap-4 sm:flex-row">
+              <div className="animate-fade-up-soft-delay-3 mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:gap-4">
                 <a
                   href="#templates"
                   className="btn-primary inline-flex items-center justify-center rounded-full px-7 py-3 text-sm font-medium transition-transform duration-300 hover:-translate-y-0.5"
@@ -1011,44 +1015,44 @@ export default function Home() {
                 </a>
               </div>
 
-              <div className="animate-fade-up-soft-delay-3 mt-12 grid max-w-lg grid-cols-3 gap-4">
+              <div className="animate-fade-up-soft-delay-3 mt-8 grid max-w-lg grid-cols-3 gap-2.5 sm:mt-12 sm:gap-4">
                 <div
-                  className={`rounded-3xl p-4 backdrop-blur transition-transform duration-300 hover:-translate-y-1 ${
+                  className={`rounded-2xl p-3 backdrop-blur transition-transform duration-300 hover:-translate-y-1 sm:rounded-3xl sm:p-4 ${
                     isDark
                       ? "border border-white/10 bg-white/6 shadow-[0_18px_50px_rgba(0,0,0,0.24)] ring-1 ring-[color-mix(in_srgb,var(--color-rose)_20%,transparent)]"
-                      : "home-lux-panel--compact rounded-3xl border-0 p-4 ring-2 ring-[color-mix(in_srgb,var(--luxury-gold)_38%,var(--color-rose))] backdrop-blur-sm"
+                      : "home-lux-panel--compact border-0 ring-2 ring-[color-mix(in_srgb,var(--luxury-gold)_38%,var(--color-rose))] backdrop-blur-sm sm:rounded-3xl"
                   }`}
                 >
-                  <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[color-mix(in_srgb,var(--luxury-gold)_22%,var(--color-sage))]">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[color-mix(in_srgb,var(--luxury-gold)_22%,var(--color-sage))] sm:text-xs sm:tracking-[0.28em]">
                     {copy.statTemplates}
                   </p>
-                  <p className="mt-3 font-display text-3xl">
+                  <p className="mt-2 font-display text-xl sm:mt-3 sm:text-3xl">
                     {weddingTemplates.length}+
                   </p>
                 </div>
                 <div
-                  className={`rounded-3xl p-4 backdrop-blur transition-transform duration-300 hover:-translate-y-1 ${
+                  className={`rounded-2xl p-3 backdrop-blur transition-transform duration-300 hover:-translate-y-1 sm:rounded-3xl sm:p-4 ${
                     isDark
                       ? "border border-white/10 bg-white/6 shadow-[0_18px_50px_rgba(0,0,0,0.24)] ring-1 ring-[color-mix(in_srgb,var(--color-rose)_20%,transparent)]"
-                      : "home-lux-panel--compact rounded-3xl border-0 p-4 ring-2 ring-[color-mix(in_srgb,var(--luxury-gold)_38%,var(--color-rose))] backdrop-blur-sm"
+                      : "home-lux-panel--compact border-0 ring-2 ring-[color-mix(in_srgb,var(--luxury-gold)_38%,var(--color-rose))] backdrop-blur-sm sm:rounded-3xl"
                   }`}
                 >
-                  <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[color-mix(in_srgb,var(--luxury-gold)_22%,var(--color-sage))]">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[color-mix(in_srgb,var(--luxury-gold)_22%,var(--color-sage))] sm:text-xs sm:tracking-[0.28em]">
                     {copy.statDelivery}
                   </p>
-                  <p className="mt-3 font-display text-2xl leading-tight sm:text-3xl">{copy.statDeliveryValue}</p>
+                  <p className="mt-2 font-display text-lg leading-tight sm:mt-3 sm:text-2xl md:text-3xl">{copy.statDeliveryValue}</p>
                 </div>
                 <div
-                  className={`rounded-3xl p-4 backdrop-blur transition-transform duration-300 hover:-translate-y-1 ${
+                  className={`rounded-2xl p-3 backdrop-blur transition-transform duration-300 hover:-translate-y-1 sm:rounded-3xl sm:p-4 ${
                     isDark
                       ? "border border-white/10 bg-white/6 shadow-[0_18px_50px_rgba(0,0,0,0.24)] ring-1 ring-[color-mix(in_srgb,var(--color-rose)_20%,transparent)]"
-                      : "home-lux-panel--compact rounded-3xl border-0 p-4 ring-2 ring-[color-mix(in_srgb,var(--luxury-gold)_38%,var(--color-rose))] backdrop-blur-sm"
+                      : "home-lux-panel--compact border-0 ring-2 ring-[color-mix(in_srgb,var(--luxury-gold)_38%,var(--color-rose))] backdrop-blur-sm sm:rounded-3xl"
                   }`}
                 >
-                  <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[color-mix(in_srgb,var(--luxury-gold)_22%,var(--color-sage))]">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[color-mix(in_srgb,var(--luxury-gold)_22%,var(--color-sage))] sm:text-xs sm:tracking-[0.28em]">
                     {copy.statMobile}
                   </p>
-                  <p className="mt-3 font-display text-3xl">100%</p>
+                  <p className="mt-2 font-display text-xl sm:mt-3 sm:text-3xl">100%</p>
                 </div>
               </div>
             </div>
@@ -1068,10 +1072,10 @@ export default function Home() {
       >
         <div className="max-w-4xl">
           <WeddingFlourish align="start" className="mb-4" luxury={!isDark} />
-          <p className="text-sm font-semibold uppercase tracking-[0.38em] text-[color-mix(in_srgb,var(--luxury-gold)_28%,var(--color-sage))]">
+          <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[color-mix(in_srgb,var(--luxury-gold)_28%,var(--color-sage))] sm:text-sm sm:tracking-[0.38em]">
             {copy.templatesEyebrow}
           </p>
-          <h2 className="mt-4 font-display text-4xl leading-tight sm:text-5xl lg:text-[2.75rem]">
+          <h2 className="mt-3 font-display text-2xl leading-tight sm:mt-4 sm:text-4xl sm:leading-tight md:text-5xl lg:text-[2.75rem]">
             {copy.templatesTitle}
           </h2>
         </div>
@@ -1113,13 +1117,13 @@ export default function Home() {
         className={`animate-fade-scale-soft ${homeOuter} py-20 sm:py-24 ${!isDark ? "home-lux-panel rounded-[2.5rem] border-0" : ""}`}
       >
         <div className="mx-auto max-w-4xl text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.38em] text-[color-mix(in_srgb,var(--luxury-gold)_35%,var(--color-rose))]">
+          <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[color-mix(in_srgb,var(--luxury-gold)_35%,var(--color-rose))] sm:text-sm sm:tracking-[0.38em]">
             {copy.whyUsEyebrow}
           </p>
-          <h2 className="mt-4 font-display text-3xl leading-[1.12] sm:text-4xl lg:text-[2.85rem]">
+          <h2 className="mt-3 font-display text-2xl leading-[1.15] sm:mt-4 sm:text-3xl sm:leading-[1.12] md:text-4xl lg:text-[2.85rem]">
             {copy.whyUsTitle}
           </h2>
-          <p className={`mx-auto mt-5 max-w-2xl text-base leading-8 sm:text-lg ${isDark ? "text-white/68" : "text-[var(--color-ink)]/85"}`}>
+          <p className={`mx-auto mt-4 max-w-2xl text-sm leading-7 sm:mt-5 sm:text-base sm:leading-8 md:text-lg ${isDark ? "text-white/68" : "text-[var(--color-ink)]/85"}`}>
             {copy.whyUsBody}
           </p>
         </div>
@@ -1134,10 +1138,10 @@ export default function Home() {
                   <WhyUsGlyph id={item.icon as WhyUsIconId} />
                 </div>
                 <div className="min-w-0 flex-1 text-right">
-                  <h3 className={`text-base font-semibold tracking-tight sm:text-lg ${whyUsTitleClass(item.tone as WhyUsTone, isDark)}`}>
+                  <h3 className={`text-sm font-semibold tracking-tight sm:text-base md:text-lg ${whyUsTitleClass(item.tone as WhyUsTone, isDark)}`}>
                     {item.title}
                   </h3>
-                  <p className={`mt-2 text-sm leading-7 ${isDark ? "text-white/60" : "text-[var(--color-ink)]/82"}`}>
+                  <p className={`mt-1.5 text-xs leading-6 sm:mt-2 sm:text-sm sm:leading-7 ${isDark ? "text-white/60" : "text-[var(--color-ink)]/82"}`}>
                     {item.description}
                   </p>
                 </div>
@@ -1173,10 +1177,10 @@ export default function Home() {
                   <WhyUsGlyph id={item.icon as WhyUsIconId} />
                 </div>
                 <div className="min-w-0 flex-1 text-left">
-                  <h3 className={`text-base font-semibold tracking-tight sm:text-lg ${whyUsTitleClass(item.tone as WhyUsTone, isDark)}`}>
+                  <h3 className={`text-sm font-semibold tracking-tight sm:text-base md:text-lg ${whyUsTitleClass(item.tone as WhyUsTone, isDark)}`}>
                     {item.title}
                   </h3>
-                  <p className={`mt-2 text-sm leading-7 ${isDark ? "text-white/60" : "text-[var(--color-ink)]/82"}`}>
+                  <p className={`mt-1.5 text-xs leading-6 sm:mt-2 sm:text-sm sm:leading-7 ${isDark ? "text-white/60" : "text-[var(--color-ink)]/82"}`}>
                     {item.description}
                   </p>
                 </div>
@@ -1191,7 +1195,7 @@ export default function Home() {
         className={`animate-fade-scale-soft-delay-1 ${homeOuter} py-14 sm:py-20 lg:py-24`}
       >
         <div
-          className={`hover-lift-strong rounded-[2.5rem] px-6 py-14 sm:px-10 lg:px-14 ${
+          className={`hover-lift-strong rounded-[1.75rem] px-4 py-10 sm:rounded-[2.5rem] sm:px-6 sm:py-14 md:px-10 lg:px-14 ${
             isDark
               ? "border border-white/10 bg-[radial-gradient(circle_at_top,_rgba(209,177,171,0.1),_transparent_28%),linear-gradient(180deg,#111113,#18181b)] text-white shadow-[0_24px_70px_rgba(0,0,0,0.28)]"
               : "home-lux-panel border-0 text-[var(--color-ink)]"
@@ -1200,17 +1204,17 @@ export default function Home() {
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-xl">
               <p
-                className={`text-sm font-semibold uppercase tracking-[0.38em] ${
+                className={`text-xs font-semibold uppercase tracking-[0.32em] sm:text-sm sm:tracking-[0.38em] ${
                   isDark ? "text-[var(--color-rose)]/82" : "text-[color-mix(in_srgb,var(--luxury-gold)_30%,var(--color-rose))]"
                 }`}
               >
                 {copy.featuresEyebrow}
               </p>
-              <h2 className="mt-4 font-display text-4xl leading-tight sm:text-5xl">
+              <h2 className="mt-3 font-display text-2xl leading-tight sm:mt-4 sm:text-4xl md:text-5xl">
                 {copy.featuresTitle}
               </h2>
             </div>
-            <p className={`max-w-md text-sm leading-7 ${isDark ? "text-white/68" : "text-[var(--color-ink)]/86"}`}>
+            <p className={`max-w-md text-xs leading-6 sm:text-sm sm:leading-7 ${isDark ? "text-white/68" : "text-[var(--color-ink)]/86"}`}>
               {copy.featuresBody}
             </p>
           </div>
@@ -1325,12 +1329,12 @@ export default function Home() {
       >
         <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.38em] text-[color-mix(in_srgb,var(--luxury-gold)_28%,var(--color-sage))]">
+            <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[color-mix(in_srgb,var(--luxury-gold)_28%,var(--color-sage))] sm:text-sm sm:tracking-[0.38em]">
               {copy.processEyebrow}
             </p>
-            <h2 className="mt-4 font-display text-4xl sm:text-[2.75rem]">{copy.processTitle}</h2>
+            <h2 className="mt-3 font-display text-2xl sm:mt-4 sm:text-3xl md:text-4xl md:leading-tight lg:text-[2.75rem]">{copy.processTitle}</h2>
           </div>
-          <p className={`max-w-md text-sm leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/86"}`}>
+          <p className={`max-w-md text-xs leading-6 sm:text-sm sm:leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/86"}`}>
             {copy.processBody}
           </p>
         </div>
@@ -1339,17 +1343,17 @@ export default function Home() {
           {copy.process.map((item) => (
             <article
               key={item.step}
-              className={`hover-lift-strong rounded-[2rem] p-6 ${
+              className={`hover-lift-strong rounded-[1.5rem] p-5 sm:rounded-[2rem] sm:p-6 ${
                 isDark
                   ? "border border-white/10 bg-white/6 shadow-[0_16px_40px_rgba(0,0,0,0.24)]"
-                  : "home-lux-panel--compact rounded-[2rem] border-0 p-6 ring-1 ring-[color-mix(in_srgb,var(--luxury-gold)_22%,transparent)]"
+                  : "home-lux-panel--compact border-0 ring-1 ring-[color-mix(in_srgb,var(--luxury-gold)_22%,transparent)]"
               }`}
             >
-              <p className="text-sm font-semibold uppercase tracking-[0.32em] text-[color-mix(in_srgb,var(--luxury-gold)_22%,var(--color-sage))]">
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[color-mix(in_srgb,var(--luxury-gold)_22%,var(--color-sage))] sm:text-sm sm:tracking-[0.32em]">
                 {item.step}
               </p>
-              <h3 className="mt-4 font-display text-3xl">{item.title}</h3>
-              <p className={`mt-4 text-sm leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/86"}`}>
+              <h3 className="mt-3 font-display text-2xl sm:mt-4 sm:text-3xl">{item.title}</h3>
+              <p className={`mt-3 text-xs leading-6 sm:mt-4 sm:text-sm sm:leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/86"}`}>
                 {item.description}
               </p>
             </article>
@@ -1361,23 +1365,23 @@ export default function Home() {
         className={`animate-fade-scale-soft-delay-2 grid gap-6 py-12 sm:py-16 lg:grid-cols-[1fr_0.9fr] ${homeOuter}`}
       >
         <div
-          className={`hover-lift-strong rounded-[2.4rem] p-8 sm:p-10 ${
+          className={`hover-lift-strong rounded-[1.75rem] p-5 sm:rounded-[2.4rem] sm:p-8 md:p-10 ${
             isDark
               ? "border border-white/10 bg-white/6 shadow-[0_16px_40px_rgba(0,0,0,0.24)]"
               : "home-lux-panel border-0"
           }`}
         >
-          <p className="text-sm font-semibold uppercase tracking-[0.38em] text-[color-mix(in_srgb,var(--luxury-gold)_28%,var(--color-sage))]">
+          <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[color-mix(in_srgb,var(--luxury-gold)_28%,var(--color-sage))] sm:text-sm sm:tracking-[0.38em]">
             {copy.valueEyebrow}
           </p>
-          <h2 className="mt-4 font-display text-4xl leading-tight sm:text-5xl">
+          <h2 className="mt-3 font-display text-2xl leading-tight sm:mt-4 sm:text-4xl md:text-5xl">
             {copy.valueTitle}
           </h2>
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
             {copy.valuePoints.map((feature) => (
               <div
                 key={feature}
-                className={`hover-lift-strong rounded-[1.5rem] p-4 text-sm ${
+                className={`hover-lift-strong rounded-[1.25rem] p-3 text-xs sm:rounded-[1.5rem] sm:p-4 sm:text-sm ${
                   isDark
                     ? "bg-[rgba(255,255,255,0.04)] text-white/75"
                     : "home-lux-panel--compact rounded-[1.5rem] border-0 text-[var(--color-ink)] ring-1 ring-[color-mix(in_srgb,var(--luxury-gold)_18%,transparent)]"
@@ -1390,19 +1394,19 @@ export default function Home() {
         </div>
 
         <div
-          className={`animate-pulse-glow-soft hover-lift-strong rounded-[2.4rem] p-8 sm:p-10 ${
+          className={`animate-pulse-glow-soft hover-lift-strong rounded-[1.75rem] p-5 sm:rounded-[2.4rem] sm:p-8 md:p-10 ${
             isDark
               ? "border border-white/10 bg-[linear-gradient(180deg,rgba(209,177,171,0.08),rgba(255,255,255,0.04))]"
               : "home-lux-panel--jewel border-0"
           }`}
         >
-          <p className="text-sm font-semibold uppercase tracking-[0.38em] text-[color-mix(in_srgb,var(--luxury-gold)_28%,var(--color-sage))]">
+          <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[color-mix(in_srgb,var(--luxury-gold)_28%,var(--color-sage))] sm:text-sm sm:tracking-[0.38em]">
             {copy.positioningEyebrow}
           </p>
-          <blockquote className="mt-4 font-display text-3xl leading-tight sm:text-4xl">
+          <blockquote className="mt-3 font-display text-2xl leading-tight sm:mt-4 sm:text-3xl md:text-4xl">
             &ldquo;{copy.positioningQuote}&rdquo;
           </blockquote>
-          <p className={`mt-6 text-sm leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/86"}`}>
+          <p className={`mt-4 text-xs leading-6 sm:mt-6 sm:text-sm sm:leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/86"}`}>
             {copy.positioningBody}
           </p>
         </div>
@@ -1413,11 +1417,11 @@ export default function Home() {
         className={`animate-fade-scale-soft-delay-2 ${homeOuter} py-24 sm:py-28 ${!isDark ? "home-lux-panel rounded-[2.5rem] border-0" : ""}`}
       >
         <div className="text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.38em] text-[color-mix(in_srgb,var(--luxury-gold)_28%,var(--color-sage))]">
+          <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[color-mix(in_srgb,var(--luxury-gold)_28%,var(--color-sage))] sm:text-sm sm:tracking-[0.38em]">
             {copy.pricingEyebrow}
           </p>
-          <h2 className="mt-4 font-display text-4xl sm:text-[2.85rem]">{copy.pricingTitle}</h2>
-          <p className={`mx-auto mt-4 max-w-2xl text-sm leading-7 ${isDark ? "text-white/68" : "text-[var(--color-ink)]/86"}`}>
+          <h2 className="mt-3 font-display text-2xl sm:mt-4 sm:text-4xl md:text-[2.85rem]">{copy.pricingTitle}</h2>
+          <p className={`mx-auto mt-3 max-w-2xl text-xs leading-6 sm:mt-4 sm:text-sm sm:leading-7 ${isDark ? "text-white/68" : "text-[var(--color-ink)]/86"}`}>
             {copy.pricingBody}
           </p>
           <div className="mt-8 flex justify-center">
@@ -1448,7 +1452,7 @@ export default function Home() {
           {copy.pricing.map((plan) => (
             <article
               key={plan.name}
-              className={`hover-lift-strong rounded-[2.5rem] p-8 transition ${
+              className={`hover-lift-strong rounded-[1.75rem] p-5 transition sm:rounded-[2.5rem] sm:p-8 ${
                 plan.featured
                   ? isDark
                     ? "border-2 border-[var(--color-rose)]/45 bg-white/[0.07] shadow-[0_22px_56px_rgba(0,0,0,0.28)] ring-1 ring-[var(--color-rose)]/20"
@@ -1473,8 +1477,8 @@ export default function Home() {
                   {plan.tagline}
                 </p>
               ) : null}
-              <h3 className="mt-4 font-display text-4xl sm:text-5xl">{plan.price}</h3>
-              <p className={`mt-4 text-sm leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/86"}`}>
+              <h3 className="mt-3 font-display text-3xl sm:mt-4 sm:text-4xl md:text-5xl">{plan.price}</h3>
+              <p className={`mt-3 text-xs leading-6 sm:mt-4 sm:text-sm sm:leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/86"}`}>
                 {plan.note}
               </p>
             </article>
@@ -1489,13 +1493,13 @@ export default function Home() {
         }`}
       >
         <div className="mx-auto max-w-3xl text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.38em] text-[color-mix(in_srgb,var(--luxury-gold)_35%,var(--color-rose))]">
+          <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[color-mix(in_srgb,var(--luxury-gold)_35%,var(--color-rose))] sm:text-sm sm:tracking-[0.38em]">
             {copy.testimonialsEyebrow}
           </p>
-          <h2 className="mt-4 font-display text-4xl leading-tight sm:text-[2.85rem]">
+          <h2 className="mt-3 font-display text-2xl leading-tight sm:mt-4 sm:text-4xl md:text-[2.85rem]">
             {copy.testimonialsTitle}
           </h2>
-          <p className={`mt-4 text-sm leading-7 ${isDark ? "text-white/68" : "text-[var(--color-ink)]/85"}`}>
+          <p className={`mt-3 text-xs leading-6 sm:mt-4 sm:text-sm sm:leading-7 ${isDark ? "text-white/68" : "text-[var(--color-ink)]/85"}`}>
             {copy.testimonialsBody}
           </p>
         </div>
@@ -1533,22 +1537,22 @@ export default function Home() {
             {copy.testimonials.map((item) => (
               <figure
                 key={item.name}
-                className={`hover-lift-strong relative z-0 flex w-[min(19rem,100%)] shrink-0 snap-start flex-col rounded-[2rem] p-6 sm:w-[22rem] sm:p-7 ${
+                className={`hover-lift-strong relative z-0 flex w-[min(17.5rem,100%)] shrink-0 snap-start flex-col rounded-[1.5rem] p-4 sm:w-[22rem] sm:rounded-[2rem] sm:p-7 ${
                   isDark
                     ? "border border-white/10 bg-white/[0.05]"
                     : "home-lux-panel--compact rounded-[2rem] border-0 bg-white/85 ring-1 ring-[color-mix(in_srgb,var(--luxury-gold)_28%,transparent)] backdrop-blur-sm"
                 }`}
               >
-                <span className="font-display text-4xl leading-none text-[color-mix(in_srgb,var(--luxury-gold)_40%,var(--color-rose))]" aria-hidden="true">
+                <span className="font-display text-3xl leading-none text-[color-mix(in_srgb,var(--luxury-gold)_40%,var(--color-rose))] sm:text-4xl" aria-hidden="true">
                   &ldquo;
                 </span>
                 <blockquote
-                  className={`mt-2 flex-1 text-base leading-7 [overflow-wrap:normal] [word-break:normal] ${isDark ? "text-white/88" : "text-[var(--color-ink)]"}`}
+                  className={`mt-2 flex-1 text-sm leading-6 [overflow-wrap:normal] [word-break:normal] sm:text-base sm:leading-7 ${isDark ? "text-white/88" : "text-[var(--color-ink)]"}`}
                 >
                   {item.quote}
                 </blockquote>
-                <figcaption className={`mt-6 min-w-0 border-t pt-5 ${isDark ? "border-white/10" : "border-[var(--color-ink)]/10"}`}>
-                  <p className="font-display text-xl break-words">{item.name}</p>
+                <figcaption className={`mt-4 min-w-0 border-t pt-4 sm:mt-6 sm:pt-5 ${isDark ? "border-white/10" : "border-[var(--color-ink)]/10"}`}>
+                  <p className="font-display text-lg break-words sm:text-xl">{item.name}</p>
                   <div
                     className={`mt-2 max-w-full overflow-x-auto overflow-y-hidden pb-0.5 [-webkit-overflow-scrolling:touch] ${isDark ? "text-white/50" : "text-[var(--color-ink)]/72"}`}
                   >
@@ -1587,47 +1591,51 @@ export default function Home() {
 
       <section
         id="contact"
-        className={`animate-fade-scale-soft-delay-2 ${homeOuter} pb-24 pt-6 sm:pt-10`}
+        className={`animate-fade-scale-soft-delay-2 ${homeOuter} pb-[max(7rem,calc(env(safe-area-inset-bottom)+5.5rem))] pt-6 sm:pb-24 sm:pt-10`}
       >
         <div
-          className={`animate-pulse-glow-soft hover-lift-strong rounded-[2.5rem] p-8 sm:p-12 ${
+          className={`animate-pulse-glow-soft hover-lift-strong min-w-0 rounded-[1.35rem] p-5 sm:rounded-[2rem] sm:p-8 lg:rounded-[2.5rem] lg:p-12 ${
             isDark
-              ? "border border-white/10 bg-white/6 shadow-[0_18px_50px_rgba(0,0,0,0.24)]"
+              ? "border border-white/12 bg-white/[0.07] shadow-[0_18px_50px_rgba(0,0,0,0.24)]"
               : "home-lux-panel--jewel border-0"
           }`}
         >
-          <div className="text-center">
-            <WeddingFlourish className="mb-4" luxury={!isDark} />
-            <p className="text-sm font-semibold uppercase tracking-[0.38em] text-[color-mix(in_srgb,var(--luxury-gold)_28%,var(--color-sage))]">
+          <div className="px-0.5 text-center sm:px-0">
+            <WeddingFlourish className="mb-3 sm:mb-4" luxury={!isDark} />
+            <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[color-mix(in_srgb,var(--luxury-gold)_28%,var(--color-sage))] sm:text-sm sm:tracking-[0.38em]">
               {copy.contactEyebrow}
             </p>
-            <h2 className="mt-4 font-display text-4xl sm:text-5xl">{copy.contactTitle}</h2>
-            <p className={`mx-auto mt-4 max-w-2xl text-sm leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/86"}`}>
+            <h2 className="mt-3 font-display text-2xl leading-[1.15] tracking-[-0.02em] sm:mt-4 sm:text-3xl sm:leading-tight md:text-4xl md:leading-tight lg:text-5xl">
+              {copy.contactTitle}
+            </h2>
+            <p
+              className={`mx-auto mt-3 max-w-2xl text-xs leading-relaxed sm:mt-4 sm:text-sm sm:leading-7 ${isDark ? "text-white/72" : "text-[var(--color-ink)]/86"}`}
+            >
               {copy.contactBody}
             </p>
           </div>
 
-          <form className="mx-auto mt-10 grid max-w-3xl gap-4 sm:grid-cols-2">
+          <form className="mx-auto mt-8 grid w-full min-w-0 max-w-3xl grid-cols-1 gap-3.5 sm:mt-10 sm:grid-cols-2 sm:gap-4">
+            <input className={contactFieldClass} placeholder={copy.contactName} autoComplete="name" />
             <input
-              className="rounded-2xl border border-[var(--color-ink)]/10 bg-[var(--color-cream)] px-5 py-4 outline-none placeholder:text-[var(--color-ink)]/35"
-              placeholder={copy.contactName}
-            />
-            <input
-              className="rounded-2xl border border-[var(--color-ink)]/10 bg-[var(--color-cream)] px-5 py-4 outline-none placeholder:text-[var(--color-ink)]/35"
+              className={contactFieldClass}
               placeholder={copy.contactPhone}
+              autoComplete="tel"
+              inputMode="tel"
             />
-            <select className="rounded-2xl border border-[var(--color-ink)]/10 bg-[var(--color-cream)] px-5 py-4 outline-none sm:col-span-2">
+            <select className={`${contactFieldClass} sm:col-span-2`}>
               <option>{copy.contactOption1}</option>
               <option>{copy.contactOption2}</option>
               <option>{copy.contactOption3}</option>
             </select>
             <textarea
-              className="min-h-32 rounded-2xl border border-[var(--color-ink)]/10 bg-[var(--color-cream)] px-5 py-4 outline-none placeholder:text-[var(--color-ink)]/35 sm:col-span-2"
+              className={`min-h-28 resize-y sm:min-h-32 ${contactFieldClass} sm:col-span-2`}
               placeholder={copy.contactMessage}
+              rows={5}
             />
             <button
               type="button"
-              className="btn-primary rounded-full px-7 py-4 text-sm font-medium transition-transform duration-300 hover:-translate-y-1 sm:col-span-2"
+              className="btn-primary w-full rounded-full px-6 py-3.5 text-sm font-medium transition-transform duration-300 hover:-translate-y-1 sm:col-span-2 sm:w-auto sm:justify-self-center sm:px-7 sm:py-4"
             >
               {copy.contactSubmit}
             </button>

@@ -34,12 +34,12 @@ function ImageLightbox({
 
   return (
     <div
-      className="fixed inset-0 z-[80] flex items-center justify-center bg-black/82 p-4"
+      className="fixed inset-0 z-[80] flex items-center justify-center bg-black/82 p-3 pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(0.75rem,env(safe-area-inset-bottom))] pl-[max(0.75rem,env(safe-area-inset-left))] pr-[max(0.75rem,env(safe-area-inset-right))] sm:p-4"
       onClick={onClose}
       role="presentation"
     >
       <div
-        className="relative w-full max-w-5xl"
+        className="relative w-full max-w-5xl min-w-0"
         onClick={(event) => event.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -48,7 +48,7 @@ function ImageLightbox({
         <button
           type="button"
           onClick={onClose}
-          className={`absolute right-3 top-3 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full shadow transition cursor-pointer ${
+          className={`absolute right-2 top-[max(0.5rem,env(safe-area-inset-top))] z-10 inline-flex h-10 w-10 items-center justify-center rounded-full shadow transition cursor-pointer sm:right-3 sm:top-3 ${
             isDark
               ? "bg-white/12 text-white hover:bg-white/18"
               : "bg-white/90 text-[var(--color-ink)] hover:bg-white"
@@ -70,7 +70,7 @@ function ImageLightbox({
             <path d="M6 6l12 12" />
           </svg>
         </button>
-        <div className="relative h-[85vh] w-full overflow-hidden rounded-[1.8rem] bg-white/10">
+        <div className="relative h-[min(85dvh,calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom)-1.5rem))] max-h-[85vh] w-full overflow-hidden rounded-[1.4rem] bg-white/10 sm:rounded-[1.8rem]">
           <Image
             src={image.src}
             alt={image.alt}
@@ -254,7 +254,7 @@ function PreviewConfigurator({
       <button
         type="button"
         onClick={onToggleCollapsed}
-        className={`fixed bottom-1 right-1 z-50 inline-flex h-14 w-14 cursor-pointer items-center justify-center rounded-full backdrop-blur transition ${
+        className={`fixed bottom-[max(0.25rem,env(safe-area-inset-bottom))] right-[max(0.25rem,env(safe-area-inset-right))] z-50 inline-flex h-14 w-14 cursor-pointer items-center justify-center rounded-full backdrop-blur transition ${
           isDark
             ? "border border-white/10 bg-white/10 text-white shadow-[0_24px_60px_rgba(0,0,0,0.3)] hover:bg-white/14"
             : "border border-[var(--color-ink)]/10 bg-white/92 text-[var(--color-ink)] shadow-[0_24px_60px_rgba(49,42,40,0.14)] hover:bg-white"
@@ -276,7 +276,7 @@ function PreviewConfigurator({
 
   return (
     <div
-      className={`fixed bottom-1 left-2 right-1 z-50 flex max-h-[min(90vh,calc(100dvh-0.5rem))] flex-col rounded-[1.8rem] p-5 backdrop-blur sm:bottom-1 sm:left-auto sm:right-0 sm:w-[min(440px,100vw)] sm:rounded-l-[1.8rem] sm:rounded-r-none sm:p-6 md:w-[min(480px,100vw)] ${
+      className={`fixed bottom-[max(0.25rem,env(safe-area-inset-bottom))] left-[max(0.5rem,env(safe-area-inset-left))] right-[max(0.5rem,env(safe-area-inset-right))] z-50 flex max-h-[min(90vh,calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom)-0.5rem))] flex-col rounded-[1.8rem] p-4 backdrop-blur sm:bottom-[max(0.25rem,env(safe-area-inset-bottom))] sm:left-auto sm:right-[max(0rem,env(safe-area-inset-right))] sm:w-[min(440px,calc(100vw-env(safe-area-inset-left)-env(safe-area-inset-right)))] sm:rounded-l-[1.8rem] sm:rounded-r-none sm:p-6 md:w-[min(480px,calc(100vw-env(safe-area-inset-left)-env(safe-area-inset-right)))] ${
         isDark
           ? "border border-white/10 bg-[#0f0f10]/92 text-white shadow-[0_24px_60px_rgba(0,0,0,0.3)]"
           : "border border-[var(--color-ink)]/10 bg-white/92 shadow-[0_24px_60px_rgba(49,42,40,0.14)]"
@@ -287,7 +287,7 @@ function PreviewConfigurator({
           <p className="text-xs uppercase tracking-[0.3em] text-[var(--color-sage)]">
             {copy.titleEyebrow}
           </p>
-          <h2 className="mt-3 font-display text-3xl">{copy.title}</h2>
+          <h2 className="mt-3 min-w-0 font-display text-2xl leading-snug sm:text-3xl">{copy.title}</h2>
         </div>
         <button
           type="button"
@@ -310,7 +310,7 @@ function PreviewConfigurator({
         <input className={inputClass} value={preview.bride} onChange={(event) => onChange("bride", event.target.value)} placeholder={copy.brideName} />
         <input className={inputClass} value={preview.dateLabel} onChange={(event) => onChange("dateLabel", event.target.value)} placeholder={copy.dateLabel} />
         <input className={inputClass} value={preview.location} onChange={(event) => onChange("location", event.target.value)} placeholder={copy.location} />
-        <div className="grid grid-cols-2 gap-3.5">
+        <div className="grid grid-cols-1 gap-3.5 min-[400px]:grid-cols-2">
           <input className={inputClass} value={preview.ceremonyTime} onChange={(event) => onChange("ceremonyTime", event.target.value)} placeholder={copy.ceremonyTime} />
           <input className={inputClass} value={preview.partyTime} onChange={(event) => onChange("partyTime", event.target.value)} placeholder={copy.partyTime} />
         </div>
@@ -470,7 +470,13 @@ export default function TemplateWorkspace({
   );
 
   return (
-    <div className={theme === "dark" ? "text-white" : ""}>
+    <div
+      className={`${theme === "dark" ? "text-white" : ""}${
+        isConfiguratorCollapsed
+          ? ""
+          : " pb-[max(6rem,min(40dvh,22rem))] sm:pb-8 md:pb-10"
+      }`.trim()}
+    >
       <PreviewComponent {...previewProps} />
       <ImageLightbox image={lightboxImage} onClose={() => setLightboxImage(null)} />
       <PreviewConfigurator

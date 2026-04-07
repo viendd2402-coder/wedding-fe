@@ -36,7 +36,7 @@ export function AzurePromiseHeader({ tier }: { tier: string }) {
     language === "vi" ? "Nhận tư vấn mẫu này" : "Get consultation";
 
   return (
-    <div className="relative mx-auto flex max-w-7xl flex-col gap-4 px-6 py-8 sm:px-10 lg:px-16">
+    <div className="relative mx-auto flex max-w-7xl flex-col gap-4 px-4 py-6 sm:px-10 sm:py-8 lg:px-16">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <Link
           href="/"
@@ -119,7 +119,7 @@ export function AzurePromiseMusicPlayer({
   };
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex max-w-full flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
       <audio
         ref={audioRef}
         loop
@@ -147,7 +147,7 @@ export function AzurePromiseMusicPlayer({
               : "Play music"}
         </span>
       </button>
-      <p className="text-xs uppercase tracking-[0.22em] text-[var(--color-ink)]/48">
+      <p className="hidden text-xs uppercase tracking-[0.22em] text-[var(--color-ink)]/48 sm:block">
         {label}
       </p>
     </div>

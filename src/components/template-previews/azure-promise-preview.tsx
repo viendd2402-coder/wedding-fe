@@ -282,11 +282,11 @@ export default function AzurePromisePreview({
     >
       <AzurePromiseHeader tier={template.tier} />
 
-      <section className="mx-auto max-w-4xl px-4 pb-12 sm:px-6 lg:pb-20">
+      <section className="mx-auto max-w-4xl px-3 pb-12 sm:px-6 lg:pb-20">
         <div className={`overflow-hidden rounded-[2rem] ${shellClass}`}>
           <div className="relative">
             <div
-              className="h-[340px] bg-cover bg-center sm:h-[460px]"
+              className="h-[min(340px,52svh)] min-h-[220px] bg-cover bg-center sm:h-[460px]"
               style={{
                 backgroundImage: `linear-gradient(180deg, rgba(19,38,61,0.10), rgba(19,38,61,0.46)), url(${images.coverImage || template.image})`,
               }}
@@ -307,7 +307,7 @@ export default function AzurePromisePreview({
                     <p className="text-xs uppercase tracking-[0.3em] text-[#6f9bb6]">
                       {copy.heroTitle}
                     </p>
-                    <h1 className="mt-4 font-display text-5xl leading-none sm:text-6xl">
+                    <h1 className="mt-4 break-words font-display text-4xl leading-[1.05] sm:text-5xl sm:leading-none lg:text-6xl">
                       {preview.groom} <span className="text-[#7aa6c2]">&</span> {preview.bride}
                     </h1>
                     <p className={`mt-4 max-w-xl text-sm leading-7 ${subtleTextClass}`}>
@@ -330,7 +330,7 @@ export default function AzurePromisePreview({
                   </div>
                 </div>
 
-                <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+                <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
                   <div className="flex flex-wrap gap-3">
                     <button
                       type="button"
@@ -361,11 +361,11 @@ export default function AzurePromisePreview({
             </div>
           </div>
 
-          <div className={`mt-5 grid grid-cols-2 border-y px-2 sm:grid-cols-4 ${isDark ? "border-white/8" : "border-[#dce9f4]"}`}>
+          <div className={`mt-5 grid grid-cols-2 gap-y-1 border-y px-1 py-1 sm:grid-cols-4 sm:px-2 sm:py-0 ${isDark ? "border-white/8" : "border-[#dce9f4]"}`}>
             {copy.tabs.map((item) => (
               <div
                 key={item}
-                className={`px-4 py-3 text-center text-xs font-medium uppercase tracking-[0.24em] ${
+                className={`px-2 py-2.5 text-center text-[10px] font-medium uppercase leading-tight tracking-[0.18em] sm:px-4 sm:py-3 sm:text-xs sm:tracking-[0.24em] ${
                   isDark ? "border-white/10 text-white/68" : "text-[#5c7f96]"
                 }`}
               >
@@ -380,7 +380,7 @@ export default function AzurePromisePreview({
               <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
                 <div>
                   <p className="text-xs uppercase tracking-[0.28em] text-[#6f9bb6]">{copy.invitationTitle}</p>
-                  <p className="mt-4 font-display text-4xl leading-tight sm:text-5xl">
+                  <p className="mt-4 break-words font-display text-3xl leading-tight sm:text-4xl md:text-5xl">
                     {preview.groom} & {preview.bride}
                   </p>
                 </div>
@@ -442,16 +442,16 @@ export default function AzurePromisePreview({
                     key={event.label}
                     className={`rounded-[1.4rem] px-5 py-5 ${elevatedCardClass}`}
                   >
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <p className="font-display text-3xl">{event.label}</p>
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                      <div className="min-w-0">
+                        <p className="break-words font-display text-2xl sm:text-3xl">{event.label}</p>
                         <p className={`mt-2 text-sm leading-7 ${subtleTextClass}`}>
                           {event.timeKey === "ceremonyTime" ? preview.ceremonyTime : preview.partyTime}
                           {" · "}
                           {event.place === "Riverside Garden" ? preview.venue : event.place}
                         </p>
                       </div>
-                      <span className="rounded-full bg-[#dff1ff] px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-[#4d88a8]">
+                      <span className="w-fit shrink-0 rounded-full bg-[#dff1ff] px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-[#4d88a8]">
                         {copy.previewCta}
                       </span>
                     </div>
@@ -581,7 +581,7 @@ export default function AzurePromisePreview({
 
             <ScrollRevealDiv revealAxis="up" className={scroll.block}>
             <div className={`rounded-[1.7rem] p-6 text-center ${softCardClass}`}>
-              <p className="font-display text-4xl leading-tight">{copy.footerTitle}</p>
+              <p className="break-words font-display text-2xl leading-tight sm:text-4xl">{copy.footerTitle}</p>
             </div>
             </ScrollRevealDiv>
           </div>

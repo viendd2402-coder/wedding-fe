@@ -21,10 +21,13 @@ export default function AppTopChrome() {
   }
 
   return (
-    <div className="sticky top-0 z-[70] p-4 sm:px-6 lg:px-8">
+    <header
+      className="sticky top-0 z-[70] pt-[max(0.65rem,env(safe-area-inset-top))] pb-2 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:pb-3 sm:pl-6 sm:pr-6 lg:px-8"
+      role="banner"
+    >
       <div className="mx-auto w-full max-w-7xl">
         <GlobalDashboardControls />
       </div>
-    </div>
+    </header>
   );
 }

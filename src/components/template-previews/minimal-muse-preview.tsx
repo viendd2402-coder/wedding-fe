@@ -171,12 +171,12 @@ export default function MinimalMusePreview({
         />
         <MinimalMuseFallingHearts color="rgba(197, 122, 145, 0.9)" />
         <MinimalMuseHeader tier={template.tier} />
-        <div className="relative mx-auto max-w-7xl px-6 pb-12 sm:px-10 lg:px-16 lg:pb-20">
+        <div className="relative mx-auto max-w-7xl px-4 pb-10 sm:px-10 sm:pb-12 lg:px-16 lg:pb-20">
           <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
             <ScrollRevealDiv revealAxis="left" className={scroll.block}>
             <div className="max-w-2xl">
               <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-sage)]">{template.style}</p>
-              <h1 className="mt-5 font-display text-6xl leading-none sm:text-8xl">
+              <h1 className="mt-5 break-words font-display text-4xl leading-[1.06] sm:text-6xl lg:text-8xl">
                 {preview.groom}
                 <br />
                 <span className="text-[var(--color-sage)]/78">&</span> {preview.bride}
@@ -219,7 +219,7 @@ export default function MinimalMusePreview({
                 }`}
               >
                 <div
-                  className="min-h-[380px] rounded-[1.8rem] bg-cover bg-center p-6 sm:min-h-[520px]"
+                  className="min-h-[min(380px,72svh)] rounded-[1.8rem] bg-cover bg-center p-4 sm:min-h-[520px] sm:p-6"
                   style={{
                     backgroundImage: `linear-gradient(180deg, rgba(255,255,255,0.08), rgba(49,42,40,0.22)), url(${images.coverImage || template.image})`,
                   }}
@@ -229,7 +229,7 @@ export default function MinimalMusePreview({
                       isDark ? "bg-[#111214]/88 text-white" : "bg-white/88 text-[var(--color-ink)]"
                     }`}>
                       <p className="text-xs uppercase tracking-[0.3em] text-[var(--color-sage)]">{template.previewLabel}</p>
-                      <p className="mt-4 font-display text-4xl leading-none sm:text-5xl">
+                      <p className="mt-4 break-words font-display text-3xl leading-tight sm:text-4xl sm:leading-none lg:text-5xl">
                         {preview.groom} & {preview.bride}
                       </p>
                       <p className={`mt-4 text-sm leading-7 ${isDark ? "text-white/68" : "text-[var(--color-ink)]/68"}`}>{template.description}</p>
@@ -258,7 +258,7 @@ export default function MinimalMusePreview({
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 py-10 sm:px-10 lg:px-16">
+      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-10 lg:px-16">
         <div className="grid gap-6 lg:grid-cols-[0.92fr_1.08fr]">
           <ScrollRevealDiv revealAxis="left" className={scroll.block}>
           <div className={`rounded-[2.2rem] p-6 shadow-[0_16px_40px_rgba(49,42,40,0.06)] sm:p-8 ${
@@ -269,9 +269,9 @@ export default function MinimalMusePreview({
               isDark ? "border border-white/10 bg-[rgba(255,255,255,0.04)]" : "border border-[var(--color-ink)]/8 bg-[var(--color-cream)]"
             }`}>
               <p className="text-xs uppercase tracking-[0.3em] text-[var(--color-sage)]">Trân trọng kính mời</p>
-              <p className="mt-5 font-display text-5xl leading-none">
+              <p className="mt-5 break-words font-display text-3xl leading-tight sm:text-5xl sm:leading-none">
                 {preview.groom}
-                <span className="px-3 text-[var(--color-rose)]/80">&</span>
+                <span className="inline-block px-1.5 text-[var(--color-rose)]/80 sm:px-3">&</span>
                 {preview.bride}
               </p>
               <p className={`mt-5 text-sm leading-7 ${isDark ? "text-white/68" : "text-[var(--color-ink)]/68"}`}>{template.heroSubtitle}</p>
@@ -324,7 +324,7 @@ export default function MinimalMusePreview({
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 py-10 sm:px-10 lg:px-16">
+      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-10 lg:px-16">
         <div className="grid gap-5 md:grid-cols-4">
           {galleryImages.map((image, index) => (
             <ScrollRevealButton
@@ -343,7 +343,7 @@ export default function MinimalMusePreview({
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 py-10 sm:px-10 lg:px-16">
+      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-10 lg:px-16">
         <div className="grid gap-6 lg:grid-cols-[1fr_0.96fr]">
           <ScrollRevealDiv revealAxis="left" className={scroll.block}>
           <div

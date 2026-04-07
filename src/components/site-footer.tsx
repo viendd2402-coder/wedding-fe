@@ -136,13 +136,13 @@ export default function SiteFooter() {
     ? "border-white/[0.08] bg-white/[0.03] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)]"
     : "border-[var(--color-ink)]/[0.06] bg-white/55 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.85)]";
 
-  const navLinkClass = `group inline-flex items-center gap-1.5 text-[13px] font-medium tracking-[0.02em] transition ${
+  const navLinkClass = `group inline-flex items-center gap-1.5 text-xs font-medium tracking-[0.02em] transition sm:text-[13px] ${
     isDark
       ? "text-white/65 hover:text-white"
       : "text-[var(--color-ink)]/62 hover:text-[var(--color-ink)]"
   }`;
 
-  const contactCardClass = `group flex items-start gap-3.5 rounded-2xl border px-4 py-3.5 transition duration-300 ${panelMuted} ${
+  const contactCardClass = `group flex min-w-0 items-start gap-3 rounded-2xl border px-3.5 py-3 transition duration-300 sm:gap-3.5 sm:px-4 sm:py-3.5 ${panelMuted} ${
     isDark
       ? "hover:border-[var(--color-sage)]/35 hover:bg-white/[0.06]"
       : "hover:border-[var(--color-sage)]/30 hover:bg-white/80"
@@ -180,8 +180,8 @@ export default function SiteFooter() {
         aria-hidden="true"
       />
 
-      <div className="relative mx-auto w-full max-w-7xl px-6 py-16 sm:px-10 sm:py-20 lg:px-16">
-        <div className="grid gap-14 lg:grid-cols-12 lg:gap-10 xl:gap-14">
+      <div className="relative mx-auto w-full max-w-7xl px-4 py-12 sm:px-10 sm:py-20 lg:px-16">
+        <div className="grid gap-10 sm:gap-12 lg:grid-cols-12 lg:gap-10 xl:gap-14">
           <div className="lg:col-span-5">
             <div className="flex items-start gap-5">
               <span
@@ -194,9 +194,9 @@ export default function SiteFooter() {
                 aria-hidden="true"
               />
               <div className="min-w-0">
-                <p className="text-[11px] uppercase tracking-[0.38em] text-[var(--color-sage)]">{copy.eyebrow}</p>
-                <p className="mt-3 font-display text-4xl tracking-[0.06em] sm:text-5xl">{copy.brand}</p>
-                <p className={`mt-6 max-w-md text-[15px] leading-[1.75] ${isDark ? "text-white/66" : "text-[var(--color-ink)]/70"}`}>
+                <p className="text-[10px] uppercase tracking-[0.32em] text-[var(--color-sage)] sm:text-[11px] sm:tracking-[0.38em]">{copy.eyebrow}</p>
+                <p className="mt-2 font-display text-2xl tracking-[0.06em] sm:mt-3 sm:text-3xl md:text-4xl lg:text-5xl">{copy.brand}</p>
+                <p className={`mt-4 max-w-md text-sm leading-[1.7] sm:mt-6 sm:text-[15px] sm:leading-[1.75] ${isDark ? "text-white/66" : "text-[var(--color-ink)]/70"}`}>
                   {copy.body}
                 </p>
               </div>
@@ -205,7 +205,7 @@ export default function SiteFooter() {
 
           <div className="lg:col-span-4">
             <p className="text-[11px] uppercase tracking-[0.38em] text-[var(--color-sage)]">{copy.contactTitle}</p>
-            <div className="mt-6 flex flex-col gap-3">
+            <div className="mt-5 flex flex-col gap-2.5 sm:mt-6 sm:gap-3">
               <a href={siteZaloUrl} className={contactCardClass} target="_blank" rel="noopener noreferrer">
                 <span className={iconWrap}>
                   <IconZaloBrand className="h-5 w-5" />
@@ -263,7 +263,7 @@ export default function SiteFooter() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-10 sm:gap-12 lg:col-span-3">
+          <div className="grid grid-cols-2 gap-8 gap-y-10 sm:gap-10 sm:gap-y-12 lg:col-span-3">
             <div>
               <p className="text-[11px] uppercase tracking-[0.38em] text-[var(--color-sage)]">{copy.navExploreTitle}</p>
               <ul className="mt-5 space-y-3">{exploreLinks.map(({ href, label }) => renderNavLink(href, label))}</ul>

@@ -80,18 +80,45 @@ export default function GlobalDashboardControls() {
   const accountChipClass = `inline-flex shrink-0 items-center gap-2 rounded-full border px-3 py-2 text-sm font-medium transition hover:opacity-90 ${
     theme === "dark"
       ? "border-white/18 bg-white/8 text-white"
-      : "border-[var(--color-ink)]/14 bg-[var(--color-cream)] text-[var(--color-ink)]"
+      : "border-[var(--color-ink)]/22 bg-white text-[var(--color-ink)] shadow-[0_1px_3px_rgba(49,42,40,0.08)] max-lg:border-[var(--color-ink)]/26 max-lg:shadow-[0_2px_8px_rgba(49,42,40,0.1)]"
   }`;
 
-  const panelClass =
+  const shellClass =
     theme === "dark"
-      ? "border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))] text-white shadow-[0_18px_50px_rgba(0,0,0,0.28)]"
-      : "border-white/70 bg-white/68 text-[var(--color-ink)] shadow-[0_18px_50px_rgba(49,42,40,0.08)]";
+      ? "border-white/[0.09] bg-[linear-gradient(180deg,rgba(20,20,22,0.94),rgba(12,12,14,0.9))] text-white shadow-[0_12px_40px_rgba(0,0,0,0.38),inset_0_1px_0_rgba(255,255,255,0.05)]"
+      : "border-[var(--color-ink)]/14 bg-[linear-gradient(180deg,rgba(255,253,249,0.98),rgba(247,242,236,0.96))] text-[var(--color-ink)] shadow-[0_8px_28px_rgba(49,42,40,0.09),inset_0_1px_0_rgba(255,255,255,0.95)] max-lg:border-[var(--color-ink)]/20 max-lg:bg-white max-lg:shadow-[0_4px_20px_rgba(49,42,40,0.12),0_0_0_1px_rgba(49,42,40,0.05)_inset] max-lg:backdrop-blur-md";
 
   const groupClass =
     theme === "dark"
-      ? "border-white/10 bg-white/6 text-white/72"
-      : "border-[var(--color-ink)]/10 bg-[var(--color-cream)] text-[var(--color-ink)]/56";
+      ? "border-white/12 bg-white/[0.06] text-white/78"
+      : "border-[var(--color-ink)]/20 bg-white text-[var(--color-ink)]/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_1px_2px_rgba(49,42,40,0.06)] max-lg:border-[var(--color-ink)]/24 max-lg:shadow-[0_1px_3px_rgba(49,42,40,0.08)]";
+
+  const navLinkClass = (active: boolean) =>
+    `rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
+      theme === "dark"
+        ? active
+          ? "bg-white/12 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]"
+          : "text-white/72 hover:bg-white/[0.07] hover:text-white"
+        : active
+          ? "bg-[var(--color-ink)]/[0.08] text-[var(--color-ink)] shadow-[inset_0_0_0_1px_rgba(49,42,40,0.1)]"
+          : "text-[var(--color-ink)]/75 hover:bg-[var(--color-ink)]/[0.06] hover:text-[var(--color-ink)]"
+    }`;
+
+  const mobileNavTile = (active: boolean) =>
+    `flex w-full items-center justify-center rounded-xl border px-3 py-2.5 text-center text-xs font-medium transition sm:py-3 sm:text-sm ${
+      theme === "dark"
+        ? active
+          ? "border-white/16 bg-white/14 text-white shadow-sm"
+          : "border-white/10 bg-white/[0.06] text-white/85 hover:border-white/14 hover:bg-white/10"
+        : active
+          ? "border-[var(--color-ink)]/22 bg-[var(--color-sand)]/55 text-[var(--color-ink)] shadow-[0_2px_6px_rgba(49,42,40,0.08)]"
+          : "border-[var(--color-ink)]/18 bg-white text-[var(--color-ink)] shadow-[0_1px_3px_rgba(49,42,40,0.07)] hover:border-[var(--color-ink)]/24 hover:bg-[var(--color-cream)]"
+    }`;
+
+  const closeMobile = () => setIsMobileMenuOpen(false);
+
+  const templatesActive = pathname.startsWith("/templates");
+  const homeActive = pathname === "/";
 
   /** Đang ở trang chủ: click logo / Trang chủ → về đầu trang (và bỏ hash). */
   const handleHomeLinkClick = useCallback(
@@ -120,10 +147,10 @@ export default function GlobalDashboardControls() {
         current === value
           ? theme === "dark"
             ? "bg-white text-[#111113] shadow-[0_6px_16px_rgba(255,255,255,0.08)]"
-            : "bg-[var(--color-ink)] text-white"
+            : "bg-[var(--color-ink)] text-white shadow-sm"
           : theme === "dark"
             ? "text-white/76 hover:bg-white/8"
-            : ""
+            : "text-[var(--color-ink)]/82 hover:bg-[var(--color-ink)]/[0.07]"
       }`}
     >
       {label}
@@ -152,163 +179,173 @@ export default function GlobalDashboardControls() {
   );
 
   return (
-    <div className={`overflow-visible rounded-[2rem] border px-4 py-4 backdrop-blur sm:px-5 ${panelClass}`}>
-      <div className="flex flex-col gap-3 sm:gap-4">
-        <div className="flex w-full items-center gap-3 sm:gap-4">
-          <Link href="/" className="min-w-0 shrink-0" onClick={handleHomeLinkClick}>
-            <p className="text-[11px] uppercase tracking-[0.35em] text-[var(--color-sage)]">
-              {copy.brandEyebrow}
-            </p>
-            <p className="font-display text-xl tracking-[0.12em] sm:text-2xl">
-              {copy.brandName}
-            </p>
-          </Link>
-          <nav
-            className={`hidden min-w-0 flex-1 items-center justify-center gap-5 text-sm lg:flex ${theme === "dark" ? "text-white/72" : "text-[var(--color-ink)]/70"}`}
-          >
-            <Link href="/" onClick={handleHomeLinkClick}>
-              {copy.navHome}
-            </Link>
-            <Link href="/#templates">{copy.navTemplates}</Link>
-            {/* <Link href="/#why-us">{copy.navWhyUs}</Link> */}
-            <Link href="/#features">{copy.navFeatures}</Link>
-            <Link href="/#pricing">{copy.navPricing}</Link>
-            {/* <Link href="/#feedback">{copy.navFeedback}</Link> */}
-            <Link href="/#contact">{copy.navContact}</Link>
-          </nav>
-          <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
-            <button
-              type="button"
-              onClick={() => setIsMobileMenuOpen((value) => !value)}
-              className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border lg:hidden ${
-                theme === "dark"
-                  ? "border-white/10 bg-white/6 text-white"
-                  : "border-[var(--color-ink)]/10 bg-[var(--color-cream)] text-[var(--color-ink)]"
+    <div
+      className={`overflow-visible rounded-2xl border px-3 py-2.5 backdrop-blur-xl backdrop-saturate-150 sm:rounded-[1.35rem] sm:px-4 sm:py-3 ${shellClass}`}
+    >
+      <div className="flex items-center gap-2 sm:gap-3">
+        <Link
+          href="/"
+          className="group flex min-w-0 shrink-0 items-center gap-2.5 sm:gap-3"
+          onClick={handleHomeLinkClick}
+        >
+          <span
+            className="hidden h-9 w-px shrink-0 bg-gradient-to-b from-transparent via-[var(--color-sage)]/50 to-transparent sm:block"
+            aria-hidden
+          />
+          <span className="flex min-w-0 flex-col leading-tight">
+            <span
+              className={`text-[9px] font-semibold uppercase tracking-[0.3em] sm:text-[11px] sm:tracking-[0.36em] ${
+                theme === "dark" ? "text-[var(--color-sage)]" : "text-[var(--color-sage)] max-lg:text-[var(--color-ink)]/55"
               }`}
-              aria-label={isMobileMenuOpen ? copy.closeMenu : copy.openMenu}
-              aria-expanded={isMobileMenuOpen}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-5 w-5"
-                aria-hidden="true"
-              >
-                {isMobileMenuOpen ? (
-                  <>
-                    <path d="M18 6 6 18" />
-                    <path d="m6 6 12 12" />
-                  </>
-                ) : (
-                  <>
-                    <path d="M4 7h16" />
-                    <path d="M4 12h16" />
-                    <path d="M4 17h16" />
-                  </>
-                )}
-              </svg>
-            </button>
-            <div className="hidden items-center gap-2 lg:flex">{prefsControls}</div>
-            {signedIn ? (
-              <HeaderAccountMenu
-                theme={theme}
-                language={language}
-                className="hidden lg:block"
-              />
-            ) : (
-              <Link
-                href="/login"
-                className={`${accountChipClass} hidden lg:inline-flex`}
-                aria-label={copy.accountChipAriaSignedOut}
-              >
-                <UserCircleIcon />
-                <span className="max-w-[7.5rem] truncate sm:max-w-none">{copy.navLogin}</span>
-              </Link>
-            )}
-          </div>
-        </div>
-        <div className="flex flex-wrap items-center justify-end gap-2 lg:hidden">
-          {prefsControls}
+              {copy.brandEyebrow}
+            </span>
+            <span
+              className={`font-display text-base tracking-[0.14em] sm:text-lg sm:tracking-[0.16em] md:text-xl md:tracking-[0.14em] ${
+                theme === "dark" ? "" : "text-[var(--color-ink)] max-lg:font-medium"
+              }`}
+            >
+              {copy.brandName}
+            </span>
+          </span>
+        </Link>
+
+        <nav
+          className="mx-auto hidden min-w-0 flex-1 items-center justify-center gap-0.5 px-2 lg:flex xl:gap-1"
+          aria-label={language === "vi" ? "Điều hướng chính" : "Main navigation"}
+        >
+          <Link href="/" className={navLinkClass(homeActive)} onClick={handleHomeLinkClick}>
+            {copy.navHome}
+          </Link>
+          <Link href="/#templates" className={navLinkClass(templatesActive)}>
+            {copy.navTemplates}
+          </Link>
+          <Link href="/#features" className={navLinkClass(false)}>
+            {copy.navFeatures}
+          </Link>
+          <Link href="/#pricing" className={navLinkClass(false)}>
+            {copy.navPricing}
+          </Link>
+          <Link href="/#contact" className={navLinkClass(false)}>
+            {copy.navContact}
+          </Link>
+        </nav>
+
+        <div className="relative z-[1] ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+          <div className="hidden items-center gap-1.5 lg:flex xl:gap-2">{prefsControls}</div>
           {signedIn ? (
             <HeaderAccountMenu theme={theme} language={language} />
           ) : (
             <Link
               href="/login"
-              className={accountChipClass}
+              className={`${accountChipClass} hidden lg:inline-flex`}
               aria-label={copy.accountChipAriaSignedOut}
             >
               <UserCircleIcon />
               <span className="max-w-[7.5rem] truncate sm:max-w-none">{copy.navLogin}</span>
             </Link>
           )}
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen((value) => !value)}
+            className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition lg:hidden ${
+              theme === "dark"
+                ? "border-white/12 bg-white/[0.07] text-white hover:bg-white/12"
+                : "border-[var(--color-ink)]/22 bg-white text-[var(--color-ink)] shadow-[0_2px_6px_rgba(49,42,40,0.1)] hover:border-[var(--color-ink)]/28 hover:bg-[var(--color-cream)]"
+            }`}
+            aria-label={isMobileMenuOpen ? copy.closeMenu : copy.openMenu}
+            aria-expanded={isMobileMenuOpen}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-5 w-5"
+              aria-hidden="true"
+            >
+              {isMobileMenuOpen ? (
+                <>
+                  <path d="M18 6 6 18" />
+                  <path d="m6 6 12 12" />
+                </>
+              ) : (
+                <>
+                  <path d="M4 7h16" />
+                  <path d="M4 12h16" />
+                  <path d="M4 17h16" />
+                </>
+              )}
+            </svg>
+          </button>
         </div>
-        <nav
-          className={`${
-            isMobileMenuOpen ? "grid" : "hidden"
-          } gap-3 text-sm lg:hidden ${
-            theme === "dark" ? "text-white/72" : "text-[var(--color-ink)]/70"
-          }`}
-        >
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-          <Link
-            href="/"
-            onClick={(e) => {
-              handleHomeLinkClick(e);
-              setIsMobileMenuOpen(false);
-            }}
-            className={`rounded-[1rem] px-3 py-2 text-center ${theme === "dark" ? "bg-white/6" : "bg-[var(--color-cream)]"}`}
+      </div>
+
+      <div
+        className={`grid transition-[grid-template-rows] duration-200 ease-out lg:hidden ${
+          isMobileMenuOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        }`}
+      >
+        <div className="min-h-0 overflow-hidden">
+          <div
+            className={`mt-3 border-t pt-3 sm:mt-4 sm:pt-4 ${
+              theme === "dark" ? "border-white/10" : "border-[var(--color-ink)]/14 max-lg:border-[var(--color-ink)]/18"
+            }`}
           >
-            {copy.navHome}
-          </Link>
-          <Link
-            href="/#templates"
-            onClick={() => setIsMobileMenuOpen(false)}
-            className={`rounded-[1rem] px-3 py-2 text-center ${theme === "dark" ? "bg-white/6" : "bg-[var(--color-cream)]"}`}
-          >
-            {copy.navTemplates}
-          </Link>
-          <Link
-            href="/#why-us"
-            onClick={() => setIsMobileMenuOpen(false)}
-            className={`rounded-[1rem] px-3 py-2 text-center ${theme === "dark" ? "bg-white/6" : "bg-[var(--color-cream)]"}`}
-          >
-            {copy.navWhyUs}
-          </Link>
-          <Link
-            href="/#features"
-            onClick={() => setIsMobileMenuOpen(false)}
-            className={`rounded-[1rem] px-3 py-2 text-center ${theme === "dark" ? "bg-white/6" : "bg-[var(--color-cream)]"}`}
-          >
-            {copy.navFeatures}
-          </Link>
-          <Link
-            href="/#pricing"
-            onClick={() => setIsMobileMenuOpen(false)}
-            className={`rounded-[1rem] px-3 py-2 text-center ${theme === "dark" ? "bg-white/6" : "bg-[var(--color-cream)]"}`}
-          >
-            {copy.navPricing}
-          </Link>
-          <Link
-            href="/#feedback"
-            onClick={() => setIsMobileMenuOpen(false)}
-            className={`rounded-[1rem] px-3 py-2 text-center ${theme === "dark" ? "bg-white/6" : "bg-[var(--color-cream)]"}`}
-          >
-            {copy.navFeedback}
-          </Link>
-          <Link
-            href="/#contact"
-            onClick={() => setIsMobileMenuOpen(false)}
-            className={`rounded-[1rem] px-3 py-2 text-center ${theme === "dark" ? "bg-white/6" : "bg-[var(--color-cream)]"}`}
-          >
-            {copy.navContact}
-          </Link>
+            <nav
+              className="grid grid-cols-1 gap-2 min-[400px]:grid-cols-2"
+              aria-label={language === "vi" ? "Menu di động" : "Mobile menu"}
+            >
+              <Link
+                href="/"
+                className={mobileNavTile(homeActive)}
+                onClick={(e) => {
+                  handleHomeLinkClick(e);
+                  closeMobile();
+                }}
+              >
+                {copy.navHome}
+              </Link>
+              <Link href="/#templates" className={mobileNavTile(templatesActive)} onClick={closeMobile}>
+                {copy.navTemplates}
+              </Link>
+              <Link href="/#features" className={mobileNavTile(false)} onClick={closeMobile}>
+                {copy.navFeatures}
+              </Link>
+              <Link href="/#pricing" className={mobileNavTile(false)} onClick={closeMobile}>
+                {copy.navPricing}
+              </Link>
+              <Link
+                href="/#contact"
+                className={`${mobileNavTile(false)} min-[400px]:col-span-2`}
+                onClick={closeMobile}
+              >
+                {copy.navContact}
+              </Link>
+            </nav>
+            <div
+              className={`mt-4 flex flex-wrap items-center justify-between gap-3 border-t pt-4 ${
+                theme === "dark" ? "border-white/10" : "border-[var(--color-ink)]/14 max-lg:border-[var(--color-ink)]/18"
+              }`}
+            >
+              <div className="flex flex-wrap items-center gap-2">{prefsControls}</div>
+              {signedIn ? null : (
+                <Link
+                  href="/login"
+                  className={accountChipClass}
+                  onClick={closeMobile}
+                  aria-label={copy.accountChipAriaSignedOut}
+                >
+                  <UserCircleIcon />
+                  <span className="max-w-[10rem] truncate">{copy.navLogin}</span>
+                </Link>
+              )}
+            </div>
           </div>
-        </nav>
+        </div>
       </div>
     </div>
   );

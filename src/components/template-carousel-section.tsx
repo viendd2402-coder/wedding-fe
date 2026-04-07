@@ -65,13 +65,13 @@ export default function TemplateCarouselSection({
     <div className={rootClass}>
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <p className={`text-sm font-semibold uppercase tracking-[0.32em] ${eyebrowColorClassName}`}>
+          <p className={`text-xs font-semibold uppercase tracking-[0.28em] sm:text-sm sm:tracking-[0.32em] ${eyebrowColorClassName}`}>
             {eyebrow}
           </p>
-          <h3 className="mt-3 font-display text-4xl">{title}</h3>
+          <h3 className="mt-2 font-display text-2xl sm:mt-3 sm:text-3xl md:text-4xl">{title}</h3>
         </div>
         <div className="flex flex-col gap-4 md:items-end">
-          <p className={`max-w-md text-sm leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/86"}`}>
+          <p className={`max-w-md text-xs leading-6 sm:text-sm sm:leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/86"}`}>
             {description}
           </p>
           <a

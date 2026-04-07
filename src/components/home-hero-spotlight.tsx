@@ -68,13 +68,13 @@ export default function HomeHeroSpotlight() {
 
   return (
     <div className="animate-fade-up-soft-delay-2 min-w-0 w-full max-w-md lg:max-w-none">
-      <p className="home-hero-spotlight-eyebrow text-sm uppercase tracking-[0.35em] text-[var(--color-sage)]">
+      <p className="home-hero-spotlight-eyebrow text-xs uppercase tracking-[0.28em] text-[var(--color-sage)] sm:text-sm sm:tracking-[0.35em]">
         {copy.eyebrow}
       </p>
-      <h2 className="mt-3 font-display text-3xl leading-tight sm:text-4xl lg:text-[2.35rem]">
+      <h2 className="mt-2 font-display text-2xl leading-tight sm:mt-3 sm:text-3xl md:text-4xl lg:text-[2.35rem]">
         {copy.title}
       </h2>
-      <p className={`mt-3 max-w-md text-sm leading-7 ${isDark ? "text-white/68" : "text-[var(--color-ink)]/86"}`}>
+      <p className={`mt-2 max-w-md text-xs leading-6 sm:mt-3 sm:text-sm sm:leading-7 ${isDark ? "text-white/68" : "text-[var(--color-ink)]/86"}`}>
         {copy.body}
       </p>
 
@@ -100,7 +100,7 @@ export default function HomeHeroSpotlight() {
                     {rank}
                   </span>
                 </div>
-                <div className="flex min-w-0 flex-1 flex-col justify-center gap-1.5 p-3.5 sm:gap-2 sm:p-5">
+                <div className="flex min-w-0 flex-1 flex-col justify-center gap-1 p-3 sm:gap-1.5 sm:p-3.5 md:gap-2 md:p-5">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className={`rounded-full px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.18em] ${tierClass}`}>
                       {tierLabel(template.tier)}
@@ -111,10 +111,10 @@ export default function HomeHeroSpotlight() {
                       {template.style}
                     </span>
                   </div>
-                  <p className="font-display text-xl leading-tight sm:text-[1.65rem]">
+                  <p className="font-display text-lg leading-tight sm:text-xl md:text-[1.65rem]">
                     {template.name}
                   </p>
-                  <span className="inline-flex items-center gap-1 text-sm font-semibold text-[color-mix(in_srgb,var(--luxury-gold)_25%,var(--color-sage))]">
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-[color-mix(in_srgb,var(--luxury-gold)_25%,var(--color-sage))] sm:text-sm">
                     {copy.openLabel}
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
