@@ -41,7 +41,7 @@ export default function FreeTemplatesPage() {
 
   return (
     <main className={`min-h-screen flex-1 transition-colors ${mainClass}`}>
-      <div className="mx-auto w-full max-w-7xl px-6 py-10 sm:px-10 lg:px-16 lg:py-14">
+      <div className="mx-auto w-full max-w-[min(100%,92rem)] px-4 py-10 sm:px-6 lg:px-10 lg:py-14">
         <Link
           href="/"
           className={`inline-flex items-center gap-2 text-sm font-medium transition hover:underline ${isDark ? "text-white/72 hover:text-white" : "text-[var(--color-ink)]/72 hover:text-[var(--color-ink)]"}`}
@@ -75,7 +75,7 @@ export default function FreeTemplatesPage() {
           </p>
         </header>
 
-        <div className="mt-14 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-14 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
           {freeTemplates.map((item) => (
             <TemplateListCard
               key={item.slug}

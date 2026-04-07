@@ -131,18 +131,82 @@ function WhyUsGlyph({ id }: { id: WhyUsIconId }) {
 function WeddingFlourish({
   align = "center",
   className = "",
+  luxury = false,
 }: {
   align?: "center" | "start";
   className?: string;
+  /** Theme sáng trang chủ: viền vàng hồng champagne */
+  luxury?: boolean;
 }) {
+  const lineClass = luxury
+    ? "home-wedding-flourish-line-luxury h-px w-10 max-w-[28vw] shrink sm:w-14"
+    : "h-px w-10 max-w-[28vw] shrink bg-[color-mix(in_srgb,var(--color-rose)_42%,transparent)] sm:w-14";
+  const starClass = luxury
+    ? "home-wedding-flourish-star-luxury font-display text-[0.95rem] leading-none"
+    : "font-display text-[0.95rem] leading-none text-[var(--color-rose)]/90";
   return (
     <div
       className={`flex w-full items-center gap-3 ${align === "start" ? "justify-start" : "justify-center"} ${className}`}
       aria-hidden="true"
     >
-      <span className="h-px w-10 max-w-[28vw] shrink bg-[color-mix(in_srgb,var(--color-rose)_42%,transparent)] sm:w-14" />
-      <span className="font-display text-[0.95rem] leading-none text-[var(--color-rose)]/72">✦</span>
-      <span className="h-px w-10 max-w-[28vw] shrink bg-[color-mix(in_srgb,var(--color-rose)_42%,transparent)] sm:w-14" />
+      <span className={lineClass} />
+      <span className={starClass}>✦</span>
+      <span className={lineClass} />
+    </div>
+  );
+}
+
+/** Một lần duy nhất: cành lá mờ trong hero — nét mảnh, ít lớp, tránh “vệt xám” khi blur. */
+function HeroBotanicalMotif({ isDark }: { isDark: boolean }) {
+  return (
+    <div
+      className="pointer-events-none absolute inset-0 z-0 hidden overflow-hidden md:block"
+      aria-hidden="true"
+    >
+      <div
+        className={`absolute -right-2 top-[5%] h-[min(70vh,500px)] w-[min(42vw,400px)] origin-top-right md:h-[min(62vh,440px)] md:w-[min(48vw,360px)] lg:-right-1 lg:top-[4%] lg:h-[min(76vh,540px)] lg:w-[min(44vw,420px)] ${
+          isDark
+            ? "text-[color-mix(in_srgb,var(--color-rose)_48%,rgb(255_255_255)_52%)]"
+            : "text-[color-mix(in_srgb,var(--color-rose)_45%,var(--luxury-gold)_40%,var(--color-sage)_15%)]"
+        }`}
+      >
+        <div
+          className={`h-full w-full ${isDark ? "opacity-[0.09]" : "opacity-[0.125]"} [-webkit-mask-image:linear-gradient(to_left,black_55%,transparent)] [mask-image:linear-gradient(to_left,black_55%,transparent)] lg:[-webkit-mask-image:linear-gradient(to_left,black_68%,transparent)] lg:[mask-image:linear-gradient(to_left,black_68%,transparent)]`}
+        >
+          <div className="h-full w-full blur-[0.5px] will-change-transform lg:blur-none">
+            <svg
+              className="h-full w-full max-w-none"
+              viewBox="0 0 400 580"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              preserveAspectRatio="xMaxYMin meet"
+            >
+              <path
+                d="M388 568C312 472 278 332 252 210C228 102 184 38 64 6"
+                stroke="currentColor"
+                strokeWidth="1.15"
+                strokeLinecap="round"
+              />
+              <g fill="currentColor" fillOpacity="0.34">
+                <ellipse cx="322" cy="418" rx="36" ry="13" transform="rotate(-36 322 418)" />
+                <ellipse cx="278" cy="298" rx="32" ry="12" transform="rotate(-48 278 298)" />
+                <ellipse cx="242" cy="188" rx="28" ry="11" transform="rotate(-58 242 188)" />
+                <ellipse cx="198" cy="92" rx="24" ry="10" transform="rotate(-28 198 92)" />
+              </g>
+              <g fill="currentColor" fillOpacity="0.22">
+                <ellipse cx="348" cy="312" rx="22" ry="9" transform="rotate(24 348 312)" />
+                <ellipse cx="128" cy="48" rx="20" ry="8" transform="rotate(-18 128 48)" />
+              </g>
+              <g fill="currentColor" fillOpacity="0.5">
+                <circle cx="218" cy="108" r="3" />
+                <circle cx="268" cy="218" r="2.6" />
+                <circle cx="308" cy="338" r="2.8" />
+                <circle cx="348" cy="468" r="2.4" />
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -150,6 +214,10 @@ function WeddingFlourish({
 export default function Home() {
   const { language, theme } = useGlobalPreferences();
   const isDark = theme === "dark";
+
+  /** Cùng max-width & padding ngang với #templates — trang cân, một cột nhịp */
+  const homeOuter =
+    "mx-auto w-full max-w-[min(100%,92rem)] px-4 sm:px-6 lg:px-10";
 
   const copy = useMemo(
     () =>
@@ -873,45 +941,57 @@ export default function Home() {
   const feedbackNavBtnClass = `flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full border backdrop-blur transition hover:scale-105 sm:h-12 sm:w-12 ${
     isDark
       ? "border-white/12 bg-white/12 text-white shadow-[0_8px_24px_rgba(0,0,0,0.35)] hover:bg-white/18"
-      : "border-[var(--color-ink)]/12 bg-white/95 text-[var(--color-ink)] shadow-[0_8px_24px_rgba(49,42,40,0.1)] hover:bg-white"
+      : "home-lux-panel--compact border-0 bg-[linear-gradient(145deg,#fffefb,rgba(252,244,236,0.95))] text-[var(--color-ink)] shadow-[0_12px_36px_rgba(46,36,32,0.1)] hover:ring-2 hover:ring-[color-mix(in_srgb,var(--luxury-gold)_40%,transparent)]"
   }`;
 
   return (
-    <main className="home-wedding-main-backdrop text-[var(--color-ink)] transition-colors">
+    <main
+      className={`home-wedding-main-backdrop text-[var(--color-ink)] transition-colors ${!isDark ? "home-luxury-light subpixel-antialiased" : ""}`}
+    >
       <section className="relative isolate overflow-hidden">
         <div
           className={`absolute inset-0 ${
             isDark
               ? "bg-[radial-gradient(ellipse_75%_48%_at_50%_-10%,rgba(209,177,171,0.18),transparent_46%),linear-gradient(145deg,rgba(10,9,9,0.98),rgba(14,12,13,0.96))]"
-              : "bg-[radial-gradient(ellipse_82%_50%_at_50%_-14%,rgba(197,167,161,0.45),transparent_48%),radial-gradient(circle_at_92%_18%,rgba(233,221,209,0.85),transparent_52%),linear-gradient(168deg,rgba(255,253,251,0.96),rgba(247,242,236,0.99))]"
+              : "bg-[radial-gradient(ellipse_72%_44%_at_50%_-6%,rgba(184,146,92,0.2),transparent_54%),radial-gradient(ellipse_82%_50%_at_50%_-8%,rgba(196,160,153,0.22),transparent_50%),radial-gradient(circle_at_86%_10%,rgba(255,252,250,0.92),transparent_55%),linear-gradient(168deg,#fffefb_0%,#faf4ee_48%,#f3e4d8_100%)]"
           }`}
         />
         <div
           className={`animate-float-soft absolute -top-28 right-[-120px] h-80 w-80 rounded-full blur-3xl ${
-            isDark ? "bg-[rgba(209,177,171,0.1)]" : "bg-[color-mix(in_srgb,var(--color-rose)_24%,white)]"
+            isDark ? "bg-[rgba(209,177,171,0.1)]" : "bg-[color-mix(in_srgb,var(--luxury-gold)_28%,#fffefb)]"
           }`}
         />
         <div
           className={`animate-drift-soft absolute bottom-0 left-[-80px] h-64 w-64 rounded-full blur-3xl ${
-            isDark ? "bg-[rgba(155,168,150,0.1)]" : "bg-[color-mix(in_srgb,var(--color-sage)_18%,white)]"
+            isDark ? "bg-[rgba(155,168,150,0.1)]" : "bg-[color-mix(in_srgb,var(--color-rose)_22%,#f5f0eb)]"
           }`}
         />
 
-        <div className="relative mx-auto flex min-h-screen w-full max-w-7xl flex-col px-6 py-8 sm:px-10 lg:px-16">
+        <HeroBotanicalMotif isDark={isDark} />
+
+        <div className={`relative z-10 flex min-h-screen flex-col py-8 sm:py-10 lg:py-12 ${homeOuter}`}>
           <div className="grid flex-1 items-center gap-14 py-10 lg:grid-cols-[1.05fr_0.95fr] lg:py-16">
             <div className="max-w-2xl">
-              <p className="animate-fade-up-soft mb-3 text-sm uppercase tracking-[0.35em] text-[var(--color-sage)]">
+              <p className="animate-fade-up-soft mb-3 text-sm font-semibold uppercase tracking-[0.38em] text-[color-mix(in_srgb,var(--luxury-gold)_32%,var(--color-sage))]">
                 {copy.heroEyebrow}
               </p>
-              <WeddingFlourish align="start" className="animate-fade-up-soft mb-5" />
-              <h1 className="animate-fade-up-soft-delay-1 font-display text-5xl leading-[1.05] sm:text-7xl lg:text-8xl">
+              <WeddingFlourish align="start" className="animate-fade-up-soft mb-5" luxury={!isDark} />
+              <h1
+                className={`animate-fade-up-soft-delay-1 font-display text-5xl leading-[1.06] tracking-[-0.015em] sm:text-7xl lg:text-8xl ${
+                  isDark ? "" : "text-[var(--color-ink)]"
+                }`}
+              >
                 {copy.heroTitle}
               </h1>
-              <p className={`animate-fade-up-soft-delay-2 mt-6 max-w-xl text-base leading-8 sm:text-lg ${isDark ? "text-white/74" : "text-[var(--color-ink)]/75"}`}>
+              <p className={`animate-fade-up-soft-delay-2 mt-6 max-w-xl text-base leading-8 sm:text-lg ${isDark ? "text-white/74" : "text-[var(--color-ink)]/88"}`}>
                 {copy.heroBody}
               </p>
               <p
-                className={`animate-fade-up-soft-delay-2 mt-5 max-w-xl font-display text-lg italic leading-relaxed sm:text-xl ${isDark ? "text-[var(--color-rose)]/80" : "text-[color-mix(in_srgb,var(--color-rose)_88%,var(--color-ink)_12%)]"}`}
+                className={`animate-fade-up-soft-delay-2 mt-5 max-w-xl font-display text-lg italic leading-relaxed sm:text-xl ${
+                  isDark
+                    ? "text-[var(--color-rose)]/80"
+                    : "text-[color-mix(in_srgb,var(--color-rose)_78%,var(--luxury-gold)_22%)]"
+                }`}
               >
                 {copy.heroTagline}
               </p>
@@ -933,13 +1013,13 @@ export default function Home() {
 
               <div className="animate-fade-up-soft-delay-3 mt-12 grid max-w-lg grid-cols-3 gap-4">
                 <div
-                  className={`rounded-3xl p-4 ring-1 ring-[color-mix(in_srgb,var(--color-rose)_20%,transparent)] backdrop-blur transition-transform duration-300 hover:-translate-y-1 ${
+                  className={`rounded-3xl p-4 backdrop-blur transition-transform duration-300 hover:-translate-y-1 ${
                     isDark
-                      ? "border border-white/10 bg-white/6 shadow-[0_18px_50px_rgba(0,0,0,0.24)]"
-                      : "border border-white/70 bg-white/65 shadow-[0_18px_50px_rgba(49,42,40,0.08)]"
+                      ? "border border-white/10 bg-white/6 shadow-[0_18px_50px_rgba(0,0,0,0.24)] ring-1 ring-[color-mix(in_srgb,var(--color-rose)_20%,transparent)]"
+                      : "home-lux-panel--compact rounded-3xl border-0 p-4 ring-2 ring-[color-mix(in_srgb,var(--luxury-gold)_38%,var(--color-rose))] backdrop-blur-sm"
                   }`}
                 >
-                  <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-sage)]">
+                  <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[color-mix(in_srgb,var(--luxury-gold)_22%,var(--color-sage))]">
                     {copy.statTemplates}
                   </p>
                   <p className="mt-3 font-display text-3xl">
@@ -947,25 +1027,25 @@ export default function Home() {
                   </p>
                 </div>
                 <div
-                  className={`rounded-3xl p-4 ring-1 ring-[color-mix(in_srgb,var(--color-rose)_20%,transparent)] backdrop-blur transition-transform duration-300 hover:-translate-y-1 ${
+                  className={`rounded-3xl p-4 backdrop-blur transition-transform duration-300 hover:-translate-y-1 ${
                     isDark
-                      ? "border border-white/10 bg-white/6 shadow-[0_18px_50px_rgba(0,0,0,0.24)]"
-                      : "border border-white/70 bg-white/65 shadow-[0_18px_50px_rgba(49,42,40,0.08)]"
+                      ? "border border-white/10 bg-white/6 shadow-[0_18px_50px_rgba(0,0,0,0.24)] ring-1 ring-[color-mix(in_srgb,var(--color-rose)_20%,transparent)]"
+                      : "home-lux-panel--compact rounded-3xl border-0 p-4 ring-2 ring-[color-mix(in_srgb,var(--luxury-gold)_38%,var(--color-rose))] backdrop-blur-sm"
                   }`}
                 >
-                  <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-sage)]">
+                  <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[color-mix(in_srgb,var(--luxury-gold)_22%,var(--color-sage))]">
                     {copy.statDelivery}
                   </p>
                   <p className="mt-3 font-display text-2xl leading-tight sm:text-3xl">{copy.statDeliveryValue}</p>
                 </div>
                 <div
-                  className={`rounded-3xl p-4 ring-1 ring-[color-mix(in_srgb,var(--color-rose)_20%,transparent)] backdrop-blur transition-transform duration-300 hover:-translate-y-1 ${
+                  className={`rounded-3xl p-4 backdrop-blur transition-transform duration-300 hover:-translate-y-1 ${
                     isDark
-                      ? "border border-white/10 bg-white/6 shadow-[0_18px_50px_rgba(0,0,0,0.24)]"
-                      : "border border-white/70 bg-white/65 shadow-[0_18px_50px_rgba(49,42,40,0.08)]"
+                      ? "border border-white/10 bg-white/6 shadow-[0_18px_50px_rgba(0,0,0,0.24)] ring-1 ring-[color-mix(in_srgb,var(--color-rose)_20%,transparent)]"
+                      : "home-lux-panel--compact rounded-3xl border-0 p-4 ring-2 ring-[color-mix(in_srgb,var(--luxury-gold)_38%,var(--color-rose))] backdrop-blur-sm"
                   }`}
                 >
-                  <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-sage)]">
+                  <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[color-mix(in_srgb,var(--luxury-gold)_22%,var(--color-sage))]">
                     {copy.statMobile}
                   </p>
                   <p className="mt-3 font-display text-3xl">100%</p>
@@ -980,14 +1060,18 @@ export default function Home() {
 
       <section
         id="templates"
-        className="mx-auto w-full max-w-7xl border-t border-[color-mix(in_srgb,var(--color-rose)_14%,transparent)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--color-rose)_6%,transparent),transparent)] px-6 py-24 sm:px-10 lg:px-16"
+        className={`${homeOuter} py-24 sm:py-28 ${
+          isDark
+            ? "border-t border-[color-mix(in_srgb,var(--color-rose)_14%,transparent)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--color-rose)_6%,transparent),transparent)]"
+            : "home-lux-panel my-6 rounded-[2.5rem] border-0 sm:my-10"
+        }`}
       >
-        <div className="max-w-3xl">
-          <WeddingFlourish align="start" className="mb-4" />
-          <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-sage)]">
+        <div className="max-w-4xl">
+          <WeddingFlourish align="start" className="mb-4" luxury={!isDark} />
+          <p className="text-sm font-semibold uppercase tracking-[0.38em] text-[color-mix(in_srgb,var(--luxury-gold)_28%,var(--color-sage))]">
             {copy.templatesEyebrow}
           </p>
-          <h2 className="mt-4 font-display text-4xl leading-tight sm:text-5xl">
+          <h2 className="mt-4 font-display text-4xl leading-tight sm:text-5xl lg:text-[2.75rem]">
             {copy.templatesTitle}
           </h2>
         </div>
@@ -1020,19 +1104,22 @@ export default function Home() {
           secondaryActionLabel={copy.premiumSecondary}
           secondaryActionClassName="btn-secondary inline-flex rounded-full px-5 py-3 text-sm font-medium transition"
           demoLinkLabel={copy.templateCardDemo}
+          stackedBelowFree
         />
       </section>
 
       <section
         id="why-us"
-        className="animate-fade-scale-soft mx-auto w-full max-w-7xl px-6 py-20 sm:px-10 sm:py-24 lg:px-16"
+        className={`animate-fade-scale-soft ${homeOuter} py-20 sm:py-24 ${!isDark ? "home-lux-panel rounded-[2.5rem] border-0" : ""}`}
       >
         <div className="mx-auto max-w-4xl text-center">
-          <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-rose)]">{copy.whyUsEyebrow}</p>
-          <h2 className="mt-4 font-display text-3xl leading-[1.15] sm:text-4xl lg:text-[2.65rem]">
+          <p className="text-sm font-semibold uppercase tracking-[0.38em] text-[color-mix(in_srgb,var(--luxury-gold)_35%,var(--color-rose))]">
+            {copy.whyUsEyebrow}
+          </p>
+          <h2 className="mt-4 font-display text-3xl leading-[1.12] sm:text-4xl lg:text-[2.85rem]">
             {copy.whyUsTitle}
           </h2>
-          <p className={`mx-auto mt-5 max-w-2xl text-base leading-8 sm:text-lg ${isDark ? "text-white/68" : "text-[var(--color-ink)]/68"}`}>
+          <p className={`mx-auto mt-5 max-w-2xl text-base leading-8 sm:text-lg ${isDark ? "text-white/68" : "text-[var(--color-ink)]/85"}`}>
             {copy.whyUsBody}
           </p>
         </div>
@@ -1050,7 +1137,7 @@ export default function Home() {
                   <h3 className={`text-base font-semibold tracking-tight sm:text-lg ${whyUsTitleClass(item.tone as WhyUsTone, isDark)}`}>
                     {item.title}
                   </h3>
-                  <p className={`mt-2 text-sm leading-7 ${isDark ? "text-white/60" : "text-[var(--color-ink)]/64"}`}>
+                  <p className={`mt-2 text-sm leading-7 ${isDark ? "text-white/60" : "text-[var(--color-ink)]/82"}`}>
                     {item.description}
                   </p>
                 </div>
@@ -1066,7 +1153,11 @@ export default function Home() {
                 alt={copy.whyUsImageAlt}
                 width={1200}
                 height={1000}
-                className="h-auto w-full select-none rounded-2xl object-cover object-center shadow-[0_20px_50px_rgba(49,42,40,0.12)] ring-1 ring-black/5 dark:shadow-[0_24px_60px_rgba(0,0,0,0.45)] dark:ring-white/10"
+                className={`h-auto w-full select-none rounded-2xl object-cover object-center ${
+                  isDark
+                    ? "shadow-[0_24px_60px_rgba(0,0,0,0.45)] ring-1 ring-white/10"
+                    : "shadow-[0_28px_72px_rgba(46,36,32,0.14),0_0_0_1px_rgba(255,255,255,0.95)_inset] ring-2 ring-[color-mix(in_srgb,var(--luxury-gold)_50%,var(--color-rose))]"
+                }`}
                 sizes="(max-width: 1024px) min(100vw, 420px), 380px"
                 priority={false}
               />
@@ -1085,7 +1176,7 @@ export default function Home() {
                   <h3 className={`text-base font-semibold tracking-tight sm:text-lg ${whyUsTitleClass(item.tone as WhyUsTone, isDark)}`}>
                     {item.title}
                   </h3>
-                  <p className={`mt-2 text-sm leading-7 ${isDark ? "text-white/60" : "text-[var(--color-ink)]/64"}`}>
+                  <p className={`mt-2 text-sm leading-7 ${isDark ? "text-white/60" : "text-[var(--color-ink)]/82"}`}>
                     {item.description}
                   </p>
                 </div>
@@ -1097,25 +1188,29 @@ export default function Home() {
 
       <section
         id="features"
-        className="animate-fade-scale-soft-delay-1 mx-auto w-full max-w-7xl px-6 py-8 sm:px-10 lg:px-16"
+        className={`animate-fade-scale-soft-delay-1 ${homeOuter} py-14 sm:py-20 lg:py-24`}
       >
         <div
           className={`hover-lift-strong rounded-[2.5rem] px-6 py-14 sm:px-10 lg:px-14 ${
             isDark
               ? "border border-white/10 bg-[radial-gradient(circle_at_top,_rgba(209,177,171,0.1),_transparent_28%),linear-gradient(180deg,#111113,#18181b)] text-white shadow-[0_24px_70px_rgba(0,0,0,0.28)]"
-              : "border border-[var(--color-ink)]/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(233,221,209,0.82))] text-[var(--color-ink)] shadow-[0_24px_70px_rgba(49,42,40,0.08)]"
+              : "home-lux-panel border-0 text-[var(--color-ink)]"
           }`}
         >
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-xl">
-              <p className={`text-sm uppercase tracking-[0.35em] ${isDark ? "text-[var(--color-rose)]/82" : "text-[var(--color-rose)]/82"}`}>
+              <p
+                className={`text-sm font-semibold uppercase tracking-[0.38em] ${
+                  isDark ? "text-[var(--color-rose)]/82" : "text-[color-mix(in_srgb,var(--luxury-gold)_30%,var(--color-rose))]"
+                }`}
+              >
                 {copy.featuresEyebrow}
               </p>
               <h2 className="mt-4 font-display text-4xl leading-tight sm:text-5xl">
                 {copy.featuresTitle}
               </h2>
             </div>
-            <p className={`max-w-md text-sm leading-7 ${isDark ? "text-white/68" : "text-[var(--color-ink)]/70"}`}>
+            <p className={`max-w-md text-sm leading-7 ${isDark ? "text-white/68" : "text-[var(--color-ink)]/86"}`}>
               {copy.featuresBody}
             </p>
           </div>
@@ -1124,7 +1219,7 @@ export default function Home() {
             className={`mt-10 overflow-x-auto rounded-[2rem] backdrop-blur transition-transform duration-500 hover:scale-[1.01] ${
               isDark
                 ? "border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03))] shadow-[0_14px_36px_rgba(0,0,0,0.22)]"
-                : "border border-[var(--color-ink)]/8 bg-white/58 shadow-[0_14px_36px_rgba(49,42,40,0.06)]"
+                : "home-lux-panel--compact border-0 bg-white/80 shadow-[0_16px_44px_rgba(46,36,32,0.08)] ring-1 ring-[color-mix(in_srgb,var(--luxury-gold)_25%,transparent)] backdrop-blur-sm"
             }`}
           >
             <div id="features-comparison-table" className="min-w-[920px]">
@@ -1139,7 +1234,7 @@ export default function Home() {
                           ? "text-[var(--color-rose)]"
                           : isDark
                             ? "text-white/62"
-                            : "text-[var(--color-ink)]/62"
+                            : "text-[var(--color-ink)]/78"
                     }`}
                   >
                     {header}
@@ -1161,7 +1256,7 @@ export default function Home() {
                     <p className="text-[11px] uppercase tracking-[0.25em] text-[var(--color-rose)]/76">
                       {String(index + 1).padStart(2, "0")}
                     </p>
-                    <p className={`mt-3 text-sm leading-7 ${isDark ? "text-white/88" : "text-[var(--color-ink)]/88"}`}>
+                    <p className={`mt-3 text-sm leading-7 ${isDark ? "text-white/88" : "text-[var(--color-ink)]"}`}>
                       {row.label}
                     </p>
                   </div>
@@ -1203,7 +1298,7 @@ export default function Home() {
                   className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
                     isDark
                       ? "text-white/85 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-rose)]/70"
-                      : "text-[var(--color-ink)]/85 hover:bg-[var(--color-ink)]/[0.06] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-rose)]/50"
+                      : "text-[var(--color-ink)] hover:bg-[var(--color-ink)]/[0.06] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-rose)]/50"
                   }`}
                 >
                   <svg
@@ -1226,16 +1321,16 @@ export default function Home() {
 
       <section
         id="process"
-        className="animate-fade-scale-soft-delay-1 mx-auto w-full max-w-7xl px-6 py-24 sm:px-10 lg:px-16"
+        className={`animate-fade-scale-soft-delay-1 ${homeOuter} py-24 sm:py-28 ${!isDark ? "home-lux-panel rounded-[2.5rem] border-0" : ""}`}
       >
         <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-sage)]">
+            <p className="text-sm font-semibold uppercase tracking-[0.38em] text-[color-mix(in_srgb,var(--luxury-gold)_28%,var(--color-sage))]">
               {copy.processEyebrow}
             </p>
-            <h2 className="mt-4 font-display text-4xl sm:text-5xl">{copy.processTitle}</h2>
+            <h2 className="mt-4 font-display text-4xl sm:text-[2.75rem]">{copy.processTitle}</h2>
           </div>
-          <p className={`max-w-md text-sm leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/70"}`}>
+          <p className={`max-w-md text-sm leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/86"}`}>
             {copy.processBody}
           </p>
         </div>
@@ -1247,14 +1342,14 @@ export default function Home() {
               className={`hover-lift-strong rounded-[2rem] p-6 ${
                 isDark
                   ? "border border-white/10 bg-white/6 shadow-[0_16px_40px_rgba(0,0,0,0.24)]"
-                  : "border border-[var(--color-ink)]/8 bg-white/75 shadow-[0_16px_40px_rgba(49,42,40,0.06)]"
+                  : "home-lux-panel--compact rounded-[2rem] border-0 p-6 ring-1 ring-[color-mix(in_srgb,var(--luxury-gold)_22%,transparent)]"
               }`}
             >
-              <p className="text-sm uppercase tracking-[0.3em] text-[var(--color-sage)]">
+              <p className="text-sm font-semibold uppercase tracking-[0.32em] text-[color-mix(in_srgb,var(--luxury-gold)_22%,var(--color-sage))]">
                 {item.step}
               </p>
               <h3 className="mt-4 font-display text-3xl">{item.title}</h3>
-              <p className={`mt-4 text-sm leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/70"}`}>
+              <p className={`mt-4 text-sm leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/86"}`}>
                 {item.description}
               </p>
             </article>
@@ -1262,15 +1357,17 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="animate-fade-scale-soft-delay-2 mx-auto grid w-full max-w-7xl gap-6 px-6 py-8 sm:px-10 lg:grid-cols-[1fr_0.9fr] lg:px-16">
+      <section
+        className={`animate-fade-scale-soft-delay-2 grid gap-6 py-12 sm:py-16 lg:grid-cols-[1fr_0.9fr] ${homeOuter}`}
+      >
         <div
           className={`hover-lift-strong rounded-[2.4rem] p-8 sm:p-10 ${
             isDark
               ? "border border-white/10 bg-white/6 shadow-[0_16px_40px_rgba(0,0,0,0.24)]"
-              : "border border-[var(--color-ink)]/8 bg-white/75 shadow-[0_16px_40px_rgba(49,42,40,0.06)]"
+              : "home-lux-panel border-0"
           }`}
         >
-          <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-sage)]">
+          <p className="text-sm font-semibold uppercase tracking-[0.38em] text-[color-mix(in_srgb,var(--luxury-gold)_28%,var(--color-sage))]">
             {copy.valueEyebrow}
           </p>
           <h2 className="mt-4 font-display text-4xl leading-tight sm:text-5xl">
@@ -1283,7 +1380,7 @@ export default function Home() {
                 className={`hover-lift-strong rounded-[1.5rem] p-4 text-sm ${
                   isDark
                     ? "bg-[rgba(255,255,255,0.04)] text-white/75"
-                    : "bg-[var(--color-cream)] text-[var(--color-ink)]/75"
+                    : "home-lux-panel--compact rounded-[1.5rem] border-0 text-[var(--color-ink)] ring-1 ring-[color-mix(in_srgb,var(--luxury-gold)_18%,transparent)]"
                 }`}
               >
                 {feature}
@@ -1296,16 +1393,16 @@ export default function Home() {
           className={`animate-pulse-glow-soft hover-lift-strong rounded-[2.4rem] p-8 sm:p-10 ${
             isDark
               ? "border border-white/10 bg-[linear-gradient(180deg,rgba(209,177,171,0.08),rgba(255,255,255,0.04))]"
-              : "bg-[linear-gradient(180deg,_rgba(197,167,161,0.22),_rgba(255,255,255,0.82))]"
+              : "home-lux-panel--jewel border-0"
           }`}
         >
-          <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-sage)]">
+          <p className="text-sm font-semibold uppercase tracking-[0.38em] text-[color-mix(in_srgb,var(--luxury-gold)_28%,var(--color-sage))]">
             {copy.positioningEyebrow}
           </p>
           <blockquote className="mt-4 font-display text-3xl leading-tight sm:text-4xl">
             &ldquo;{copy.positioningQuote}&rdquo;
           </blockquote>
-          <p className={`mt-6 text-sm leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/70"}`}>
+          <p className={`mt-6 text-sm leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/86"}`}>
             {copy.positioningBody}
           </p>
         </div>
@@ -1313,14 +1410,14 @@ export default function Home() {
 
       <section
         id="pricing"
-        className="animate-fade-scale-soft-delay-2 mx-auto w-full max-w-5xl px-6 py-24 sm:px-10"
+        className={`animate-fade-scale-soft-delay-2 ${homeOuter} py-24 sm:py-28 ${!isDark ? "home-lux-panel rounded-[2.5rem] border-0" : ""}`}
       >
         <div className="text-center">
-          <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-sage)]">
+          <p className="text-sm font-semibold uppercase tracking-[0.38em] text-[color-mix(in_srgb,var(--luxury-gold)_28%,var(--color-sage))]">
             {copy.pricingEyebrow}
           </p>
-          <h2 className="mt-4 font-display text-4xl sm:text-5xl">{copy.pricingTitle}</h2>
-          <p className={`mx-auto mt-4 max-w-2xl text-sm leading-7 ${isDark ? "text-white/68" : "text-[var(--color-ink)]/70"}`}>
+          <h2 className="mt-4 font-display text-4xl sm:text-[2.85rem]">{copy.pricingTitle}</h2>
+          <p className={`mx-auto mt-4 max-w-2xl text-sm leading-7 ${isDark ? "text-white/68" : "text-[var(--color-ink)]/86"}`}>
             {copy.pricingBody}
           </p>
           <div className="mt-8 flex justify-center">
@@ -1355,27 +1452,29 @@ export default function Home() {
                 plan.featured
                   ? isDark
                     ? "border-2 border-[var(--color-rose)]/45 bg-white/[0.07] shadow-[0_22px_56px_rgba(0,0,0,0.28)] ring-1 ring-[var(--color-rose)]/20"
-                    : "border-2 border-[var(--color-rose)]/35 bg-white shadow-[0_22px_56px_rgba(49,42,40,0.1)] ring-1 ring-[var(--color-rose)]/15"
+                    : "home-lux-panel--jewel border-0"
                   : isDark
                     ? "border border-white/10 bg-white/6 shadow-[0_18px_50px_rgba(0,0,0,0.24)]"
-                    : "border border-[var(--color-ink)]/8 bg-white/80 shadow-[0_18px_50px_rgba(49,42,40,0.07)]"
+                    : "home-lux-panel--compact rounded-[2.5rem] border-0 p-8 ring-1 ring-[color-mix(in_srgb,var(--luxury-gold)_22%,transparent)]"
               }`}
             >
               <div className="flex flex-wrap items-center gap-2">
-                <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-sage)]">{plan.name}</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.35em] text-[color-mix(in_srgb,var(--luxury-gold)_22%,var(--color-sage))]">
+                  {plan.name}
+                </p>
                 {plan.featured ? (
-                  <span className="rounded-full bg-[var(--color-rose)]/15 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--color-rose)]">
+                  <span className="rounded-full bg-[color-mix(in_srgb,var(--luxury-gold)_22%,var(--color-rose))]/25 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.22em] text-[color-mix(in_srgb,var(--luxury-gold)_15%,var(--color-rose))] ring-1 ring-[color-mix(in_srgb,var(--luxury-gold)_35%,transparent)]">
                     {copy.pricingPopularBadge}
                   </span>
                 ) : null}
               </div>
               {plan.tagline ? (
-                <p className={`mt-2 text-sm font-medium ${isDark ? "text-white/55" : "text-[var(--color-ink)]/58"}`}>
+                <p className={`mt-2 text-sm font-medium ${isDark ? "text-white/55" : "text-[var(--color-ink)]/78"}`}>
                   {plan.tagline}
                 </p>
               ) : null}
               <h3 className="mt-4 font-display text-4xl sm:text-5xl">{plan.price}</h3>
-              <p className={`mt-4 text-sm leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/70"}`}>
+              <p className={`mt-4 text-sm leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/86"}`}>
                 {plan.note}
               </p>
             </article>
@@ -1385,24 +1484,26 @@ export default function Home() {
 
       <section
         id="feedback"
-        className="animate-fade-scale-soft-delay-2 mx-auto w-full max-w-7xl px-6 py-24 sm:px-10 lg:px-16"
+        className={`animate-fade-scale-soft-delay-2 ${homeOuter} py-24 sm:py-28 ${
+          isDark ? "mt-10 sm:mt-14 lg:mt-16" : "home-lux-panel mt-10 rounded-[2.5rem] border-0 sm:mt-14 lg:mt-16"
+        }`}
       >
         <div className="mx-auto max-w-3xl text-center">
-          <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-rose)]">
+          <p className="text-sm font-semibold uppercase tracking-[0.38em] text-[color-mix(in_srgb,var(--luxury-gold)_35%,var(--color-rose))]">
             {copy.testimonialsEyebrow}
           </p>
-          <h2 className="mt-4 font-display text-4xl leading-tight sm:text-5xl">
+          <h2 className="mt-4 font-display text-4xl leading-tight sm:text-[2.85rem]">
             {copy.testimonialsTitle}
           </h2>
-          <p className={`mt-4 text-sm leading-7 ${isDark ? "text-white/68" : "text-[var(--color-ink)]/68"}`}>
+          <p className={`mt-4 text-sm leading-7 ${isDark ? "text-white/68" : "text-[var(--color-ink)]/85"}`}>
             {copy.testimonialsBody}
           </p>
         </div>
 
-        <div className="mt-12 flex items-center gap-2 sm:gap-4">
+        <div className="mt-12 flex w-full min-w-0 max-w-full items-stretch gap-2 sm:gap-4">
           <button
             type="button"
-            className={feedbackNavBtnClass}
+            className={`${feedbackNavBtnClass} shrink-0 self-center`}
             onClick={() => scrollFeedbackStrip("left")}
             aria-label={copy.feedbackScrollPrev}
           >
@@ -1423,29 +1524,33 @@ export default function Home() {
 
           <div
             ref={feedbackStripRef}
-            className="min-w-0 flex-1 flex gap-5 overflow-x-auto scroll-smooth pb-3 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] snap-x snap-mandatory [&::-webkit-scrollbar]:hidden"
+            className="min-w-0 flex-1 overflow-x-auto scroll-smooth py-6 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] overscroll-x-contain snap-x snap-mandatory sm:py-8 [&::-webkit-scrollbar]:hidden"
           >
+            {/*
+              Padding dọc trên khối overflow-x + lớp trong: chừa chỗ cho box-shadow hover (tránh bị clip).
+            */}
+            <div className="flex items-stretch gap-5 px-3 py-4 sm:px-4 sm:py-6">
             {copy.testimonials.map((item) => (
               <figure
                 key={item.name}
-                className={`hover-lift-strong flex w-[min(19rem,100%)] shrink-0 snap-start flex-col rounded-[2rem] p-6 sm:w-[22rem] sm:p-7 ${
+                className={`hover-lift-strong relative z-0 flex w-[min(19rem,100%)] shrink-0 snap-start flex-col rounded-[2rem] p-6 sm:w-[22rem] sm:p-7 ${
                   isDark
-                    ? "border border-white/10 bg-white/[0.05] shadow-[0_16px_40px_rgba(0,0,0,0.22)]"
-                    : "border border-[var(--color-ink)]/8 bg-white/80 shadow-[0_16px_40px_rgba(49,42,40,0.06)]"
+                    ? "border border-white/10 bg-white/[0.05]"
+                    : "home-lux-panel--compact rounded-[2rem] border-0 bg-white/85 ring-1 ring-[color-mix(in_srgb,var(--luxury-gold)_28%,transparent)] backdrop-blur-sm"
                 }`}
               >
-                <span className="font-display text-4xl leading-none text-[var(--color-rose)]/55" aria-hidden="true">
+                <span className="font-display text-4xl leading-none text-[color-mix(in_srgb,var(--luxury-gold)_40%,var(--color-rose))]" aria-hidden="true">
                   &ldquo;
                 </span>
                 <blockquote
-                  className={`mt-2 min-h-0 flex-1 text-base leading-7 [overflow-wrap:normal] [word-break:normal] ${isDark ? "text-white/88" : "text-[var(--color-ink)]/88"}`}
+                  className={`mt-2 flex-1 text-base leading-7 [overflow-wrap:normal] [word-break:normal] ${isDark ? "text-white/88" : "text-[var(--color-ink)]"}`}
                 >
                   {item.quote}
                 </blockquote>
                 <figcaption className={`mt-6 min-w-0 border-t pt-5 ${isDark ? "border-white/10" : "border-[var(--color-ink)]/10"}`}>
                   <p className="font-display text-xl break-words">{item.name}</p>
                   <div
-                    className={`mt-2 max-w-full overflow-x-auto overflow-y-hidden pb-0.5 [-webkit-overflow-scrolling:touch] ${isDark ? "text-white/50" : "text-[var(--color-ink)]/50"}`}
+                    className={`mt-2 max-w-full overflow-x-auto overflow-y-hidden pb-0.5 [-webkit-overflow-scrolling:touch] ${isDark ? "text-white/50" : "text-[var(--color-ink)]/72"}`}
                   >
                     <p className="w-max min-w-full whitespace-nowrap text-xs uppercase tracking-[0.2em]">
                       {item.detail}
@@ -1454,11 +1559,12 @@ export default function Home() {
                 </figcaption>
               </figure>
             ))}
+            </div>
           </div>
 
           <button
             type="button"
-            className={feedbackNavBtnClass}
+            className={`${feedbackNavBtnClass} shrink-0 self-center`}
             onClick={() => scrollFeedbackStrip("right")}
             aria-label={copy.feedbackScrollNext}
           >
@@ -1481,20 +1587,22 @@ export default function Home() {
 
       <section
         id="contact"
-        className="animate-fade-scale-soft-delay-2 mx-auto w-full max-w-5xl px-6 pb-24 sm:px-10"
+        className={`animate-fade-scale-soft-delay-2 ${homeOuter} pb-24 pt-6 sm:pt-10`}
       >
         <div
           className={`animate-pulse-glow-soft hover-lift-strong rounded-[2.5rem] p-8 sm:p-12 ${
             isDark
               ? "border border-white/10 bg-white/6 shadow-[0_18px_50px_rgba(0,0,0,0.24)]"
-              : "border border-[color-mix(in_srgb,var(--color-rose)_12%,var(--color-ink)_8%)] bg-white/80 shadow-[0_18px_50px_rgba(49,42,40,0.07)]"
+              : "home-lux-panel--jewel border-0"
           }`}
         >
           <div className="text-center">
-            <WeddingFlourish className="mb-4" />
-            <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-sage)]">{copy.contactEyebrow}</p>
+            <WeddingFlourish className="mb-4" luxury={!isDark} />
+            <p className="text-sm font-semibold uppercase tracking-[0.38em] text-[color-mix(in_srgb,var(--luxury-gold)_28%,var(--color-sage))]">
+              {copy.contactEyebrow}
+            </p>
             <h2 className="mt-4 font-display text-4xl sm:text-5xl">{copy.contactTitle}</h2>
-            <p className={`mx-auto mt-4 max-w-2xl text-sm leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/70"}`}>
+            <p className={`mx-auto mt-4 max-w-2xl text-sm leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/86"}`}>
               {copy.contactBody}
             </p>
           </div>
