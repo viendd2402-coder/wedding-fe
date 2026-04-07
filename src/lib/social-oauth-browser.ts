@@ -1,4 +1,4 @@
-/** OAuth trên trình duyệt: Google dùng OAuth2 token client (popup, không FedCM); Facebook dùng SDK. */
+/** OAuth trên trình duyệt: Google Sign-In dùng FedCM (GIS `use_fedcm_for_button`); Facebook dùng SDK. */
 
 declare global {
   interface Window {
@@ -9,25 +9,27 @@ declare global {
             client_id: string;
             callback: (resp: { credential?: string }) => void;
             auto_select?: boolean;
-            ux_mode?: "popup";
+            use_fedcm_for_button?: boolean;
+            button_auto_select?: boolean;
           }) => void;
+          renderButton: (
+            parent: HTMLElement,
+            options: {
+              type?: "standard" | "icon";
+              theme?: "outline" | "filled_blue" | "filled_black";
+              size?: "small" | "medium" | "large";
+              text?: string;
+              shape?: "rectangular" | "pill" | "circle" | "square";
+              logo_alignment?: "left" | "center";
+              width?: number;
+              locale?: string;
+            },
+          ) => void;
           prompt: (momentListener?: (notification: {
-            isNotDisplayed: () => boolean;
             isSkippedMoment: () => boolean;
-            getNotDisplayedReason: () => string;
-            getSkippedReason: () => string;
+            isDismissedMoment: () => boolean;
+            getDismissedReason: () => string;
           }) => void) => void;
-        };
-        oauth2: {
-          initTokenClient: (config: {
-            client_id: string;
-            scope: string;
-            callback: (resp: {
-              access_token?: string;
-              error?: string;
-              error_description?: string;
-            }) => void;
-          }) => { requestAccessToken: (overrideConfig?: { prompt?: string }) => void };
         };
       };
     };
@@ -76,37 +78,52 @@ export function ensureGoogleIdentityScript(): Promise<void> {
   return googleScriptPromise;
 }
 
+export type GoogleFedCmButtonOptions = {
+  /** Nhận ID token (JWT) sau khi người dùng đăng nhập qua FedCM / nút chính thức. */
+  onCredential: (idToken: string) => void;
+  /** Giao diện sáng / tối — chọn theme nút Google phù hợp. */
+  isDark?: boolean;
+  /** Mã ngôn ngữ nút (vd `vi`, `en`). */
+  locale?: string;
+};
+
 /**
- * Google Identity Services — mở popup chọn tài khoản, trả về ID token (JWT).
- * Dùng cho backend verify danh tính người dùng.
+ * Vẽ nút "Sign in with Google" chính thức với FedCM (`use_fedcm_for_button`),
+ * không dùng third-party cookie / One Tap `prompt` kiểu cũ.
  */
-export function requestGoogleIdToken(clientId: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const googleId = window.google?.accounts?.id;
-    if (!googleId) {
-      reject(new Error("Google sign-in is not ready"));
-      return;
-    }
-    googleId.initialize({
-      client_id: clientId,
-      callback: (resp) => {
-        if (resp.credential) {
-          resolve(resp.credential);
-          return;
-        }
-        reject(new Error("Google did not return an ID token"));
-      },
-      ux_mode: "popup",
-    });
-    googleId.prompt((notification) => {
-      if (notification.isNotDisplayed()) {
-        reject(new Error(notification.getNotDisplayedReason() || "Google sign-in popup was not displayed"));
+export function renderGoogleFedCmSignInButton(
+  container: HTMLElement,
+  clientId: string,
+  opts: GoogleFedCmButtonOptions,
+): void {
+  const googleId = window.google?.accounts?.id;
+  if (!googleId) {
+    throw new Error("Google sign-in is not ready");
+  }
+  container.innerHTML = "";
+  const theme = opts.isDark ? "filled_blue" : "outline";
+  const widthPx = Math.max(240, Math.floor(container.getBoundingClientRect().width) || 320);
+
+  googleId.initialize({
+    client_id: clientId,
+    use_fedcm_for_button: true,
+    callback: (resp) => {
+      if (resp.credential) {
+        opts.onCredential(resp.credential);
         return;
       }
-      if (notification.isSkippedMoment()) {
-        reject(new Error(notification.getSkippedReason() || "Google sign-in was skipped"));
-      }
-    });
+    },
+  });
+
+  googleId.renderButton(container, {
+    type: "standard",
+    theme,
+    size: "large",
+    text: "continue_with",
+    shape: "pill",
+    width: widthPx,
+    locale: opts.locale,
+    logo_alignment: "left",
   });
 }
 

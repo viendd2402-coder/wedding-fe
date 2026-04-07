@@ -11,6 +11,7 @@ import {
   LUMIERE_AUTH_CHANGE_EVENT,
   LUMIERE_PROFILE_UPDATED_EVENT,
   fetchProfileRequest,
+  getAuthSessionMarker,
 } from "@/lib/auth-client";
 
 type HeaderAccountMenuProps = {
@@ -49,7 +50,12 @@ export default function HeaderAccountMenu({
     [language],
   );
 
-  const loadAvatar = useCallback(async () => {
+  const syncAccountChip = useCallback(async () => {
+    if (!getAuthSessionMarker()) {
+      setAvatarUrl(null);
+      setInitial("?");
+      return;
+    }
     const r = await fetchProfileRequest();
     if (!r.ok) return;
     setAvatarUrl(r.profile.avatarUrl);
@@ -59,18 +65,18 @@ export default function HeaderAccountMenu({
   }, []);
 
   useEffect(() => {
-    void loadAvatar();
-  }, [loadAvatar]);
+    void syncAccountChip();
+  }, [syncAccountChip]);
 
   useEffect(() => {
-    const onUpdated = () => void loadAvatar();
+    const onUpdated = () => void syncAccountChip();
     window.addEventListener(LUMIERE_PROFILE_UPDATED_EVENT, onUpdated);
     window.addEventListener(LUMIERE_AUTH_CHANGE_EVENT, onUpdated);
     return () => {
       window.removeEventListener(LUMIERE_PROFILE_UPDATED_EVENT, onUpdated);
       window.removeEventListener(LUMIERE_AUTH_CHANGE_EVENT, onUpdated);
     };
-  }, [loadAvatar]);
+  }, [syncAccountChip]);
 
   useEffect(() => {
     if (!open) return;

@@ -15,7 +15,6 @@ import { useGlobalPreferences } from "@/components/global-preferences-provider";
 import {
   PROFILE_MAX_AVATAR_DATA_URL_LENGTH,
   fetchProfileRequest,
-  isFakeAuthEnabled,
   normalizeProfileInput,
   updateProfileRequest,
   type UserProfile,
@@ -36,7 +35,6 @@ export default function ProfileScreen() {
   const logout = useLogout();
   const { language, theme } = useGlobalPreferences();
   const isDark = theme === "dark";
-  const demoMode = isFakeAuthEnabled();
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [draft, setDraft] = useState<UserProfile | null>(null);
@@ -54,10 +52,7 @@ export default function ProfileScreen() {
             backHome: "Quay về trang chủ",
             title: "Hồ sơ",
             subtitle: "Chỉnh sửa gọn gàng — ảnh đại diện và thông tin liên hệ của bạn.",
-            body: demoMode
-              ? "Đang bản demo: dữ liệu lưu trên trình duyệt. Kết nối backend để đồng bộ máy chủ."
-              : "Lưu thay đổi để cập nhật tài khoản trên hệ thống.",
-            demoPill: "Demo",
+            body: "Lưu thay đổi để cập nhật tài khoản trên hệ thống.",
             sectionDetails: "Thông tin tài khoản",
             sectionOptional: "Liên hệ thêm",
             additionalContact: "Liên hệ bổ sung",
@@ -91,10 +86,7 @@ export default function ProfileScreen() {
             backHome: "Back to home",
             title: "Profile",
             subtitle: "A calm place to refine your photo and contact details.",
-            body: demoMode
-              ? "Demo: data stays in this browser. Connect your API to sync with the server."
-              : "Save to update your account on our systems.",
-            demoPill: "Demo",
+            body: "Save to update your account on our systems.",
             sectionDetails: "Account details",
             sectionOptional: "Extra contact",
             additionalContact: "Additional contact",
@@ -124,7 +116,7 @@ export default function ProfileScreen() {
             previewHint: "Shown on your account.",
             changeAvatarShort: "Change photo",
           },
-    [language, demoMode],
+    [language],
   );
 
   const loadProfile = useCallback(async () => {
@@ -340,15 +332,6 @@ export default function ProfileScreen() {
           </Link>
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="font-display text-3xl tracking-tight sm:text-4xl">{copy.title}</h1>
-            {demoMode ? (
-              <span
-                className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] ${
-                  isDark ? "bg-[var(--color-rose)]/20 text-[var(--color-rose)]" : "bg-[var(--color-rose)]/15 text-[#6b4f52]"
-                }`}
-              >
-                {copy.demoPill}
-              </span>
-            ) : null}
           </div>
           <p className={`text-sm leading-relaxed ${muted}`}>{copy.subtitle}</p>
         </div>

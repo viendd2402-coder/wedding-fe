@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
-import { completeSocialAuthFromLocation } from "@/lib/auth-client";
+import {
+  completeSocialAuthFromLocation,
+  navigateAfterSocialAuthSuccess,
+} from "@/lib/auth-client";
 
 export default function SocialAuthCallbackScreen() {
-  const router = useRouter();
   const { language, theme } = useGlobalPreferences();
   const isDark = theme === "dark";
   const [error, setError] = useState<string | null>(null);
@@ -39,8 +40,7 @@ export default function SocialAuthCallbackScreen() {
       );
       if (!mounted) return;
       if (result.ok) {
-        router.replace(result.redirectTo);
-        router.refresh();
+        navigateAfterSocialAuthSuccess(result.redirectTo);
         return;
       }
       setError(result.message);
@@ -48,7 +48,7 @@ export default function SocialAuthCallbackScreen() {
     return () => {
       mounted = false;
     };
-  }, [router]);
+  }, []);
 
   return (
     <main

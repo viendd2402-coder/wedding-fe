@@ -2,27 +2,23 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { useAuthSession } from "@/components/auth-session";
-import {
-  IconFacebookBrand,
-  IconGoogleColor,
-} from "@/components/icons-auth-social";
+import { IconFacebookBrand } from "@/components/icons-auth-social";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
 import { getPublicApiBaseUrl } from "@/lib/api-base";
 import {
   getPublicFacebookAppId,
   getPublicGoogleOAuthClientId,
-  isFakeAuthEnabled,
   loginRequest,
+  navigateAfterSocialAuthSuccess,
   verifySocialLoginWithBackend,
-  type SocialAuthProvider,
 } from "@/lib/auth-client";
 import {
   ensureFacebookSdk,
   ensureGoogleIdentityScript,
+  renderGoogleFedCmSignInButton,
   requestFacebookAccessToken,
-  requestGoogleIdToken,
 } from "@/lib/social-oauth-browser";
 
 type AuthMode = "login" | "register";
@@ -42,6 +38,18 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [socialBusy, setSocialBusy] = useState(false);
+  const googleButtonHostRef = useRef<HTMLDivElement>(null);
+  const googleIdTokenHandlerRef = useRef<(idToken: string) => void>(() => {});
+  const [browserOrigin, setBrowserOrigin] = useState("");
+  const [originCopiedFlash, setOriginCopiedFlash] = useState(false);
+
+  const showGoogleOriginHint =
+    process.env.NODE_ENV === "development" ||
+    process.env.NEXT_PUBLIC_GOOGLE_SIGNIN_SETUP_HINT === "1";
+
+  useEffect(() => {
+    setBrowserOrigin(typeof window !== "undefined" ? window.location.origin : "");
+  }, []);
 
   useEffect(() => {
     if (mode !== "login" || !signedIn) return;
@@ -116,14 +124,19 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
             submitting: "Đang đăng nhập…",
             socialContinue: "Hoặc tiếp tục với",
             socialEmail: "Hoặc dùng email",
-            socialGoogle: "Google",
             socialFacebook: "Facebook",
             socialNeedApi:
-              "Chưa cấu hình API. Đặt NEXT_PUBLIC_API_URL để bật đăng nhập mạng xã hội (hoặc bật chế độ demo).",
+              "Chưa cấu hình API. Đặt NEXT_PUBLIC_API_URL để bật đăng nhập mạng xã hội.",
             socialNeedGoogleClientId:
               "Chưa cấu hình Google: đặt NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID (OAuth 2.0 Client ID kiểu Web).",
             socialNeedFacebookAppId:
               "Chưa cấu hình Facebook: đặt NEXT_PUBLIC_FACEBOOK_APP_ID.",
+            googleOrigin403Hint:
+              "Nếu console báo origin is not allowed hoặc gsi/button 403: Google Cloud Console → APIs & Services → Credentials → OAuth 2.0 Client ID (Web) → Authorized JavaScript origins → thêm đúng origin dưới (không có / ở cuối, đúng http/https và port).",
+            googleOrigin403Note127:
+              "localhost và 127.0.0.1 là hai origin khác nhau — phải trùng với URL trên thanh địa chỉ.",
+            googleOriginCopy: "Sao chép origin",
+            googleOriginCopied: "Đã chép",
           }
         : {
             backHome: "Back to home",
@@ -156,87 +169,118 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
             submitting: "Signing in…",
             socialContinue: "Or continue with",
             socialEmail: "Or use email",
-            socialGoogle: "Google",
             socialFacebook: "Facebook",
             socialNeedApi:
-              "API base URL is not set. Add NEXT_PUBLIC_API_URL to enable social sign-in (or enable demo mode).",
+              "API base URL is not set. Add NEXT_PUBLIC_API_URL to enable social sign-in.",
             socialNeedGoogleClientId:
               "Google is not configured: set NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID (Web OAuth 2.0 client ID).",
             socialNeedFacebookAppId:
               "Facebook is not configured: set NEXT_PUBLIC_FACEBOOK_APP_ID.",
+            googleOrigin403Hint:
+              "If the console shows origin is not allowed or gsi/button returns 403: Google Cloud Console → APIs & Services → Credentials → your Web OAuth 2.0 Client → Authorized JavaScript origins → add the exact origin below (no trailing slash, correct scheme and port).",
+            googleOrigin403Note127:
+              "localhost and 127.0.0.1 are different origins — they must match what you see in the address bar.",
+            googleOriginCopy: "Copy origin",
+            googleOriginCopied: "Copied",
           },
     [language, mode],
   );
 
-  const startSocialLogin = useCallback(
-    async (provider: SocialAuthProvider) => {
-      setError(null);
-      if (isFakeAuthEnabled()) {
-        router.push("/");
-        router.refresh();
+  googleIdTokenHandlerRef.current = async (idToken: string) => {
+    setSocialBusy(true);
+    setError(null);
+    try {
+      const result = await verifySocialLoginWithBackend({
+        provider: "google",
+        idToken,
+        redirectTo: "/",
+      });
+      if (!result.ok) {
+        setError(result.message);
         return;
       }
-      if (!getPublicApiBaseUrl()) {
-        setError(copy.socialNeedApi);
-        return;
-      }
+      navigateAfterSocialAuthSuccess(result.redirectTo);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setSocialBusy(false);
+    }
+  };
 
-      setSocialBusy(true);
-      try {
-        if (provider === "google") {
-          const clientId = getPublicGoogleOAuthClientId();
-          if (!clientId) {
-            setError(copy.socialNeedGoogleClientId);
-            return;
-          }
+  /** Google: nút chính thức + FedCM (`use_fedcm_for_button`); Facebook giữ popup SDK. */
+  useEffect(() => {
+    const host = googleButtonHostRef.current;
+    if (!host) return;
+
+    const apiBase = getPublicApiBaseUrl();
+    const clientId = getPublicGoogleOAuthClientId();
+    if (!apiBase || !clientId) {
+      host.innerHTML = "";
+      return;
+    }
+
+    let cancelled = false;
+
+    const mount = () => {
+      void (async () => {
+        try {
           await ensureGoogleIdentityScript();
-          const idToken = await requestGoogleIdToken(clientId);
-          const result = await verifySocialLoginWithBackend({
-            provider: "google",
-            idToken,
-            redirectTo: "/",
+          if (cancelled || !googleButtonHostRef.current) return;
+          renderGoogleFedCmSignInButton(googleButtonHostRef.current, clientId, {
+            isDark,
+            locale: language === "vi" ? "vi" : "en",
+            onCredential: (token) => {
+              void googleIdTokenHandlerRef.current(token);
+            },
           });
-          if (!result.ok) {
-            setError(result.message);
-            return;
+        } catch (e) {
+          if (!cancelled) {
+            setError(e instanceof Error ? e.message : String(e));
           }
-          router.push(result.redirectTo);
-          router.refresh();
-          return;
         }
+      })();
+    };
 
-        const appId = getPublicFacebookAppId();
-        if (!appId) {
-          setError(copy.socialNeedFacebookAppId);
-          return;
-        }
-        await ensureFacebookSdk(appId);
-        const accessToken = await requestFacebookAccessToken();
-        const result = await verifySocialLoginWithBackend({
-          provider: "facebook",
-          accessToken,
-          redirectTo: "/",
-        });
-        if (!result.ok) {
-          setError(result.message);
-          return;
-        }
-        router.push(result.redirectTo);
-        router.refresh();
-      } catch (e) {
-        const msg = e instanceof Error ? e.message : String(e);
-        setError(msg);
-      } finally {
-        setSocialBusy(false);
+    requestAnimationFrame(() => requestAnimationFrame(mount));
+
+    return () => {
+      cancelled = true;
+      host.innerHTML = "";
+    };
+  }, [isDark, language, router]);
+
+  const startFacebookLogin = useCallback(async () => {
+    setError(null);
+    if (!getPublicApiBaseUrl()) {
+      setError(copy.socialNeedApi);
+      return;
+    }
+
+    setSocialBusy(true);
+    try {
+      const appId = getPublicFacebookAppId();
+      if (!appId) {
+        setError(copy.socialNeedFacebookAppId);
+        return;
       }
-    },
-    [
-      copy.socialNeedApi,
-      copy.socialNeedGoogleClientId,
-      copy.socialNeedFacebookAppId,
-      router,
-    ],
-  );
+      await ensureFacebookSdk(appId);
+      const accessToken = await requestFacebookAccessToken();
+      const result = await verifySocialLoginWithBackend({
+        provider: "facebook",
+        accessToken,
+        redirectTo: "/",
+      });
+      if (!result.ok) {
+        setError(result.message);
+        return;
+      }
+      navigateAfterSocialAuthSuccess(result.redirectTo);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setSocialBusy(false);
+    }
+  }, [copy.socialNeedApi, copy.socialNeedFacebookAppId, router]);
 
   const formBusy = (mode === "login" && loading) || socialBusy;
 
@@ -384,26 +428,18 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
                   <div className={`h-px flex-1 ${isDark ? "bg-white/10" : "bg-[var(--color-ink)]/10"}`} />
                 </div>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <button
-                    type="button"
-                    disabled={formBusy}
-                    onClick={() => {
-                      void startSocialLogin("google");
-                    }}
-                    className={`flex w-full cursor-pointer items-center justify-center gap-2.5 rounded-2xl border py-3.5 text-sm font-semibold transition hover:opacity-95 disabled:cursor-not-allowed disabled:pointer-events-none disabled:opacity-55 ${
-                      isDark
-                        ? "border-white/12 bg-white/[0.06] text-white"
-                        : "border-[var(--color-ink)]/10 bg-white text-[var(--color-ink)] shadow-sm"
+                  <div
+                    className={`flex min-h-[48px] w-full items-center justify-center [&>div]:w-full ${
+                      formBusy ? "pointer-events-none opacity-55" : ""
                     }`}
                   >
-                    <IconGoogleColor className="h-5 w-5 shrink-0" />
-                    {copy.socialGoogle}
-                  </button>
+                    <div ref={googleButtonHostRef} className="flex w-full justify-center" />
+                  </div>
                   <button
                     type="button"
                     disabled={formBusy}
                     onClick={() => {
-                      void startSocialLogin("facebook");
+                      void startFacebookLogin();
                     }}
                     className="flex w-full cursor-pointer items-center justify-center gap-2.5 rounded-2xl border border-transparent bg-[#1877F2] py-3.5 text-sm font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:pointer-events-none disabled:opacity-55"
                   >
@@ -411,6 +447,45 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
                     {copy.socialFacebook}
                   </button>
                 </div>
+                {showGoogleOriginHint &&
+                getPublicGoogleOAuthClientId() &&
+                browserOrigin ? (
+                  <div
+                    className={`rounded-2xl border px-3 py-2.5 text-left text-[11px] leading-snug ${
+                      isDark
+                        ? "border-amber-400/30 bg-amber-500/[0.12] text-amber-50/95"
+                        : "border-amber-200/90 bg-amber-50/95 text-amber-950"
+                    }`}
+                  >
+                    <p>{copy.googleOrigin403Hint}</p>
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                      <code
+                        className={`rounded-lg px-2 py-1 font-mono text-[11px] ${
+                          isDark ? "bg-black/35 text-amber-100" : "bg-white/90 text-amber-950"
+                        }`}
+                      >
+                        {browserOrigin}
+                      </code>
+                      <button
+                        type="button"
+                        className={`shrink-0 rounded-lg px-2 py-1 text-[11px] font-semibold underline decoration-current/30 underline-offset-2 hover:opacity-90 ${
+                          isDark ? "text-amber-100" : "text-amber-900"
+                        }`}
+                        onClick={() => {
+                          void navigator.clipboard.writeText(browserOrigin).then(() => {
+                            setOriginCopiedFlash(true);
+                            window.setTimeout(() => setOriginCopiedFlash(false), 2000);
+                          });
+                        }}
+                      >
+                        {originCopiedFlash ? copy.googleOriginCopied : copy.googleOriginCopy}
+                      </button>
+                    </div>
+                    <p className={`mt-1.5 ${isDark ? "text-amber-100/75" : "text-amber-900/75"}`}>
+                      {copy.googleOrigin403Note127}
+                    </p>
+                  </div>
+                ) : null}
                 <div className="flex items-center gap-3 pt-1">
                   <div className={`h-px flex-1 ${isDark ? "bg-white/10" : "bg-[var(--color-ink)]/10"}`} />
                   <span

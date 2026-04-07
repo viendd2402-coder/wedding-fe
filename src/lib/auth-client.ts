@@ -21,12 +21,6 @@ export type LoginResult = LoginSuccess | LoginFailure;
 
 const AUTH_TOKEN_KEY = "lumiere-auth-token";
 
-/** Bật `NEXT_PUBLIC_FAKE_AUTH=1` để xem /profile và header đã đăng nhập mà không cần backend. Chỉ dùng lúc dev. */
-export function isFakeAuthEnabled(): boolean {
-  const v = process.env.NEXT_PUBLIC_FAKE_AUTH?.trim().toLowerCase();
-  return v === "1" || v === "true" || v === "yes";
-}
-
 /** Khi login thành công nhưng backend không trả JWT (chỉ cookie) — tab hiện tại coi là đã đăng nhập. */
 const AUTH_SESSION_HINT_KEY = "lumiere-auth-cookie-session";
 
@@ -60,7 +54,6 @@ function clearSessionHint(): void {
 /** Chuỗi snapshot cho đồng bộ React — đổi khi đăng nhập / đăng xuất. */
 export function getAuthSessionMarker(): string {
   if (typeof window === "undefined") return "";
-  if (isFakeAuthEnabled()) return "fake";
   const t = window.localStorage.getItem(AUTH_TOKEN_KEY);
   if (t) return `t:${t.length}:${t.slice(0, 12)}`;
   if (readSessionHint()) return "cookie";
@@ -71,11 +64,6 @@ export const LUMIERE_AUTH_CHANGE_EVENT = "lumiere-auth-change";
 
 /** Sau khi lưu hồ sơ — header có thể tải lại avatar. */
 export const LUMIERE_PROFILE_UPDATED_EVENT = "lumiere-profile-updated";
-
-export function notifyProfileUpdated(): void {
-  if (typeof window === "undefined") return;
-  window.dispatchEvent(new Event(LUMIERE_PROFILE_UPDATED_EVENT));
-}
 
 export function notifyAuthSessionChanged(): void {
   if (typeof window === "undefined") return;
@@ -96,17 +84,6 @@ export type UserProfile = {
   additionalContact: string | null;
 };
 
-const FAKE_PROFILE: UserProfile = {
-  email: "ban@demo.lumiere.local",
-  name: "Tài khoản demo",
-  phone: "0900 000 000",
-  age: 28,
-  gender: "unspecified",
-  avatarUrl: null,
-  additionalContact: null,
-};
-
-const PROFILE_LOCAL_KEY = "lumiere-profile-local";
 /** Giới hạn kích thước data URL avatar lưu localStorage (ký tự). */
 const MAX_AVATAR_DATA_URL_CHARS = 520_000;
 
@@ -162,44 +139,6 @@ export function normalizeProfileInput(p: UserProfile): UserProfile {
     avatarUrl: av ? av.slice(0, MAX_AVATAR_DATA_URL_CHARS) : null,
     additionalContact: p.additionalContact?.trim().slice(0, 255) || null,
   };
-}
-
-function readFakeStoredProfile(): UserProfile | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = window.localStorage.getItem(PROFILE_LOCAL_KEY);
-    if (!raw) return null;
-    const o = JSON.parse(raw) as unknown;
-    if (!o || typeof o !== "object") return null;
-    const r = o as Record<string, unknown>;
-    const profile: UserProfile = {
-      email:
-        typeof r.email === "string" || r.email === null
-          ? (r.email as string | null)
-          : pickString(r.email),
-      name:
-        typeof r.name === "string" || r.name === null
-          ? (r.name as string | null)
-          : pickString(r.name),
-      phone:
-        typeof r.phone === "string" || r.phone === null
-          ? (r.phone as string | null)
-          : pickString(r.phone),
-      age: typeof r.age === "number" ? r.age : pickNumber(r.age),
-      gender: normalizeGender(r.gender) ?? "unspecified",
-      avatarUrl:
-        typeof r.avatarUrl === "string" || r.avatarUrl === null
-          ? (r.avatarUrl as string | null)
-          : pickString(r.avatarUrl),
-      additionalContact:
-        typeof r.additionalContact === "string" || r.additionalContact === null
-          ? (r.additionalContact as string | null)
-          : pickString(r.additionalContact),
-    };
-    return normalizeProfileInput(profile);
-  } catch {
-    return null;
-  }
 }
 
 function pickString(...vals: unknown[]): string | null {
@@ -289,16 +228,23 @@ export type ProfileResult =
   | { ok: true; profile: UserProfile }
   | { ok: false; status: number; message: string };
 
-/** Gọi backend: `GET {NEXT_PUBLIC_API_URL}/auth/profile` — Bearer nếu có; luôn gửi cookie. */
-export async function fetchProfileRequest(): Promise<ProfileResult> {
-  if (isFakeAuthEnabled()) {
-    const stored = readFakeStoredProfile();
-    return {
-      ok: true,
-      profile: stored ?? normalizeProfileInput(FAKE_PROFILE),
-    };
-  }
+type ProfileOk = Extract<ProfileResult, { ok: true }>;
 
+/** Gộp GET đồng thời + cache TTL — tránh 2 request cùng lúc (header, /profile, React Strict Mode). */
+const PROFILE_GET_CACHE_MS = 12_000;
+
+let profileGetInFlight: Promise<ProfileResult> | null = null;
+let profileGetCache: { expiresAt: number; result: ProfileOk } | null = null;
+
+export function invalidateProfileRequestCache(): void {
+  profileGetCache = null;
+}
+
+function cloneProfileOk(r: ProfileOk): ProfileResult {
+  return { ok: true, profile: { ...r.profile } };
+}
+
+async function fetchProfileFromNetwork(): Promise<ProfileResult> {
   const base = getPublicApiBaseUrl();
   if (!base) {
     return {
@@ -353,23 +299,50 @@ export async function fetchProfileRequest(): Promise<ProfileResult> {
   return { ok: true, profile: parseUserProfile(json) };
 }
 
+/** Gọi backend: `GET {NEXT_PUBLIC_API_URL}/auth/profile` — Bearer nếu có; luôn gửi cookie. */
+export async function fetchProfileRequest(): Promise<ProfileResult> {
+  const base = getPublicApiBaseUrl();
+  if (!base) {
+    return {
+      ok: false,
+      status: 0,
+      message: "Missing NEXT_PUBLIC_API_URL",
+    };
+  }
+
+  const now = Date.now();
+  if (profileGetCache && now < profileGetCache.expiresAt) {
+    return cloneProfileOk(profileGetCache.result);
+  }
+
+  if (profileGetInFlight) return profileGetInFlight;
+
+  profileGetInFlight = (async () => {
+    const result = await fetchProfileFromNetwork();
+    if (result.ok) {
+      profileGetCache = { expiresAt: Date.now() + PROFILE_GET_CACHE_MS, result };
+    }
+    return result;
+  })().finally(() => {
+    profileGetInFlight = null;
+  });
+
+  return profileGetInFlight;
+}
+
+export function notifyProfileUpdated(): void {
+  if (typeof window === "undefined") return;
+  invalidateProfileRequestCache();
+  window.dispatchEvent(new Event(LUMIERE_PROFILE_UPDATED_EVENT));
+}
+
 export type UpdateProfileResult =
   | { ok: true }
   | { ok: false; message: string };
 
-/**
- * Cập nhật hồ sơ: fake auth → lưu toàn bộ vào `localStorage`.
- * Thật → `PATCH {NEXT_PUBLIC_API_URL}/auth/profile` (multipart fields khớp UpdateProfileDto).
- */
+/** `PATCH {NEXT_PUBLIC_API_URL}/auth/profile` (multipart fields khớp UpdateProfileDto). */
 export async function updateProfileRequest(profile: UserProfile): Promise<UpdateProfileResult> {
   const sanitized = normalizeProfileInput(profile);
-
-  if (isFakeAuthEnabled()) {
-    if (typeof window === "undefined") return { ok: true };
-    window.localStorage.setItem(PROFILE_LOCAL_KEY, JSON.stringify(sanitized));
-    notifyProfileUpdated();
-    return { ok: true };
-  }
 
   const base = getPublicApiBaseUrl();
   if (!base) {
@@ -457,13 +430,6 @@ function extractErrorMessage(body: unknown, fallback: string): string {
 
 /** Gọi backend: `POST {NEXT_PUBLIC_API_URL}/auth/login` */
 export async function loginRequest(payload: LoginPayload): Promise<LoginResult> {
-  if (isFakeAuthEnabled()) {
-    if (typeof window !== "undefined") {
-      notifyAuthSessionChanged();
-    }
-    return { ok: true, token: null };
-  }
-
   const base = getPublicApiBaseUrl();
   if (!base) {
     return {
@@ -515,6 +481,7 @@ export async function loginRequest(payload: LoginPayload): Promise<LoginResult> 
 
   const token = extractToken(json);
   if (typeof window !== "undefined") {
+    invalidateProfileRequestCache();
     if (token) {
       window.localStorage.setItem(AUTH_TOKEN_KEY, token);
       clearSessionHint();
@@ -530,30 +497,21 @@ export async function loginRequest(payload: LoginPayload): Promise<LoginResult> 
 /** Xóa JWT + hint session (cookie-only) — dùng khi 401 hoặc hết hạn. */
 export function clearStoredAuthToken(): void {
   if (typeof window === "undefined") return;
+  invalidateProfileRequestCache();
   window.localStorage.removeItem(AUTH_TOKEN_KEY);
   clearSessionHint();
   notifyAuthSessionChanged();
 }
 
 /**
- * Đăng xuất đầy đủ phía client: JWT không lưu server (API stateless).
- * — Xóa token, session hint
- * — Demo: xóa profile lưu localStorage
- * — Báo UI cập nhật (header / profile)
+ * Đăng xuất phía client (JWT stateless): xóa token, session hint, báo UI cập nhật.
  */
 export function logoutClient(): void {
   if (typeof window === "undefined") return;
+  invalidateProfileRequestCache();
   window.localStorage.removeItem(AUTH_TOKEN_KEY);
   clearSessionHint();
-  if (isFakeAuthEnabled()) {
-    try {
-      window.localStorage.removeItem(PROFILE_LOCAL_KEY);
-    } catch {
-      /* ignore */
-    }
-  }
   notifyAuthSessionChanged();
-  notifyProfileUpdated();
 }
 
 export function getStoredAuthToken(): string | null {
@@ -578,6 +536,15 @@ function sanitizeRedirectPath(input: string | null | undefined): string {
   const raw = (input ?? "").trim();
   if (!raw.startsWith("/") || raw.startsWith("//")) return "/";
   return raw;
+}
+
+/**
+ * Full-page redirect sau social login (FedCM / SDK gọi callback ngoài React).
+ * `router.replace` từ ngữ cảnh đó đôi khi không đổi URL; reload cũng đảm bảo cookie session mới được áp dụng.
+ */
+export function navigateAfterSocialAuthSuccess(redirectTo?: string | null): void {
+  if (typeof window === "undefined") return;
+  window.location.assign(sanitizeRedirectPath(redirectTo));
 }
 
 function parseHashParams(hash: string): URLSearchParams {
@@ -645,6 +612,7 @@ async function verifySocialTokenRequest(
     res = await fetch(`${base}/auth/social-login`, {
       method: "POST",
       headers: { "Content-Type": "application/json", Accept: "application/json" },
+      credentials: "include",
       body: JSON.stringify({
         provider: payload.provider,
         token: payload.token ?? undefined,
@@ -684,6 +652,7 @@ async function verifySocialTokenRequest(
 
 function persistSocialAuthSession(token: string | null): void {
   if (typeof window === "undefined") return;
+  invalidateProfileRequestCache();
   if (token) {
     window.localStorage.setItem(AUTH_TOKEN_KEY, token);
     clearSessionHint();
@@ -702,11 +671,6 @@ export async function verifySocialLoginWithBackend(opts: {
   idToken?: string | null;
   redirectTo?: string;
 }): Promise<SocialAuthCompleteResult> {
-  if (isFakeAuthEnabled()) {
-    notifyAuthSessionChanged();
-    return { ok: true, redirectTo: sanitizeRedirectPath(opts.redirectTo) };
-  }
-
   const verified = await verifySocialTokenRequest({
     provider: opts.provider,
     token: opts.idToken ?? opts.accessToken,
@@ -727,11 +691,6 @@ export async function completeSocialAuthFromLocation(
   search: string,
   hash: string,
 ): Promise<SocialAuthCompleteResult> {
-  if (isFakeAuthEnabled()) {
-    notifyAuthSessionChanged();
-    return { ok: true, redirectTo: "/" };
-  }
-
   const queryParams = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
   const hashParams = parseHashParams(hash);
   const redirectTo = sanitizeRedirectPath(
