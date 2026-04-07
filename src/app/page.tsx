@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
+import { HomeContactReportForm } from "@/components/home-contact-report-form";
 import HomeHeroSpotlight from "@/components/home-hero-spotlight";
 import TemplateCarouselSection from "@/components/template-carousel-section";
 import {
@@ -554,14 +555,6 @@ export default function Home() {
             contactTitle: "Chúng tôi lắng nghe",
             contactBody:
               "Để lại thông tin — đội ngũ sẽ liên hệ tư vấn mẫu phù hợp và thời gian triển khai.",
-            contactName: "Họ và tên",
-            contactPhone: "Số điện thoại hoặc Zalo",
-            contactOption1: "Tôi muốn xem các mẫu có sẵn",
-            contactOption2: "Tôi muốn đặt website theo mẫu",
-            contactOption3: "Tôi muốn tư vấn thêm (gói, tên miền, v.v.)",
-            contactMessage:
-              "Chia sẻ ngắn gọn phong cách mong muốn, ngày cưới hoặc thời điểm cần bàn giao",
-            contactSubmit: "Gửi yêu cầu tư vấn",
           }
         : {
             heroEyebrow: "Refined online wedding invitations",
@@ -891,14 +884,6 @@ export default function Home() {
             contactTitle: "We would love to hear from you",
             contactBody:
               "Leave your details—we will follow up with template suggestions and a realistic timeline.",
-            contactName: "Full name",
-            contactPhone: "Phone or Zalo",
-            contactOption1: "I want to browse ready-made templates",
-            contactOption2: "I want a website based on a template",
-            contactOption3: "I want more guidance (plans, domain, etc.)",
-            contactMessage:
-              "Share your preferred style, wedding date, or when you need the site ready",
-            contactSubmit: "Send my request",
           },
     [language],
   );
@@ -1615,31 +1600,7 @@ export default function Home() {
             </p>
           </div>
 
-          <form className="mx-auto mt-8 grid w-full min-w-0 max-w-3xl grid-cols-1 gap-3.5 sm:mt-10 sm:grid-cols-2 sm:gap-4">
-            <input className={contactFieldClass} placeholder={copy.contactName} autoComplete="name" />
-            <input
-              className={contactFieldClass}
-              placeholder={copy.contactPhone}
-              autoComplete="tel"
-              inputMode="tel"
-            />
-            <select className={`${contactFieldClass} sm:col-span-2`}>
-              <option>{copy.contactOption1}</option>
-              <option>{copy.contactOption2}</option>
-              <option>{copy.contactOption3}</option>
-            </select>
-            <textarea
-              className={`min-h-28 resize-y sm:min-h-32 ${contactFieldClass} sm:col-span-2`}
-              placeholder={copy.contactMessage}
-              rows={5}
-            />
-            <button
-              type="button"
-              className="btn-primary w-full rounded-full px-6 py-3.5 text-sm font-medium transition-transform duration-300 hover:-translate-y-1 sm:col-span-2 sm:w-auto sm:justify-self-center sm:px-7 sm:py-4"
-            >
-              {copy.contactSubmit}
-            </button>
-          </form>
+          <HomeContactReportForm fieldClassName={contactFieldClass} />
         </div>
       </section>
     </main>

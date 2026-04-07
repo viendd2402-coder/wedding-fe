@@ -11,9 +11,15 @@ import {
   getPublicFacebookAppId,
   getPublicGoogleOAuthClientId,
   loginRequest,
-  navigateAfterSocialAuthSuccess,
   verifySocialLoginWithBackend,
 } from "@/lib/auth-client";
+import { navigateAfterLoginSpa } from "@/lib/auth-app-navigation";
+import {
+  LOGIN_PASSWORD_MIN_LENGTH,
+  isValidLoginEmail,
+  validateLoginDtoInput,
+  type LoginFieldErrors,
+} from "@/lib/login-validation";
 import {
   ensureFacebookSdk,
   ensureGoogleIdentityScript,
@@ -36,12 +42,15 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [loginFieldErrors, setLoginFieldErrors] = useState<LoginFieldErrors>({});
   const [loading, setLoading] = useState(false);
   const [socialBusy, setSocialBusy] = useState(false);
   const googleButtonHostRef = useRef<HTMLDivElement>(null);
   const googleIdTokenHandlerRef = useRef<(idToken: string) => void>(() => {});
   const [browserOrigin, setBrowserOrigin] = useState("");
   const [originCopiedFlash, setOriginCopiedFlash] = useState(false);
+  /** Tránh redirect trong lúc hydrate (cùng ý tưởng profile-screen). */
+  const [authClientReady, setAuthClientReady] = useState(false);
 
   const showGoogleOriginHint =
     process.env.NODE_ENV === "development" ||
@@ -52,36 +61,45 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
   }, []);
 
   useEffect(() => {
-    if (mode !== "login" || !signedIn) return;
-    router.replace("/");
-    router.refresh();
-  }, [mode, router, signedIn]);
+    setAuthClientReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!authClientReady || mode !== "login" || !signedIn) return;
+    navigateAfterLoginSpa(router, "/");
+  }, [authClientReady, mode, router, signedIn]);
+
+  useEffect(() => {
+    setLoginFieldErrors({});
+    setError(null);
+  }, [mode]);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     if (mode !== "login") return;
 
-    if (!email.trim()) {
-      setError(language === "vi" ? "Vui lòng nhập email." : "Please enter your email.");
-      return;
-    }
-    if (!password) {
-      setError(language === "vi" ? "Vui lòng nhập mật khẩu." : "Please enter your password.");
+    setLoginFieldErrors({});
+    const validated = validateLoginDtoInput({ email, password });
+    if (!validated.ok) {
+      setLoginFieldErrors(validated.errors);
       return;
     }
 
     setLoading(true);
-    const result = await loginRequest({ email, password });
-    setLoading(false);
+    const result = await loginRequest({
+      email: validated.email,
+      password: validated.password,
+    });
 
     if (!result.ok) {
+      setLoading(false);
       setError(result.message);
       return;
     }
 
-    router.push("/");
-    router.refresh();
+    setLoading(false);
+    /* Điều hướng chỉ qua effect khi signedIn — tránh đua replace + refresh với hydrate sau F5 */
   }
 
   const copy = useMemo(
@@ -137,6 +155,10 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
               "localhost và 127.0.0.1 là hai origin khác nhau — phải trùng với URL trên thanh địa chỉ.",
             googleOriginCopy: "Sao chép origin",
             googleOriginCopied: "Đã chép",
+            loginEmailRequired: "Vui lòng nhập email.",
+            loginEmailInvalid: "Email không hợp lệ.",
+            loginPasswordRequired: "Vui lòng nhập mật khẩu.",
+            loginPasswordMin: `Mật khẩu tối thiểu ${LOGIN_PASSWORD_MIN_LENGTH} ký tự.`,
           }
         : {
             backHome: "Back to home",
@@ -182,9 +204,29 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
               "localhost and 127.0.0.1 are different origins — they must match what you see in the address bar.",
             googleOriginCopy: "Copy origin",
             googleOriginCopied: "Copied",
+            loginEmailRequired: "Please enter your email.",
+            loginEmailInvalid: "Please enter a valid email address.",
+            loginPasswordRequired: "Please enter your password.",
+            loginPasswordMin: `Password must be at least ${LOGIN_PASSWORD_MIN_LENGTH} characters.`,
           },
     [language, mode],
   );
+
+  const resolveLoginFieldMessage = useCallback(
+    (code: string | undefined): string => {
+      if (!code) return "";
+      if (code === "__EMAIL_REQUIRED__") return copy.loginEmailRequired;
+      if (code === "__EMAIL_INVALID__") return copy.loginEmailInvalid;
+      if (code === "__PASSWORD_REQUIRED__") return copy.loginPasswordRequired;
+      if (code === "__PASSWORD_MIN__") return copy.loginPasswordMin;
+      return code;
+    },
+    [copy],
+  );
+
+  const loginInputErrorRing = isDark
+    ? "ring-2 ring-rose-400/45 border-rose-400/35"
+    : "ring-2 ring-[var(--color-rose)]/40 border-[var(--color-rose)]/35";
 
   googleIdTokenHandlerRef.current = async (idToken: string) => {
     setSocialBusy(true);
@@ -199,7 +241,6 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
         setError(result.message);
         return;
       }
-      navigateAfterSocialAuthSuccess(result.redirectTo);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
@@ -247,7 +288,7 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
       cancelled = true;
       host.innerHTML = "";
     };
-  }, [isDark, language, router]);
+  }, [isDark, language]);
 
   const startFacebookLogin = useCallback(async () => {
     setError(null);
@@ -274,13 +315,12 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
         setError(result.message);
         return;
       }
-      navigateAfterSocialAuthSuccess(result.redirectTo);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
       setSocialBusy(false);
     }
-  }, [copy.socialNeedApi, copy.socialNeedFacebookAppId, router]);
+  }, [copy.socialNeedApi, copy.socialNeedFacebookAppId]);
 
   const formBusy = (mode === "login" && loading) || socialBusy;
 
@@ -507,11 +547,40 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
                   name="email"
                   autoComplete="email"
                   value={email}
-                  onChange={(ev) => setEmail(ev.target.value)}
+                  onChange={(ev) => {
+                    const v = ev.target.value;
+                    setEmail(v);
+                    if (mode === "login") {
+                      const t = v.trim();
+                      if (t && isValidLoginEmail(t)) {
+                        setLoginFieldErrors((prev) => {
+                          if (!prev.email) return prev;
+                          const next = { ...prev };
+                          delete next.email;
+                          return next;
+                        });
+                      }
+                      setError(null);
+                    }
+                  }}
                   placeholder="name@email.com"
                   disabled={formBusy}
-                  className={`${inputClass} mt-2 disabled:opacity-55`}
+                  aria-invalid={mode === "login" && Boolean(loginFieldErrors.email)}
+                  aria-describedby={
+                    mode === "login" && loginFieldErrors.email ? "auth-email-err" : undefined
+                  }
+                  className={`${inputClass} mt-2 disabled:opacity-55 ${
+                    mode === "login" && loginFieldErrors.email ? loginInputErrorRing : ""
+                  }`.trim()}
                 />
+                {mode === "login" && loginFieldErrors.email ? (
+                  <p
+                    id="auth-email-err"
+                    className="mt-1.5 text-xs text-rose-500 dark:text-rose-300"
+                  >
+                    {resolveLoginFieldMessage(loginFieldErrors.email)}
+                  </p>
+                ) : null}
               </div>
               <div>
                 <label className={labelClass} htmlFor="auth-password">
@@ -523,11 +592,39 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
                   name="password"
                   autoComplete={mode === "login" ? "current-password" : "new-password"}
                   value={password}
-                  onChange={(ev) => setPassword(ev.target.value)}
+                  onChange={(ev) => {
+                    const v = ev.target.value;
+                    setPassword(v);
+                    if (mode === "login") {
+                      if (v.length >= LOGIN_PASSWORD_MIN_LENGTH) {
+                        setLoginFieldErrors((prev) => {
+                          if (!prev.password) return prev;
+                          const next = { ...prev };
+                          delete next.password;
+                          return next;
+                        });
+                      }
+                      setError(null);
+                    }
+                  }}
                   placeholder="••••••••"
                   disabled={formBusy}
-                  className={`${inputClass} mt-2 disabled:opacity-55`}
+                  aria-invalid={mode === "login" && Boolean(loginFieldErrors.password)}
+                  aria-describedby={
+                    mode === "login" && loginFieldErrors.password ? "auth-password-err" : undefined
+                  }
+                  className={`${inputClass} mt-2 disabled:opacity-55 ${
+                    mode === "login" && loginFieldErrors.password ? loginInputErrorRing : ""
+                  }`.trim()}
                 />
+                {mode === "login" && loginFieldErrors.password ? (
+                  <p
+                    id="auth-password-err"
+                    className="mt-1.5 text-xs text-rose-500 dark:text-rose-300"
+                  >
+                    {resolveLoginFieldMessage(loginFieldErrors.password)}
+                  </p>
+                ) : null}
               </div>
               {mode === "register" ? (
                 <div>

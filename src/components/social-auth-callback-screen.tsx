@@ -1,17 +1,22 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { useAuthSession } from "@/components/auth-session";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
-import {
-  completeSocialAuthFromLocation,
-  navigateAfterSocialAuthSuccess,
-} from "@/lib/auth-client";
+import { navigateAfterLoginSpa } from "@/lib/auth-app-navigation";
+import { completeSocialAuthFromLocation } from "@/lib/auth-client";
 
 export default function SocialAuthCallbackScreen() {
+  const router = useRouter();
+  const { signedIn } = useAuthSession();
   const { language, theme } = useGlobalPreferences();
   const isDark = theme === "dark";
   const [error, setError] = useState<string | null>(null);
+  /** Tránh replace trong lúc hydrate; đồng bộ với auth-screen (email). */
+  const [authClientReady, setAuthClientReady] = useState(false);
+  const [pendingRedirect, setPendingRedirect] = useState<string | null>(null);
 
   const copy = useMemo(
     () =>
@@ -32,6 +37,10 @@ export default function SocialAuthCallbackScreen() {
   );
 
   useEffect(() => {
+    setAuthClientReady(true);
+  }, []);
+
+  useEffect(() => {
     let mounted = true;
     void (async () => {
       const result = await completeSocialAuthFromLocation(
@@ -40,7 +49,7 @@ export default function SocialAuthCallbackScreen() {
       );
       if (!mounted) return;
       if (result.ok) {
-        navigateAfterSocialAuthSuccess(result.redirectTo);
+        setPendingRedirect(result.redirectTo);
         return;
       }
       setError(result.message);
@@ -49,6 +58,11 @@ export default function SocialAuthCallbackScreen() {
       mounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (!authClientReady || !signedIn || pendingRedirect == null) return;
+    navigateAfterLoginSpa(router, pendingRedirect);
+  }, [authClientReady, pendingRedirect, router, signedIn]);
 
   return (
     <main

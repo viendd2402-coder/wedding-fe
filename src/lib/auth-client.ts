@@ -1,4 +1,5 @@
 import { getPublicApiBaseUrl } from "@/lib/api-base";
+import { extractApiErrorMessage, fetchPublicApi } from "@/lib/api-fetch";
 
 export type LoginPayload = {
   email: string;
@@ -245,58 +246,35 @@ function cloneProfileOk(r: ProfileOk): ProfileResult {
 }
 
 async function fetchProfileFromNetwork(): Promise<ProfileResult> {
-  const base = getPublicApiBaseUrl();
-  if (!base) {
-    return {
-      ok: false,
-      status: 0,
-      message: "Missing NEXT_PUBLIC_API_URL",
-    };
-  }
-
   const token = getStoredAuthToken();
-  const headers: Record<string, string> = { Accept: "application/json" };
+  const headers: Record<string, string> = {};
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  let res: Response;
-  try {
-    res = await fetch(`${base}/auth/profile`, {
-      method: "GET",
-      headers,
-      credentials: "include",
-    });
-  } catch {
-    return { ok: false, status: 0, message: "Network error" };
-  }
+  const r = await fetchPublicApi("auth/profile", { method: "GET", headers });
 
-  const text = await res.text();
-  let json: unknown = null;
-  if (text) {
-    try {
-      json = JSON.parse(text) as unknown;
-    } catch {
-      /* ignore */
+  if (!r.ok) {
+    if (r.networkError) {
+      return { ok: false, status: 0, message: "Network error" };
     }
-  }
-
-  if (res.status === 401) {
-    clearStoredAuthToken();
+    if (r.status === 0) {
+      return { ok: false, status: 0, message: "Missing NEXT_PUBLIC_API_URL" };
+    }
+    if (r.status === 401) {
+      clearStoredAuthToken();
+      return {
+        ok: false,
+        status: 401,
+        message: extractApiErrorMessage(r.data, "Session expired"),
+      };
+    }
     return {
       ok: false,
-      status: 401,
-      message: extractErrorMessage(json, "Session expired"),
+      status: r.status,
+      message: extractApiErrorMessage(r.data, `Request failed (${r.status})`),
     };
   }
 
-  if (!res.ok) {
-    return {
-      ok: false,
-      status: res.status,
-      message: extractErrorMessage(json, `Request failed (${res.status})`),
-    };
-  }
-
-  return { ok: true, profile: parseUserProfile(json) };
+  return { ok: true, profile: parseUserProfile(r.data) };
 }
 
 /** Gọi backend: `GET {NEXT_PUBLIC_API_URL}/auth/profile` — Bearer nếu có; luôn gửi cookie. */
@@ -344,13 +322,8 @@ export type UpdateProfileResult =
 export async function updateProfileRequest(profile: UserProfile): Promise<UpdateProfileResult> {
   const sanitized = normalizeProfileInput(profile);
 
-  const base = getPublicApiBaseUrl();
-  if (!base) {
-    return { ok: false, message: "Missing NEXT_PUBLIC_API_URL" };
-  }
-
   const token = getStoredAuthToken();
-  const headers: Record<string, string> = { Accept: "application/json" };
+  const headers: Record<string, string> = {};
   if (token) headers.Authorization = `Bearer ${token}`;
 
   const fd = new FormData();
@@ -364,37 +337,26 @@ export async function updateProfileRequest(profile: UserProfile): Promise<Update
   }
   if (sanitized.additionalContact) fd.append("additionalContact", sanitized.additionalContact);
 
-  let res: Response;
-  try {
-    res = await fetch(`${base}/auth/profile`, {
-      method: "PATCH",
-      headers,
-      credentials: "include",
-      body: fd,
-    });
-  } catch {
-    return { ok: false, message: "Network error" };
-  }
+  const r = await fetchPublicApi("auth/profile", {
+    method: "PATCH",
+    headers,
+    body: fd,
+  });
 
-  const text = await res.text();
-  let json: unknown = null;
-  if (text) {
-    try {
-      json = JSON.parse(text) as unknown;
-    } catch {
-      /* ignore */
+  if (!r.ok) {
+    if (r.networkError) {
+      return { ok: false, message: "Network error" };
     }
-  }
-
-  if (res.status === 401) {
-    clearStoredAuthToken();
-    return { ok: false, message: extractErrorMessage(json, "Session expired") };
-  }
-
-  if (!res.ok) {
+    if (r.status === 0) {
+      return { ok: false, message: "Missing NEXT_PUBLIC_API_URL" };
+    }
+    if (r.status === 401) {
+      clearStoredAuthToken();
+      return { ok: false, message: extractApiErrorMessage(r.data, "Session expired") };
+    }
     return {
       ok: false,
-      message: extractErrorMessage(json, `Request failed (${res.status})`),
+      message: extractApiErrorMessage(r.data, `Request failed (${r.status})`),
     };
   }
 
@@ -417,69 +379,34 @@ function extractToken(body: unknown): string | null {
   return null;
 }
 
-function extractErrorMessage(body: unknown, fallback: string): string {
-  if (!body || typeof body !== "object") return fallback;
-  const o = body as Record<string, unknown>;
-  const msg = o.message ?? o.error ?? o.detail;
-  if (typeof msg === "string" && msg.trim()) return msg.trim();
-  if (Array.isArray(o.message) && typeof o.message[0] === "string") {
-    return o.message[0];
-  }
-  return fallback;
-}
-
 /** Gọi backend: `POST {NEXT_PUBLIC_API_URL}/auth/login` */
 export async function loginRequest(payload: LoginPayload): Promise<LoginResult> {
-  const base = getPublicApiBaseUrl();
-  if (!base) {
-    return {
-      ok: false,
-      status: 0,
-      message: "Missing NEXT_PUBLIC_API_URL",
-    };
-  }
+  const r = await fetchPublicApi("auth/login", {
+    method: "POST",
+    json: {
+      email: payload.email.trim(),
+      password: payload.password,
+    },
+  });
 
-  let res: Response;
-  try {
-    res = await fetch(`${base}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({
-        email: payload.email.trim(),
-        password: payload.password,
-      }),
-      credentials: "include",
-    });
-  } catch {
-    return {
-      ok: false,
-      status: 0,
-      message: "Network error",
-    };
-  }
-
-  const text = await res.text();
-  let json: unknown = null;
-  if (text) {
-    try {
-      json = JSON.parse(text) as unknown;
-    } catch {
-      /* plain text body */
+  if (!r.ok) {
+    if (r.networkError) {
+      return { ok: false, status: 0, message: "Network error" };
     }
-  }
-
-  if (!res.ok) {
+    if (r.status === 0) {
+      return { ok: false, status: 0, message: "Missing NEXT_PUBLIC_API_URL" };
+    }
     return {
       ok: false,
-      status: res.status,
-      message: extractErrorMessage(
-        json,
-        res.status === 401 ? "Invalid email or password" : `Request failed (${res.status})`,
+      status: r.status,
+      message: extractApiErrorMessage(
+        r.data,
+        r.status === 401 ? "Invalid email or password" : `Request failed (${r.status})`,
       ),
     };
   }
 
-  const token = extractToken(json);
+  const token = extractToken(r.data);
   if (typeof window !== "undefined") {
     invalidateProfileRequestCache();
     if (token) {
@@ -539,13 +466,17 @@ function sanitizeRedirectPath(input: string | null | undefined): string {
 }
 
 /**
- * Full-page redirect sau social login (FedCM / SDK gọi callback ngoài React).
- * `router.replace` từ ngữ cảnh đó đôi khi không đổi URL; reload cũng đảm bảo cookie session mới được áp dụng.
+ * Full reload — chỉ khi thật sự cần (debug / workaround). Luồng bình thường dùng
+ * `navigateAfterLoginSpa` từ `@/lib/auth-app-navigation`.
  */
-export function navigateAfterSocialAuthSuccess(redirectTo?: string | null): void {
+export function navigateAfterAuthHardReload(redirectTo?: string | null): void {
   if (typeof window === "undefined") return;
   window.location.assign(sanitizeRedirectPath(redirectTo));
 }
+
+/** @deprecated Dùng `navigateAfterLoginSpa(router, path)` — tên cũ trỏ tới hard reload. */
+export const navigateAfterAuthSuccess = navigateAfterAuthHardReload;
+export const navigateAfterSocialAuthSuccess = navigateAfterAuthHardReload;
 
 function parseHashParams(hash: string): URLSearchParams {
   const h = hash.startsWith("#") ? hash.slice(1) : hash;
@@ -596,57 +527,42 @@ async function verifySocialTokenRequest(
   | { ok: true; token: string | null; redirectTo: string }
   | { ok: false; status: number; message: string; redirectTo: string }
 > {
-  const base = getPublicApiBaseUrl();
   const redirectTo = sanitizeRedirectPath(payload.redirectTo);
-  if (!base) {
-    return {
-      ok: false,
-      status: 0,
-      message: "Missing NEXT_PUBLIC_API_URL",
-      redirectTo: "/login",
-    };
-  }
 
-  let res: Response;
-  try {
-    res = await fetch(`${base}/auth/social-login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      credentials: "include",
-      body: JSON.stringify({
-        provider: payload.provider,
-        token: payload.token ?? undefined,
-      }),
-    });
-  } catch {
-    return {
-      ok: false,
-      status: 0,
-      message: "Network error",
-      redirectTo: "/login",
-    };
-  }
+  const r = await fetchPublicApi("auth/social-login", {
+    method: "POST",
+    json: {
+      provider: payload.provider,
+      token: payload.token ?? undefined,
+    },
+  });
 
-  const text = await res.text();
-  let json: unknown = null;
-  if (text) {
-    try {
-      json = JSON.parse(text) as unknown;
-    } catch {
-      /* plain text body */
+  if (!r.ok) {
+    if (r.networkError) {
+      return {
+        ok: false,
+        status: 0,
+        message: "Network error",
+        redirectTo: "/login",
+      };
     }
-  }
-
-  if (!res.ok) {
+    if (r.status === 0) {
+      return {
+        ok: false,
+        status: 0,
+        message: "Missing NEXT_PUBLIC_API_URL",
+        redirectTo: "/login",
+      };
+    }
     return {
       ok: false,
-      status: res.status,
-      message: extractErrorMessage(json, `Request failed (${res.status})`),
+      status: r.status,
+      message: extractApiErrorMessage(r.data, `Request failed (${r.status})`),
       redirectTo: "/login",
     };
   }
 
-  const token = extractToken(json);
+  const token = extractToken(r.data);
   return { ok: true, token, redirectTo };
 }
 
