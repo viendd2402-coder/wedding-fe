@@ -2,6 +2,7 @@
 
 import { type FormEvent, useCallback, useMemo, useState } from "react";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
+import { getHomeContactReportCopy } from "@/i18n/messages/contact-report";
 import { isValidContactPhone } from "@/lib/phone";
 import {
   REPORT_DESCRIPTION_MAX,
@@ -30,65 +31,11 @@ export function HomeContactReportForm({ fieldClassName }: HomeContactReportFormP
 
   const copy = useMemo(
     () =>
-      language === "vi"
-        ? {
-            typePlaceholder: "Chọn nhu cầu của bạn",
-            option1: "Tôi muốn xem các mẫu có sẵn",
-            option2: "Tôi muốn đặt website theo mẫu",
-            option3: "Tôi muốn tư vấn thêm (gói, tên miền, v.v.)",
-            opiton4: "Khác",
-            nameLabel: "Họ và tên",
-            phoneLabel: "Số điện thoại",
-            needLabel: "Nhu cầu",
-            messageLabel: "Nội dung (tuỳ chọn)",
-            messageHint: `${REPORT_DESCRIPTION_MAX} ký tự tối đa`,
-            submit: "Gửi yêu cầu tư vấn",
-            submitting: "Đang gửi…",
-            fullNameRequired: "Vui lòng nhập họ và tên.",
-            fullNameMax: `Họ và tên tối đa ${REPORT_FULL_NAME_MAX} ký tự.`,
-            phoneRequired: "Vui lòng nhập số điện thoại.",
-            phoneMax: `Số điện thoại tối đa ${REPORT_PHONE_MAX} ký tự.`,
-            phoneInvalid:
-              "Nhập số di động Việt Nam (vd 09…, 03…) hoặc số quốc tế có mã vùng (+…).",
-            typeRequired: "Vui lòng chọn một nhu cầu.",
-            descriptionMax: `Nội dung tối đa ${REPORT_DESCRIPTION_MAX} ký tự.`,
-            successTitle: "Đã gửi thành công",
-            successBody:
-              "Cảm ơn bạn đã liên hệ. Đội ngũ Lumiere sẽ đọc yêu cầu và phản hồi sớm qua số điện thoại hoặc kênh bạn để lại.",
-            sendAnother: "Gửi yêu cầu khác",
-            errorGeneric: "Không gửi được. Vui lòng thử lại sau.",
-            errorNetwork: "Lỗi mạng. Kiểm tra kết nối và thử lại.",
-            errorConfig: "Chưa cấu hình API (NEXT_PUBLIC_API_URL).",
-          }
-        : {
-            typePlaceholder: "What do you need help with?",
-            option1: "I want to browse ready-made templates",
-            option2: "I want a website based on a template",
-            option3: "I want more guidance (plans, domain, etc.)",
-            opiton4: "Other",
-            nameLabel: "Full name",
-            phoneLabel: "Phone number",
-            needLabel: "Request type",
-            messageLabel: "Message (optional)",
-            messageHint: `Up to ${REPORT_DESCRIPTION_MAX} characters`,
-            submit: "Send my request",
-            submitting: "Sending…",
-            fullNameRequired: "Please enter your full name.",
-            fullNameMax: `Full name must be at most ${REPORT_FULL_NAME_MAX} characters.`,
-            phoneRequired: "Please enter your phone number.",
-            phoneMax: `Phone must be at most ${REPORT_PHONE_MAX} characters.`,
-            phoneInvalid:
-              "Use a valid Vietnamese mobile (e.g. 09…, 03…) or international format with country code (+…).",
-            typeRequired: "Please choose a request type.",
-            descriptionMax: `Message must be at most ${REPORT_DESCRIPTION_MAX} characters.`,
-            successTitle: "Thank you — we received it",
-            successBody:
-              "Our team will review your request and get back to you soon using the contact details you shared.",
-            sendAnother: "Send another request",
-            errorGeneric: "We could not send your request. Please try again.",
-            errorNetwork: "Network error. Check your connection and try again.",
-            errorConfig: "API URL is not configured (NEXT_PUBLIC_API_URL).",
-          },
+      getHomeContactReportCopy(language, {
+        fullNameMax: REPORT_FULL_NAME_MAX,
+        phoneMax: REPORT_PHONE_MAX,
+        descriptionMax: REPORT_DESCRIPTION_MAX,
+      }),
     [language],
   );
 
@@ -378,7 +325,7 @@ export function HomeContactReportForm({ fieldClassName }: HomeContactReportFormP
           <option value="1">{copy.option1}</option>
           <option value="2">{copy.option2}</option>
           <option value="3">{copy.option3}</option>
-          <option value="4">{copy.opiton4}</option>
+          <option value="4">{copy.option4}</option>
         </select>
         {fieldErrors.type ? (
           <p id="contact-type-err" className="mt-1.5 text-xs text-rose-500 dark:text-rose-300">

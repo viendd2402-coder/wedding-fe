@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useMemo, type MouseEvent } from "react";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
+import { useMessages } from "@/i18n/use-messages";
 import { IconTiktokBrand, IconZaloBrand } from "@/components/icons-social-brands";
 import { forceDocumentScrollTop } from "@/lib/force-document-scroll-top";
 import { isTemplateDetailPath } from "@/lib/is-template-detail-path";
@@ -32,62 +33,9 @@ function IconPhone({ className }: { className?: string }) {
 
 export default function SiteFooter() {
   const pathname = usePathname();
-  const { language, theme } = useGlobalPreferences();
+  const { theme } = useGlobalPreferences();
+  const { footer: copy } = useMessages();
   const isDark = theme === "dark";
-
-  const copy = useMemo(
-    () =>
-      language === "vi"
-        ? {
-            eyebrow: "Thiệp mời trực tuyến",
-            brand: "Lumiere",
-            body: "Nền tảng giúp hai bạn dựng website mời cưới với mẫu giao diện độc lập, hỗ trợ song ngữ và chế độ sáng hoặc tối — một link để khách mời xem lịch, địa điểm và xác nhận tham dự ngay trên điện thoại.",
-            navExploreTitle: "Khám phá",
-            navSupportTitle: "Dịch vụ",
-            home: "Trang chủ",
-            templates: "Mẫu giao diện",
-            whyUs: "Vì sao chọn chúng tôi",
-            free: "Mẫu miễn phí",
-            premium: "Mẫu trả phí",
-            features: "Trải nghiệm",
-            pricing: "Bảng giá",
-            feedback: "Phản hồi",
-            contact: "Liên hệ",
-            login: "Đăng nhập",
-            rights: "Bảo lưu mọi quyền.",
-            contactTitle: "Liên hệ trực tiếp",
-            labelZalo: "Zalo",
-            labelTiktok: "TikTok",
-            labelEmail: "Email",
-            labelPhone: "Điện thoại",
-            tagline: "Tinh tế trên mọi thiết bị.",
-          }
-        : {
-            eyebrow: "Online wedding invitations",
-            brand: "Lumiere",
-            body: "Build your wedding website with distinct templates, bilingual support, and light or dark UI—one link gives guests the schedule, venues, and RSVP on mobile.",
-            navExploreTitle: "Explore",
-            navSupportTitle: "Service",
-            home: "Home",
-            templates: "Templates",
-            whyUs: "Why Lumiere",
-            free: "Free templates",
-            premium: "Premium templates",
-            features: "Experience",
-            pricing: "Pricing",
-            feedback: "Feedback",
-            contact: "Contact",
-            login: "Login",
-            rights: "All rights reserved.",
-            contactTitle: "Get in touch",
-            labelZalo: "Zalo",
-            labelTiktok: "TikTok",
-            labelEmail: "Email",
-            labelPhone: "Phone",
-            tagline: "Refined on every screen.",
-          },
-    [language],
-  );
 
   const exploreLinks = useMemo(
     () =>

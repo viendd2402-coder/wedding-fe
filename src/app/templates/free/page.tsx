@@ -1,36 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
+import { useMessages } from "@/i18n/use-messages";
 import { TemplateListCard } from "@/components/template-list-card";
 import { freeTemplates } from "@/lib/templates";
 
 export default function FreeTemplatesPage() {
-  const { language, theme } = useGlobalPreferences();
+  const { theme } = useGlobalPreferences();
+  const { templatesFree: copy } = useMessages();
   const isDark = theme === "dark";
-
-  const copy = useMemo(
-    () =>
-      language === "vi"
-        ? {
-            back: "Về trang chủ",
-            eyebrow: "Bộ sưu tập",
-            title: "Mẫu miễn phí",
-            body: "Toàn bộ mẫu dưới đây có thể xem demo trực tiếp. Liên hệ khi bạn muốn triển khai theo mẫu đã chọn.",
-            demo: "Xem demo",
-            useTemplate: "Dùng mẫu này",
-          }
-        : {
-            back: "Back to home",
-            eyebrow: "Gallery",
-            title: "Free templates",
-            body: "Open any card for a full live demo. Reach out when you are ready to launch with your chosen design.",
-            demo: "View demo",
-            useTemplate: "Use this template",
-          },
-    [language],
-  );
 
   const badgeClassName =
     "rounded-full bg-[var(--color-sage)]/10 px-3 py-1 text-xs font-medium text-[var(--color-sage)]";

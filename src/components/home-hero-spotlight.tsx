@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo } from "react";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
+import { useMessages } from "@/i18n/use-messages";
 import type { WeddingTemplate } from "@/lib/templates";
 import {
   TOP_TEMPLATE_SLUGS_BY_USAGE,
@@ -18,35 +19,10 @@ function resolveTopByUsage(): WeddingTemplate[] {
 }
 
 export default function HomeHeroSpotlight() {
-  const { language, theme } = useGlobalPreferences();
+  const { theme } = useGlobalPreferences();
+  const { homeHeroSpotlight: copy } = useMessages();
   const isDark = theme === "dark";
   const items = useMemo(() => resolveTopByUsage(), []);
-
-  const copy = useMemo(
-    () =>
-      language === "vi"
-        ? {
-            eyebrow: "Phổ biến",
-            title: "Mẫu được chọn nhiều nhất",
-            body: "Thứ hạng theo lượt cặp đôi chọn mẫu — mở thẻ để xem demo đầy đủ.",
-            openLabel: "Xem mẫu",
-            viewAll: "Xem tất cả mẫu giao diện",
-            tierFree: "Miễn phí",
-            tierPremium: "Trả phí",
-            rankLabel: (n: number) => `Hạng ${n}`,
-          }
-        : {
-            eyebrow: "Popular",
-            title: "Most-chosen templates",
-            body: "Ranked by how often couples pick each design — open a card for the full demo.",
-            openLabel: "Open",
-            viewAll: "Browse all templates",
-            tierFree: "Free",
-            tierPremium: "Premium",
-            rankLabel: (n: number) => `#${n}`,
-          },
-    [language],
-  );
 
   const tierLabel = (tier: string) => {
     if (tier === "Miễn phí") return copy.tierFree;
@@ -86,7 +62,7 @@ export default function HomeHeroSpotlight() {
               <Link
                 href={`/templates/${template.slug}`}
                 className={`group flex overflow-hidden rounded-[1.75rem] border transition ${cardClass}`}
-                aria-label={`${copy.rankLabel(rank)}: ${template.name}`}
+                aria-label={`${copy.rankLabelTpl.replace("__N__", String(rank))}: ${template.name}`}
               >
                 <div className="relative shrink-0">
                   <div

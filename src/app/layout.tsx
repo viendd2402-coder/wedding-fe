@@ -7,6 +7,7 @@ import {
   type AppLanguage,
   type AppTheme,
 } from "@/components/global-preferences-provider";
+import { siteMetaByLocale } from "@/i18n/messages/site-meta";
 import { Cormorant_Garamond, Inter } from "next/font/google";
 import { cookies } from "next/headers";
 import "./globals.css";
@@ -22,11 +23,16 @@ const cormorant = Cormorant_Garamond({
   weight: ["400", "500", "600", "700"],
 });
 
-export const metadata: Metadata = {
-  title: "Lumiere Wedding Websites",
-  description:
-    "Thiệp mời trực tuyến tinh tế — chọn phong cách phù hợp, chia sẻ dễ dàng và hoàn thiện cùng đội ngũ Lumiere.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const cookieStore = await cookies();
+  const savedLanguage = cookieStore.get("lumiere-language")?.value;
+  const lang: AppLanguage = savedLanguage === "en" ? "en" : "vi";
+  const meta = siteMetaByLocale[lang];
+  return {
+    title: meta.title,
+    description: meta.description,
+  };
+}
 
 export const viewport: Viewport = {
   width: "device-width",

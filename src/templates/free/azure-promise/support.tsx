@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
+import { templateDemoChromeMessages } from "@/i18n/messages/template-demo-chrome";
 
 export type { TemplatePreviewProps } from "@/templates/preview-types";
 
@@ -31,9 +32,9 @@ export const azurePromiseGallery = [
 export function AzurePromiseHeader({ tier }: { tier: string }) {
   const { language, theme } = useGlobalPreferences();
   const isDark = theme === "dark";
-  const backLabel = language === "vi" ? "Quay lại trang chủ" : "Back to home";
-  const contactLabel =
-    language === "vi" ? "Nhận tư vấn mẫu này" : "Get consultation";
+  const chrome = templateDemoChromeMessages[language];
+  const backLabel = chrome.backToHome;
+  const contactLabel = chrome.contactCta;
 
   return (
     <div className="relative mx-auto flex max-w-7xl flex-col gap-4 px-4 py-6 sm:px-10 sm:py-8 lg:px-16">
@@ -87,6 +88,7 @@ export function AzurePromiseMusicPlayer({
   accentClassName: string;
 }) {
   const { language } = useGlobalPreferences();
+  const chrome = templateDemoChromeMessages[language];
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -137,15 +139,7 @@ export function AzurePromiseMusicPlayer({
             isPlaying ? accentClassName : "bg-[var(--color-ink)]/20"
           }`}
         />
-        <span>
-          {language === "vi"
-            ? isPlaying
-              ? "Tắt nhạc nền"
-              : "Bật nhạc nền"
-            : isPlaying
-              ? "Mute music"
-              : "Play music"}
-        </span>
+        <span>{isPlaying ? chrome.musicMute : chrome.musicPlay}</span>
       </button>
       <p className="hidden text-xs uppercase tracking-[0.22em] text-[var(--color-ink)]/48 sm:block">
         {label}

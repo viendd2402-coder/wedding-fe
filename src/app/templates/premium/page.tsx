@@ -1,36 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
+import { useMessages } from "@/i18n/use-messages";
 import { TemplateListCard } from "@/components/template-list-card";
 import { premiumTemplates } from "@/lib/templates";
 
 export default function PremiumTemplatesPage() {
-  const { language, theme } = useGlobalPreferences();
+  const { theme } = useGlobalPreferences();
+  const { templatesPremium: copy } = useMessages();
   const isDark = theme === "dark";
-
-  const copy = useMemo(
-    () =>
-      language === "vi"
-        ? {
-            back: "Về trang chủ",
-            eyebrow: "Bộ sưu tập",
-            title: "Mẫu trả phí",
-            body: "Các mẫu cao cấp với bố cục và trải nghiệm đầy đủ hơn — mở demo để xem chi tiết, xem bảng giá khi bạn muốn chốt gói.",
-            demo: "Xem demo",
-            seePricing: "Xem bảng giá",
-          }
-        : {
-            back: "Back to home",
-            eyebrow: "Gallery",
-            title: "Premium templates",
-            body: "Elevated layouts and a richer guest experience — open any demo for the full preview, then check pricing when you are ready.",
-            demo: "View demo",
-            seePricing: "See pricing",
-          },
-    [language],
-  );
 
   const badgeClassName =
     "rounded-full bg-[var(--color-rose)]/12 px-3 py-1 text-xs font-medium text-[var(--color-rose)]";

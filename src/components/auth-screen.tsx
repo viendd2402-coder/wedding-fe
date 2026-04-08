@@ -14,6 +14,7 @@ import {
   verifySocialLoginWithBackend,
 } from "@/lib/auth-client";
 import { navigateAfterLoginSpa } from "@/lib/auth-app-navigation";
+import { getAuthScreenCopy } from "@/i18n/messages/auth";
 import {
   LOGIN_PASSWORD_MIN_LENGTH,
   isValidLoginEmail,
@@ -103,112 +104,7 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
   }
 
   const copy = useMemo(
-    () =>
-      language === "vi"
-        ? {
-            backHome: "Quay về trang chủ",
-            badge:
-              mode === "login"
-                ? "Đăng nhập tài khoản"
-                : "Tạo tài khoản mới",
-            title:
-              mode === "login"
-                ? "Chào mừng trở lại"
-                : "Bắt đầu cùng Lumiere",
-            lead:
-              mode === "login"
-                ? "Đăng nhập để tiếp tục hoàn thiện website cưới của bạn."
-                : "Tạo tài khoản để bắt đầu hành trình thiệp mời trực tuyến.",
-            body:
-              mode === "login"
-                ? "Cập nhật nội dung, theo dõi chỉnh sửa và tiến độ — gọn trong một không gian."
-                : "Lưu mẫu yêu thích, khởi tạo dự án và nhận thông tin bàn giao rõ ràng.",
-            asideKicker: "Lumiere",
-            asideTitle: "Không gian riêng cho thiệp mời trực tuyến của hai bạn.",
-            email: "Email",
-            password: "Mật khẩu",
-            confirmPassword: "Nhập lại mật khẩu",
-            forgotPassword: "Quên mật khẩu?",
-            rememberMe: "Ghi nhớ đăng nhập",
-            submit: mode === "login" ? "Đăng nhập" : "Tạo tài khoản",
-            switchPrompt:
-              mode === "login" ? "Chưa có tài khoản?" : "Đã có tài khoản?",
-            switchAction:
-              mode === "login" ? "Đăng ký ngay" : "Đăng nhập ngay",
-            switchHref: mode === "login" ? "/register" : "/login",
-            feature1: "Lưu mẫu giao diện bạn đã chọn",
-            feature2: "Theo dõi yêu cầu chỉnh sửa và phản hồi",
-            feature3: "Xem tiến độ hoàn thiện minh bạch",
-            submitting: "Đang đăng nhập…",
-            socialContinue: "Hoặc tiếp tục với",
-            socialEmail: "Hoặc dùng email",
-            socialFacebook: "Facebook",
-            socialNeedApi:
-              "Chưa cấu hình API. Đặt NEXT_PUBLIC_API_URL để bật đăng nhập mạng xã hội.",
-            socialNeedGoogleClientId:
-              "Chưa cấu hình Google: đặt NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID (OAuth 2.0 Client ID kiểu Web).",
-            socialNeedFacebookAppId:
-              "Chưa cấu hình Facebook: đặt NEXT_PUBLIC_FACEBOOK_APP_ID.",
-            googleOrigin403Hint:
-              "Nếu console báo origin is not allowed hoặc gsi/button 403: Google Cloud Console → APIs & Services → Credentials → OAuth 2.0 Client ID (Web) → Authorized JavaScript origins → thêm đúng origin dưới (không có / ở cuối, đúng http/https và port).",
-            googleOrigin403Note127:
-              "localhost và 127.0.0.1 là hai origin khác nhau — phải trùng với URL trên thanh địa chỉ.",
-            googleOriginCopy: "Sao chép origin",
-            googleOriginCopied: "Đã chép",
-            loginEmailRequired: "Vui lòng nhập email.",
-            loginEmailInvalid: "Email không hợp lệ.",
-            loginPasswordRequired: "Vui lòng nhập mật khẩu.",
-            loginPasswordMin: `Mật khẩu tối thiểu ${LOGIN_PASSWORD_MIN_LENGTH} ký tự.`,
-          }
-        : {
-            backHome: "Back to home",
-            badge: mode === "login" ? "Sign in" : "Create account",
-            title: mode === "login" ? "Welcome back" : "Start with Lumiere",
-            lead:
-              mode === "login"
-                ? "Sign in to continue shaping your wedding website."
-                : "Create an account to begin your online invitation journey.",
-            body:
-              mode === "login"
-                ? "Update copy, follow revisions, and see delivery progress in one calm workspace."
-                : "Save favorite templates, start projects, and stay informed as your site comes together.",
-            asideKicker: "Lumiere",
-            asideTitle: "A private space to refine your online wedding invitation.",
-            email: "Email",
-            password: "Password",
-            confirmPassword: "Confirm password",
-            forgotPassword: "Forgot password?",
-            rememberMe: "Keep me signed in",
-            submit: mode === "login" ? "Sign in" : "Create account",
-            switchPrompt:
-              mode === "login" ? "Don't have an account?" : "Already have an account?",
-            switchAction:
-              mode === "login" ? "Register now" : "Sign in now",
-            switchHref: mode === "login" ? "/register" : "/login",
-            feature1: "Save the templates you love",
-            feature2: "Follow revision requests and feedback",
-            feature3: "See clear, transparent delivery progress",
-            submitting: "Signing in…",
-            socialContinue: "Or continue with",
-            socialEmail: "Or use email",
-            socialFacebook: "Facebook",
-            socialNeedApi:
-              "API base URL is not set. Add NEXT_PUBLIC_API_URL to enable social sign-in.",
-            socialNeedGoogleClientId:
-              "Google is not configured: set NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID (Web OAuth 2.0 client ID).",
-            socialNeedFacebookAppId:
-              "Facebook is not configured: set NEXT_PUBLIC_FACEBOOK_APP_ID.",
-            googleOrigin403Hint:
-              "If the console shows origin is not allowed or gsi/button returns 403: Google Cloud Console → APIs & Services → Credentials → your Web OAuth 2.0 Client → Authorized JavaScript origins → add the exact origin below (no trailing slash, correct scheme and port).",
-            googleOrigin403Note127:
-              "localhost and 127.0.0.1 are different origins — they must match what you see in the address bar.",
-            googleOriginCopy: "Copy origin",
-            googleOriginCopied: "Copied",
-            loginEmailRequired: "Please enter your email.",
-            loginEmailInvalid: "Please enter a valid email address.",
-            loginPasswordRequired: "Please enter your password.",
-            loginPasswordMin: `Password must be at least ${LOGIN_PASSWORD_MIN_LENGTH} characters.`,
-          },
+    () => getAuthScreenCopy(language, mode, LOGIN_PASSWORD_MIN_LENGTH),
     [language, mode],
   );
 

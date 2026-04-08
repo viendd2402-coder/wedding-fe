@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
+import { useMessages } from "@/i18n/use-messages";
 import { TemplateListCard } from "@/components/template-list-card";
 import type { WeddingTemplate } from "@/lib/templates";
 
@@ -35,11 +36,13 @@ export default function TemplateCarouselSection({
   secondaryActionHref,
   secondaryActionLabel,
   secondaryActionClassName,
-  demoLinkLabel = "Xem demo",
+  demoLinkLabel,
   stackedBelowFree = false,
 }: TemplateCarouselSectionProps) {
   const carouselRef = useRef<HTMLDivElement | null>(null);
   const { theme } = useGlobalPreferences();
+  const { home } = useMessages();
+  const resolvedDemoLabel = demoLinkLabel ?? home.templateCardDemo;
   const isDark = theme === "dark";
   const shouldUseCarousel = templates.length > 2;
 
@@ -143,7 +146,7 @@ export default function TemplateCarouselSection({
                 item={item}
                 isDark={isDark}
                 badgeClassName={badgeClassName}
-                demoLabel={demoLinkLabel}
+                demoLabel={resolvedDemoLabel}
                 secondaryHref={secondaryActionHref}
                 secondaryLabel={secondaryActionLabel}
                 secondaryClassName={secondaryActionClassName}
@@ -160,7 +163,7 @@ export default function TemplateCarouselSection({
               item={item}
               isDark={isDark}
               badgeClassName={badgeClassName}
-              demoLabel={demoLinkLabel}
+              demoLabel={resolvedDemoLabel}
               secondaryHref={secondaryActionHref}
               secondaryLabel={secondaryActionLabel}
               secondaryClassName={secondaryActionClassName}

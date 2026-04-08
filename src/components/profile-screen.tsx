@@ -12,6 +12,7 @@ import {
 } from "react";
 import { useAuthSession, useLogout } from "@/components/auth-session";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
+import { useMessages } from "@/i18n/use-messages";
 import {
   PROFILE_MAX_AVATAR_DATA_URL_LENGTH,
   fetchProfileRequest,
@@ -33,7 +34,8 @@ export default function ProfileScreen() {
   const router = useRouter();
   const { signedIn } = useAuthSession();
   const logout = useLogout();
-  const { language, theme } = useGlobalPreferences();
+  const { theme } = useGlobalPreferences();
+  const { profile: copy } = useMessages();
   const isDark = theme === "dark";
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -44,80 +46,6 @@ export default function ProfileScreen() {
   const [formError, setFormError] = useState<string | null>(null);
   /** Tránh coi là chưa đăng nhập trong lúc hydrate (SSR snapshot rỗng → signedIn false một nhịp). */
   const [clientReady, setClientReady] = useState(false);
-
-  const copy = useMemo(
-    () =>
-      language === "vi"
-        ? {
-            backHome: "Quay về trang chủ",
-            title: "Hồ sơ",
-            subtitle: "Chỉnh sửa gọn gàng — ảnh đại diện và thông tin liên hệ của bạn.",
-            body: "Lưu thay đổi để cập nhật tài khoản trên hệ thống.",
-            sectionDetails: "Thông tin tài khoản",
-            sectionOptional: "Liên hệ thêm",
-            additionalContact: "Liên hệ bổ sung",
-            email: "Email",
-            name: "Họ tên",
-            phone: "Điện thoại",
-            age: "Tuổi",
-            gender: "Giới tính",
-            changePhoto: "Tải ảnh lên",
-            avatarUrlHint: "Dán URL ảnh (https://…)",
-            genderMale: "Nam",
-            genderFemale: "Nữ",
-            genderOther: "Khác",
-            genderUnspecified: "Không nêu",
-            save: "Lưu",
-            saving: "Đang lưu…",
-            saved: "Đã lưu",
-            reset: "Hoàn tác",
-            loading: "Đang tải…",
-            retry: "Thử lại",
-            logout: "Đăng xuất",
-            needLogin: "Đăng nhập để xem hồ sơ.",
-            goLogin: "Đăng nhập",
-            imageTooBig: "Ảnh quá lớn (tối đa ~500KB).",
-            imageType: "Chọn file ảnh.",
-            dataUrlTooLong: "Ảnh mã hoá quá lớn.",
-            previewHint: "Ảnh hiển thị trên tài khoản của bạn.",
-            changeAvatarShort: "Đổi ảnh",
-          }
-        : {
-            backHome: "Back to home",
-            title: "Profile",
-            subtitle: "A calm place to refine your photo and contact details.",
-            body: "Save to update your account on our systems.",
-            sectionDetails: "Account details",
-            sectionOptional: "Extra contact",
-            additionalContact: "Additional contact",
-            email: "Email",
-            name: "Full name",
-            phone: "Phone",
-            age: "Age",
-            gender: "Gender",
-            changePhoto: "Upload image",
-            avatarUrlHint: "Or paste image URL (https://…)",
-            genderMale: "Male",
-            genderFemale: "Female",
-            genderOther: "Other",
-            genderUnspecified: "Prefer not to say",
-            save: "Save",
-            saving: "Saving…",
-            saved: "Saved",
-            reset: "Reset",
-            loading: "Loading…",
-            retry: "Try again",
-            logout: "Log out",
-            needLogin: "Sign in to view your profile.",
-            goLogin: "Sign in",
-            imageTooBig: "Image too large (max ~500KB).",
-            imageType: "Please pick an image file.",
-            dataUrlTooLong: "Encoded image too large.",
-            previewHint: "Shown on your account.",
-            changeAvatarShort: "Change photo",
-          },
-    [language],
-  );
 
   const loadProfile = useCallback(async () => {
     setLoadState("loading");
@@ -642,7 +570,7 @@ export default function ProfileScreen() {
                     <div className={`${formRowGrid} ${formRowPad}`}>
                       <div>
                         <p className={rowLabel}>{copy.sectionOptional}</p>
-                        <p className={rowHint}>{language === "vi" ? "Không bắt buộc." : "Optional."}</p>
+                        <p className={rowHint}>{copy.optionalFieldHint}</p>
                       </div>
                       <div>
                         <label className="sr-only" htmlFor="profile-phone">
@@ -663,7 +591,7 @@ export default function ProfileScreen() {
                     <div className={`${formRowGrid} ${formRowPad}`}>
                       <div>
                         <p className={rowLabel}>{copy.additionalContact}</p>
-                        <p className={rowHint}>{language === "vi" ? "Ví dụ Zalo, Telegram." : "e.g. Zalo, Telegram."}</p>
+                        <p className={rowHint}>{copy.messengerExampleHint}</p>
                       </div>
                       <div>
                         <label className="sr-only" htmlFor="profile-additional-contact">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useGlobalPreferences } from "@/components/global-preferences-provider";
+import { useMessages } from "@/i18n/use-messages";
 
 type WeddingCountdownProps = {
   targetDate: string;
@@ -38,13 +38,10 @@ export default function WeddingCountdown({
   targetDate,
   variant = "minimal",
 }: WeddingCountdownProps) {
-  const { language } = useGlobalPreferences();
+  const { countdown: cd } = useMessages();
   const labels = useMemo<[string, string, string, string]>(
-    () =>
-      language === "vi"
-        ? ["Ngày", "Giờ", "Phút", "Giây"]
-        : ["Days", "Hours", "Minutes", "Seconds"],
-    [language],
+    () => [cd.day, cd.hour, cd.minute, cd.second],
+    [cd.day, cd.hour, cd.minute, cd.second],
   );
   const [parts, setParts] = useState<CountdownPart[]>(() =>
     getCountdownParts(targetDate, labels),

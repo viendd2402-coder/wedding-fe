@@ -1,12 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useLogout } from "@/components/auth-session";
-import type {
-  AppLanguage,
-  AppTheme,
-} from "@/components/global-preferences-provider";
+import type { AppTheme } from "@/components/global-preferences-provider";
+import { useMessages } from "@/i18n/use-messages";
 import {
   LUMIERE_AUTH_CHANGE_EVENT,
   LUMIERE_PROFILE_UPDATED_EVENT,
@@ -16,16 +14,15 @@ import {
 
 type HeaderAccountMenuProps = {
   theme: AppTheme;
-  language: AppLanguage;
   className?: string;
 };
 
 export default function HeaderAccountMenu({
   theme,
-  language,
   className = "",
 }: HeaderAccountMenuProps) {
   const logout = useLogout();
+  const { headerAccount: copy } = useMessages();
   const menuId = useId();
   const wrapRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
@@ -33,22 +30,6 @@ export default function HeaderAccountMenu({
   const [initial, setInitial] = useState("?");
 
   const isDark = theme === "dark";
-
-  const copy = useMemo(
-    () =>
-      language === "vi"
-        ? {
-            openMenu: "Menu tài khoản",
-            viewProfile: "Xem hồ sơ",
-            logout: "Đăng xuất",
-          }
-        : {
-            openMenu: "Account menu",
-            viewProfile: "View profile",
-            logout: "Log out",
-          },
-    [language],
-  );
 
   const syncAccountChip = useCallback(async () => {
     if (!getAuthSessionMarker()) {

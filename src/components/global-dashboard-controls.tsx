@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCallback, useMemo, useState, type MouseEvent } from "react";
+import { useCallback, useState, type MouseEvent } from "react";
 import {
   useGlobalPreferences,
   type AppLanguage,
   type AppTheme,
 } from "@/components/global-preferences-provider";
 import HeaderAccountMenu from "@/components/header-account-menu";
+import { useMessages } from "@/i18n/use-messages";
 import { useAuthSession } from "@/components/auth-session";
 import { forceDocumentScrollTop } from "@/lib/force-document-scroll-top";
 
@@ -35,47 +36,8 @@ export default function GlobalDashboardControls() {
   const pathname = usePathname();
   const { signedIn } = useAuthSession();
   const { language, theme, setLanguage, setTheme } = useGlobalPreferences();
+  const { nav: copy } = useMessages();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  const copy = useMemo(
-    () =>
-      language === "vi"
-        ? {
-            brandEyebrow: "Thiệp mời trực tuyến",
-            brandName: "Lumiere",
-            navHome: "Trang chủ",
-            navTemplates: "Mẫu giao diện",
-            navWhyUs: "Vì sao chọn chúng tôi",
-            navFeatures: "Trải nghiệm",
-            navPricing: "Bảng giá",
-            navFeedback: "Phản hồi",
-            navContact: "Liên hệ",
-            navLogin: "Đăng nhập",
-            lightLabel: "Trắng",
-            darkLabel: "Đen",
-            openMenu: "Mở menu",
-            closeMenu: "Đóng menu",
-            accountChipAriaSignedOut: "Đăng nhập hoặc tạo tài khoản",
-          }
-        : {
-            brandEyebrow: "Online wedding invitations",
-            brandName: "Lumiere",
-            navHome: "Home",
-            navTemplates: "Templates",
-            navWhyUs: "Why Lumiere",
-            navFeatures: "Experience",
-            navPricing: "Pricing",
-            navFeedback: "Feedback",
-            navContact: "Contact",
-            navLogin: "Login",
-            lightLabel: "Light",
-            darkLabel: "Dark",
-            openMenu: "Open menu",
-            closeMenu: "Close menu",
-            accountChipAriaSignedOut: "Sign in or create an account",
-          },
-    [language],
-  );
 
   const accountChipClass = `inline-flex shrink-0 items-center gap-2 rounded-full border px-3 py-2 text-sm font-medium transition hover:opacity-90 ${
     theme === "dark"
@@ -212,7 +174,7 @@ export default function GlobalDashboardControls() {
 
         <nav
           className="mx-auto hidden min-w-0 flex-1 items-center justify-center gap-0.5 px-2 lg:flex xl:gap-1"
-          aria-label={language === "vi" ? "Điều hướng chính" : "Main navigation"}
+          aria-label={copy.mainNavAria}
         >
           <Link href="/" className={navLinkClass(homeActive)} onClick={handleHomeLinkClick}>
             {copy.navHome}
@@ -234,7 +196,7 @@ export default function GlobalDashboardControls() {
         <div className="relative z-[1] ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
           <div className="hidden items-center gap-1.5 lg:flex xl:gap-2">{prefsControls}</div>
           {signedIn ? (
-            <HeaderAccountMenu theme={theme} language={language} />
+            <HeaderAccountMenu theme={theme} />
           ) : (
             <Link
               href="/login"
@@ -297,7 +259,7 @@ export default function GlobalDashboardControls() {
           >
             <nav
               className="grid grid-cols-1 gap-2 min-[400px]:grid-cols-2"
-              aria-label={language === "vi" ? "Menu di động" : "Mobile menu"}
+              aria-label={copy.mobileMenuAria}
             >
               <Link
                 href="/"

@@ -2,39 +2,23 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuthSession } from "@/components/auth-session";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
+import { useMessages } from "@/i18n/use-messages";
 import { navigateAfterLoginSpa } from "@/lib/auth-app-navigation";
 import { completeSocialAuthFromLocation } from "@/lib/auth-client";
 
 export default function SocialAuthCallbackScreen() {
   const router = useRouter();
   const { signedIn } = useAuthSession();
-  const { language, theme } = useGlobalPreferences();
+  const { theme } = useGlobalPreferences();
+  const { socialCallback: copy } = useMessages();
   const isDark = theme === "dark";
   const [error, setError] = useState<string | null>(null);
   /** Tránh replace trong lúc hydrate; đồng bộ với auth-screen (email). */
   const [authClientReady, setAuthClientReady] = useState(false);
   const [pendingRedirect, setPendingRedirect] = useState<string | null>(null);
-
-  const copy = useMemo(
-    () =>
-      language === "vi"
-        ? {
-            title: "Đang hoàn tất đăng nhập",
-            subtitle: "Vui lòng đợi trong giây lát…",
-            failedTitle: "Không thể đăng nhập mạng xã hội",
-            backLogin: "Quay lại đăng nhập",
-          }
-        : {
-            title: "Finishing sign in",
-            subtitle: "Please wait a moment…",
-            failedTitle: "Social sign-in failed",
-            backLogin: "Back to sign in",
-          },
-    [language],
-  );
 
   useEffect(() => {
     setAuthClientReady(true);

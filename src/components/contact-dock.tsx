@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
+import { contactDockMessages } from "@/i18n/messages/contact-dock";
 import { IconTiktokBrand, IconZaloBrand } from "@/components/icons-social-brands";
 import {
   siteContact,
@@ -59,19 +60,7 @@ export function ContactDock({
   compact?: boolean;
 }) {
   const { language, theme } = useGlobalPreferences();
-
-  const labels =
-    language === "vi"
-      ? {
-          zalo: "Chat Zalo",
-          tiktok: "TikTok Lumiere",
-          phone: `Gọi ${siteContact.phoneDisplay}`,
-        }
-      : {
-          zalo: "Chat on Zalo",
-          tiktok: "Lumiere on TikTok",
-          phone: `Call ${siteContact.phoneDisplay}`,
-        };
+  const labels = contactDockMessages(language, siteContact.phoneDisplay);
 
   const ringFocus =
     theme === "dark" ? "focus-visible:outline-white/60" : "focus-visible:outline-[var(--color-rose)]/50";
@@ -84,7 +73,7 @@ export function ContactDock({
   const wiggle2 = compact ? `${dockIconWiggleCompact} animate-floating-contact-wiggle-delay-2` : `${dockIconWiggle} animate-floating-contact-wiggle-delay-2`;
 
   return (
-    <div className={shell} role="group" aria-label={language === "vi" ? "Liên hệ nhanh" : "Quick contact"}>
+    <div className={shell} role="group" aria-label={labels.groupAria}>
       <Link
         href={siteZaloUrl}
         target="_blank"
