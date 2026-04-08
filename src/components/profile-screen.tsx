@@ -11,6 +11,7 @@ import {
   type FormEvent,
 } from "react";
 import { useAuthSession, useLogout } from "@/components/auth-session";
+import { FullscreenLoading } from "@/components/common/fullscreen-loading";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
 import { useMessages } from "@/i18n/use-messages";
 import {
@@ -22,6 +23,14 @@ import {
 } from "@/lib/auth-client";
 
 const MAX_AVATAR_FILE_BYTES = 512 * 1024;
+const PROFILE_FULL_NAME_MAX = 100;
+const PROFILE_PHONE_MAX = 20;
+const PROFILE_AGE_MIN = 0;
+const PROFILE_AGE_MAX = 120;
+const PROFILE_GENDER_MAX = 20;
+const PROFILE_ADDITIONAL_CONTACT_MAX = 255;
+type ProfileField = "name" | "phone" | "age" | "gender" | "additionalContact";
+type ProfileFieldErrors = Partial<Record<ProfileField, string>>;
 
 function profileToDraft(p: UserProfile): UserProfile {
   return normalizeProfileInput({
@@ -44,6 +53,7 @@ export default function ProfileScreen() {
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<ProfileFieldErrors>({});
   /** Tránh coi là chưa đăng nhập trong lúc hydrate (SSR snapshot rỗng → signedIn false một nhịp). */
   const [clientReady, setClientReady] = useState(false);
 
@@ -80,6 +90,7 @@ export default function ProfileScreen() {
 
   const muted = isDark ? "text-white/62" : "text-[var(--color-ink)]/62";
   const mutedSoft = isDark ? "text-white/48" : "text-[var(--color-ink)]/48";
+  const fieldErrorText = isDark ? "mt-2 text-xs text-amber-200/95" : "mt-2 text-xs text-amber-900";
 
   /** Ô nhập dạng “sheet”: nhãn trái — điều khiển phải */
   const inputSheet =
@@ -162,10 +173,70 @@ export default function ProfileScreen() {
     reader.readAsDataURL(f);
   };
 
+  const validateField = (field: ProfileField, candidate: UserProfile): string | null => {
+    if (field === "name") {
+      const fullName = candidate.name?.trim() ?? "";
+      if (fullName.length > PROFILE_FULL_NAME_MAX) return copy.fullNameTooLong;
+      return null;
+    }
+    if (field === "phone") {
+      const phone = candidate.phone?.trim() ?? "";
+      if (phone.length > PROFILE_PHONE_MAX) return copy.phoneTooLong;
+      return null;
+    }
+    if (field === "age") {
+      const ageValue = candidate.age;
+      if (ageValue !== null) {
+        if (!Number.isInteger(ageValue) || ageValue < PROFILE_AGE_MIN || ageValue > PROFILE_AGE_MAX) {
+          return copy.ageInvalid;
+        }
+      }
+      return null;
+    }
+    if (field === "gender") {
+      const gender = candidate.gender?.trim() ?? "";
+      if (gender.length > PROFILE_GENDER_MAX) return copy.genderTooLong;
+      return null;
+    }
+    const additionalContact = candidate.additionalContact?.trim() ?? "";
+    if (additionalContact.length > PROFILE_ADDITIONAL_CONTACT_MAX) return copy.additionalContactTooLong;
+    return null;
+  };
+
+  const setOrClearFieldError = (
+    prev: ProfileFieldErrors,
+    field: ProfileField,
+    nextError: string | null,
+  ): ProfileFieldErrors => {
+    if (!nextError) {
+      const rest = { ...prev };
+      delete rest[field];
+      return rest;
+    }
+    return { ...prev, [field]: nextError };
+  };
+
+  const validateDraft = (candidate: UserProfile): ProfileFieldErrors => {
+    const nextErrors: ProfileFieldErrors = {};
+    const fields: ProfileField[] = ["name", "phone", "age", "gender", "additionalContact"];
+    for (const field of fields) {
+      const err = validateField(field, candidate);
+      if (err) nextErrors[field] = err;
+    }
+    return nextErrors;
+  };
+
   const onSubmit = async (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
     if (!draft) return;
     setFormError(null);
+    const nextErrors = validateDraft(draft);
+    setFieldErrors(nextErrors);
+    const firstError = Object.values(nextErrors)[0] ?? null;
+    if (firstError) {
+      setFormError(firstError);
+      return;
+    }
     setSaveState("saving");
     const result = await updateProfileRequest(draft);
     if (!result.ok) {
@@ -181,6 +252,7 @@ export default function ProfileScreen() {
   const resetDraft = () => {
     if (profile) setDraft(profileToDraft(profile));
     setFormError(null);
+    setFieldErrors({});
   };
 
   const displayName = draft?.name?.trim() || draft?.email?.split("@")[0] || "—";
@@ -229,6 +301,11 @@ export default function ProfileScreen() {
         isDark ? "bg-[#090909]" : "bg-[var(--color-cream)]"
       }`}
     >
+      <FullscreenLoading
+        show={loadState === "loading" || saveState === "saving"}
+        isDark={isDark}
+        label={saveState === "saving" ? copy.saving : copy.loading}
+      />
       <div
         className={`pointer-events-none absolute inset-0 ${
           isDark
@@ -460,11 +537,29 @@ export default function ProfileScreen() {
                         id="profile-name"
                         type="text"
                         value={draft.name ?? ""}
-                        onChange={(e) => setDraft((d) => (d ? { ...d, name: e.target.value } : d))}
+                        onChange={(e) =>
+                          setDraft((d) => {
+                            if (!d) return d;
+                            const next = { ...d, name: e.target.value };
+                            setFormError(null);
+                            setFieldErrors((prev) =>
+                              setOrClearFieldError(prev, "name", validateField("name", next)),
+                            );
+                            return next;
+                          })
+                        }
                         disabled={saveState === "saving"}
                         className={inputSheet}
+                        maxLength={PROFILE_FULL_NAME_MAX}
                         autoComplete="name"
+                        aria-invalid={fieldErrors.name ? true : undefined}
+                        aria-describedby={fieldErrors.name ? "profile-name-error" : undefined}
                       />
+                      {fieldErrors.name ? (
+                        <p id="profile-name-error" className={fieldErrorText}>
+                          {fieldErrors.name}
+                        </p>
+                      ) : null}
                     </div>
 
                     <div className={`${formRowGrid} ${formRowPad}`}>
@@ -477,9 +572,9 @@ export default function ProfileScreen() {
                         id="profile-email"
                         type="email"
                         value={draft.email ?? ""}
-                        onChange={(e) => setDraft((d) => (d ? { ...d, email: e.target.value } : d))}
-                        disabled={saveState === "saving"}
-                        className={inputSheet}
+                        disabled
+                        readOnly
+                        className={`${inputSheet} cursor-not-allowed opacity-70`}
                         autoComplete="email"
                       />
                     </div>
@@ -493,23 +588,43 @@ export default function ProfileScreen() {
                       <input
                         id="profile-age"
                         type="number"
-                        min={0}
-                        max={150}
+                        min={PROFILE_AGE_MIN}
+                        max={PROFILE_AGE_MAX}
                         value={draft.age ?? ""}
                         onChange={(e) => {
                           const v = e.target.value;
                           setDraft((d) =>
                             d
-                              ? {
-                                  ...d,
-                                  age: v === "" ? null : Math.min(150, Math.max(0, parseInt(v, 10) || 0)),
-                                }
+                              ? (() => {
+                                  const next = {
+                                    ...d,
+                                    age:
+                                      v === ""
+                                        ? null
+                                        : Math.min(
+                                            PROFILE_AGE_MAX,
+                                            Math.max(PROFILE_AGE_MIN, parseInt(v, 10) || 0),
+                                          ),
+                                  };
+                                  setFormError(null);
+                                  setFieldErrors((prev) =>
+                                    setOrClearFieldError(prev, "age", validateField("age", next)),
+                                  );
+                                  return next;
+                                })()
                               : d,
                           );
                         }}
                         disabled={saveState === "saving"}
                         className={`${inputSheet} max-w-full sm:max-w-[8rem]`}
+                        aria-invalid={fieldErrors.age ? true : undefined}
+                        aria-describedby={fieldErrors.age ? "profile-age-error" : undefined}
                       />
+                      {fieldErrors.age ? (
+                        <p id="profile-age-error" className={fieldErrorText}>
+                          {fieldErrors.age}
+                        </p>
+                      ) : null}
                     </div>
 
                     <div className={`${formRowGrid} ${formRowPad}`}>
@@ -531,7 +646,17 @@ export default function ProfileScreen() {
                               type="button"
                               aria-pressed={on}
                               disabled={saveState === "saving"}
-                              onClick={() => setDraft((d) => (d ? { ...d, gender: gv } : d))}
+                              onClick={() =>
+                                setDraft((d) => {
+                                  if (!d) return d;
+                                  const next = { ...d, gender: gv };
+                                  setFormError(null);
+                                  setFieldErrors((prev) =>
+                                    setOrClearFieldError(prev, "gender", validateField("gender", next)),
+                                  );
+                                  return next;
+                                })
+                              }
                               className={`${genderPillBase} ${on ? genderPillOn : genderPillOff}`}
                             >
                               {label}
@@ -539,26 +664,11 @@ export default function ProfileScreen() {
                           );
                         })}
                       </div>
-                    </div>
-
-                    <div className={`${formRowGrid} ${formRowPad}`}>
-                      <div>
-                        <label className={rowLabel} htmlFor="profile-avatar-url">
-                          {copy.avatarUrlHint}
-                        </label>
-                      </div>
-                      <input
-                        id="profile-avatar-url"
-                        type="url"
-                        value={draft.avatarUrl?.startsWith("data:") ? "" : draft.avatarUrl ?? ""}
-                        onChange={(e) =>
-                          setDraft((d) => (d ? { ...d, avatarUrl: e.target.value.trim() || null } : d))
-                        }
-                        disabled={saveState === "saving"}
-                        placeholder="https://…"
-                        className={inputSheet}
-                        autoComplete="off"
-                      />
+                      {fieldErrors.gender ? (
+                        <p id="profile-gender-error" className={fieldErrorText}>
+                          {fieldErrors.gender}
+                        </p>
+                      ) : null}
                     </div>
                   </div>
                 </div>
@@ -569,7 +679,7 @@ export default function ProfileScreen() {
                   <div className={`divide-y ${formDivide}`}>
                     <div className={`${formRowGrid} ${formRowPad}`}>
                       <div>
-                        <p className={rowLabel}>{copy.sectionOptional}</p>
+                        <p className={rowLabel}>{copy.phone}</p>
                         <p className={rowHint}>{copy.optionalFieldHint}</p>
                       </div>
                       <div>
@@ -580,12 +690,30 @@ export default function ProfileScreen() {
                           id="profile-phone"
                           type="tel"
                           value={draft.phone ?? ""}
-                          onChange={(e) => setDraft((d) => (d ? { ...d, phone: e.target.value } : d))}
+                          onChange={(e) =>
+                            setDraft((d) => {
+                              if (!d) return d;
+                              const next = { ...d, phone: e.target.value };
+                              setFormError(null);
+                              setFieldErrors((prev) =>
+                                setOrClearFieldError(prev, "phone", validateField("phone", next)),
+                              );
+                              return next;
+                            })
+                          }
                           disabled={saveState === "saving"}
                           className={inputSheet}
+                          maxLength={PROFILE_PHONE_MAX}
                           autoComplete="tel"
                           placeholder={copy.phone}
+                          aria-invalid={fieldErrors.phone ? true : undefined}
+                          aria-describedby={fieldErrors.phone ? "profile-phone-error" : undefined}
                         />
+                        {fieldErrors.phone ? (
+                          <p id="profile-phone-error" className={fieldErrorText}>
+                            {fieldErrors.phone}
+                          </p>
+                        ) : null}
                       </div>
                     </div>
                     <div className={`${formRowGrid} ${formRowPad}`}>
@@ -603,14 +731,40 @@ export default function ProfileScreen() {
                           value={draft.additionalContact ?? ""}
                           onChange={(e) =>
                             setDraft((d) =>
-                              d ? { ...d, additionalContact: e.target.value.trim() || null } : d,
+                              d
+                                ? (() => {
+                                    const next = {
+                                      ...d,
+                                      additionalContact: e.target.value.trim() || null,
+                                    };
+                                    setFormError(null);
+                                    setFieldErrors((prev) =>
+                                      setOrClearFieldError(
+                                        prev,
+                                        "additionalContact",
+                                        validateField("additionalContact", next),
+                                      ),
+                                    );
+                                    return next;
+                                  })()
+                                : d,
                             )
                           }
                           disabled={saveState === "saving"}
                           className={inputSheet}
+                          maxLength={PROFILE_ADDITIONAL_CONTACT_MAX}
                           autoComplete="off"
                           placeholder={copy.additionalContact}
+                          aria-invalid={fieldErrors.additionalContact ? true : undefined}
+                          aria-describedby={
+                            fieldErrors.additionalContact ? "profile-additional-contact-error" : undefined
+                          }
                         />
+                        {fieldErrors.additionalContact ? (
+                          <p id="profile-additional-contact-error" className={fieldErrorText}>
+                            {fieldErrors.additionalContact}
+                          </p>
+                        ) : null}
                       </div>
                     </div>
                   </div>
@@ -637,15 +791,15 @@ export default function ProfileScreen() {
                   <button
                     type="submit"
                     disabled={saveState === "saving"}
-                    className="btn-primary inline-flex min-w-[10rem] items-center justify-center rounded-full px-10 py-3.5 text-sm font-semibold shadow-[0_14px_36px_rgba(197,167,161,0.38)] transition hover:brightness-[1.03] disabled:pointer-events-none disabled:opacity-55 dark:shadow-[0_16px_40px_rgba(0,0,0,0.38)]"
+                    className="btn-primary inline-flex min-w-[10rem] cursor-pointer items-center justify-center rounded-full px-10 py-3.5 text-sm font-semibold shadow-[0_14px_36px_rgba(197,167,161,0.38)] transition hover:brightness-[1.03] disabled:cursor-not-allowed disabled:pointer-events-none disabled:opacity-55 dark:shadow-[0_16px_40px_rgba(0,0,0,0.38)]"
                   >
-                    {saveState === "saving" ? copy.saving : saveState === "saved" ? copy.saved : copy.save}
+                    {copy.save}
                   </button>
                   <button
                     type="button"
                     onClick={resetDraft}
                     disabled={saveState === "saving"}
-                    className={`inline-flex rounded-full border px-9 py-3.5 text-sm font-medium transition hover:opacity-90 disabled:opacity-45 ${
+                    className={`inline-flex cursor-pointer rounded-full border px-9 py-3.5 text-sm font-medium transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-45 ${
                       isDark
                         ? "border-white/14 bg-white/[0.06] text-white/92"
                         : "border-[var(--color-ink)]/10 bg-white text-[var(--color-ink)] shadow-sm"
@@ -658,20 +812,6 @@ export default function ProfileScreen() {
             </div>
           </form>
         ) : null}
-
-        <div className="mt-10 flex justify-center sm:mt-14">
-          <button
-            type="button"
-            onClick={() => logout()}
-            className={`rounded-full border px-8 py-3 text-sm font-medium transition hover:opacity-90 ${
-              isDark
-                ? "border-white/12 bg-transparent text-white/55 hover:border-white/20 hover:bg-white/[0.04] hover:text-white/75"
-                : "border-[var(--color-ink)]/10 bg-white/40 text-[var(--color-ink)]/55 hover:border-[var(--color-ink)]/18 hover:bg-white/70 hover:text-[var(--color-ink)]/75"
-            }`}
-          >
-            {copy.logout}
-          </button>
-        </div>
       </div>
     </main>
   );

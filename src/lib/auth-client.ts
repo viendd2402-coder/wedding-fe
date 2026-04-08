@@ -5,6 +5,14 @@ export type LoginPayload = {
   email: string;
   password: string;
 };
+export type RegisterPayload = {
+  email: string;
+  password: string;
+  passwordConfirmation: string;
+};
+export type ForgotPasswordPayload = {
+  email: string;
+};
 
 export type LoginSuccess = {
   ok: true;
@@ -19,6 +27,12 @@ export type LoginFailure = {
 };
 
 export type LoginResult = LoginSuccess | LoginFailure;
+export type RegisterResult =
+  | { ok: true }
+  | { ok: false; status: number; message: string };
+export type ForgotPasswordResult =
+  | { ok: true; message: string }
+  | { ok: false; status: number; message: string };
 
 const AUTH_TOKEN_KEY = "lumiere-auth-token";
 
@@ -92,13 +106,13 @@ function pickNumber(...vals: unknown[]): number | null {
   for (const v of vals) {
     if (typeof v === "number" && Number.isFinite(v)) {
       const n = Math.round(v);
-      if (n >= 0 && n <= 150) return n;
+      if (n >= 0 && n <= 120) return n;
     }
     if (typeof v === "string") {
       const t = v.trim();
       if (/^\d{1,3}$/.test(t)) {
         const n = parseInt(t, 10);
-        if (n >= 0 && n <= 150) return n;
+        if (n >= 0 && n <= 120) return n;
       }
     }
   }
@@ -130,11 +144,11 @@ export function normalizeProfileInput(p: UserProfile): UserProfile {
   }
   return {
     email: p.email?.trim().slice(0, 254) || null,
-    name: p.name?.trim().slice(0, 120) || null,
-    phone: p.phone?.trim().slice(0, 40) || null,
+    name: p.name?.trim().slice(0, 100) || null,
+    phone: p.phone?.trim().slice(0, 20) || null,
     age:
       p.age !== null && Number.isFinite(p.age)
-        ? Math.min(150, Math.max(0, Math.round(p.age)))
+        ? Math.min(120, Math.max(0, Math.round(p.age)))
         : null,
     gender: gg,
     avatarUrl: av ? av.slice(0, MAX_AVATAR_DATA_URL_CHARS) : null,
@@ -419,6 +433,65 @@ export async function loginRequest(payload: LoginPayload): Promise<LoginResult> 
   }
 
   return { ok: true, token };
+}
+
+/** Gọi backend: `POST {NEXT_PUBLIC_API_URL}/auth/register` */
+export async function registerRequest(payload: RegisterPayload): Promise<RegisterResult> {
+  const r = await fetchPublicApi("auth/register", {
+    method: "POST",
+    json: {
+      email: payload.email.trim(),
+      password: payload.password,
+      passwordConfirmation: payload.passwordConfirmation,
+    },
+  });
+
+  if (!r.ok) {
+    if (r.networkError) {
+      return { ok: false, status: 0, message: "Network error" };
+    }
+    if (r.status === 0) {
+      return { ok: false, status: 0, message: "Missing NEXT_PUBLIC_API_URL" };
+    }
+    return {
+      ok: false,
+      status: r.status,
+      message: extractApiErrorMessage(r.data, `Request failed (${r.status})`),
+    };
+  }
+
+  return { ok: true };
+}
+
+/** Gọi backend: `POST {NEXT_PUBLIC_API_URL}/auth/forgot-password` */
+export async function forgotPasswordRequest(
+  payload: ForgotPasswordPayload,
+): Promise<ForgotPasswordResult> {
+  const r = await fetchPublicApi("auth/forgot-password", {
+    method: "POST",
+    json: {
+      email: payload.email.trim(),
+    },
+  });
+
+  if (!r.ok) {
+    if (r.networkError) {
+      return { ok: false, status: 0, message: "Network error" };
+    }
+    if (r.status === 0) {
+      return { ok: false, status: 0, message: "Missing NEXT_PUBLIC_API_URL" };
+    }
+    return {
+      ok: false,
+      status: r.status,
+      message: extractApiErrorMessage(r.data, `Request failed (${r.status})`),
+    };
+  }
+
+  return {
+    ok: true,
+    message: extractApiErrorMessage(r.data, "If that email exists, reset instructions were sent."),
+  };
 }
 
 /** Xóa JWT + hint session (cookie-only) — dùng khi 401 hoặc hết hạn. */

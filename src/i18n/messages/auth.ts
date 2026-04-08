@@ -1,6 +1,6 @@
 import type { AppLanguage } from "@/components/global-preferences-provider";
 
-export type AuthMode = "login" | "register";
+export type AuthMode = "login" | "register" | "forgot";
 
 export type AuthScreenCopy = {
   backHome: string;
@@ -37,6 +37,26 @@ export type AuthScreenCopy = {
   loginEmailInvalid: string;
   loginPasswordRequired: string;
   loginPasswordMin: string;
+  registerPasswordMax: string;
+  registerPasswordConfirmationRequired: string;
+  registerPasswordConfirmationMin: string;
+  registerPasswordConfirmationMax: string;
+  registerPasswordConfirmationMismatch: string;
+  registerSuccess: string;
+  forgotNeedEmail: string;
+  forgotEmailInvalid: string;
+  forgotSuccessGeneric: string;
+  forgotTitle: string;
+  forgotLead: string;
+  forgotBody: string;
+  forgotSubmit: string;
+  forgotBackToLogin: string;
+  authNetworkError: string;
+  authRequestFailed: string;
+  loginFailedCredentials: string;
+  registerFailedGeneric: string;
+  forgotFailedGeneric: string;
+  socialLoginFailed: string;
 };
 
 type AuthBundle = {
@@ -68,6 +88,7 @@ type AuthBundle = {
   feature2: string;
   feature3: string;
   submitting: string;
+  submittingRegister: string;
   socialContinue: string;
   socialEmail: string;
   socialFacebook: string;
@@ -82,6 +103,26 @@ type AuthBundle = {
   loginEmailInvalid: string;
   loginPasswordRequired: string;
   loginPasswordMinTpl: string;
+  registerPasswordMax: string;
+  registerPasswordConfirmationRequired: string;
+  registerPasswordConfirmationMinTpl: string;
+  registerPasswordConfirmationMax: string;
+  registerPasswordConfirmationMismatch: string;
+  registerSuccess: string;
+  forgotNeedEmail: string;
+  forgotEmailInvalid: string;
+  forgotSuccessGeneric: string;
+  forgotTitle: string;
+  forgotLead: string;
+  forgotBody: string;
+  forgotSubmit: string;
+  forgotBackToLogin: string;
+  authNetworkError: string;
+  authRequestFailed: string;
+  loginFailedCredentials: string;
+  registerFailedGeneric: string;
+  forgotFailedGeneric: string;
+  socialLoginFailed: string;
 };
 
 const vi: AuthBundle = {
@@ -113,6 +154,7 @@ const vi: AuthBundle = {
   feature2: "Theo dõi yêu cầu chỉnh sửa và phản hồi",
   feature3: "Xem tiến độ hoàn thiện minh bạch",
   submitting: "Đang đăng nhập…",
+  submittingRegister: "Đang tạo tài khoản…",
   socialContinue: "Hoặc tiếp tục với",
   socialEmail: "Hoặc dùng email",
   socialFacebook: "Facebook",
@@ -131,6 +173,26 @@ const vi: AuthBundle = {
   loginEmailInvalid: "Email không hợp lệ.",
   loginPasswordRequired: "Vui lòng nhập mật khẩu.",
   loginPasswordMinTpl: "Mật khẩu tối thiểu __MIN__ ký tự.",
+  registerPasswordMax: "Mật khẩu tối đa 255 ký tự.",
+  registerPasswordConfirmationRequired: "Vui lòng nhập lại mật khẩu.",
+  registerPasswordConfirmationMinTpl: "Nhập lại mật khẩu tối thiểu __MIN__ ký tự.",
+  registerPasswordConfirmationMax: "Nhập lại mật khẩu tối đa 255 ký tự.",
+  registerPasswordConfirmationMismatch: "Mật khẩu xác nhận không khớp.",
+  registerSuccess: "Tạo tài khoản thành công. Vui lòng đăng nhập.",
+  forgotNeedEmail: "Vui lòng nhập email trước khi đặt lại mật khẩu.",
+  forgotEmailInvalid: "Email không hợp lệ để đặt lại mật khẩu.",
+  forgotSuccessGeneric: "Nếu email tồn tại, hướng dẫn đặt lại mật khẩu đã được gửi.",
+  forgotTitle: "Quên mật khẩu",
+  forgotLead: "Nhập email để nhận hướng dẫn đặt lại mật khẩu.",
+  forgotBody: "Chúng tôi sẽ gửi liên kết đặt lại mật khẩu đến email của bạn nếu tài khoản tồn tại.",
+  forgotSubmit: "Gửi email đặt lại",
+  forgotBackToLogin: "Quay lại đăng nhập",
+  authNetworkError: "Không thể kết nối máy chủ. Vui lòng thử lại sau.",
+  authRequestFailed: "Đã xảy ra lỗi. Vui lòng thử lại.",
+  loginFailedCredentials: "Email hoặc mật khẩu không đúng.",
+  registerFailedGeneric: "Không thể tạo tài khoản lúc này. Vui lòng thử lại.",
+  forgotFailedGeneric: "Không thể gửi email đặt lại lúc này. Vui lòng thử lại.",
+  socialLoginFailed: "Không thể đăng nhập bằng mạng xã hội lúc này. Vui lòng thử lại.",
 };
 
 const en: AuthBundle = {
@@ -162,6 +224,7 @@ const en: AuthBundle = {
   feature2: "Follow revision requests and feedback",
   feature3: "See clear, transparent delivery progress",
   submitting: "Signing in…",
+  submittingRegister: "Creating account…",
   socialContinue: "Or continue with",
   socialEmail: "Or use email",
   socialFacebook: "Facebook",
@@ -179,6 +242,26 @@ const en: AuthBundle = {
   loginEmailInvalid: "Please enter a valid email address.",
   loginPasswordRequired: "Please enter your password.",
   loginPasswordMinTpl: "Password must be at least __MIN__ characters.",
+  registerPasswordMax: "Password must be at most 255 characters.",
+  registerPasswordConfirmationRequired: "Please confirm your password.",
+  registerPasswordConfirmationMinTpl: "Confirmation password must be at least __MIN__ characters.",
+  registerPasswordConfirmationMax: "Confirmation password must be at most 255 characters.",
+  registerPasswordConfirmationMismatch: "Confirmation password does not match.",
+  registerSuccess: "Account created successfully. Please sign in.",
+  forgotNeedEmail: "Please enter your email before resetting password.",
+  forgotEmailInvalid: "Please enter a valid email for password reset.",
+  forgotSuccessGeneric: "If that email exists, reset instructions were sent.",
+  forgotTitle: "Forgot password",
+  forgotLead: "Enter your email to receive reset instructions.",
+  forgotBody: "We'll send a password reset link to your email if an account exists.",
+  forgotSubmit: "Send reset email",
+  forgotBackToLogin: "Back to sign in",
+  authNetworkError: "Unable to connect to the server. Please try again later.",
+  authRequestFailed: "Something went wrong. Please try again.",
+  loginFailedCredentials: "Invalid email or password.",
+  registerFailedGeneric: "Unable to create your account right now. Please try again.",
+  forgotFailedGeneric: "Unable to send reset email right now. Please try again.",
+  socialLoginFailed: "Unable to sign in with social account right now. Please try again.",
 };
 
 const bundles: Record<AppLanguage, AuthBundle> = { vi, en };
@@ -190,12 +273,13 @@ export function getAuthScreenCopy(
 ): AuthScreenCopy {
   const m = bundles[language];
   const login = mode === "login";
+  const forgot = mode === "forgot";
   return {
     backHome: m.backHome,
-    badge: login ? m.badgeLogin : m.badgeRegister,
-    title: login ? m.titleLogin : m.titleRegister,
-    lead: login ? m.leadLogin : m.leadRegister,
-    body: login ? m.bodyLogin : m.bodyRegister,
+    badge: forgot ? m.badgeLogin : login ? m.badgeLogin : m.badgeRegister,
+    title: forgot ? m.forgotTitle : login ? m.titleLogin : m.titleRegister,
+    lead: forgot ? m.forgotLead : login ? m.leadLogin : m.leadRegister,
+    body: forgot ? m.forgotBody : login ? m.bodyLogin : m.bodyRegister,
     asideKicker: m.asideKicker,
     asideTitle: m.asideTitle,
     email: m.email,
@@ -203,14 +287,14 @@ export function getAuthScreenCopy(
     confirmPassword: m.confirmPassword,
     forgotPassword: m.forgotPassword,
     rememberMe: m.rememberMe,
-    submit: login ? m.submitLogin : m.submitRegister,
-    switchPrompt: login ? m.switchPromptLogin : m.switchPromptRegister,
-    switchAction: login ? m.switchActionLogin : m.switchActionRegister,
-    switchHref: login ? m.switchHrefLogin : m.switchHrefRegister,
+    submit: forgot ? m.forgotSubmit : login ? m.submitLogin : m.submitRegister,
+    switchPrompt: forgot ? m.switchPromptRegister : login ? m.switchPromptLogin : m.switchPromptRegister,
+    switchAction: forgot ? m.switchActionRegister : login ? m.switchActionLogin : m.switchActionRegister,
+    switchHref: forgot ? m.switchHrefRegister : login ? m.switchHrefLogin : m.switchHrefRegister,
     feature1: m.feature1,
     feature2: m.feature2,
     feature3: m.feature3,
-    submitting: m.submitting,
+    submitting: login ? m.submitting : m.submittingRegister,
     socialContinue: m.socialContinue,
     socialEmail: m.socialEmail,
     socialFacebook: m.socialFacebook,
@@ -225,5 +309,28 @@ export function getAuthScreenCopy(
     loginEmailInvalid: m.loginEmailInvalid,
     loginPasswordRequired: m.loginPasswordRequired,
     loginPasswordMin: m.loginPasswordMinTpl.replace("__MIN__", String(passwordMinLength)),
+    registerPasswordMax: m.registerPasswordMax,
+    registerPasswordConfirmationRequired: m.registerPasswordConfirmationRequired,
+    registerPasswordConfirmationMin: m.registerPasswordConfirmationMinTpl.replace(
+      "__MIN__",
+      String(passwordMinLength),
+    ),
+    registerPasswordConfirmationMax: m.registerPasswordConfirmationMax,
+    registerPasswordConfirmationMismatch: m.registerPasswordConfirmationMismatch,
+    registerSuccess: m.registerSuccess,
+    forgotNeedEmail: m.forgotNeedEmail,
+    forgotEmailInvalid: m.forgotEmailInvalid,
+    forgotSuccessGeneric: m.forgotSuccessGeneric,
+    forgotTitle: m.forgotTitle,
+    forgotLead: m.forgotLead,
+    forgotBody: m.forgotBody,
+    forgotSubmit: m.forgotSubmit,
+    forgotBackToLogin: m.forgotBackToLogin,
+    authNetworkError: m.authNetworkError,
+    authRequestFailed: m.authRequestFailed,
+    loginFailedCredentials: m.loginFailedCredentials,
+    registerFailedGeneric: m.registerFailedGeneric,
+    forgotFailedGeneric: m.forgotFailedGeneric,
+    socialLoginFailed: m.socialLoginFailed,
   };
 }

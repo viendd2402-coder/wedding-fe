@@ -35,6 +35,11 @@ export type ProfileMessages = {
   changeAvatarShort: string;
   optionalFieldHint: string;
   messengerExampleHint: string;
+  fullNameTooLong: string;
+  phoneTooLong: string;
+  ageInvalid: string;
+  genderTooLong: string;
+  additionalContactTooLong: string;
 };
 
 const vi: ProfileMessages = {
@@ -72,6 +77,11 @@ const vi: ProfileMessages = {
   changeAvatarShort: "Đổi ảnh",
   optionalFieldHint: "Không bắt buộc.",
   messengerExampleHint: "Ví dụ Zalo, Telegram.",
+  fullNameTooLong: "Họ tên tối đa 100 ký tự.",
+  phoneTooLong: "Số điện thoại tối đa 20 ký tự.",
+  ageInvalid: "Tuổi phải là số nguyên từ 0 đến 120.",
+  genderTooLong: "Giới tính tối đa 20 ký tự.",
+  additionalContactTooLong: "Liên hệ bổ sung tối đa 255 ký tự.",
 };
 
 const en: ProfileMessages = {
@@ -109,6 +119,11 @@ const en: ProfileMessages = {
   changeAvatarShort: "Change photo",
   optionalFieldHint: "Optional.",
   messengerExampleHint: "e.g. Zalo, Telegram.",
+  fullNameTooLong: "Full name must be at most 100 characters.",
+  phoneTooLong: "Phone must be at most 20 characters.",
+  ageInvalid: "Age must be an integer between 0 and 120.",
+  genderTooLong: "Gender must be at most 20 characters.",
+  additionalContactTooLong: "Additional contact must be at most 255 characters.",
 };
 
 export const profileMessages: Record<AppLanguage, ProfileMessages> = { vi, en };

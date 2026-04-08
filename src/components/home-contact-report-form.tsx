@@ -1,6 +1,7 @@
 "use client";
 
 import { type FormEvent, useCallback, useMemo, useState } from "react";
+import { FullscreenLoading } from "@/components/common/fullscreen-loading";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
 import { getHomeContactReportCopy } from "@/i18n/messages/contact-report";
 import { isValidContactPhone } from "@/lib/phone";
@@ -222,11 +223,13 @@ export function HomeContactReportForm({ fieldClassName }: HomeContactReportFormP
   }
 
   return (
-    <form
-      className="mx-auto mt-8 grid w-full min-w-0 max-w-3xl grid-cols-1 gap-3.5 sm:mt-10 sm:grid-cols-2 sm:gap-4"
-      onSubmit={onSubmit}
-      noValidate
-    >
+    <>
+      <FullscreenLoading show={status === "loading"} isDark={isDark} label={copy.submitting} />
+      <form
+        className="mx-auto mt-8 grid w-full min-w-0 max-w-3xl grid-cols-1 gap-3.5 sm:mt-10 sm:grid-cols-2 sm:gap-4"
+        onSubmit={onSubmit}
+        noValidate
+      >
       {bannerMessage ? (
         <div
           className={`col-span-1 rounded-2xl border px-4 py-3 text-sm leading-relaxed sm:col-span-2 ${
@@ -381,6 +384,7 @@ export function HomeContactReportForm({ fieldClassName }: HomeContactReportFormP
           {status === "loading" ? copy.submitting : copy.submit}
         </button>
       </div>
-    </form>
+      </form>
+    </>
   );
 }

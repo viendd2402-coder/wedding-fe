@@ -4,13 +4,16 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { useAuthSession } from "@/components/auth-session";
+import { FullscreenLoading } from "@/components/common/fullscreen-loading";
 import { IconFacebookBrand } from "@/components/icons-auth-social";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
 import { getPublicApiBaseUrl } from "@/lib/api-base";
 import {
+  forgotPasswordRequest,
   getPublicFacebookAppId,
   getPublicGoogleOAuthClientId,
   loginRequest,
+  registerRequest,
   verifySocialLoginWithBackend,
 } from "@/lib/auth-client";
 import { navigateAfterLoginSpa } from "@/lib/auth-app-navigation";
@@ -19,7 +22,6 @@ import {
   LOGIN_PASSWORD_MIN_LENGTH,
   isValidLoginEmail,
   validateLoginDtoInput,
-  type LoginFieldErrors,
 } from "@/lib/login-validation";
 import {
   ensureFacebookSdk,
@@ -28,13 +30,19 @@ import {
   requestFacebookAccessToken,
 } from "@/lib/social-oauth-browser";
 
-type AuthMode = "login" | "register";
+type AuthMode = "login" | "register" | "forgot";
 
 type AuthScreenProps = {
   mode: AuthMode;
 };
+type AuthFieldErrors = {
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
+};
 
 export default function AuthScreen({ mode }: AuthScreenProps) {
+  const PASSWORD_MAX_LENGTH = 255;
   const router = useRouter();
   const { signedIn } = useAuthSession();
   const { language, theme } = useGlobalPreferences();
@@ -43,23 +51,15 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [loginFieldErrors, setLoginFieldErrors] = useState<LoginFieldErrors>({});
+  const [registerToast, setRegisterToast] = useState<string | null>(null);
+  const [forgotMessage, setForgotMessage] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<AuthFieldErrors>({});
   const [loading, setLoading] = useState(false);
   const [socialBusy, setSocialBusy] = useState(false);
   const googleButtonHostRef = useRef<HTMLDivElement>(null);
   const googleIdTokenHandlerRef = useRef<(idToken: string) => void>(() => {});
-  const [browserOrigin, setBrowserOrigin] = useState("");
-  const [originCopiedFlash, setOriginCopiedFlash] = useState(false);
   /** Tránh redirect trong lúc hydrate (cùng ý tưởng profile-screen). */
   const [authClientReady, setAuthClientReady] = useState(false);
-
-  const showGoogleOriginHint =
-    process.env.NODE_ENV === "development" ||
-    process.env.NEXT_PUBLIC_GOOGLE_SIGNIN_SETUP_HINT === "1";
-
-  useEffect(() => {
-    setBrowserOrigin(typeof window !== "undefined" ? window.location.origin : "");
-  }, []);
 
   useEffect(() => {
     setAuthClientReady(true);
@@ -71,42 +71,148 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
   }, [authClientReady, mode, router, signedIn]);
 
   useEffect(() => {
-    setLoginFieldErrors({});
+    setFieldErrors({});
     setError(null);
+    setRegisterToast(null);
+    setForgotMessage(null);
   }, [mode]);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
-    if (mode !== "login") return;
+    setRegisterToast(null);
 
-    setLoginFieldErrors({});
-    const validated = validateLoginDtoInput({ email, password });
-    if (!validated.ok) {
-      setLoginFieldErrors(validated.errors);
+    setFieldErrors({});
+    if (mode === "login") {
+      const validated = validateLoginDtoInput({ email, password });
+      if (!validated.ok) {
+        setFieldErrors(validated.errors);
+        return;
+      }
+
+      setLoading(true);
+      const result = await loginRequest({
+        email: validated.email,
+        password: validated.password,
+      });
+
+      if (!result.ok) {
+        setLoading(false);
+        setError(
+          result.status === 0
+            ? copy.authNetworkError
+            : result.status === 401
+              ? copy.loginFailedCredentials
+              : copy.authRequestFailed,
+        );
+        return;
+      }
+
+      setLoading(false);
+      /* Điều hướng chỉ qua effect khi signedIn — tránh đua replace + refresh với hydrate sau F5 */
+      return;
+    }
+
+    const registerErrors: AuthFieldErrors = {};
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) {
+      registerErrors.email = "__EMAIL_REQUIRED__";
+    } else if (!isValidLoginEmail(trimmedEmail)) {
+      registerErrors.email = "__EMAIL_INVALID__";
+    }
+    if (!password) {
+      registerErrors.password = "__PASSWORD_REQUIRED__";
+    } else if (password.length < LOGIN_PASSWORD_MIN_LENGTH) {
+      registerErrors.password = "__PASSWORD_MIN__";
+    } else if (password.length > PASSWORD_MAX_LENGTH) {
+      registerErrors.password = "__PASSWORD_MAX__";
+    }
+    if (!confirmPassword) {
+      registerErrors.confirmPassword = "__PASSWORD_CONFIRM_REQUIRED__";
+    } else if (confirmPassword.length < LOGIN_PASSWORD_MIN_LENGTH) {
+      registerErrors.confirmPassword = "__PASSWORD_CONFIRM_MIN__";
+    } else if (confirmPassword.length > PASSWORD_MAX_LENGTH) {
+      registerErrors.confirmPassword = "__PASSWORD_CONFIRM_MAX__";
+    } else if (confirmPassword !== password) {
+      registerErrors.confirmPassword = "__PASSWORD_CONFIRM_MISMATCH__";
+    }
+
+    if (Object.keys(registerErrors).length > 0) {
+      setFieldErrors(registerErrors);
       return;
     }
 
     setLoading(true);
-    const result = await loginRequest({
-      email: validated.email,
-      password: validated.password,
+    const registerResult = await registerRequest({
+      email: trimmedEmail,
+      password,
+      passwordConfirmation: confirmPassword,
     });
 
-    if (!result.ok) {
+    if (!registerResult.ok) {
       setLoading(false);
-      setError(result.message);
+      setError(registerResult.status === 0 ? copy.authNetworkError : copy.registerFailedGeneric);
       return;
     }
 
+    const loginAfterRegister = await loginRequest({
+      email: trimmedEmail,
+      password,
+    });
     setLoading(false);
-    /* Điều hướng chỉ qua effect khi signedIn — tránh đua replace + refresh với hydrate sau F5 */
+
+    if (!loginAfterRegister.ok) {
+      setError(
+        loginAfterRegister.status === 0
+          ? copy.authNetworkError
+          : loginAfterRegister.status === 401
+            ? copy.loginFailedCredentials
+            : copy.authRequestFailed,
+      );
+      return;
+    }
+
+    navigateAfterLoginSpa(router, "/");
   }
 
   const copy = useMemo(
     () => getAuthScreenCopy(language, mode, LOGIN_PASSWORD_MIN_LENGTH),
     [language, mode],
   );
+
+  const handleForgotPassword = useCallback(async () => {
+    const trimmedEmail = email.trim();
+    setError(null);
+    setForgotMessage(null);
+    setFieldErrors((prev) => {
+      if (!prev.email) return prev;
+      const next = { ...prev };
+      delete next.email;
+      return next;
+    });
+    if (!trimmedEmail) {
+      setFieldErrors((prev) => ({ ...prev, email: "__EMAIL_REQUIRED__" }));
+      return;
+    }
+    if (!isValidLoginEmail(trimmedEmail)) {
+      setFieldErrors((prev) => ({ ...prev, email: "__EMAIL_INVALID__" }));
+      return;
+    }
+
+    setLoading(true);
+    const result = await forgotPasswordRequest({ email: trimmedEmail });
+    setLoading(false);
+    if (!result.ok) {
+      setError(result.status === 0 ? copy.authNetworkError : copy.forgotFailedGeneric);
+      return;
+    }
+    setForgotMessage(copy.forgotSuccessGeneric);
+  }, [
+    copy.authNetworkError,
+    copy.forgotFailedGeneric,
+    copy.forgotSuccessGeneric,
+    email,
+  ]);
 
   const resolveLoginFieldMessage = useCallback(
     (code: string | undefined): string => {
@@ -115,6 +221,11 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
       if (code === "__EMAIL_INVALID__") return copy.loginEmailInvalid;
       if (code === "__PASSWORD_REQUIRED__") return copy.loginPasswordRequired;
       if (code === "__PASSWORD_MIN__") return copy.loginPasswordMin;
+      if (code === "__PASSWORD_MAX__") return copy.registerPasswordMax;
+      if (code === "__PASSWORD_CONFIRM_REQUIRED__") return copy.registerPasswordConfirmationRequired;
+      if (code === "__PASSWORD_CONFIRM_MIN__") return copy.registerPasswordConfirmationMin;
+      if (code === "__PASSWORD_CONFIRM_MAX__") return copy.registerPasswordConfirmationMax;
+      if (code === "__PASSWORD_CONFIRM_MISMATCH__") return copy.registerPasswordConfirmationMismatch;
       return code;
     },
     [copy],
@@ -134,11 +245,11 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
         redirectTo: "/",
       });
       if (!result.ok) {
-        setError(result.message);
+        setError(copy.socialLoginFailed);
         return;
       }
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
+    } catch {
+      setError(copy.socialLoginFailed);
     } finally {
       setSocialBusy(false);
     }
@@ -208,20 +319,27 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
         redirectTo: "/",
       });
       if (!result.ok) {
-        setError(result.message);
+        setError(copy.socialLoginFailed);
         return;
       }
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
+    } catch {
+      setError(copy.socialLoginFailed);
     } finally {
       setSocialBusy(false);
     }
-  }, [copy.socialNeedApi, copy.socialNeedFacebookAppId]);
+  }, [copy.socialLoginFailed, copy.socialNeedApi, copy.socialNeedFacebookAppId]);
 
-  const formBusy = (mode === "login" && loading) || socialBusy;
+  const formBusy = loading || socialBusy;
+  const inForgotView = mode === "forgot";
 
   const muted = isDark ? "text-white/62" : "text-[var(--color-ink)]/62";
   const mutedSoft = isDark ? "text-white/48" : "text-[var(--color-ink)]/48";
+  const errorCardClass = isDark
+    ? "border-red-400/35 bg-[linear-gradient(140deg,rgba(248,113,113,0.2)_0%,rgba(239,68,68,0.08)_55%,rgba(127,29,29,0.2)_100%)] text-red-50 shadow-[0_14px_34px_rgba(127,29,29,0.28)]"
+    : "border-red-200/90 bg-[linear-gradient(140deg,rgba(254,226,226,0.92)_0%,rgba(254,242,242,0.96)_100%)] text-red-900 shadow-[0_10px_24px_rgba(153,27,27,0.12)]";
+  const successCardClass = isDark
+    ? "border-emerald-400/30 bg-[linear-gradient(140deg,rgba(16,185,129,0.2)_0%,rgba(16,185,129,0.08)_58%,rgba(6,78,59,0.2)_100%)] text-emerald-50 shadow-[0_12px_30px_rgba(6,95,70,0.3)]"
+    : "border-emerald-200 bg-[linear-gradient(140deg,rgba(236,253,245,0.95)_0%,rgba(240,253,250,0.98)_100%)] text-emerald-900 shadow-[0_10px_22px_rgba(6,95,70,0.1)]";
 
   const panelOuter = isDark
     ? "border border-white/[0.09] shadow-[0_4px_0_0_rgba(0,0,0,0.2),0_32px_80px_rgba(0,0,0,0.42),inset_0_1px_0_0_rgba(255,255,255,0.06)]"
@@ -259,6 +377,7 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
         isDark ? "bg-[#090909]" : "bg-[var(--color-cream)]"
       }`}
     >
+      <FullscreenLoading show={formBusy} isDark={isDark} label={copy.submitting} />
       <div
         className={`pointer-events-none absolute inset-0 ${
           isDark
@@ -337,11 +456,15 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
             <p className="mt-8 text-[11px] font-semibold uppercase tracking-[0.32em] text-[var(--color-sage)]">
               {copy.badge}
             </p>
-            <h1 className="mt-3 font-display text-3xl tracking-tight sm:text-4xl">{copy.title}</h1>
+            <h1 className="mt-3 font-display text-3xl tracking-tight sm:text-4xl">
+              {inForgotView ? copy.forgotTitle : copy.title}
+            </h1>
             <p className={`mt-2 text-[15px] font-medium ${isDark ? "text-white/80" : "text-[var(--color-ink)]/85"}`}>
-              {copy.lead}
+              {inForgotView ? copy.forgotLead : copy.lead}
             </p>
-            <p className={`mt-3 max-w-md text-sm leading-relaxed ${mutedSoft}`}>{copy.body}</p>
+            <p className={`mt-3 max-w-md text-sm leading-relaxed ${mutedSoft}`}>
+              {inForgotView ? copy.forgotBody : copy.body}
+            </p>
 
             <ul className={`mt-6 space-y-2.5 text-sm lg:hidden ${muted}`}>
               {features.map((item) => (
@@ -352,8 +475,20 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
               ))}
             </ul>
 
-            <form className="mt-8 space-y-5" onSubmit={handleSubmit} noValidate>
-              <div className="space-y-4">
+            <form
+              className="mt-8 space-y-5"
+              onSubmit={(e) => {
+                if (inForgotView) {
+                  e.preventDefault();
+                  void handleForgotPassword();
+                  return;
+                }
+                void handleSubmit(e);
+              }}
+              noValidate
+            >
+              {inForgotView ? null : (
+                <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <div className={`h-px flex-1 ${isDark ? "bg-white/10" : "bg-[var(--color-ink)]/10"}`} />
                   <span
@@ -383,45 +518,6 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
                     {copy.socialFacebook}
                   </button>
                 </div>
-                {showGoogleOriginHint &&
-                getPublicGoogleOAuthClientId() &&
-                browserOrigin ? (
-                  <div
-                    className={`rounded-2xl border px-3 py-2.5 text-left text-[11px] leading-snug ${
-                      isDark
-                        ? "border-amber-400/30 bg-amber-500/[0.12] text-amber-50/95"
-                        : "border-amber-200/90 bg-amber-50/95 text-amber-950"
-                    }`}
-                  >
-                    <p>{copy.googleOrigin403Hint}</p>
-                    <div className="mt-2 flex flex-wrap items-center gap-2">
-                      <code
-                        className={`rounded-lg px-2 py-1 font-mono text-[11px] ${
-                          isDark ? "bg-black/35 text-amber-100" : "bg-white/90 text-amber-950"
-                        }`}
-                      >
-                        {browserOrigin}
-                      </code>
-                      <button
-                        type="button"
-                        className={`shrink-0 rounded-lg px-2 py-1 text-[11px] font-semibold underline decoration-current/30 underline-offset-2 hover:opacity-90 ${
-                          isDark ? "text-amber-100" : "text-amber-900"
-                        }`}
-                        onClick={() => {
-                          void navigator.clipboard.writeText(browserOrigin).then(() => {
-                            setOriginCopiedFlash(true);
-                            window.setTimeout(() => setOriginCopiedFlash(false), 2000);
-                          });
-                        }}
-                      >
-                        {originCopiedFlash ? copy.googleOriginCopied : copy.googleOriginCopy}
-                      </button>
-                    </div>
-                    <p className={`mt-1.5 ${isDark ? "text-amber-100/75" : "text-amber-900/75"}`}>
-                      {copy.googleOrigin403Note127}
-                    </p>
-                  </div>
-                ) : null}
                 <div className="flex items-center gap-3 pt-1">
                   <div className={`h-px flex-1 ${isDark ? "bg-white/10" : "bg-[var(--color-ink)]/10"}`} />
                   <span
@@ -431,7 +527,8 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
                   </span>
                   <div className={`h-px flex-1 ${isDark ? "bg-white/10" : "bg-[var(--color-ink)]/10"}`} />
                 </div>
-              </div>
+                </div>
+              )}
 
               <div>
                 <label className={labelClass} htmlFor="auth-email">
@@ -446,10 +543,10 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
                   onChange={(ev) => {
                     const v = ev.target.value;
                     setEmail(v);
-                    if (mode === "login") {
+                    if (mode === "login" || mode === "register" || mode === "forgot") {
                       const t = v.trim();
                       if (t && isValidLoginEmail(t)) {
-                        setLoginFieldErrors((prev) => {
+                        setFieldErrors((prev) => {
                           if (!prev.email) return prev;
                           const next = { ...prev };
                           delete next.email;
@@ -457,72 +554,74 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
                         });
                       }
                       setError(null);
+                      setRegisterToast(null);
+                      setForgotMessage(null);
                     }
                   }}
                   placeholder="name@email.com"
                   disabled={formBusy}
-                  aria-invalid={mode === "login" && Boolean(loginFieldErrors.email)}
-                  aria-describedby={
-                    mode === "login" && loginFieldErrors.email ? "auth-email-err" : undefined
-                  }
+                  aria-invalid={Boolean(fieldErrors.email)}
+                  aria-describedby={fieldErrors.email ? "auth-email-err" : undefined}
                   className={`${inputClass} mt-2 disabled:opacity-55 ${
-                    mode === "login" && loginFieldErrors.email ? loginInputErrorRing : ""
+                    fieldErrors.email ? loginInputErrorRing : ""
                   }`.trim()}
                 />
-                {mode === "login" && loginFieldErrors.email ? (
+                {fieldErrors.email ? (
                   <p
                     id="auth-email-err"
                     className="mt-1.5 text-xs text-rose-500 dark:text-rose-300"
                   >
-                    {resolveLoginFieldMessage(loginFieldErrors.email)}
+                    {resolveLoginFieldMessage(fieldErrors.email)}
                   </p>
                 ) : null}
               </div>
-              <div>
-                <label className={labelClass} htmlFor="auth-password">
-                  {copy.password}
-                </label>
-                <input
-                  id="auth-password"
-                  type="password"
-                  name="password"
-                  autoComplete={mode === "login" ? "current-password" : "new-password"}
-                  value={password}
-                  onChange={(ev) => {
-                    const v = ev.target.value;
-                    setPassword(v);
-                    if (mode === "login") {
-                      if (v.length >= LOGIN_PASSWORD_MIN_LENGTH) {
-                        setLoginFieldErrors((prev) => {
-                          if (!prev.password) return prev;
-                          const next = { ...prev };
-                          delete next.password;
-                          return next;
-                        });
+              {inForgotView ? null : (
+                <div>
+                  <label className={labelClass} htmlFor="auth-password">
+                    {copy.password}
+                  </label>
+                  <input
+                    id="auth-password"
+                    type="password"
+                    name="password"
+                    autoComplete={mode === "login" ? "current-password" : "new-password"}
+                    value={password}
+                    onChange={(ev) => {
+                      const v = ev.target.value;
+                      setPassword(v);
+                      if (mode === "login" || mode === "register") {
+                        if (v.length >= LOGIN_PASSWORD_MIN_LENGTH) {
+                          setFieldErrors((prev) => {
+                            if (!prev.password) return prev;
+                            const next = { ...prev };
+                            delete next.password;
+                            return next;
+                          });
+                        }
+                        setError(null);
+                        setRegisterToast(null);
+                        setForgotMessage(null);
                       }
-                      setError(null);
-                    }
-                  }}
-                  placeholder="••••••••"
-                  disabled={formBusy}
-                  aria-invalid={mode === "login" && Boolean(loginFieldErrors.password)}
-                  aria-describedby={
-                    mode === "login" && loginFieldErrors.password ? "auth-password-err" : undefined
-                  }
-                  className={`${inputClass} mt-2 disabled:opacity-55 ${
-                    mode === "login" && loginFieldErrors.password ? loginInputErrorRing : ""
-                  }`.trim()}
-                />
-                {mode === "login" && loginFieldErrors.password ? (
-                  <p
-                    id="auth-password-err"
-                    className="mt-1.5 text-xs text-rose-500 dark:text-rose-300"
-                  >
-                    {resolveLoginFieldMessage(loginFieldErrors.password)}
-                  </p>
-                ) : null}
-              </div>
-              {mode === "register" ? (
+                    }}
+                    placeholder="••••••••"
+                    disabled={formBusy}
+                    aria-invalid={Boolean(fieldErrors.password)}
+                    aria-describedby={fieldErrors.password ? "auth-password-err" : undefined}
+                    className={`${inputClass} mt-2 disabled:opacity-55 ${
+                      fieldErrors.password ? loginInputErrorRing : ""
+                    }`.trim()}
+                  />
+                  {fieldErrors.password ? (
+                    <p
+                      id="auth-password-err"
+                      className="mt-1.5 text-xs text-rose-500 dark:text-rose-300"
+                    >
+                      {resolveLoginFieldMessage(fieldErrors.password)}
+                    </p>
+                  ) : null}
+                </div>
+              )}
+              {mode === "register" && !inForgotView ? (
                 <div>
                   <label className={labelClass} htmlFor="auth-confirm">
                     {copy.confirmPassword}
@@ -533,72 +632,177 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
                     name="confirmPassword"
                     autoComplete="new-password"
                     value={confirmPassword}
-                    onChange={(ev) => setConfirmPassword(ev.target.value)}
+                    onChange={(ev) => {
+                      setConfirmPassword(ev.target.value);
+                      setError(null);
+                      setRegisterToast(null);
+                      setForgotMessage(null);
+                      setFieldErrors((prev) => {
+                        if (!prev.confirmPassword) return prev;
+                        const next = { ...prev };
+                        delete next.confirmPassword;
+                        return next;
+                      });
+                    }}
                     placeholder="••••••••"
-                    className={`${inputClass} mt-2`}
+                    disabled={formBusy}
+                    aria-invalid={Boolean(fieldErrors.confirmPassword)}
+                    aria-describedby={fieldErrors.confirmPassword ? "auth-confirm-err" : undefined}
+                    className={`${inputClass} mt-2 disabled:opacity-55 ${
+                      fieldErrors.confirmPassword ? loginInputErrorRing : ""
+                    }`.trim()}
                   />
+                  {fieldErrors.confirmPassword ? (
+                    <p
+                      id="auth-confirm-err"
+                      className="mt-1.5 text-xs text-rose-500 dark:text-rose-300"
+                    >
+                      {resolveLoginFieldMessage(fieldErrors.confirmPassword)}
+                    </p>
+                  ) : null}
                 </div>
               ) : null}
 
               {error ? (
-                <p
+                <div
                   role="alert"
-                  className={`rounded-2xl border px-4 py-3.5 text-sm ${
-                    isDark
-                      ? "border-red-400/30 bg-red-500/[0.1] text-red-100"
-                      : "border-red-200/90 bg-red-50 text-red-900"
-                  }`}
+                  className={`rounded-2xl border px-4 py-3.5 text-sm ${errorCardClass}`}
                 >
-                  {error}
-                </p>
+                  <div className="flex items-start gap-3">
+                    <span
+                      aria-hidden="true"
+                      className={`mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[13px] font-bold ${
+                        isDark ? "bg-red-300/18 text-red-100" : "bg-red-200/75 text-red-900"
+                      }`}
+                    >
+                      !
+                    </span>
+                    <div className="min-w-0">
+                      <p className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${isDark ? "text-red-100/85" : "text-red-800/80"}`}>
+                        Error
+                      </p>
+                      <p className="mt-1 leading-relaxed">{error}</p>
+                    </div>
+                  </div>
+                </div>
               ) : null}
-
+              {forgotMessage ? (
+                <div
+                  role="status"
+                  aria-live="polite"
+                  className={`rounded-2xl border px-4 py-3.5 text-sm ${successCardClass}`}
+                >
+                  <div className="flex items-start gap-3">
+                    <span
+                      aria-hidden="true"
+                      className={`mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[13px] font-bold ${
+                        isDark ? "bg-emerald-300/18 text-emerald-100" : "bg-emerald-200/75 text-emerald-900"
+                      }`}
+                    >
+                      ✓
+                    </span>
+                    <div className="min-w-0">
+                      <p className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${isDark ? "text-emerald-100/85" : "text-emerald-800/80"}`}>
+                        Success
+                      </p>
+                      <p className="mt-1 leading-relaxed">{forgotMessage}</p>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
               <div className={`flex flex-wrap items-center justify-between gap-3 text-sm ${muted}`}>
-                <label className="inline-flex cursor-pointer items-center gap-2.5">
-                  <input
-                    type="checkbox"
-                    className={`h-4 w-4 rounded border shadow-sm ${
-                      isDark
-                        ? "border-white/20 bg-white/5 accent-[var(--color-rose)]"
-                        : "border-[var(--color-ink)]/15 bg-white accent-[var(--color-rose)]"
-                    }`}
-                    disabled={formBusy}
-                  />
-                  <span>{copy.rememberMe}</span>
-                </label>
                 {mode === "login" ? (
-                  <button
-                    type="button"
+                  <label className="inline-flex cursor-pointer items-center gap-2.5">
+                    <input
+                      type="checkbox"
+                      className={`h-4 w-4 rounded border shadow-sm ${
+                        isDark
+                          ? "border-white/20 bg-white/5 accent-[var(--color-rose)]"
+                          : "border-[var(--color-ink)]/15 bg-white accent-[var(--color-rose)]"
+                      }`}
+                      disabled={formBusy}
+                    />
+                    <span>{copy.rememberMe}</span>
+                  </label>
+                ) : (
+                  <span className="min-w-[1px]" aria-hidden="true" />
+                )}
+                {mode === "login" ? (
+                  <Link
+                    href="/forgot-password"
                     className="cursor-pointer font-medium text-[var(--color-sage)] transition hover:opacity-80"
                   >
                     {copy.forgotPassword}
-                  </button>
+                  </Link>
+                ) : inForgotView ? (
+                  <Link
+                    href="/login"
+                    className="cursor-pointer font-medium text-[var(--color-sage)] transition hover:opacity-80"
+                  >
+                    {copy.forgotBackToLogin}
+                  </Link>
                 ) : (
                   <span className="min-w-[1px]" aria-hidden="true" />
                 )}
               </div>
 
-              <button
-                type="submit"
-                disabled={formBusy}
-                className="btn-primary mt-1 w-full cursor-pointer rounded-full px-8 py-3.5 text-sm font-semibold shadow-[0_14px_36px_rgba(197,167,161,0.38)] transition hover:brightness-[1.03] disabled:cursor-not-allowed disabled:pointer-events-none disabled:opacity-55 dark:shadow-[0_16px_40px_rgba(0,0,0,0.38)] sm:w-auto sm:min-w-[12rem]"
-              >
-                {mode === "login" && loading ? copy.submitting : copy.submit}
-              </button>
+              {inForgotView ? (
+                <button
+                  type="submit"
+                  disabled={formBusy}
+                  className="btn-primary mt-1 w-full cursor-pointer rounded-full px-8 py-3.5 text-sm font-semibold shadow-[0_14px_36px_rgba(197,167,161,0.38)] transition hover:brightness-[1.03] disabled:cursor-not-allowed disabled:pointer-events-none disabled:opacity-55 dark:shadow-[0_16px_40px_rgba(0,0,0,0.38)] sm:w-auto sm:min-w-[12rem]"
+                >
+                  {copy.forgotSubmit}
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={formBusy}
+                  className="btn-primary mt-1 w-full cursor-pointer rounded-full px-8 py-3.5 text-sm font-semibold shadow-[0_14px_36px_rgba(197,167,161,0.38)] transition hover:brightness-[1.03] disabled:cursor-not-allowed disabled:pointer-events-none disabled:opacity-55 dark:shadow-[0_16px_40px_rgba(0,0,0,0.38)] sm:w-auto sm:min-w-[12rem]"
+                >
+                  {mode === "login" && loading ? copy.submitting : copy.submit}
+                </button>
+              )}
             </form>
 
-            <p className={`mt-8 text-sm ${muted}`}>
-              {copy.switchPrompt}{" "}
-              <Link
-                href={copy.switchHref}
-                className="font-semibold text-[var(--color-sage)] underline decoration-current/20 underline-offset-4 transition hover:decoration-current/40"
-              >
-                {copy.switchAction}
-              </Link>
-            </p>
+            {inForgotView ? null : (
+              <p className={`mt-8 text-sm ${muted}`}>
+                {copy.switchPrompt}{" "}
+                <Link
+                  href={copy.switchHref}
+                  className="font-semibold text-[var(--color-sage)] underline decoration-current/20 underline-offset-4 transition hover:decoration-current/40"
+                >
+                  {copy.switchAction}
+                </Link>
+              </p>
+            )}
           </div>
         </div>
       </div>
+      {registerToast ? (
+        <div
+          role="status"
+          aria-live="polite"
+          className={`fixed top-5 left-1/2 z-[240] w-[min(92vw,34rem)] -translate-x-1/2 rounded-2xl border px-4 py-3 text-sm ${successCardClass}`}
+        >
+          <div className="flex items-start gap-3">
+            <span
+              aria-hidden="true"
+              className={`mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[13px] font-bold ${
+                isDark ? "bg-emerald-300/18 text-emerald-100" : "bg-emerald-200/75 text-emerald-900"
+              }`}
+            >
+              ✓
+            </span>
+            <div className="min-w-0">
+              <p className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${isDark ? "text-emerald-100/85" : "text-emerald-800/80"}`}>
+                Success
+              </p>
+              <p className="mt-1 leading-relaxed">{registerToast ?? copy.registerSuccess}</p>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </main>
   );
 }
