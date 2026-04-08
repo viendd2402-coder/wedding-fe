@@ -17,6 +17,20 @@ export type MyInvitationsMessages = {
   step1: string;
   step2: string;
   step3: string;
+  demoNotice: string;
+  listHeading: string;
+  inviteLinkLabel: string;
+  openInvite: string;
+  copyLink: string;
+  copied: string;
+  updatedPrefix: string;
+  statusPublished: string;
+  statusDraft: string;
+  tierFree: string;
+  tierPremium: string;
+  previewPhotoCaption: string;
+  eventSummaryLabel: string;
+  venueLabel: string;
 };
 
 const vi: MyInvitationsMessages = {
@@ -39,6 +53,21 @@ const vi: MyInvitationsMessages = {
   step1: "Chọn mẫu",
   step2: "Chỉnh nội dung",
   step3: "Lưu & triển khai",
+  demoNotice:
+    "Đang hiển thị dữ liệu minh họa. Khi kết nối API, danh sách sẽ lấy từ máy chủ.",
+  listHeading: "Thiệp của bạn",
+  inviteLinkLabel: "Link thiệp cưới",
+  openInvite: "Mở thiệp",
+  copyLink: "Sao chép link",
+  copied: "Đã sao chép",
+  updatedPrefix: "Cập nhật",
+  statusPublished: "Đã xuất bản",
+  statusDraft: "Bản nháp",
+  tierFree: "Miễn phí",
+  tierPremium: "Trả phí",
+  previewPhotoCaption: "Ảnh xem thử",
+  eventSummaryLabel: "Thời gian & địa điểm",
+  venueLabel: "Địa điểm tổ chức",
 };
 
 const en: MyInvitationsMessages = {
@@ -61,6 +90,21 @@ const en: MyInvitationsMessages = {
   step1: "Pick a template",
   step2: "Customize",
   step3: "Save & deploy",
+  demoNotice:
+    "Showing sample data. Once the API is connected, this list will come from the server.",
+  listHeading: "Your invitations",
+  inviteLinkLabel: "Invitation link",
+  openInvite: "Open invitation",
+  copyLink: "Copy link",
+  copied: "Copied",
+  updatedPrefix: "Updated",
+  statusPublished: "Published",
+  statusDraft: "Draft",
+  tierFree: "Free",
+  tierPremium: "Premium",
+  previewPhotoCaption: "Preview image",
+  eventSummaryLabel: "When & where",
+  venueLabel: "Venue",
 };
 
 export const myInvitationsMessages: Record<AppLanguage, MyInvitationsMessages> = {

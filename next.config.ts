@@ -7,6 +7,16 @@ const nextConfig: NextConfig = {
    * may appear unresponsive when opening via local network IP.
    */
   allowedDevOrigins: ["10.5.10.155", "10.5.10.155:3000", "localhost", "localhost:3000", "nonaccelerative-noah-unoriginally.ngrok-free.dev"],
+
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        pathname: "/**",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

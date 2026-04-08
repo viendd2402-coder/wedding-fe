@@ -34,6 +34,10 @@ import {
   myInvitationsMessages,
   type MyInvitationsMessages,
 } from "@/i18n/messages/my-invitations";
+import {
+  inviteSnapshotMessages,
+  type InviteSnapshotMessages,
+} from "@/i18n/messages/invite-snapshot";
 
 export type Messages = {
   home: HomeMessages;
@@ -48,6 +52,7 @@ export type Messages = {
   countdown: CountdownMessages;
   templateWorkspace: TemplateWorkspaceMessages;
   myInvitations: MyInvitationsMessages;
+  inviteSnapshot: InviteSnapshotMessages;
 };
 
 export const messagesByLocale: Record<AppLanguage, Messages> = {
@@ -64,6 +69,7 @@ export const messagesByLocale: Record<AppLanguage, Messages> = {
     countdown: countdownMessages.vi,
     templateWorkspace: templateWorkspaceMessages.vi,
     myInvitations: myInvitationsMessages.vi,
+    inviteSnapshot: inviteSnapshotMessages.vi,
   },
   en: {
     home: homeEn,
@@ -78,5 +84,6 @@ export const messagesByLocale: Record<AppLanguage, Messages> = {
     countdown: countdownMessages.en,
     templateWorkspace: templateWorkspaceMessages.en,
     myInvitations: myInvitationsMessages.en,
+    inviteSnapshot: inviteSnapshotMessages.en,
   },
 };

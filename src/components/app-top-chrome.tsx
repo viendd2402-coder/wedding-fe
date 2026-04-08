@@ -13,10 +13,15 @@ function pathnameIsTemplateDemo(pathname: string | null): boolean {
   return templateDemoSlugs.has(slug);
 }
 
+/** Thiệp xem bản lưu (không phải studio chỉnh mẫu). */
+function pathnameIsInviteSnapshot(pathname: string | null): boolean {
+  return Boolean(pathname?.startsWith("/invite/"));
+}
+
 /** Ẩn nav studio trên trang xem demo từng mẫu; giữ nav ở các trang như /templates/free. */
 export default function AppTopChrome() {
   const pathname = usePathname();
-  if (pathnameIsTemplateDemo(pathname)) {
+  if (pathnameIsTemplateDemo(pathname) || pathnameIsInviteSnapshot(pathname)) {
     return null;
   }
 
