@@ -112,22 +112,77 @@ export default function HeaderAccountMenu({
           id={menuId}
           role="menu"
           aria-orientation="vertical"
-          className={`absolute right-0 z-[120] mt-2 min-w-[11.5rem] overflow-hidden rounded-2xl py-1.5 ${panelClass}`}
+          className={`absolute right-0 z-[120] mt-2 min-w-[15.5rem] overflow-hidden rounded-2xl py-1.5 ${panelClass}`}
         >
           <Link
             role="menuitem"
             href="/profile"
-            className={`block px-4 py-2.5 text-sm font-medium transition ${
+            className={`flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition ${
               isDark ? "hover:bg-white/10" : "hover:bg-[var(--color-cream)]"
             }`}
             onClick={() => setOpen(false)}
           >
-            {copy.viewProfile}
+            <span
+              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border ${
+                isDark
+                  ? "border-white/10 bg-white/[0.06] text-white/75"
+                  : "border-[var(--color-ink)]/10 bg-[var(--color-cream)]/80 text-[var(--color-ink)]/70"
+              }`}
+              aria-hidden
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.65"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-4 w-4"
+              >
+                <circle cx="12" cy="9" r="3.25" />
+                <path d="M6.5 19.25c.84-2.8 3.53-4.5 5.5-4.5s4.66 1.7 5.5 4.5" />
+              </svg>
+            </span>
+            <span className="min-w-0 leading-snug">{copy.viewProfile}</span>
+          </Link>
+          <Link
+            role="menuitem"
+            href="/my-invitations"
+            className={`flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition ${
+              isDark ? "hover:bg-white/10" : "hover:bg-[var(--color-cream)]"
+            }`}
+            onClick={() => setOpen(false)}
+          >
+            <span
+              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border ${
+                isDark
+                  ? "border-white/10 bg-white/[0.06] text-[var(--color-rose)]/85"
+                  : "border-[var(--color-ink)]/10 bg-[var(--color-rose)]/[0.08] text-[var(--color-rose)]"
+              }`}
+              aria-hidden
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.65"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-4 w-4"
+              >
+                <path d="M4 7.5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-10Z" />
+                <path d="M8 5.5V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v1.5" />
+                <path d="M4 9.5h16" />
+              </svg>
+            </span>
+            <span className="min-w-0 leading-snug">{copy.myInvitations}</span>
           </Link>
           <button
             role="menuitem"
             type="button"
-            className={`w-full px-4 py-2.5 text-left text-sm font-medium transition ${
+            className={`flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm font-medium transition ${
               isDark ? "hover:bg-white/10" : "hover:bg-[var(--color-cream)]"
             }`}
             onClick={() => {
@@ -135,7 +190,30 @@ export default function HeaderAccountMenu({
               logout();
             }}
           >
-            {copy.logout}
+            <span
+              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border ${
+                isDark
+                  ? "border-white/10 bg-white/[0.06] text-white/55"
+                  : "border-[var(--color-ink)]/10 bg-[var(--color-cream)]/80 text-[var(--color-ink)]/55"
+              }`}
+              aria-hidden
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.65"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-4 w-4"
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" x2="9" y1="12" y2="12" />
+              </svg>
+            </span>
+            <span className="leading-snug">{copy.logout}</span>
           </button>
         </div>
       ) : null}

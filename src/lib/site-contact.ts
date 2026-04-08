@@ -1,7 +1,7 @@
 /** Thông tin liên hệ hiển thị ở footer — cập nhật khi có số/email chính thức. */
 export const siteContact = {
-  phoneDisplay: "090 712 78 90",
-  phoneE164: "+84907127890",
+  phoneDisplay: "0329 161 198",
+  phoneE164: "+84329161198",
   email: "hello@lumierewedding.vn",
   /** TikTok mặc định (nút nổi). Để `""` nếu chưa có kênh. `NEXT_PUBLIC_TIKTOK_URL` ghi đè khi có. */
   tiktokUrl: "https://www.tiktok.com/@lumierewedding",

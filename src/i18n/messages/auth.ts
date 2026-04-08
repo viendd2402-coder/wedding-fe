@@ -29,6 +29,7 @@ export type AuthScreenCopy = {
   socialNeedApi: string;
   socialNeedGoogleClientId: string;
   socialNeedFacebookAppId: string;
+  socialFacebookHttpsRequired: string;
   googleOrigin403Hint: string;
   googleOrigin403Note127: string;
   googleOriginCopy: string;
@@ -95,6 +96,7 @@ type AuthBundle = {
   socialNeedApi: string;
   socialNeedGoogleClientId: string;
   socialNeedFacebookAppId: string;
+  socialFacebookHttpsRequired: string;
   googleOrigin403Hint: string;
   googleOrigin403Note127: string;
   googleOriginCopy: string;
@@ -163,6 +165,8 @@ const vi: AuthBundle = {
   socialNeedGoogleClientId:
     "Chưa cấu hình Google: đặt NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID (OAuth 2.0 Client ID kiểu Web).",
   socialNeedFacebookAppId: "Chưa cấu hình Facebook: đặt NEXT_PUBLIC_FACEBOOK_APP_ID.",
+  socialFacebookHttpsRequired:
+    "Facebook Login yêu cầu HTTPS. Hãy mở site bằng https:// (hoặc localhost) rồi thử lại.",
   googleOrigin403Hint:
     "Nếu console báo origin is not allowed hoặc gsi/button 403: Google Cloud Console → APIs & Services → Credentials → OAuth 2.0 Client ID (Web) → Authorized JavaScript origins → thêm đúng origin dưới (không có / ở cuối, đúng http/https và port).",
   googleOrigin403Note127:
@@ -232,6 +236,8 @@ const en: AuthBundle = {
   socialNeedGoogleClientId:
     "Google is not configured: set NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID (Web OAuth 2.0 client ID).",
   socialNeedFacebookAppId: "Facebook is not configured: set NEXT_PUBLIC_FACEBOOK_APP_ID.",
+  socialFacebookHttpsRequired:
+    "Facebook Login requires HTTPS. Open this site on https:// (or localhost) and try again.",
   googleOrigin403Hint:
     "If the console shows origin is not allowed or gsi/button returns 403: Google Cloud Console → APIs & Services → Credentials → your Web OAuth 2.0 Client → Authorized JavaScript origins → add the exact origin below (no trailing slash, correct scheme and port).",
   googleOrigin403Note127:
@@ -301,6 +307,7 @@ export function getAuthScreenCopy(
     socialNeedApi: m.socialNeedApi,
     socialNeedGoogleClientId: m.socialNeedGoogleClientId,
     socialNeedFacebookAppId: m.socialNeedFacebookAppId,
+    socialFacebookHttpsRequired: m.socialFacebookHttpsRequired,
     googleOrigin403Hint: m.googleOrigin403Hint,
     googleOrigin403Note127: m.googleOrigin403Note127,
     googleOriginCopy: m.googleOriginCopy,

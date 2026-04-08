@@ -30,6 +30,10 @@ import {
   templateWorkspaceMessages,
   type TemplateWorkspaceMessages,
 } from "@/i18n/messages/template-workspace-ui";
+import {
+  myInvitationsMessages,
+  type MyInvitationsMessages,
+} from "@/i18n/messages/my-invitations";
 
 export type Messages = {
   home: HomeMessages;
@@ -43,6 +47,7 @@ export type Messages = {
   templatesPremium: TemplatesGalleryPremiumMessages;
   countdown: CountdownMessages;
   templateWorkspace: TemplateWorkspaceMessages;
+  myInvitations: MyInvitationsMessages;
 };
 
 export const messagesByLocale: Record<AppLanguage, Messages> = {
@@ -58,6 +63,7 @@ export const messagesByLocale: Record<AppLanguage, Messages> = {
     templatesPremium: templatesGalleryPremium.vi,
     countdown: countdownMessages.vi,
     templateWorkspace: templateWorkspaceMessages.vi,
+    myInvitations: myInvitationsMessages.vi,
   },
   en: {
     home: homeEn,
@@ -71,5 +77,6 @@ export const messagesByLocale: Record<AppLanguage, Messages> = {
     templatesPremium: templatesGalleryPremium.en,
     countdown: countdownMessages.en,
     templateWorkspace: templateWorkspaceMessages.en,
+    myInvitations: myInvitationsMessages.en,
   },
 };

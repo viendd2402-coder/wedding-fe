@@ -56,6 +56,7 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
   const [fieldErrors, setFieldErrors] = useState<AuthFieldErrors>({});
   const [loading, setLoading] = useState(false);
   const [socialBusy, setSocialBusy] = useState(false);
+  const [facebookSdkReady, setFacebookSdkReady] = useState(false);
   const googleButtonHostRef = useRef<HTMLDivElement>(null);
   const googleIdTokenHandlerRef = useRef<(idToken: string) => void>(() => {});
   /** Tránh redirect trong lúc hydrate (cùng ý tưởng profile-screen). */
@@ -297,10 +298,42 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
     };
   }, [isDark, language]);
 
+  /** Facebook: preload SDK khi đủ cấu hình để thao tác đăng nhập mượt như Google. */
+  useEffect(() => {
+    const appId = getPublicFacebookAppId();
+    if (!getPublicApiBaseUrl() || !appId) {
+      setFacebookSdkReady(false);
+      return;
+    }
+
+    let cancelled = false;
+    setFacebookSdkReady(false);
+    void (async () => {
+      try {
+        await ensureFacebookSdk(appId);
+        if (!cancelled) setFacebookSdkReady(true);
+      } catch {
+        if (!cancelled) setError(copy.socialLoginFailed);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [copy.socialLoginFailed]);
+
   const startFacebookLogin = useCallback(async () => {
     setError(null);
     if (!getPublicApiBaseUrl()) {
       setError(copy.socialNeedApi);
+      return;
+    }
+    const protocol = window.location.protocol.toLowerCase();
+    const hostname = window.location.hostname.toLowerCase();
+    const isLocalhostLike =
+      hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1";
+    if (protocol !== "https:" && !isLocalhostLike) {
+      setError(copy.socialFacebookHttpsRequired);
       return;
     }
 
@@ -311,7 +344,10 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
         setError(copy.socialNeedFacebookAppId);
         return;
       }
-      await ensureFacebookSdk(appId);
+      if (!facebookSdkReady) {
+        await ensureFacebookSdk(appId);
+        setFacebookSdkReady(true);
+      }
       const accessToken = await requestFacebookAccessToken();
       const result = await verifySocialLoginWithBackend({
         provider: "facebook",
@@ -327,7 +363,13 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
     } finally {
       setSocialBusy(false);
     }
-  }, [copy.socialLoginFailed, copy.socialNeedApi, copy.socialNeedFacebookAppId]);
+  }, [
+    copy.socialFacebookHttpsRequired,
+    copy.socialLoginFailed,
+    copy.socialNeedApi,
+    copy.socialNeedFacebookAppId,
+    facebookSdkReady,
+  ]);
 
   const formBusy = loading || socialBusy;
   const inForgotView = mode === "forgot";
@@ -500,7 +542,7 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
                 </div>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div
-                    className={`flex min-h-[48px] w-full items-center justify-center [&>div]:w-full ${
+                    className={`flex h-[40px] w-full items-center justify-center [&>div]:w-full ${
                       formBusy ? "pointer-events-none opacity-55" : ""
                     }`}
                   >
@@ -512,9 +554,13 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
                     onClick={() => {
                       void startFacebookLogin();
                     }}
-                    className="flex w-full cursor-pointer items-center justify-center gap-2.5 rounded-2xl border border-transparent bg-[#1877F2] py-3.5 text-sm font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:pointer-events-none disabled:opacity-55"
+                    className={`flex h-[40px] w-full cursor-pointer items-center justify-center gap-2.5 rounded-full border px-5 py-0 text-sm font-medium transition ${
+                      isDark
+                        ? "border-white/14 bg-white/[0.03] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] hover:bg-white/[0.08]"
+                        : "border-[var(--color-ink)]/14 bg-white text-[var(--color-ink)] shadow-[0_1px_2px_rgba(49,42,40,0.06)] hover:bg-[var(--color-cream)]/75"
+                    } disabled:cursor-not-allowed disabled:pointer-events-none disabled:opacity-55`}
                   >
-                    <IconFacebookBrand className="h-5 w-5 shrink-0 text-white" />
+                    <IconFacebookBrand className="h-5 w-5 shrink-0 text-[#1877F2]" />
                     {copy.socialFacebook}
                   </button>
                 </div>

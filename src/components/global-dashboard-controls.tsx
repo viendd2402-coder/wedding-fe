@@ -36,7 +36,7 @@ export default function GlobalDashboardControls() {
   const pathname = usePathname();
   const { signedIn } = useAuthSession();
   const { language, theme, setLanguage, setTheme } = useGlobalPreferences();
-  const { nav: copy } = useMessages();
+  const { nav: copy, headerAccount: accountCopy } = useMessages();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const accountChipClass = `inline-flex shrink-0 items-center gap-2 rounded-full border px-3 py-2 text-sm font-medium transition hover:opacity-90 ${
@@ -81,6 +81,8 @@ export default function GlobalDashboardControls() {
 
   const templatesActive = pathname.startsWith("/templates");
   const homeActive = pathname === "/";
+  const profileActive = pathname === "/profile";
+  const myInvitationsActive = pathname === "/my-invitations";
 
   /** Đang ở trang chủ: click logo / Trang chủ → về đầu trang (và bỏ hash). */
   const handleHomeLinkClick = useCallback(
@@ -288,6 +290,28 @@ export default function GlobalDashboardControls() {
                 {copy.navContact}
               </Link>
             </nav>
+            {signedIn ? (
+              <div
+                className={`mt-4 grid grid-cols-1 gap-2 border-t pt-4 min-[400px]:grid-cols-2 ${
+                  theme === "dark" ? "border-white/10" : "border-[var(--color-ink)]/14 max-lg:border-[var(--color-ink)]/18"
+                }`}
+              >
+                <Link
+                  href="/profile"
+                  className={mobileNavTile(profileActive)}
+                  onClick={closeMobile}
+                >
+                  {accountCopy.viewProfile}
+                </Link>
+                <Link
+                  href="/my-invitations"
+                  className={mobileNavTile(myInvitationsActive)}
+                  onClick={closeMobile}
+                >
+                  {accountCopy.myInvitations}
+                </Link>
+              </div>
+            ) : null}
             <div
               className={`mt-4 flex flex-wrap items-center justify-between gap-3 border-t pt-4 ${
                 theme === "dark" ? "border-white/10" : "border-[var(--color-ink)]/14 max-lg:border-[var(--color-ink)]/18"

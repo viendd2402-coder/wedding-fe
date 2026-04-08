@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
    * Without this, hydration/HMR requests can be blocked and client-side buttons
    * may appear unresponsive when opening via local network IP.
    */
-  allowedDevOrigins: ["10.5.10.155", "10.5.10.155:3000", "localhost", "localhost:3000"],
+  allowedDevOrigins: ["10.5.10.155", "10.5.10.155:3000", "localhost", "localhost:3000", "nonaccelerative-noah-unoriginally.ngrok-free.dev"],
 };
 
 export default nextConfig;
