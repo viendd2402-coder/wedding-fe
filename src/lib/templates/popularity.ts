@@ -1,12 +1,2 @@
-/**
- * Thứ tự slug theo mức độ được chọn (cao → thấp), dùng cho hero “top templates”.
- * Khi có API/backend thống kê, thay bằng dữ liệu thật và giữ thứ tự động sort theo `usageCount`.
- */
-export const TOP_TEMPLATE_SLUGS_BY_USAGE = [
-  "brightly-basic",
-  "slide-flex",
-  "minimal-muse",
-  "azure-promise",
-] as const;
-
+/** Giới hạn `limit` cho `GET …/api/invites/popular`. Body: `{ success, message, data: { items, total } }`; mỗi `items[]` ghép với registry (slug hoặc `templateName`). */
 export const TOP_TEMPLATE_SPOTLIGHT_LIMIT = 4;

@@ -1,28 +1,135 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
 import { useMessages } from "@/i18n/use-messages";
+import { fetchPublicApi } from "@/lib/api-fetch";
 import type { WeddingTemplate } from "@/lib/templates";
-import {
-  TOP_TEMPLATE_SLUGS_BY_USAGE,
-  TOP_TEMPLATE_SPOTLIGHT_LIMIT,
-  weddingTemplates,
-} from "@/lib/templates";
+import { TOP_TEMPLATE_SPOTLIGHT_LIMIT, weddingTemplates } from "@/lib/templates";
 
-function resolveTopByUsage(): WeddingTemplate[] {
-  const map = new Map(weddingTemplates.map((t) => [t.slug, t]));
-  return TOP_TEMPLATE_SLUGS_BY_USAGE.map((slug) => map.get(slug)).filter(
-    (t): t is WeddingTemplate => t != null,
-  ).slice(0, TOP_TEMPLATE_SPOTLIGHT_LIMIT);
+/**
+ * `{ success, message, data: { items, total } }` hoặc mảng gốc / `{ data: [...] }`.
+ */
+function unwrapPopularInvitesList(payload: unknown): unknown[] | null {
+  if (payload == null) return null;
+  if (Array.isArray(payload)) return payload;
+  if (typeof payload !== "object") return null;
+  const root = payload as Record<string, unknown>;
+  if (root.success === false) return null;
+  if (Array.isArray(root.items)) return root.items;
+  const data = root.data;
+  if (data && typeof data === "object" && !Array.isArray(data)) {
+    const inner = data as Record<string, unknown>;
+    if (Array.isArray(inner.items)) return inner.items;
+  }
+  if (Array.isArray(data)) return data;
+  return null;
+}
+
+function compactTemplateKey(s: string): string {
+  return s.replace(/[\s-]+/g, "").toUpperCase();
+}
+
+function resolveTemplateForPopularItem(
+  o: Record<string, unknown>,
+  slugToTemplate: Map<string, WeddingTemplate>,
+): WeddingTemplate | null {
+  const slugRaw = o.templateSlug ?? o.template_slug;
+  if (typeof slugRaw === "string" && slugRaw.trim()) {
+    const t = slugToTemplate.get(slugRaw.trim());
+    if (t) return t;
+  }
+  const name = o.templateName ?? o.template_name;
+  if (typeof name !== "string" || !name.trim()) return null;
+  const key = compactTemplateKey(name);
+  for (const t of weddingTemplates) {
+    if (compactTemplateKey(t.slug) === key) return t;
+  }
+  return null;
+}
+
+/** Ghép một dòng API với mẫu trong registry (ảnh, tier, style); link ưu tiên `invitePath`. */
+type SpotlightItem = {
+  key: string;
+  template: WeddingTemplate;
+  displayName: string;
+  href: string;
+};
+
+function spotlightItemsFromPopularPayload(
+  rawItems: unknown[],
+  slugToTemplate: Map<string, WeddingTemplate>,
+): SpotlightItem[] {
+  const out: SpotlightItem[] = [];
+  for (let i = 0; i < rawItems.length; i++) {
+    const x = rawItems[i];
+    if (!x || typeof x !== "object") continue;
+    const o = x as Record<string, unknown>;
+    const template = resolveTemplateForPopularItem(o, slugToTemplate);
+    if (!template) continue;
+
+    const eventTitle =
+      typeof o.eventTitle === "string" ? o.eventTitle.trim() : "";
+    const templateName =
+      typeof o.templateName === "string" ? o.templateName.trim() : "";
+    const displayName = eventTitle || templateName || template.name;
+
+    const inviteRaw = o.invitePath ?? o.invite_path;
+    const invitePath =
+      typeof inviteRaw === "string" && inviteRaw.trim().startsWith("/")
+        ? inviteRaw.trim()
+        : null;
+    const href = invitePath ?? `/templates/${template.slug}`;
+
+    const id = o.id;
+    const key =
+      typeof id === "number" && Number.isFinite(id)
+        ? `invite-${id}`
+        : typeof id === "string" && id.trim()
+          ? `invite-${id.trim()}`
+          : invitePath
+            ? `path-${invitePath}`
+            : `idx-${i}-${template.slug}`;
+
+    out.push({ key, template, displayName, href });
+  }
+  return out;
 }
 
 export default function HomeHeroSpotlight() {
   const { theme } = useGlobalPreferences();
   const { homeHeroSpotlight: copy } = useMessages();
   const isDark = theme === "dark";
-  const items = useMemo(() => resolveTopByUsage(), []);
+  const slugToTemplate = useMemo(
+    () => new Map(weddingTemplates.map((t) => [t.slug, t])),
+    [],
+  );
+  const [items, setItems] = useState<SpotlightItem[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const r = await fetchPublicApi(
+        `api/invites/popular?limit=${TOP_TEMPLATE_SPOTLIGHT_LIMIT}`,
+        { method: "GET" },
+      );
+      if (cancelled) return;
+      if (!r.ok || r.data == null) {
+        setItems([]);
+        return;
+      }
+      const list = unwrapPopularInvitesList(r.data);
+      if (!list) {
+        setItems([]);
+        return;
+      }
+      setItems(spotlightItemsFromPopularPayload(list, slugToTemplate));
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [slugToTemplate]);
 
   const tierLabel = (tier: string) => {
     if (tier === "Miễn phí") return copy.tierFree;
@@ -55,14 +162,14 @@ export default function HomeHeroSpotlight() {
       </p>
 
       <ol className="mt-8 flex flex-col gap-3 sm:gap-4">
-        {items.map((template, index) => {
+        {items.map(({ key, template, displayName, href }, index) => {
           const rank = index + 1;
           return (
-            <li key={template.slug}>
+            <li key={key}>
               <Link
-                href={`/templates/${template.slug}`}
+                href={href}
                 className={`group flex overflow-hidden rounded-[1.75rem] border transition ${cardClass}`}
-                aria-label={`${copy.rankLabelTpl.replace("__N__", String(rank))}: ${template.name}`}
+                aria-label={`${copy.rankLabelTpl.replace("__N__", String(rank))}: ${displayName}`}
               >
                 <div className="relative shrink-0">
                   <div
@@ -88,7 +195,7 @@ export default function HomeHeroSpotlight() {
                     </span>
                   </div>
                   <p className="font-display text-lg leading-tight sm:text-xl md:text-[1.65rem]">
-                    {template.name}
+                    {displayName}
                   </p>
                   <span className="inline-flex items-center gap-1 text-xs font-semibold text-[color-mix(in_srgb,var(--luxury-gold)_25%,var(--color-sage))] sm:text-sm">
                     {copy.openLabel}

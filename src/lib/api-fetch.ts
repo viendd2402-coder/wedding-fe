@@ -1,5 +1,15 @@
 import { getPublicApiBaseUrl } from "@/lib/api-base";
 
+/** Tránh `.../api/api/...` khi `path` bắt đầu bằng `api/` và base đã kết thúc bằng `/api`. */
+function joinPublicApiUrl(base: string, path: string): string {
+  const baseClean = base.replace(/\/+$/, "");
+  let pathClean = path.replace(/^\//, "");
+  if (pathClean.startsWith("api/") && /\/api$/i.test(baseClean)) {
+    pathClean = pathClean.slice(4);
+  }
+  return `${baseClean}/${pathClean}`;
+}
+
 function parseResponseText(text: string): unknown | null {
   const t = text.trim();
   if (!t) return null;
@@ -45,7 +55,7 @@ type FetchPublicApiOptions = {
 };
 
 /**
- * `fetch` tới `{NEXT_PUBLIC_API_URL}/{path}` — mặc định `credentials: "include"`.
+ * `fetch` tới `{NEXT_PUBLIC_API_URL}/{path}` (path có thể viết dạng `api/...` từ gốc host; base đã `/api` thì bỏ trùng) — mặc định `credentials: "include"`.
  * - `networkError: true` khi lỗi mạng.
  * - `ok: false`, `status: 0`, `networkError: false` khi thiếu `NEXT_PUBLIC_API_URL`.
  * - Với `FormData`: không set `Content-Type` (trình duyệt tự thêm boundary).
@@ -59,7 +69,7 @@ export async function fetchPublicApi(
     return { ok: false, status: 0, data: null, networkError: false };
   }
 
-  const url = `${base}/${path.replace(/^\//, "")}`;
+  const url = joinPublicApiUrl(base, path);
   const headers = new Headers(options.headers as HeadersInit | undefined);
   let body: BodyInit | undefined =
     options.body === null ? undefined : (options.body as BodyInit | undefined);
