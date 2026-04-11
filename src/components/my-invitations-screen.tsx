@@ -7,7 +7,16 @@ import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { useAuthSession } from "@/components/auth-session";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
 import { useMessages } from "@/i18n/use-messages";
-import { MY_INVITATIONS_DEMO_DATA, type DemoInvitation } from "@/lib/my-invitations-demo-data";
+import { getStoredAuthToken } from "@/lib/auth-client";
+import {
+  isPremiumPaymentProductType,
+  isPublishedInvitationStatus,
+  parseUserPaymentsListResponse,
+  type UserPaymentListItemResponse,
+} from "@/lib/user-payments-api";
+
+const INVITATION_CARD_PLACEHOLDER_IMAGE =
+  "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=70";
 
 function InvitationsGlyph({ className }: { className?: string }) {
   return (
@@ -53,6 +62,21 @@ function formatUpdatedAt(iso: string, locale: string): string {
   }
 }
 
+function formatEventDateFromIso(iso: string | null, locale: string): string | null {
+  if (!iso?.trim()) return null;
+  try {
+    const d = new Date(iso);
+    return new Intl.DateTimeFormat(locale === "vi" ? "vi-VN" : "en-GB", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }).format(d);
+  } catch {
+    return null;
+  }
+}
+
 export default function MyInvitationsScreen() {
   const router = useRouter();
   const { signedIn } = useAuthSession();
@@ -61,6 +85,10 @@ export default function MyInvitationsScreen() {
   const isDark = theme === "dark";
   const isClient = useIsClient();
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [items, setItems] = useState<UserPaymentListItemResponse[]>([]);
+  const [listPhase, setListPhase] = useState<"loading" | "ready">("loading");
+  const [listError, setListError] = useState(false);
+  const [listRefresh, setListRefresh] = useState(0);
 
   const copyPublicUrl = useCallback(async (id: string, url: string) => {
     try {
@@ -80,6 +108,64 @@ export default function MyInvitationsScreen() {
     if (!isClient) return;
     if (!signedIn) router.replace("/login");
   }, [isClient, signedIn, router]);
+
+  useEffect(() => {
+    if (!isClient || !signedIn) return;
+
+    const ac = new AbortController();
+    let cancelled = false;
+
+    const run = async () => {
+      setListPhase("loading");
+      setListError(false);
+      try {
+        const token = getStoredAuthToken();
+        const headers: Record<string, string> = { Accept: "application/json" };
+        if (token) headers.Authorization = `Bearer ${token}`;
+
+        const res = await fetch("/api/payments", {
+          method: "GET",
+          credentials: "include",
+          headers,
+          signal: ac.signal,
+        });
+
+        const raw: unknown = await res.json().catch(() => null);
+        if (cancelled) return;
+
+        if (!res.ok) {
+          setListError(true);
+          setItems([]);
+          setListPhase("ready");
+          return;
+        }
+
+        const parsed = parseUserPaymentsListResponse(raw);
+        if (!parsed) {
+          setListError(true);
+          setItems([]);
+          setListPhase("ready");
+          return;
+        }
+
+        setItems(parsed);
+        setListPhase("ready");
+      } catch (e) {
+        if (e instanceof DOMException && e.name === "AbortError") return;
+        if (!cancelled) {
+          setListError(true);
+          setItems([]);
+          setListPhase("ready");
+        }
+      }
+    };
+
+    void run();
+    return () => {
+      cancelled = true;
+      ac.abort();
+    };
+  }, [isClient, signedIn, listRefresh]);
 
   const muted = isDark ? "text-white/62" : "text-[var(--color-ink)]/62";
 
@@ -141,8 +227,6 @@ export default function MyInvitationsScreen() {
   const statusDraft = isDark
     ? "border border-amber-400/22 bg-amber-500/12 text-amber-100/90"
     : "border border-amber-600/25 bg-amber-500/12 text-amber-950/85";
-
-  const demoItems: DemoInvitation[] = MY_INVITATIONS_DEMO_DATA;
 
   return (
     <main
@@ -233,17 +317,30 @@ export default function MyInvitationsScreen() {
 
         <div className={`overflow-hidden rounded-[2rem] ${panelOuter} ${panelInner}`}>
           <div className="px-6 py-10 sm:px-10 sm:py-12 lg:px-12 lg:py-14">
-            <div
-              className={`mb-8 rounded-2xl border px-4 py-3 sm:px-5 ${
-                isDark
-                  ? "border-amber-400/18 bg-amber-400/[0.07]"
-                  : "border-amber-700/15 bg-amber-50/90"
-              }`}
-            >
-              <p className={`text-sm leading-relaxed ${isDark ? "text-amber-50/88" : "text-amber-950/85"}`}>
-                {copy.demoNotice}
-              </p>
-            </div>
+            {listError ? (
+              <div
+                className={`mb-8 flex flex-col gap-3 rounded-2xl border px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5 ${
+                  isDark
+                    ? "border-rose-400/22 bg-rose-500/[0.08]"
+                    : "border-rose-700/18 bg-rose-50/90"
+                }`}
+              >
+                <p className={`text-sm leading-relaxed ${isDark ? "text-rose-50/90" : "text-rose-950/88"}`}>
+                  {copy.listLoadError}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setListRefresh((n) => n + 1)}
+                  className={`shrink-0 rounded-xl border px-4 py-2 text-sm font-semibold transition ${
+                    isDark
+                      ? "border-white/18 text-white/90 hover:bg-white/[0.08]"
+                      : "border-[var(--color-ink)]/14 text-[var(--color-ink)] hover:bg-white"
+                  }`}
+                >
+                  {copy.retryList}
+                </button>
+              </div>
+            ) : null}
 
             <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <h2 className="font-display text-2xl tracking-tight sm:text-3xl">{copy.listHeading}</h2>
@@ -254,33 +351,67 @@ export default function MyInvitationsScreen() {
                     : "border-[var(--color-ink)]/10 bg-[var(--color-cream)]/60 text-[var(--color-ink)]/55"
                 }`}
               >
-                {demoItems.length} {language === "vi" ? "thiệp" : "invitations"}
+                {listPhase === "loading" ? "…" : items.length}{" "}
+                {language === "vi" ? "thiệp" : "invitations"}
               </p>
             </div>
 
+            {listPhase === "loading" ? (
+              <p className={`py-16 text-center text-sm font-medium ${muted}`}>{copy.loading}</p>
+            ) : null}
+
+            {listPhase === "ready" && !listError && items.length === 0 ? (
+              <div className="py-12 text-center">
+                <p
+                  className={`font-display text-2xl tracking-tight ${
+                    isDark ? "text-white/88" : "text-[var(--color-ink)]"
+                  }`}
+                >
+                  {copy.emptyTitle}
+                </p>
+                <p className={`mx-auto mt-3 max-w-md text-sm leading-relaxed ${muted}`}>{copy.emptyBody}</p>
+                <Link
+                  href="/#templates"
+                  className={`btn-primary mt-8 inline-flex rounded-full px-8 py-3.5 text-sm font-medium`}
+                >
+                  {copy.ctaBrowse}
+                </Link>
+              </div>
+            ) : null}
+
+            {listPhase === "ready" && !listError && items.length > 0 ? (
             <ul className="flex w-full max-w-none flex-col gap-6">
-              {demoItems.map((item, index) => {
-                const tName = item.templateName[language];
-                const couple = item.coupleLine[language];
-                const statusClass = item.status === "published" ? statusPublished : statusDraft;
-                const statusLabel =
-                  item.status === "published" ? copy.statusPublished : copy.statusDraft;
-                const tierLabel = item.tier === "premium" ? copy.tierPremium : copy.tierFree;
-                const tierOnImageClass =
-                  item.tier === "premium"
-                    ? isDark
-                      ? "border border-amber-300/40 bg-amber-500/30 text-amber-50 shadow-lg shadow-black/25"
-                      : "border border-amber-700/35 bg-amber-50 text-amber-950 shadow-sm"
-                    : isDark
-                      ? "border border-white/22 bg-black/50 text-white/92 backdrop-blur-md"
-                      : "border border-[var(--color-ink)]/14 bg-white/93 text-[var(--color-ink)] backdrop-blur-sm shadow-sm";
+              {items.map((item, index) => {
+                const tName = item.templateName;
+                const couple = item.eventTitle?.trim() || copy.eventUntitled;
+                const published = isPublishedInvitationStatus(item.publicationStatus);
+                const statusClass = published ? statusPublished : statusDraft;
+                const statusLabel = published ? copy.statusPublished : copy.statusDraft;
+                const premium = isPremiumPaymentProductType(item.paymentType);
+                const tierLabel = premium ? copy.tierPremium : copy.tierFree;
+                const tierOnImageClass = premium
+                  ? isDark
+                    ? "border border-amber-300/40 bg-amber-500/30 text-amber-50 shadow-lg shadow-black/25"
+                    : "border border-amber-700/35 bg-amber-50 text-amber-950 shadow-sm"
+                  : isDark
+                    ? "border border-white/22 bg-black/50 text-white/92 backdrop-blur-md"
+                    : "border border-[var(--color-ink)]/14 bg-white/93 text-[var(--color-ink)] backdrop-blur-sm shadow-sm";
                 const detailPanel = isDark
                   ? "border-white/[0.08] bg-white/[0.03]"
                   : "border-[var(--color-ink)]/[0.08] bg-[var(--color-cream)]/55";
                 const linkDivider = isDark ? "border-white/[0.1]" : "border-[var(--color-ink)]/[0.1]";
+                const previewSrc = item.thumbnailUrl?.trim() || INVITATION_CARD_PLACEHOLDER_IMAGE;
+                const previewAlt = `${item.templateName} — ${couple}`;
+                const eventSummaryText =
+                  item.eventDateLabel?.trim() ||
+                  formatEventDateFromIso(item.eventDateIso, language) ||
+                  copy.eventTbd;
+                const venueText = item.venueDetail?.trim() || copy.venueTbd;
+                const invitePath = item.invitePath?.trim() || null;
+                const rowKey = String(item.id);
 
                 return (
-                  <li key={item.id}>
+                  <li key={rowKey}>
                     <article
                       className={`group overflow-hidden rounded-[1.85rem] transition-[border-color,box-shadow] duration-300 ${inviteRow} ${
                         isDark
@@ -291,9 +422,10 @@ export default function MyInvitationsScreen() {
                       <div className="flex flex-col sm:flex-row sm:items-stretch">
                         <div className="relative aspect-[16/10] max-h-[12rem] w-full shrink-0 sm:max-h-none sm:aspect-auto sm:min-h-full sm:w-[12.5rem] md:w-[13.75rem] lg:w-[14.5rem]">
                           <Image
-                            src={item.previewImageUrl}
-                            alt={item.previewImageAlt[language]}
+                            src={previewSrc}
+                            alt={previewAlt}
                             fill
+                            unoptimized
                             className="object-cover transition duration-500 group-hover:scale-[1.02]"
                             sizes="(max-width: 640px) 100vw, 280px"
                             priority={index === 0}
@@ -336,8 +468,8 @@ export default function MyInvitationsScreen() {
                               </div>
                               <p className={`text-[11px] tabular-nums sm:text-right ${mutedSoft}`}>
                                 {copy.updatedPrefix}{" "}
-                                <time dateTime={item.updatedAtISO}>
-                                  {formatUpdatedAt(item.updatedAtISO, language)}
+                                <time dateTime={item.updatedAt}>
+                                  {formatUpdatedAt(item.updatedAt, language)}
                                 </time>
                               </p>
                             </div>
@@ -365,7 +497,7 @@ export default function MyInvitationsScreen() {
                                     isDark ? "text-white/90" : "text-[var(--color-ink)]"
                                   }`}
                                 >
-                                  {item.eventSummary[language]}
+                                  {eventSummaryText}
                                 </p>
                               </div>
                               <div className={`rounded-xl border px-3.5 py-3.5 sm:px-4 sm:py-4 ${detailPanel}`}>
@@ -375,10 +507,11 @@ export default function MyInvitationsScreen() {
                                   {copy.venueLabel}
                                 </p>
                                 <p className={`mt-2 text-sm leading-snug sm:text-[15px] ${muted}`}>
-                                  {item.venueLine[language]}
+                                  {venueText}
                                 </p>
                               </div>
                             </div>
+                          
                           </div>
 
                           <div className={`flex flex-col gap-3 border-t border-dashed pt-5 ${linkDivider}`}>
@@ -390,21 +523,23 @@ export default function MyInvitationsScreen() {
                             <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-4">
                               <div
                                 className={`min-h-[2.75rem] flex-1 rounded-lg px-3 py-2.5 font-mono text-[11px] leading-relaxed lg:min-w-0 lg:text-xs ${urlBox}`}
-                                title={item.publicInviteUrl}
+                                title={invitePath ?? undefined}
                               >
-                                <span className="break-all">{item.publicInviteUrl}</span>
+                                <span className={invitePath ? "break-all" : `italic ${muted}`}>
+                                  {invitePath ?? copy.noPublicLinkYet}
+                                </span>
                               </div>
                               <div className="flex flex-col gap-2 sm:flex-row sm:gap-2 sm:justify-end lg:shrink-0">
-                                {item.publicInviteUrl.startsWith("/") ? (
+                                {invitePath?.startsWith("/") ? (
                                   <Link
-                                    href={item.publicInviteUrl}
+                                    href={invitePath}
                                     className="btn-primary inline-flex flex-1 items-center justify-center rounded-xl px-4 py-2.5 text-sm font-medium transition duration-200 hover:-translate-y-px sm:min-w-[9.5rem] sm:flex-none"
                                   >
                                     {copy.openInvite}
                                   </Link>
-                                ) : (
+                                ) : invitePath?.startsWith("http") ? (
                                   <a
-                                    href={item.publicInviteUrl}
+                                    href={invitePath}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="btn-primary inline-flex flex-1 items-center justify-center rounded-xl px-4 py-2.5 text-sm font-medium transition duration-200 hover:-translate-y-px sm:min-w-[9.5rem] sm:flex-none"
@@ -414,17 +549,29 @@ export default function MyInvitationsScreen() {
                                       ↗
                                     </span>
                                   </a>
+                                ) : (
+                                  <span
+                                    className={`inline-flex flex-1 cursor-not-allowed items-center justify-center rounded-xl border px-4 py-2.5 text-center text-sm font-medium opacity-50 sm:min-w-[9.5rem] sm:flex-none ${
+                                      isDark ? "border-white/12 text-white/55" : "border-[var(--color-ink)]/12 text-[var(--color-ink)]/55"
+                                    }`}
+                                  >
+                                    {copy.openInvite}
+                                  </span>
                                 )}
                                 <button
                                   type="button"
-                                  onClick={() => void copyPublicUrl(item.id, item.publicInviteUrl)}
-                                  className={`inline-flex flex-1 items-center justify-center rounded-xl border px-4 py-2.5 text-sm font-medium transition duration-200 sm:min-w-[9.5rem] sm:flex-none ${
+                                  disabled={!invitePath}
+                                  onClick={() => {
+                                    if (!invitePath) return;
+                                    void copyPublicUrl(rowKey, invitePath);
+                                  }}
+                                  className={`inline-flex flex-1 items-center justify-center rounded-xl border px-4 py-2.5 text-sm font-medium transition duration-200 enabled:hover:-translate-y-px sm:min-w-[9.5rem] sm:flex-none disabled:cursor-not-allowed disabled:opacity-45 ${
                                     isDark
                                       ? "border-white/14 text-white/88 hover:bg-white/[0.08]"
                                       : "border-[var(--color-ink)]/14 text-[var(--color-ink)] hover:bg-[var(--color-cream)]"
                                   }`}
                                 >
-                                  {copiedId === item.id ? copy.copied : copy.copyLink}
+                                  {copiedId === rowKey ? copy.copied : copy.copyLink}
                                 </button>
                               </div>
                             </div>
@@ -436,6 +583,7 @@ export default function MyInvitationsScreen() {
                 );
               })}
             </ul>
+            ) : null}
 
             <div
               className={`mx-auto mt-12 max-w-2xl rounded-2xl border px-5 py-5 sm:px-6 sm:py-6 ${

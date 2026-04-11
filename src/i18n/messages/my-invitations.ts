@@ -17,7 +17,6 @@ export type MyInvitationsMessages = {
   step1: string;
   step2: string;
   step3: string;
-  demoNotice: string;
   listHeading: string;
   inviteLinkLabel: string;
   openInvite: string;
@@ -31,6 +30,13 @@ export type MyInvitationsMessages = {
   previewPhotoCaption: string;
   eventSummaryLabel: string;
   venueLabel: string;
+  listLoadError: string;
+  retryList: string;
+  noPublicLinkYet: string;
+  paymentStatusLabel: string;
+  eventUntitled: string;
+  venueTbd: string;
+  eventTbd: string;
 };
 
 const vi: MyInvitationsMessages = {
@@ -48,13 +54,10 @@ const vi: MyInvitationsMessages = {
     "Bắt đầu bằng cách chọn một mẫu, điền tên cô dâu chú rể và ngày cưới trong phần xem thử. Khi hệ thống lưu dự án của bạn, chúng sẽ xuất hiện ở đây.",
   ctaBrowse: "Khám phá mẫu thiệp",
   futureHintTitle: "Sắp tới",
-  futureHintBody:
-    "Tải gói nguồn, liên kết xem thử công khai và trạng thái thanh toán sẽ được hiển thị trên từng thẻ khi kết nối xong với máy chủ.",
+  futureHintBody: "Tải gói nguồn triển khai sẽ có trong bản cập nhật tiếp theo.",
   step1: "Chọn mẫu",
   step2: "Chỉnh nội dung",
   step3: "Lưu & triển khai",
-  demoNotice:
-    "Đang hiển thị dữ liệu minh họa. Khi kết nối API, danh sách sẽ lấy từ máy chủ.",
   listHeading: "Thiệp của bạn",
   inviteLinkLabel: "Link thiệp cưới",
   openInvite: "Mở thiệp",
@@ -68,6 +71,13 @@ const vi: MyInvitationsMessages = {
   previewPhotoCaption: "Ảnh xem thử",
   eventSummaryLabel: "Thời gian & địa điểm",
   venueLabel: "Địa điểm tổ chức",
+  listLoadError: "Không tải được danh sách thiệp. Vui lòng thử lại.",
+  retryList: "Thử lại",
+  noPublicLinkYet: "Chưa có liên kết công khai cho thiệp này.",
+  paymentStatusLabel: "Thanh toán",
+  eventUntitled: "Chưa đặt tên sự kiện",
+  venueTbd: "Chưa có địa điểm",
+  eventTbd: "Ngày giờ chưa cập nhật",
 };
 
 const en: MyInvitationsMessages = {
@@ -85,13 +95,10 @@ const en: MyInvitationsMessages = {
     "Pick a template and fill in names, date, and venue in the live preview. Once your projects are saved on our servers, they will appear in this list.",
   ctaBrowse: "Browse templates",
   futureHintTitle: "Coming soon",
-  futureHintBody:
-    "Source bundles, public preview links, and payment status will show on each card once the backend is connected.",
+  futureHintBody: "Downloadable source bundles for your invitation will arrive in a later update.",
   step1: "Pick a template",
   step2: "Customize",
   step3: "Save & deploy",
-  demoNotice:
-    "Showing sample data. Once the API is connected, this list will come from the server.",
   listHeading: "Your invitations",
   inviteLinkLabel: "Invitation link",
   openInvite: "Open invitation",
@@ -105,6 +112,13 @@ const en: MyInvitationsMessages = {
   previewPhotoCaption: "Preview image",
   eventSummaryLabel: "When & where",
   venueLabel: "Venue",
+  listLoadError: "Could not load your invitations. Please try again.",
+  retryList: "Try again",
+  noPublicLinkYet: "No public link is available for this invitation yet.",
+  paymentStatusLabel: "Payment",
+  eventUntitled: "Untitled event",
+  venueTbd: "No venue yet",
+  eventTbd: "Date and time TBD",
 };
 
 export const myInvitationsMessages: Record<AppLanguage, MyInvitationsMessages> = {
