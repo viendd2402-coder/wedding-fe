@@ -33,6 +33,8 @@ export type TemplatePreviewProps = {
   preview: PreviewData;
   images: PreviewImages;
   onPreviewImage: (image: LightboxImage) => void;
+  /** Trang `/invite/[code]` — ẩn link về trang chủ trong header mẫu (footer cảm ơn của thiệp vẫn giữ). */
+  isPublicInviteSnapshot?: boolean;
 };
 
 export const defaultPreviewData: PreviewData = {

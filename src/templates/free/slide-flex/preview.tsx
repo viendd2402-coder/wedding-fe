@@ -225,6 +225,7 @@ export default function SlideFlexPreview({
   preview,
   images,
   onPreviewImage,
+  isPublicInviteSnapshot = false,
 }: TemplatePreviewProps) {
   const { language } = useGlobalPreferences();
   const gallery =
@@ -397,9 +398,11 @@ export default function SlideFlexPreview({
             <a href="#gift" className={styles.navPill} onClick={() => setNavOpen(false)}>
               {copy.navGift}
             </a>
-            <Link href="/" className={styles.backHome} onClick={() => setNavOpen(false)}>
-              {copy.back}
-            </Link>
+            {!isPublicInviteSnapshot ? (
+              <Link href="/" className={styles.backHome} onClick={() => setNavOpen(false)}>
+                {copy.back}
+              </Link>
+            ) : null}
           </div>
         </div>
       </nav>

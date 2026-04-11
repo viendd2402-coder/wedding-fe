@@ -101,6 +101,7 @@ export default function AzurePromisePreview({
   preview,
   images,
   onPreviewImage,
+  isPublicInviteSnapshot = false,
 }: TemplatePreviewProps) {
   const { language, theme } = useGlobalPreferences();
   const isDark = theme === "dark";
@@ -280,7 +281,7 @@ export default function AzurePromisePreview({
           : "bg-[linear-gradient(180deg,#edf7fd,#f7fbff)] text-[var(--color-ink)]"
       }
     >
-      <AzurePromiseHeader tier={template.tier} />
+      <AzurePromiseHeader tier={template.tier} hideBackToHome={isPublicInviteSnapshot} />
 
       <section className="mx-auto max-w-4xl px-3 pb-12 sm:px-6 lg:pb-20">
         <div className={`overflow-hidden rounded-[2rem] ${shellClass}`}>
@@ -580,9 +581,11 @@ export default function AzurePromisePreview({
             </ScrollRevealDiv>
 
             <ScrollRevealDiv revealAxis="up" className={scroll.block}>
-            <div className={`rounded-[1.7rem] p-6 text-center ${softCardClass}`}>
-              <p className="break-words font-display text-2xl leading-tight sm:text-4xl">{copy.footerTitle}</p>
-            </div>
+              <div className={`rounded-[1.7rem] p-6 text-center ${softCardClass}`}>
+                <p className="break-words font-display text-2xl leading-tight sm:text-4xl">
+                  {copy.footerTitle}
+                </p>
+              </div>
             </ScrollRevealDiv>
           </div>
         </div>

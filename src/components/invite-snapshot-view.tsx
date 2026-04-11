@@ -1,10 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
 import { useMessages } from "@/i18n/use-messages";
+import type { PublicInvitePersonalization } from "@/lib/public-invite-types";
 import { templateModuleMap } from "@/templates/template-registry";
 import type { PreviewData, PreviewImages, LightboxImage } from "@/templates/preview-types";
 
@@ -79,13 +79,16 @@ type InviteSnapshotViewProps = {
   templateSlug: string;
   preview: PreviewData;
   images: PreviewImages;
+  personalization?: PublicInvitePersonalization;
 };
 
 export default function InviteSnapshotView({
   templateSlug,
   preview,
   images,
+  personalization,
 }: InviteSnapshotViewProps) {
+  const { theme } = useGlobalPreferences();
   const { inviteSnapshot: copy } = useMessages();
   const [lightboxImage, setLightboxImage] = useState<LightboxImage | null>(null);
   const onPreviewImage = useCallback((image: LightboxImage) => {
@@ -97,36 +100,17 @@ export default function InviteSnapshotView({
 
   return (
     <main className="relative min-h-screen bg-[var(--color-cream)] text-[var(--color-ink)]">
-      <header className="sticky top-0 z-[90] border-b border-[var(--color-ink)]/10 bg-[var(--color-cream)]/93 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl flex-col gap-2.5 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-          <Link
-            href="/"
-            className="shrink-0 text-sm font-semibold text-[var(--color-rose)] transition hover:opacity-85"
-          >
-            {copy.homeLink}
-          </Link>
-          <p className="text-center text-xs leading-relaxed text-[var(--color-ink)]/70 sm:flex-1 sm:text-left sm:text-sm">
-            {copy.banner}
-          </p>
-        </div>
-      </header>
-
       {Preview && templateMod ? (
         <Preview
           template={templateMod.meta}
           preview={preview}
           images={images}
           onPreviewImage={onPreviewImage}
+          isPublicInviteSnapshot
         />
       ) : (
         <div className="mx-auto max-w-lg px-6 py-20 text-center">
           <p className="text-sm text-[var(--color-ink)]/75">{copy.unknownTemplate}</p>
-          <Link
-            href="/"
-            className="btn-primary mt-8 inline-flex rounded-full px-8 py-3 text-sm font-medium"
-          >
-            {copy.homeLink}
-          </Link>
         </div>
       )}
 

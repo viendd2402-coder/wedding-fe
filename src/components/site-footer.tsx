@@ -8,6 +8,10 @@ import { useMessages } from "@/i18n/use-messages";
 import { IconTiktokBrand, IconZaloBrand } from "@/components/icons-social-brands";
 import { forceDocumentScrollTop } from "@/lib/force-document-scroll-top";
 import { isTemplateDetailPath } from "@/lib/is-template-detail-path";
+
+function isPublicInviteSharePath(pathname: string | null): boolean {
+  return Boolean(pathname?.startsWith("/invite/"));
+}
 import { siteContact, siteTiktokUrl, siteZaloUrl } from "@/lib/site-contact";
 
 function IconMail({ className }: { className?: string }) {
@@ -74,7 +78,7 @@ export default function SiteFooter() {
     [pathname],
   );
 
-  if (isTemplateDetailPath(pathname)) {
+  if (isTemplateDetailPath(pathname) || isPublicInviteSharePath(pathname)) {
     return null;
   }
 

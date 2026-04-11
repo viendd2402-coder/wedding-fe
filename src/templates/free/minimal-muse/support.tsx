@@ -62,7 +62,14 @@ const heartParticles = [
   { left: "92%", delay: "2.8s", duration: "10.8s", size: "21px", opacity: 0.18 },
 ];
 
-export function MinimalMuseHeader({ tier }: { tier: string }) {
+export function MinimalMuseHeader({
+  tier,
+  hideBackToHome,
+}: {
+  tier: string;
+  /** Trang thiệp công khai — không hiển thị nút về trang chủ. */
+  hideBackToHome?: boolean;
+}) {
   const { language, theme } = useGlobalPreferences();
   const isDark = theme === "dark";
   const chrome = templateDemoChromeMessages[language];
@@ -72,13 +79,15 @@ export function MinimalMuseHeader({ tier }: { tier: string }) {
   return (
     <div className="relative mx-auto flex max-w-7xl flex-col gap-4 px-4 py-6 sm:px-10 sm:py-8 lg:px-16">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <Link
-          href="/"
-          className="btn-secondary inline-flex w-fit rounded-full px-5 py-3 text-sm font-medium backdrop-blur"
-        >
-          {backLabel}
-        </Link>
-        <div className="flex items-center gap-3">
+        {!hideBackToHome ? (
+          <Link
+            href="/"
+            className="btn-secondary inline-flex w-fit rounded-full px-5 py-3 text-sm font-medium backdrop-blur"
+          >
+            {backLabel}
+          </Link>
+        ) : null}
+        <div className={`flex items-center gap-3 ${hideBackToHome ? "sm:ml-auto" : ""}`}>
           <span
             className="rounded-full px-4 py-2 text-xs font-medium uppercase tracking-[0.25em]"
             style={{

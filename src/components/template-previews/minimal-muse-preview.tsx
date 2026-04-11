@@ -113,6 +113,7 @@ export default function MinimalMusePreview({
   preview,
   images,
   onPreviewImage,
+  isPublicInviteSnapshot = false,
 }: TemplatePreviewProps) {
   const { language, theme } = useGlobalPreferences();
   const isDark = theme === "dark";
@@ -136,7 +137,7 @@ export default function MinimalMusePreview({
           }`}
         />
         <MinimalMuseFallingHearts color="rgba(197, 122, 145, 0.9)" />
-        <MinimalMuseHeader tier={template.tier} />
+        <MinimalMuseHeader tier={template.tier} hideBackToHome={isPublicInviteSnapshot} />
         <div className="relative mx-auto max-w-7xl px-4 pb-10 sm:px-10 sm:pb-12 lg:px-16 lg:pb-20">
           <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
             <ScrollRevealDiv revealAxis="left" className={scroll.block}>

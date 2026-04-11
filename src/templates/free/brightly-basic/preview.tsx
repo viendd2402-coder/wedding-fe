@@ -250,6 +250,7 @@ export default function BrightlyBasicPreview({
   preview,
   images,
   onPreviewImage,
+  isPublicInviteSnapshot = false,
 }: TemplatePreviewProps) {
   const { language } = useGlobalPreferences();
   const copy = brightlyBasicPreviewMessages[language];
@@ -365,9 +366,11 @@ export default function BrightlyBasicPreview({
                 <a href="#rsvp">{copy.navRsvp}</a>
                 <a href="#donate">{copy.navGift}</a>
               </nav>
-              <Link href="/" className={styles.backHome}>
-                {copy.back}
-              </Link>
+              {!isPublicInviteSnapshot ? (
+                <Link href="/" className={styles.backHome}>
+                  {copy.back}
+                </Link>
+              ) : null}
             </div>
           </div>
         </div>

@@ -29,7 +29,13 @@ export const azurePromiseGallery = [
   "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=1200&q=80",
 ];
 
-export function AzurePromiseHeader({ tier }: { tier: string }) {
+export function AzurePromiseHeader({
+  tier,
+  hideBackToHome,
+}: {
+  tier: string;
+  hideBackToHome?: boolean;
+}) {
   const { language, theme } = useGlobalPreferences();
   const isDark = theme === "dark";
   const chrome = templateDemoChromeMessages[language];
@@ -39,13 +45,15 @@ export function AzurePromiseHeader({ tier }: { tier: string }) {
   return (
     <div className="relative mx-auto flex max-w-7xl flex-col gap-4 px-4 py-6 sm:px-10 sm:py-8 lg:px-16">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <Link
-          href="/"
-          className="btn-secondary inline-flex w-fit rounded-full px-5 py-3 text-sm font-medium backdrop-blur"
-        >
-          {backLabel}
-        </Link>
-        <div className="flex items-center gap-3">
+        {!hideBackToHome ? (
+          <Link
+            href="/"
+            className="btn-secondary inline-flex w-fit rounded-full px-5 py-3 text-sm font-medium backdrop-blur"
+          >
+            {backLabel}
+          </Link>
+        ) : null}
+        <div className={`flex items-center gap-3 ${hideBackToHome ? "sm:ml-auto" : ""}`}>
           <span
             className="rounded-full px-4 py-2 text-xs font-medium uppercase tracking-[0.25em]"
             style={{

@@ -6,6 +6,9 @@ export type InviteSnapshotMessages = {
   homeLink: string;
   closeLightbox: string;
   unknownTemplate: string;
+  /** Ghép trước `recipientName` khi BE không gửi `greetingLine` đủ câu. */
+  inviteRecipientPrefix: string;
+  personalBlockAria: string;
 };
 
 const vi: InviteSnapshotMessages = {
@@ -14,6 +17,8 @@ const vi: InviteSnapshotMessages = {
   homeLink: "Về Lumiere",
   closeLightbox: "Đóng ảnh",
   unknownTemplate: "Không tìm thấy mẫu thiệp cho bản lưu này.",
+  inviteRecipientPrefix: "Kính mời",
+  personalBlockAria: "Lời mời dành riêng cho bạn",
 };
 
 const en: InviteSnapshotMessages = {
@@ -22,6 +27,8 @@ const en: InviteSnapshotMessages = {
   homeLink: "Lumiere home",
   closeLightbox: "Close image",
   unknownTemplate: "No template is registered for this saved invitation.",
+  inviteRecipientPrefix: "Dear",
+  personalBlockAria: "Personal invitation message",
 };
 
 export const inviteSnapshotMessages: Record<AppLanguage, InviteSnapshotMessages> = {
