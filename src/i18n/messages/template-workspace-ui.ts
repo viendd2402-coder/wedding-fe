@@ -34,6 +34,7 @@ export type TemplateWorkspacePanelMessages = {
   paymentLoading: string;
   paymentNotConfigured: string;
   paymentFailed: string;
+  paymentInviteIncomplete: string;
   paymentFreeHint: string;
   paymentEmailCta: string;
   paymentMailSubject: string;
@@ -72,12 +73,14 @@ const vi: TemplateWorkspaceMessages = {
     paymentTitle: "Thanh toán gói Premium",
     paymentBuyerLine: "Tên trên đơn thanh toán:",
     paymentBuyerUnset:
-      "Chưa nhập tên cô dâu / chú rể ở các ô phía trên — bạn vẫn có thể thanh toán; hệ thống ghi nhận theo tên mẫu.",
+      "Chưa nhập tên cô dâu / chú rể — cần đủ hai tên để tạo đơn thanh toán kèm thiệp.",
     paymentPay: "Thanh toán — 2.490.000đ",
     paymentLoading: "Đang tạo link…",
     paymentNotConfigured:
       "Cổng thanh toán chưa được cấu hình trên máy chủ. Vui lòng thử lại sau hoặc liên hệ hỗ trợ.",
     paymentFailed: "Không tạo được link. Thử lại sau.",
+    paymentInviteIncomplete:
+      "Vui lòng nhập tên cô dâu và chú rể, địa điểm tiệc hoặc thành phố, và chỉnh ngày đếm ngược (ISO) hợp lệ trước khi thanh toán.",
     paymentFreeHint:
       "Đây là mẫu miễn phí — không cần thanh toán. Gửi nội dung đã nhập phía trên qua email để được tư vấn.",
     paymentEmailCta: "Gửi yêu cầu qua email",
@@ -113,12 +116,14 @@ const en: TemplateWorkspaceMessages = {
     paymentTitle: "Premium checkout",
     paymentBuyerLine: "Name on the payment request:",
     paymentBuyerUnset:
-      "You have not filled in bride/groom names above — you can still pay; we will label the order from the template name.",
+      "Bride and groom names are not filled in yet — both are required to create the payment request with your invitation.",
     paymentPay: "Pay — 2,490,000đ",
     paymentLoading: "Creating link…",
     paymentNotConfigured:
       "Checkout is not configured on the server yet. Please try again later or contact support.",
     paymentFailed: "Could not create the payment link.",
+    paymentInviteIncomplete:
+      "Please enter bride and groom names, a reception venue or city, and a valid countdown date before paying.",
     paymentFreeHint:
       "This is a free template — no payment. Email us the details you entered above for setup help.",
     paymentEmailCta: "Send request by email",

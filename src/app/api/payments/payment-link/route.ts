@@ -1,18 +1,16 @@
 import { NextResponse } from "next/server";
 import { getPublicApiBaseUrl } from "@/lib/api-base";
+import { sanitizePaymentInvitation } from "@/lib/create-payment-invitation";
 import { extractPaymentRedirectUrl } from "@/lib/payment-redirect-url";
-import { PREMIUM_AMOUNT_VND, buildPremiumPaymentDescription } from "@/lib/premium-checkout";
 import { weddingTemplates } from "@/templates/template-registry";
 
 type Body = {
-  templateSlug?: string;
-  /** Ghi chú xem thử — chỉ log server, không gửi sang Nest. */
-  clientNote?: string;
+  invitation?: unknown;
 };
 
 /**
  * POST — tạo link thanh toán VNPay qua backend Nest (`POST …/payments/payment-link`).
- * Body gửi BE: `{ amount, description }` (class-validator trên server).
+ * Body gửi BE: `{ invitation }` — amount/description do Nest quyết định.
  */
 export async function POST(request: Request) {
   let body: Body;
@@ -22,31 +20,20 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "invalid_json" }, { status: 400 });
   }
 
-  const templateSlug = typeof body.templateSlug === "string" ? body.templateSlug.trim() : "";
-  if (!templateSlug) {
-    return NextResponse.json({ error: "missing_template" }, { status: 400 });
+  const invitation = sanitizePaymentInvitation(body.invitation);
+  if (!invitation) {
+    return NextResponse.json({ error: "invalid_invitation" }, { status: 400 });
   }
 
-  const templateMeta = weddingTemplates.find((t) => t.slug === templateSlug);
+  const templateMeta = weddingTemplates.find((t) => t.slug === invitation.templateSlug);
   if (!templateMeta || templateMeta.tier !== "Trả phí") {
     return NextResponse.json({ error: "not_premium" }, { status: 403 });
-  }
-
-  const clientNote = typeof body.clientNote === "string" ? body.clientNote.slice(0, 2000) : "";
-  if (clientNote) {
-    console.info("[payment-link note]", { templateSlug, previewNote: clientNote });
   }
 
   const apiBase = getPublicApiBaseUrl();
   if (!apiBase) {
     return NextResponse.json({ error: "payment_config" }, { status: 503 });
   }
-
-  const amount = Math.floor(Number(PREMIUM_AMOUNT_VND));
-  if (!Number.isFinite(amount) || amount < 1000) {
-    return NextResponse.json({ error: "invalid_amount" }, { status: 500 });
-  }
-  const description = buildPremiumPaymentDescription(templateMeta.name, templateMeta.slug);
 
   const upstreamUrl = `${apiBase}/payments/payment-link`;
   const cookie = request.headers.get("cookie");
@@ -62,7 +49,7 @@ export async function POST(request: Request) {
         ...(cookie ? { Cookie: cookie } : {}),
         ...(authorization?.trim() ? { Authorization: authorization.trim() } : {}),
       },
-      body: JSON.stringify({ amount, description }),
+      body: JSON.stringify({ invitation }),
       cache: "no-store",
     });
   } catch (e) {

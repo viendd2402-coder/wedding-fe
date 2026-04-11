@@ -17,6 +17,7 @@ import {
 import type { WeddingTemplate } from "@/lib/templates/types";
 import { forceDocumentScrollTop } from "@/lib/force-document-scroll-top";
 import { getStoredAuthToken } from "@/lib/auth-client";
+import { buildPaymentInvitationFromPreview } from "@/lib/create-payment-invitation";
 
 function ImageLightbox({
   image,
@@ -143,20 +144,23 @@ function PreviewConfigurator({
 
   const startPremiumCheckout = useCallback(async () => {
     setPayError(null);
+    const invitation = buildPaymentInvitationFromPreview(template.slug, preview, images);
+    if (!invitation) {
+      setPayError(copy.paymentInviteIncomplete);
+      return;
+    }
     setPayLoading(true);
     try {
       const token = getStoredAuthToken();
       const headers: Record<string, string> = { "Content-Type": "application/json" };
       if (token) headers.Authorization = `Bearer ${token}`;
 
-      
       const res = await fetch("/api/payments/payment-link", {
         method: "POST",
         headers,
         credentials: "include",
         body: JSON.stringify({
-          templateSlug: template.slug,
-          clientNote,
+          invitation,
         }),
       });
       const data = (await res.json()) as { checkoutUrl?: string; error?: string };
@@ -165,6 +169,8 @@ function PreviewConfigurator({
           setPayError(copy.paymentNotConfigured);
         } else if (data.error === "not_premium") {
           setPayError(copy.paymentFailed);
+        } else if (data.error === "invalid_invitation") {
+          setPayError(copy.paymentInviteIncomplete);
         } else {
           setPayError(copy.paymentFailed);
         }
@@ -180,7 +186,15 @@ function PreviewConfigurator({
     } finally {
       setPayLoading(false);
     }
-  }, [clientNote, copy.paymentFailed, copy.paymentNotConfigured, template.slug]);
+  }, [
+    clientNote,
+    copy.paymentFailed,
+    copy.paymentInviteIncomplete,
+    copy.paymentNotConfigured,
+    images,
+    preview,
+    template.slug,
+  ]);
 
   if (isCollapsed) {
     return (
