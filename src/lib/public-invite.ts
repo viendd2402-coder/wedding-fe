@@ -5,7 +5,11 @@ import type {
   ParsedPublicInvite,
   PublicInvitePersonalization,
 } from "@/lib/public-invite-types";
-import type { PreviewData, PreviewImages } from "@/templates/preview-types";
+import {
+  emptySlideFlexPreviewExtra,
+  type PreviewData,
+  type PreviewImages,
+} from "@/templates/preview-types";
 
 export type {
   InviteSnapshotPayload,
@@ -95,7 +99,30 @@ function formatDateLabelVi(isoOrDate: string): string {
   }
 }
 
+/** Ảnh portrait slide-flex từ JSON (chỉ chấp nhận URL https — không dùng blob). */
+function portraitHttpsFromCandidates(candidates: Record<string, unknown>[]): {
+  groomPortraitImage: string;
+  bridePortraitImage: string;
+} {
+  const groom = firstPick(candidates, [
+    "groomPortraitImage",
+    "groom_portrait_image",
+    "groomPortraitUrl",
+    "groom_portrait_url",
+  ]);
+  const bride = firstPick(candidates, [
+    "bridePortraitImage",
+    "bride_portrait_image",
+    "bridePortraitUrl",
+    "bride_portrait_url",
+  ]);
+  const g = groom && /^https?:\/\//i.test(groom) ? groom : "";
+  const b = bride && /^https?:\/\//i.test(bride) ? bride : "";
+  return { groomPortraitImage: g, bridePortraitImage: b };
+}
+
 function collectImageUrls(candidates: Record<string, unknown>[]): PreviewImages {
+  const portraits = portraitHttpsFromCandidates(candidates);
   for (const o of candidates) {
     const coverDirect = pickTrimmedString(o, [
       "coverImage",
@@ -117,7 +144,12 @@ function collectImageUrls(candidates: Record<string, unknown>[]): PreviewImages 
           }
         }
       }
-      return { coverImage: coverDirect, galleryImages: gallery };
+      return {
+        coverImage: coverDirect,
+        galleryImages: gallery,
+        groomPortraitImage: portraits.groomPortraitImage,
+        bridePortraitImage: portraits.bridePortraitImage,
+      };
     }
 
     const album = o.album ?? o.images;
@@ -132,11 +164,36 @@ function collectImageUrls(candidates: Record<string, unknown>[]): PreviewImages 
         }
       }
       if (urls.length) {
-        return { coverImage: urls[0] ?? "", galleryImages: urls.slice(1) };
+        return {
+          coverImage: urls[0] ?? "",
+          galleryImages: urls.slice(1),
+          groomPortraitImage: portraits.groomPortraitImage,
+          bridePortraitImage: portraits.bridePortraitImage,
+        };
       }
     }
   }
-  return { coverImage: "", galleryImages: [] };
+  return {
+    coverImage: "",
+    galleryImages: [],
+    groomPortraitImage: portraits.groomPortraitImage,
+    bridePortraitImage: portraits.bridePortraitImage,
+  };
+}
+
+function camelToSnakeKey(key: string): string {
+  return key.replace(/[A-Z]/g, (ch) => `_${ch.toLowerCase()}`);
+}
+
+/** Bổ sung trường tuỳ chỉnh slide-flex từ JSON (camelCase / snake_case). */
+function overlaySlideFlexExtraFromCandidates(
+  preview: PreviewData,
+  candidates: Record<string, unknown>[],
+) {
+  for (const key of Object.keys(emptySlideFlexPreviewExtra) as (keyof typeof emptySlideFlexPreviewExtra)[]) {
+    const v = firstPick(candidates, [key, camelToSnakeKey(key)]);
+    if (v) (preview as Record<string, string>)[key] = v;
+  }
 }
 
 function parsePersonalization(candidates: Record<string, unknown>[]): PublicInvitePersonalization | undefined {
@@ -230,7 +287,10 @@ export function parsePublicInviteBody(body: unknown): ParsedPublicInvite | null 
     bankName: bankName || "—",
     accountName: accountName || "—",
     accountNumber: accountNumber || "—",
+    ...emptySlideFlexPreviewExtra,
   };
+
+  overlaySlideFlexExtraFromCandidates(preview, candidates);
 
   const images = collectImageUrls(candidates);
   const personalization = parsePersonalization(candidates);

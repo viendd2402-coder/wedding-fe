@@ -9,13 +9,20 @@ export type UserPaymentListItemResponse = {
   paymentType: UserPaymentProductType;
   thumbnailUrl: string | null;
   templateName: string;
+  /** Slug mẫu thiệp (vd. slide-flex) — dùng link `/templates/[slug]`. */
+  templateSlug: string | null;
   publicationStatus: InvitationPublicationStatus;
   updatedAt: string;
+  /** Thời điểm tạo đơn / link — dùng cộng 15 phút khi không có `checkoutUrlExpireAt`. */
+  createdAt: string | null;
+  /** Hết hạn link cổng thanh toán (ISO) — ưu tiên so với thời gian hiện tại. */
+  checkoutUrlExpireAt: string | null;
   eventTitle: string | null;
   eventDateIso: string | null;
   eventDateLabel: string | null;
   venueDetail: string | null;
   invitePath: string | null;
+  checkoutUrl: string | null;
 };
 
 function isRecord(x: unknown): x is Record<string, unknown> {
@@ -57,13 +64,72 @@ function pickTrimmedString(o: Record<string, unknown>, ...keys: string[]): strin
   return "";
 }
 
+/** Cột `templateSlug` hoặc slug lồng trong `template` / `invitation` (Nest thường serialize quan hệ). */
+function pickTemplateSlug(o: Record<string, unknown>): string | null {
+  const direct = pickTrimmedString(
+    o,
+    "templateSlug",
+    "template_slug",
+    "inviteTemplateSlug",
+    "invite_template_slug",
+  );
+  if (direct) return direct;
+
+  const template = o.template;
+  if (isRecord(template)) {
+    const nested = pickTrimmedString(
+      template,
+      "slug",
+      "templateSlug",
+      "template_slug",
+    );
+    if (nested) return nested;
+  }
+
+  const invitation = o.invitation;
+  if (isRecord(invitation)) {
+    const nested = pickTrimmedString(
+      invitation,
+      "templateSlug",
+      "template_slug",
+      "slug",
+    );
+    if (nested) return nested;
+    const invTemplate = invitation.template;
+    if (isRecord(invTemplate)) {
+      const fromInvTpl = pickTrimmedString(
+        invTemplate,
+        "slug",
+        "templateSlug",
+        "template_slug",
+      );
+      if (fromInvTpl) return fromInvTpl;
+    }
+  }
+
+  return null;
+}
+
 function parseItem(o: Record<string, unknown>): UserPaymentListItemResponse | null {
   const id = parseNumericId(o.id);
   if (id === null) return null;
   const templateName = pickTrimmedString(o, "templateName", "template_name");
   if (!templateName) return null;
+  const templateSlug = pickTemplateSlug(o);
   const updatedAt = pickTrimmedString(o, "updatedAt", "updated_at");
   if (!updatedAt) return null;
+
+  const createdAtRaw = pickTrimmedString(o, "createdAt", "created_at");
+  const createdAtNorm = createdAtRaw || null;
+
+  const checkoutUrlExpireAtRaw = pickTrimmedString(
+    o,
+    "checkoutUrlExpireAt",
+    "checkout_url_expire_at",
+    "checkoutUrlExprireAt",
+    "checkout_url_exprire_at",
+  );
+  const checkoutUrlExpireAt = checkoutUrlExpireAtRaw || null;
 
   const paymentStatus = asStringField(
     o.paymentStatus ?? o.payment_status ?? o.paymentStatusEnum,
@@ -82,13 +148,23 @@ function parseItem(o: Record<string, unknown>): UserPaymentListItemResponse | nu
       asNullableString(o.thumbnail_url) ??
       asNullableString(o.previewImageUrl),
     templateName,
+    templateSlug: templateSlug ?? null,
     publicationStatus: publicationStatus || "unknown",
     updatedAt,
+    createdAt: createdAtNorm,
+    checkoutUrlExpireAt,
     eventTitle: asNullableString(o.eventTitle) ?? asNullableString(o.event_title),
     eventDateIso: asNullableString(o.eventDateIso) ?? asNullableString(o.event_date_iso),
     eventDateLabel: asNullableString(o.eventDateLabel) ?? asNullableString(o.event_date_label),
     venueDetail: asNullableString(o.venueDetail) ?? asNullableString(o.venue_detail),
     invitePath: asNullableString(o.invitePath) ?? asNullableString(o.invite_path),
+    checkoutUrl:
+      asNullableString(o.checkoutUrl) ??
+      asNullableString(o.checkout_url) ??
+      asNullableString(o.paymentUrl) ??
+      asNullableString(o.payment_url) ??
+      asNullableString(o.vnpUrl) ??
+      asNullableString(o.vnp_url),
   };
 }
 
@@ -173,4 +249,65 @@ export function isPublishedInvitationStatus(status: InvitationPublicationStatus)
 export function isPremiumPaymentProductType(t: UserPaymentProductType): boolean {
   const u = t.trim().toUpperCase();
   return u.includes("PREMIUM") || u.includes("PAID") || u.includes("TRẢ PHÍ") || u.includes("TRẢ_PHÍ");
+}
+
+/** Trạng thái đã thanh toán thành công (chuỗi enum từ Nest / cổng thanh toán). */
+export function isSuccessfulPaymentStatus(status: PaymentStatus): boolean {
+  const s = status.trim().toUpperCase();
+  if (!s || s === "UNKNOWN") return false;
+  const terminalFail = ["FAILED", "CANCELLED", "CANCELED", "REFUNDED", "EXPIRED", "DECLINED", "VOID"];
+  if (terminalFail.some((x) => s.includes(x))) return false;
+  const paid = new Set([
+    "PAID",
+    "COMPLETED",
+    "SUCCESS",
+    "SUCCEEDED",
+    "SETTLED",
+    "CAPTURED",
+    "DONE",
+    "CONFIRMED",
+  ]);
+  if (paid.has(s)) return true;
+  if (s.includes("UNPAID") || s.includes("NOT_PAID") || s === "NOTPAID") return false;
+  if (/_PAID$/u.test(s) || /_COMPLETED$/u.test(s) || /_SUCCESS$/u.test(s)) return true;
+  return false;
+}
+
+/** Có link thanh toán còn dùng được và chưa ghi nhận trạng thái thành công. */
+export function shouldOfferCheckoutResume(item: UserPaymentListItemResponse): boolean {
+  const url = item.checkoutUrl?.trim();
+  if (!url) return false;
+  return !isSuccessfulPaymentStatus(item.paymentStatus);
+}
+
+const CHECKOUT_RESUME_GRACE_MS = 15 * 60 * 1000;
+
+function parseInstant(iso: string | null | undefined): number | null {
+  if (!iso?.trim()) return null;
+  const t = Date.parse(iso.trim());
+  return Number.isNaN(t) ? null : t;
+}
+
+/**
+ * Link thanh toán coi là hết hạn khi đã qua **mốc sớm nhất** trong các mốc sau (mỗi mốc chỉ tính nếu parse được):
+ * - `createdAt` + 15 phút;
+ * - `checkoutUrlExpireAt` (hạn từ cổng / BE).
+ *
+ * Không có mốc nào hợp lệ → chưa hết hạn (vẫn cho phép nút thanh toán nếu có URL).
+ */
+export function isPaymentCheckoutOfferExpired(
+  item: UserPaymentListItemResponse,
+  nowMs: number = Date.now(),
+): boolean {
+  const deadlines: number[] = [];
+  const created = parseInstant(item.createdAt);
+  if (created !== null) {
+    deadlines.push(created + CHECKOUT_RESUME_GRACE_MS);
+  }
+  const expireAt = parseInstant(item.checkoutUrlExpireAt);
+  if (expireAt !== null) {
+    deadlines.push(expireAt);
+  }
+  if (!deadlines.length) return false;
+  return nowMs >= Math.min(...deadlines);
 }

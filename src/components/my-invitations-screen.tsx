@@ -9,9 +9,11 @@ import { useGlobalPreferences } from "@/components/global-preferences-provider";
 import { useMessages } from "@/i18n/use-messages";
 import { getStoredAuthToken } from "@/lib/auth-client";
 import {
+  isPaymentCheckoutOfferExpired,
   isPremiumPaymentProductType,
   isPublishedInvitationStatus,
   parseUserPaymentsListResponse,
+  shouldOfferCheckoutResume,
   type UserPaymentListItemResponse,
 } from "@/lib/user-payments-api";
 
@@ -408,6 +410,18 @@ export default function MyInvitationsScreen() {
                   copy.eventTbd;
                 const venueText = item.venueDetail?.trim() || copy.venueTbd;
                 const invitePath = item.invitePath?.trim() || null;
+                const checkoutUrl = item.checkoutUrl?.trim() || null;
+                const offerCheckout = shouldOfferCheckoutResume(item);
+                const checkoutExpired =
+                  Boolean(offerCheckout && checkoutUrl) &&
+                  isPaymentCheckoutOfferExpired(item);
+                const showPayButton = Boolean(
+                  offerCheckout && checkoutUrl && !checkoutExpired,
+                );
+                const templateSlug = item.templateSlug?.trim() ?? null;
+                const templateDemoPath = templateSlug
+                  ? `/templates/${encodeURIComponent(templateSlug)}`
+                  : null;
                 const rowKey = String(item.id);
 
                 return (
@@ -453,13 +467,26 @@ export default function MyInvitationsScreen() {
                           <div className="min-w-0 space-y-4 md:space-y-5">
                             <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-x-3 sm:gap-y-2">
                               <div className="flex min-w-0 flex-wrap items-center gap-2">
-                                <span
-                                  className={`rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] ${
-                                    isDark ? "bg-white/[0.07] text-white/52" : "bg-[var(--color-ink)]/[0.05] text-[var(--color-ink)]/52"
-                                  }`}
-                                >
-                                  {tName}
-                                </span>
+                                {templateDemoPath ? (
+                                  <Link
+                                    href={templateDemoPath}
+                                    className={`rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] underline-offset-2 transition hover:underline ${
+                                      isDark
+                                        ? "bg-white/[0.07] text-white/62 hover:text-white/88"
+                                        : "bg-[var(--color-ink)]/[0.05] text-[var(--color-ink)]/58 hover:text-[var(--color-ink)]/85"
+                                    }`}
+                                  >
+                                    {tName}
+                                  </Link>
+                                ) : (
+                                  <span
+                                    className={`rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] ${
+                                      isDark ? "bg-white/[0.07] text-white/52" : "bg-[var(--color-ink)]/[0.05] text-[var(--color-ink)]/52"
+                                    }`}
+                                  >
+                                    {tName}
+                                  </span>
+                                )}
                                 <span
                                   className={`shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${statusClass}`}
                                 >
@@ -530,49 +557,104 @@ export default function MyInvitationsScreen() {
                                 </span>
                               </div>
                               <div className="flex flex-col gap-2 sm:flex-row sm:gap-2 sm:justify-end lg:shrink-0">
-                                {invitePath?.startsWith("/") ? (
-                                  <Link
-                                    href={invitePath}
-                                    className="btn-primary inline-flex flex-1 items-center justify-center rounded-xl px-4 py-2.5 text-sm font-medium transition duration-200 hover:-translate-y-px sm:min-w-[9.5rem] sm:flex-none"
-                                  >
-                                    {copy.openInvite}
-                                  </Link>
-                                ) : invitePath?.startsWith("http") ? (
+                                {showPayButton ? (
                                   <a
-                                    href={invitePath}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="btn-primary inline-flex flex-1 items-center justify-center rounded-xl px-4 py-2.5 text-sm font-medium transition duration-200 hover:-translate-y-px sm:min-w-[9.5rem] sm:flex-none"
+                                    href={checkoutUrl!}
+                                    className="btn-primary inline-flex w-full flex-1 items-center justify-center rounded-xl px-4 py-2.5 text-sm font-medium transition duration-200 hover:-translate-y-px sm:min-w-[12rem] sm:flex-none"
                                   >
-                                    {copy.openInvite}
+                                    {copy.completePayment}
                                     <span className="ml-1 text-xs opacity-90" aria-hidden>
                                       ↗
                                     </span>
                                   </a>
-                                ) : (
-                                  <span
-                                    className={`inline-flex flex-1 cursor-not-allowed items-center justify-center rounded-xl border px-4 py-2.5 text-center text-sm font-medium opacity-50 sm:min-w-[9.5rem] sm:flex-none ${
-                                      isDark ? "border-white/12 text-white/55" : "border-[var(--color-ink)]/12 text-[var(--color-ink)]/55"
-                                    }`}
-                                  >
-                                    {copy.openInvite}
-                                  </span>
-                                )}
-                                <button
-                                  type="button"
-                                  disabled={!invitePath}
-                                  onClick={() => {
-                                    if (!invitePath) return;
-                                    void copyPublicUrl(rowKey, invitePath);
-                                  }}
-                                  className={`inline-flex flex-1 items-center justify-center rounded-xl border px-4 py-2.5 text-sm font-medium transition duration-200 enabled:hover:-translate-y-px sm:min-w-[9.5rem] sm:flex-none disabled:cursor-not-allowed disabled:opacity-45 ${
-                                    isDark
-                                      ? "border-white/14 text-white/88 hover:bg-white/[0.08]"
-                                      : "border-[var(--color-ink)]/14 text-[var(--color-ink)] hover:bg-[var(--color-cream)]"
-                                  }`}
-                                >
-                                  {copiedId === rowKey ? copy.copied : copy.copyLink}
-                                </button>
+                                ) : null}
+                                {checkoutExpired ? (
+                                  <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-stretch sm:justify-end lg:shrink-0">
+                                    <div
+                                      className={`inline-flex min-h-[2.75rem] w-full flex-1 items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-center text-sm font-medium sm:min-w-0 ${
+                                        isDark
+                                          ? "border-amber-400/35 bg-amber-500/10 text-amber-100/95"
+                                          : "border-amber-700/30 bg-amber-50 text-amber-950"
+                                      }`}
+                                      role="status"
+                                    >
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="1.75"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        className="h-4 w-4 shrink-0 opacity-95"
+                                        aria-hidden
+                                      >
+                                        <circle cx="12" cy="12" r="9" />
+                                        <path d="M12 7v5l3 2" />
+                                      </svg>
+                                      {copy.checkoutExpired}
+                                    </div>
+                                    {templateDemoPath ? (
+                                      <Link
+                                        href={templateDemoPath}
+                                        className={`inline-flex w-full flex-none items-center justify-center rounded-xl border px-4 py-2.5 text-sm font-medium transition duration-200 hover:-translate-y-px sm:w-auto sm:min-w-[10.5rem] ${
+                                          isDark
+                                            ? "border-white/14 text-white/88 hover:bg-white/[0.08]"
+                                            : "border-[var(--color-ink)]/14 text-[var(--color-ink)] hover:bg-[var(--color-cream)]"
+                                        }`}
+                                      >
+                                        {copy.openThisTemplate}
+                                      </Link>
+                                    ) : null}
+                                  </div>
+                                ) : null}
+                                {!showPayButton && !checkoutExpired ? (
+                                  <>
+                                    {invitePath?.startsWith("/") ? (
+                                      <Link
+                                        href={invitePath}
+                                        className="btn-primary inline-flex flex-1 items-center justify-center rounded-xl px-4 py-2.5 text-sm font-medium transition duration-200 hover:-translate-y-px sm:min-w-[9.5rem] sm:flex-none"
+                                      >
+                                        {copy.openInvite}
+                                      </Link>
+                                    ) : invitePath?.startsWith("http") ? (
+                                      <a
+                                        href={invitePath}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="btn-primary inline-flex flex-1 items-center justify-center rounded-xl px-4 py-2.5 text-sm font-medium transition duration-200 hover:-translate-y-px sm:min-w-[9.5rem] sm:flex-none"
+                                      >
+                                        {copy.openInvite}
+                                        <span className="ml-1 text-xs opacity-90" aria-hidden>
+                                          ↗
+                                        </span>
+                                      </a>
+                                    ) : (
+                                      <span
+                                        className={`inline-flex flex-1 cursor-not-allowed items-center justify-center rounded-xl border px-4 py-2.5 text-center text-sm font-medium opacity-50 sm:min-w-[9.5rem] sm:flex-none ${
+                                          isDark ? "border-white/12 text-white/55" : "border-[var(--color-ink)]/12 text-[var(--color-ink)]/55"
+                                        }`}
+                                      >
+                                        {copy.openInvite}
+                                      </span>
+                                    )}
+                                    <button
+                                      type="button"
+                                      disabled={!invitePath}
+                                      onClick={() => {
+                                        if (!invitePath) return;
+                                        void copyPublicUrl(rowKey, invitePath);
+                                      }}
+                                      className={`inline-flex flex-1 items-center justify-center rounded-xl border px-4 py-2.5 text-sm font-medium transition duration-200 enabled:hover:-translate-y-px sm:min-w-[9.5rem] sm:flex-none disabled:cursor-not-allowed disabled:opacity-45 ${
+                                        isDark
+                                          ? "border-white/14 text-white/88 hover:bg-white/[0.08]"
+                                          : "border-[var(--color-ink)]/14 text-[var(--color-ink)] hover:bg-[var(--color-cream)]"
+                                      }`}
+                                    >
+                                      {copiedId === rowKey ? copy.copied : copy.copyLink}
+                                    </button>
+                                  </>
+                                ) : null}
                               </div>
                             </div>
                           </div>

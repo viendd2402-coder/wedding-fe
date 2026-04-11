@@ -178,10 +178,10 @@ export default function GlobalDashboardControls() {
           className="mx-auto hidden min-w-0 flex-1 items-center justify-center gap-0.5 px-2 lg:flex xl:gap-1"
           aria-label={copy.mainNavAria}
         >
-          <Link href="/" className={navLinkClass(homeActive)} onClick={handleHomeLinkClick}>
+          <Link href="/" className={navLinkClass(false)} onClick={handleHomeLinkClick}>
             {copy.navHome}
           </Link>
-          <Link href="/#templates" className={navLinkClass(templatesActive)}>
+          <Link href="/#templates" className={navLinkClass(false)}>
             {copy.navTemplates}
           </Link>
           <Link href="/#features" className={navLinkClass(false)}>

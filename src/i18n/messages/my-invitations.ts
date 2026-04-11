@@ -33,6 +33,12 @@ export type MyInvitationsMessages = {
   listLoadError: string;
   retryList: string;
   noPublicLinkYet: string;
+  /** CTA mở lại cổng thanh toán khi đơn chưa hoàn tất */
+  completePayment: string;
+  /** Link thanh toán đã quá hạn (mốc sớm nhất: 15 phút sau `createdAt` hoặc `checkoutUrlExpireAt`) */
+  checkoutExpired: string;
+  /** Khi hết hạn thanh toán — mở lại trang demo mẫu đã chọn */
+  openThisTemplate: string;
   paymentStatusLabel: string;
   eventUntitled: string;
   venueTbd: string;
@@ -74,6 +80,9 @@ const vi: MyInvitationsMessages = {
   listLoadError: "Không tải được danh sách thiệp. Vui lòng thử lại.",
   retryList: "Thử lại",
   noPublicLinkYet: "Chưa có liên kết công khai cho thiệp này.",
+  completePayment: "Hoàn tất thanh toán",
+  checkoutExpired: "Hết thời gian thanh toán",
+  openThisTemplate: "Mở mẫu này",
   paymentStatusLabel: "Thanh toán",
   eventUntitled: "Chưa đặt tên sự kiện",
   venueTbd: "Chưa có địa điểm",
@@ -115,6 +124,9 @@ const en: MyInvitationsMessages = {
   listLoadError: "Could not load your invitations. Please try again.",
   retryList: "Try again",
   noPublicLinkYet: "No public link is available for this invitation yet.",
+  completePayment: "Complete payment",
+  checkoutExpired: "Payment window has ended",
+  openThisTemplate: "Open this template",
   paymentStatusLabel: "Payment",
   eventUntitled: "Untitled event",
   venueTbd: "No venue yet",

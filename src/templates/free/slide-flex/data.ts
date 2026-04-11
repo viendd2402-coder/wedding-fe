@@ -1,4 +1,4 @@
-/** Ảnh mặc định khi chưa upload — tông sáng, đa dạng để slider có nhiều slide. */
+/** Ảnh mặc định khi chưa upload — chỉ dùng cho lưới mục Album. */
 export const slideFlexGallery: string[] = [
   "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1400&q=80",
   "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=1400&q=80",
@@ -6,6 +6,21 @@ export const slideFlexGallery: string[] = [
   "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1400&q=80",
   "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1400&q=80",
 ];
+
+/**
+ * Slide 2+ của hero — lấy từ ảnh mẫu album ô 2–5 (cùng URL đã dùng ổn định trong app).
+ * Tránh danh sách URL tĩnh sai id (Unsplash trả 404) làm mất ảnh trên slider.
+ */
+export const slideFlexHeroAmbientSlides: string[] = slideFlexGallery.slice(1);
+
+/**
+ * Ảnh mặc định thẻ chú rể / cô dâu — URL riêng, **không** nằm trong `slideFlexGallery` (một số id cũ đã 404).
+ */
+export const slideFlexGroomCardFallback =
+  "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=1000&q=80";
+
+export const slideFlexBrideCardFallback =
+  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=1000&q=80";
 
 export const defaultGroomBioVi =
   "Chú rể trầm tính, coi trọng gia đình và những điều giản dị. Luôn muốn xây một mái ấm ấm áp bên người mình yêu.";

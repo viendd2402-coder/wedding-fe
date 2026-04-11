@@ -1,7 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import { usePathname } from "next/navigation";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
 import { useMessages } from "@/i18n/use-messages";
@@ -18,6 +25,289 @@ import type { WeddingTemplate } from "@/lib/templates/types";
 import { forceDocumentScrollTop } from "@/lib/force-document-scroll-top";
 import { getStoredAuthToken } from "@/lib/auth-client";
 import { buildPaymentInvitationFromPreview } from "@/lib/create-payment-invitation";
+import type { TemplateWorkspacePanelMessages } from "@/i18n/messages/template-workspace-ui";
+
+function PanelFieldBlock({
+  label,
+  tag,
+  isDark,
+  children,
+}: {
+  label: string;
+  tag: string;
+  isDark: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <div className="grid gap-1.5">
+      <span
+        className={`text-sm font-medium ${isDark ? "text-white/92" : "text-[var(--color-ink)]"}`}
+      >
+        {label}
+      </span>
+      {tag ? (
+        <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--color-sage)]">
+          {tag}
+        </span>
+      ) : null}
+      {children}
+    </div>
+  );
+}
+
+/** Khối tuỳ chỉnh slide-flex: tiêu đề + danh sách giá trị (inventory) + nội dung. */
+function SlideFlexWorkspaceSection({
+  title,
+  inventory,
+  isDark,
+  children,
+}: {
+  title: string;
+  inventory: string;
+  isDark: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <section
+      className={`flex min-w-0 flex-col gap-4 rounded-2xl border px-3 py-4 sm:px-4 ${
+        isDark ? "border-white/12 bg-white/[0.04]" : "border-[var(--color-ink)]/10 bg-[var(--color-cream)]/80"
+      }`}
+    >
+      <h3
+        className={`text-sm font-bold tracking-tight ${isDark ? "text-white" : "text-[var(--color-ink)]"}`}
+      >
+        {title}
+      </h3>
+      <p
+        className={`whitespace-pre-line text-[11px] font-medium leading-relaxed ${isDark ? "text-white/68" : "text-[var(--color-sage)]"}`}
+      >
+        {inventory}
+      </p>
+      <div className="flex min-w-0 flex-col gap-4">{children}</div>
+    </section>
+  );
+}
+
+function SlideFlexPortraitUpload({
+  label,
+  tag,
+  hasImage,
+  selectedLabel,
+  emptyLabel,
+  isDark,
+  onPick,
+}: {
+  label: string;
+  tag: string;
+  hasImage: boolean;
+  selectedLabel: string;
+  emptyLabel: string;
+  isDark: boolean;
+  onPick: (file: File | null) => void;
+}) {
+  return (
+    <div
+      className={`rounded-2xl border border-dashed px-4 py-3 text-sm ${isDark ? "border-white/14 bg-white/4" : "border-[var(--color-ink)]/12 bg-[var(--color-cream)]"}`}
+    >
+      <PanelFieldBlock label={label} tag={tag} isDark={isDark}>
+        <span
+          className={`block text-xs ${isDark ? "text-white/65" : "text-[var(--color-ink)]/65"}`}
+        >
+          {hasImage ? selectedLabel : emptyLabel}
+        </span>
+        <input
+          type="file"
+          accept="image/*"
+          className="mt-3 block w-full min-w-0 cursor-pointer text-xs"
+          onChange={(event) => onPick(event.target.files?.[0] ?? null)}
+        />
+      </PanelFieldBlock>
+    </div>
+  );
+}
+
+function TemplateWorkspaceCommonFields({
+  copy,
+  inputClass,
+  preview,
+  onChange,
+  images,
+  onCoverImageChange,
+  onGalleryImageChange,
+  isDark,
+  gallerySlotTags,
+}: {
+  copy: TemplateWorkspacePanelMessages;
+  inputClass: string;
+  preview: PreviewData;
+  onChange: (key: keyof PreviewData, value: string) => void;
+  images: PreviewImages;
+  onCoverImageChange: (file: File | null) => void;
+  onGalleryImageChange: (index: number, file: File | null) => void;
+  isDark: boolean;
+  gallerySlotTags: readonly [
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+  ];
+}) {
+  return (
+    <>
+      <PanelFieldBlock label={copy.groomName} tag={copy.tagGroom} isDark={isDark}>
+        <input
+          className={inputClass}
+          value={preview.groom}
+          onChange={(event) => onChange("groom", event.target.value)}
+          placeholder={copy.groomName}
+        />
+      </PanelFieldBlock>
+      <PanelFieldBlock label={copy.brideName} tag={copy.tagBride} isDark={isDark}>
+        <input
+          className={inputClass}
+          value={preview.bride}
+          onChange={(event) => onChange("bride", event.target.value)}
+          placeholder={copy.brideName}
+        />
+      </PanelFieldBlock>
+      <PanelFieldBlock label={copy.dateLabel} tag={copy.tagDateLabel} isDark={isDark}>
+        <input
+          className={inputClass}
+          value={preview.dateLabel}
+          onChange={(event) => onChange("dateLabel", event.target.value)}
+          placeholder={copy.dateLabel}
+        />
+      </PanelFieldBlock>
+      <PanelFieldBlock
+        label={copy.countdownTarget}
+        tag={copy.tagCountdownTarget}
+        isDark={isDark}
+      >
+        <input
+          className={inputClass}
+          value={preview.countdownTarget}
+          onChange={(event) => onChange("countdownTarget", event.target.value)}
+          placeholder="2026-10-20T09:00"
+          autoComplete="off"
+        />
+        <p
+          className={`text-xs leading-relaxed ${isDark ? "text-white/55" : "text-[var(--color-ink)]/60"}`}
+        >
+          {copy.countdownTargetHint}
+        </p>
+      </PanelFieldBlock>
+      <PanelFieldBlock label={copy.location} tag={copy.tagLocation} isDark={isDark}>
+        <input
+          className={inputClass}
+          value={preview.location}
+          onChange={(event) => onChange("location", event.target.value)}
+          placeholder={copy.location}
+        />
+      </PanelFieldBlock>
+      <div className="grid grid-cols-1 gap-3.5">
+        <PanelFieldBlock label={copy.ceremonyTime} tag={copy.tagCeremonyTime} isDark={isDark}>
+          <input
+            className={inputClass}
+            value={preview.ceremonyTime}
+            onChange={(event) => onChange("ceremonyTime", event.target.value)}
+            placeholder={copy.ceremonyTime}
+          />
+        </PanelFieldBlock>
+        <PanelFieldBlock label={copy.partyTime} tag={copy.tagPartyTime} isDark={isDark}>
+          <input
+            className={inputClass}
+            value={preview.partyTime}
+            onChange={(event) => onChange("partyTime", event.target.value)}
+            placeholder={copy.partyTime}
+          />
+        </PanelFieldBlock>
+      </div>
+      <PanelFieldBlock label={copy.venue} tag={copy.tagVenue} isDark={isDark}>
+        <input
+          className={inputClass}
+          value={preview.venue}
+          onChange={(event) => onChange("venue", event.target.value)}
+          placeholder={copy.venue}
+        />
+      </PanelFieldBlock>
+      <PanelFieldBlock label={copy.bankName} tag={copy.tagBankName} isDark={isDark}>
+        <input
+          className={inputClass}
+          value={preview.bankName}
+          onChange={(event) => onChange("bankName", event.target.value)}
+          placeholder={copy.bankName}
+        />
+      </PanelFieldBlock>
+      <PanelFieldBlock label={copy.accountName} tag={copy.tagAccountName} isDark={isDark}>
+        <input
+          className={inputClass}
+          value={preview.accountName}
+          onChange={(event) => onChange("accountName", event.target.value)}
+          placeholder={copy.accountName}
+        />
+      </PanelFieldBlock>
+      <PanelFieldBlock label={copy.accountNumber} tag={copy.tagAccountNumber} isDark={isDark}>
+        <input
+          className={inputClass}
+          value={preview.accountNumber}
+          onChange={(event) => onChange("accountNumber", event.target.value)}
+          placeholder={copy.accountNumber}
+        />
+      </PanelFieldBlock>
+      <div
+        className={`rounded-2xl border border-dashed px-4 py-3 text-sm ${isDark ? "border-white/14 bg-white/4" : "border-[var(--color-ink)]/12 bg-[var(--color-cream)]"}`}
+      >
+        <PanelFieldBlock label={copy.coverImage} tag={copy.tagCoverImage} isDark={isDark}>
+          <span
+            className={`block text-xs ${isDark ? "text-white/65" : "text-[var(--color-ink)]/65"}`}
+          >
+            {images.coverImage ? copy.coverSelected : copy.coverEmpty}
+          </span>
+          <input
+            type="file"
+            accept="image/*"
+            className="mt-3 block w-full min-w-0 text-xs"
+            onChange={(event) => onCoverImageChange(event.target.files?.[0] ?? null)}
+          />
+        </PanelFieldBlock>
+      </div>
+      <div className="rounded-2xl border border-dashed px-4 py-3 text-sm">
+        <PanelFieldBlock label={copy.gallery} tag={copy.tagGallerySection} isDark={isDark}>
+          <div className="mt-3 grid gap-3.5">
+            {[0, 1, 2, 3, 4, 5].map((index) => (
+              <div
+                key={index}
+                className={`rounded-xl border px-3 py-2 text-xs ${isDark ? "border-white/14 bg-white/4" : "border-[var(--color-ink)]/10 bg-[var(--color-cream)]"}`}
+              >
+                <PanelFieldBlock
+                  label={`${copy.imageLabel} ${index + 1}`}
+                  tag={gallerySlotTags[index]}
+                  isDark={isDark}
+                >
+                  <span
+                    className={`block text-[11px] ${isDark ? "text-white/60" : "text-[var(--color-ink)]/60"}`}
+                  >
+                    {images.galleryImages[index] ? copy.imageSelected : copy.imageDefault}
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="mt-2 block w-full min-w-0"
+                    onChange={(event) =>
+                      onGalleryImageChange(index, event.target.files?.[0] ?? null)
+                    }
+                  />
+                </PanelFieldBlock>
+              </div>
+            ))}
+          </div>
+        </PanelFieldBlock>
+      </div>
+    </>
+  );
+}
 
 function ImageLightbox({
   image,
@@ -93,6 +383,8 @@ function PreviewConfigurator({
   images,
   onCoverImageChange,
   onGalleryImageChange,
+  onGroomPortraitImageChange,
+  onBridePortraitImageChange,
   isCollapsed,
   onToggleCollapsed,
 }: {
@@ -102,6 +394,8 @@ function PreviewConfigurator({
   images: PreviewImages;
   onCoverImageChange: (file: File | null) => void;
   onGalleryImageChange: (index: number, file: File | null) => void;
+  onGroomPortraitImageChange: (file: File | null) => void;
+  onBridePortraitImageChange: (file: File | null) => void;
   isCollapsed: boolean;
   onToggleCollapsed: () => void;
 }) {
@@ -215,11 +509,24 @@ function PreviewConfigurator({
     );
   }
 
-  const inputClass = `rounded-2xl px-4 py-3.5 outline-none ${
+  const inputClass = `w-full min-w-0 rounded-2xl px-4 py-3.5 outline-none ${
     isDark
       ? "border border-white/10 bg-white/6 text-white placeholder:text-white/35"
       : "border border-[var(--color-ink)]/10 bg-[var(--color-cream)] placeholder:text-[var(--color-ink)]/35"
   }`;
+
+  const textareaClass = `${inputClass} min-h-[5.5rem] resize-y`;
+
+  const isSlideFlex = template.slug === "slide-flex";
+  const sf = copy.slideFlex;
+  const gallerySlotTags = [
+    copy.tagGallerySlot1,
+    copy.tagGallerySlot2,
+    copy.tagGallerySlot3,
+    copy.tagGallerySlot4,
+    copy.tagGallerySlot5,
+    copy.tagGallerySlot6,
+  ] as const;
 
   return (
     <div
@@ -251,43 +558,521 @@ function PreviewConfigurator({
           </svg>
         </button>
       </div>
-      <div className="mt-4 min-h-0 flex-1 overflow-y-auto pr-1">
-        <div className="grid gap-3.5">
-        <input className={inputClass} value={preview.groom} onChange={(event) => onChange("groom", event.target.value)} placeholder={copy.groomName} />
-        <input className={inputClass} value={preview.bride} onChange={(event) => onChange("bride", event.target.value)} placeholder={copy.brideName} />
-        <input className={inputClass} value={preview.dateLabel} onChange={(event) => onChange("dateLabel", event.target.value)} placeholder={copy.dateLabel} />
-        <input className={inputClass} value={preview.location} onChange={(event) => onChange("location", event.target.value)} placeholder={copy.location} />
-        <div className="grid grid-cols-1 gap-3.5 min-[400px]:grid-cols-2">
-          <input className={inputClass} value={preview.ceremonyTime} onChange={(event) => onChange("ceremonyTime", event.target.value)} placeholder={copy.ceremonyTime} />
-          <input className={inputClass} value={preview.partyTime} onChange={(event) => onChange("partyTime", event.target.value)} placeholder={copy.partyTime} />
-        </div>
-        <input className={inputClass} value={preview.venue} onChange={(event) => onChange("venue", event.target.value)} placeholder={copy.venue} />
-        <input className={inputClass} value={preview.bankName} onChange={(event) => onChange("bankName", event.target.value)} placeholder={copy.bankName} />
-        <input className={inputClass} value={preview.accountName} onChange={(event) => onChange("accountName", event.target.value)} placeholder={copy.accountName} />
-        <input className={inputClass} value={preview.accountNumber} onChange={(event) => onChange("accountNumber", event.target.value)} placeholder={copy.accountNumber} />
-        <label className={`rounded-2xl border border-dashed px-4 py-3 text-sm ${isDark ? "border-white/14 bg-white/4" : "border-[var(--color-ink)]/12 bg-[var(--color-cream)]"}`}>
-          <span className="block font-medium">{copy.coverImage}</span>
-          <span className="mt-1 block text-xs opacity-70">
-            {images.coverImage ? copy.coverSelected : copy.coverEmpty}
-          </span>
-          <input type="file" accept="image/*" className="mt-3 block w-full text-xs" onChange={(event) => onCoverImageChange(event.target.files?.[0] ?? null)} />
-        </label>
-        <div className="rounded-2xl border border-dashed px-4 py-3 text-sm">
-          <span className="block font-medium">{copy.gallery}</span>
-          <div className="mt-3 grid gap-3.5">
-            {[0, 1, 2, 3].map((index) => (
-              <label key={index} className={`rounded-xl border px-3 py-2 text-xs ${isDark ? "border-white/14 bg-white/4" : "border-[var(--color-ink)]/10 bg-[var(--color-cream)]"}`}>
-                <span className="block font-medium">
-                  {copy.imageLabel} {index + 1}
-                </span>
-                <span className="mt-1 block opacity-70">
-                  {images.galleryImages[index] ? copy.imageSelected : copy.imageDefault}
-                </span>
-                <input type="file" accept="image/*" className="mt-2 block w-full" onChange={(event) => onGalleryImageChange(index, event.target.files?.[0] ?? null)} />
-              </label>
-            ))}
-          </div>
-        </div>
+      <div className="mt-4 min-h-0 min-w-0 flex-1 overflow-y-auto pr-1">
+        <div className="grid min-w-0 gap-3.5">
+          {isSlideFlex ? (
+            <SlideFlexWorkspaceSection
+              title={sf.baseWorkspaceSectionTitle}
+              inventory={sf.baseWorkspaceSectionInventory}
+              isDark={isDark}
+            >
+              <TemplateWorkspaceCommonFields
+                copy={copy}
+                inputClass={inputClass}
+                preview={preview}
+                onChange={onChange}
+                images={images}
+                onCoverImageChange={onCoverImageChange}
+                onGalleryImageChange={onGalleryImageChange}
+                isDark={isDark}
+                gallerySlotTags={gallerySlotTags}
+              />
+            </SlideFlexWorkspaceSection>
+          ) : (
+            <TemplateWorkspaceCommonFields
+              copy={copy}
+              inputClass={inputClass}
+              preview={preview}
+              onChange={onChange}
+              images={images}
+              onCoverImageChange={onCoverImageChange}
+              onGalleryImageChange={onGalleryImageChange}
+              isDark={isDark}
+              gallerySlotTags={gallerySlotTags}
+            />
+          )}
+
+          {isSlideFlex ? (
+            <div
+              className={`flex min-w-0 flex-col gap-5 border-t pt-5 ${isDark ? "border-white/10" : "border-[var(--color-ink)]/10"}`}
+            >
+              <div>
+                <p className="text-xs uppercase tracking-[0.28em] text-[var(--color-rose)]">
+                  {sf.sectionTitle}
+                </p>
+                <p
+                  className={`mt-2 text-xs leading-relaxed ${isDark ? "text-white/70" : "text-[var(--color-ink)]/72"}`}
+                >
+                  {sf.sectionLead}
+                </p>
+              </div>
+
+              <SlideFlexWorkspaceSection
+                title={sf.coupleSection}
+                inventory={sf.coupleSectionInventory}
+                isDark={isDark}
+              >
+              <p
+                className={`text-xs font-semibold ${isDark ? "text-white/88" : "text-[var(--color-ink)]"}`}
+              >
+                {copy.groomName}
+              </p>
+              <p className="text-[11px] font-medium leading-snug text-[var(--color-sage)]">
+                {sf.couplePhotosSection}
+              </p>
+              <SlideFlexPortraitUpload
+                label={sf.groomPortraitUpload}
+                tag={sf.tagGroomPortraitUpload}
+                hasImage={Boolean(images.groomPortraitImage)}
+                selectedLabel={copy.imageSelected}
+                emptyLabel={copy.imageDefault}
+                isDark={isDark}
+                onPick={onGroomPortraitImageChange}
+              />
+              <PanelFieldBlock
+                label={sf.groomParentLine1}
+                tag={sf.tagGroomParentLine1}
+                isDark={isDark}
+              >
+                <input
+                  className={inputClass}
+                  value={preview.groomParentLine1}
+                  onChange={(e) => onChange("groomParentLine1", e.target.value)}
+                />
+              </PanelFieldBlock>
+              <PanelFieldBlock
+                label={sf.groomParentLine2}
+                tag={sf.tagGroomParentLine2}
+                isDark={isDark}
+              >
+                <input
+                  className={inputClass}
+                  value={preview.groomParentLine2}
+                  onChange={(e) => onChange("groomParentLine2", e.target.value)}
+                />
+              </PanelFieldBlock>
+              <PanelFieldBlock label={sf.groomBio} tag={sf.tagGroomBio} isDark={isDark}>
+                <textarea
+                  className={textareaClass}
+                  value={preview.groomBio}
+                  onChange={(e) => onChange("groomBio", e.target.value)}
+                  rows={3}
+                />
+              </PanelFieldBlock>
+
+              <p
+                className={`mt-1 text-xs font-semibold ${isDark ? "text-white/88" : "text-[var(--color-ink)]"}`}
+              >
+                {copy.brideName}
+              </p>
+              <SlideFlexPortraitUpload
+                label={sf.bridePortraitUpload}
+                tag={sf.tagBridePortraitUpload}
+                hasImage={Boolean(images.bridePortraitImage)}
+                selectedLabel={copy.imageSelected}
+                emptyLabel={copy.imageDefault}
+                isDark={isDark}
+                onPick={onBridePortraitImageChange}
+              />
+              <PanelFieldBlock
+                label={sf.brideParentLine1}
+                tag={sf.tagBrideParentLine1}
+                isDark={isDark}
+              >
+                <input
+                  className={inputClass}
+                  value={preview.brideParentLine1}
+                  onChange={(e) => onChange("brideParentLine1", e.target.value)}
+                />
+              </PanelFieldBlock>
+              <PanelFieldBlock
+                label={sf.brideParentLine2}
+                tag={sf.tagBrideParentLine2}
+                isDark={isDark}
+              >
+                <input
+                  className={inputClass}
+                  value={preview.brideParentLine2}
+                  onChange={(e) => onChange("brideParentLine2", e.target.value)}
+                />
+              </PanelFieldBlock>
+              <PanelFieldBlock label={sf.brideBio} tag={sf.tagBrideBio} isDark={isDark}>
+                <textarea
+                  className={textareaClass}
+                  value={preview.brideBio}
+                  onChange={(e) => onChange("brideBio", e.target.value)}
+                  rows={3}
+                />
+              </PanelFieldBlock>
+              </SlideFlexWorkspaceSection>
+
+              <SlideFlexWorkspaceSection
+                title={sf.heroCopySection}
+                inventory={sf.heroSectionInventory}
+                isDark={isDark}
+              >
+              <PanelFieldBlock label={sf.heroEyebrow} tag={sf.tagHeroEyebrow} isDark={isDark}>
+                <input
+                  className={inputClass}
+                  value={preview.heroEyebrow}
+                  onChange={(e) => onChange("heroEyebrow", e.target.value)}
+                />
+              </PanelFieldBlock>
+              <PanelFieldBlock
+                label={sf.heroGettingMarried}
+                tag={sf.tagHeroGettingMarried}
+                isDark={isDark}
+              >
+                <input
+                  className={inputClass}
+                  value={preview.heroGettingMarried}
+                  onChange={(e) => onChange("heroGettingMarried", e.target.value)}
+                />
+              </PanelFieldBlock>
+              </SlideFlexWorkspaceSection>
+
+              <SlideFlexWorkspaceSection
+                title={sf.sectionHeadingsGroup}
+                inventory={sf.sectionHeadingsInventory}
+                isDark={isDark}
+              >
+              <PanelFieldBlock
+                label={sf.sectionCoupleTitle}
+                tag={sf.tagSectionCoupleTitle}
+                isDark={isDark}
+              >
+                <input
+                  className={inputClass}
+                  value={preview.sectionCoupleTitle}
+                  onChange={(e) => onChange("sectionCoupleTitle", e.target.value)}
+                />
+              </PanelFieldBlock>
+              <PanelFieldBlock
+                label={sf.sectionStoryTitle}
+                tag={sf.tagSectionStoryTitle}
+                isDark={isDark}
+              >
+                <input
+                  className={inputClass}
+                  value={preview.sectionStoryTitle}
+                  onChange={(e) => onChange("sectionStoryTitle", e.target.value)}
+                />
+              </PanelFieldBlock>
+              <PanelFieldBlock
+                label={sf.sectionPartyTitle}
+                tag={sf.tagSectionPartyTitle}
+                isDark={isDark}
+              >
+                <input
+                  className={inputClass}
+                  value={preview.sectionPartyTitle}
+                  onChange={(e) => onChange("sectionPartyTitle", e.target.value)}
+                />
+              </PanelFieldBlock>
+              <PanelFieldBlock
+                label={sf.sectionPartyLead}
+                tag={sf.tagSectionPartyLead}
+                isDark={isDark}
+              >
+                <textarea
+                  className={textareaClass}
+                  value={preview.sectionPartyLead}
+                  onChange={(e) => onChange("sectionPartyLead", e.target.value)}
+                  rows={2}
+                />
+              </PanelFieldBlock>
+              <PanelFieldBlock
+                label={sf.sectionEventsTitle}
+                tag={sf.tagSectionEventsTitle}
+                isDark={isDark}
+              >
+                <input
+                  className={inputClass}
+                  value={preview.sectionEventsTitle}
+                  onChange={(e) => onChange("sectionEventsTitle", e.target.value)}
+                />
+              </PanelFieldBlock>
+              <PanelFieldBlock
+                label={sf.sectionEventsLead}
+                tag={sf.tagSectionEventsLead}
+                isDark={isDark}
+              >
+                <textarea
+                  className={textareaClass}
+                  value={preview.sectionEventsLead}
+                  onChange={(e) => onChange("sectionEventsLead", e.target.value)}
+                  rows={2}
+                />
+              </PanelFieldBlock>
+              <PanelFieldBlock
+                label={sf.sectionGalleryTitle}
+                tag={sf.tagSectionGalleryTitle}
+                isDark={isDark}
+              >
+                <input
+                  className={inputClass}
+                  value={preview.sectionGalleryTitle}
+                  onChange={(e) => onChange("sectionGalleryTitle", e.target.value)}
+                />
+              </PanelFieldBlock>
+              <PanelFieldBlock
+                label={sf.sectionVideoTitle}
+                tag={sf.tagSectionVideoTitle}
+                isDark={isDark}
+              >
+                <input
+                  className={inputClass}
+                  value={preview.sectionVideoTitle}
+                  onChange={(e) => onChange("sectionVideoTitle", e.target.value)}
+                />
+              </PanelFieldBlock>
+              <PanelFieldBlock
+                label={sf.sectionGuestbookTitle}
+                tag={sf.tagSectionGuestbookTitle}
+                isDark={isDark}
+              >
+                <input
+                  className={inputClass}
+                  value={preview.sectionGuestbookTitle}
+                  onChange={(e) => onChange("sectionGuestbookTitle", e.target.value)}
+                />
+              </PanelFieldBlock>
+              <PanelFieldBlock
+                label={sf.sectionGuestbookLead}
+                tag={sf.tagSectionGuestbookLead}
+                isDark={isDark}
+              >
+                <textarea
+                  className={textareaClass}
+                  value={preview.sectionGuestbookLead}
+                  onChange={(e) => onChange("sectionGuestbookLead", e.target.value)}
+                  rows={2}
+                />
+              </PanelFieldBlock>
+              <PanelFieldBlock
+                label={sf.sectionGiftTitle}
+                tag={sf.tagSectionGiftTitle}
+                isDark={isDark}
+              >
+                <input
+                  className={inputClass}
+                  value={preview.sectionGiftTitle}
+                  onChange={(e) => onChange("sectionGiftTitle", e.target.value)}
+                />
+              </PanelFieldBlock>
+              </SlideFlexWorkspaceSection>
+
+              <SlideFlexWorkspaceSection
+                title={sf.storySection}
+                inventory={sf.storySectionInventory}
+                isDark={isDark}
+              >
+              {[1, 2, 3, 4].map((n) => (
+                <div
+                  key={n}
+                  className={`grid gap-2.5 rounded-xl border px-3 py-3 text-xs ${isDark ? "border-white/12 bg-white/[0.03]" : "border-[var(--color-ink)]/10 bg-[var(--color-cream)]"}`}
+                >
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--color-sage)]">
+                    {sf.storySlotLabel} {n}
+                  </p>
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--color-sage)]/90">
+                    {sf.tagStorySlot}
+                  </span>
+                  <PanelFieldBlock label={sf.timelineTitle} tag="" isDark={isDark}>
+                    <input
+                      className={inputClass}
+                      value={preview[`timeline${n}Title` as keyof PreviewData]}
+                      onChange={(e) =>
+                        onChange(`timeline${n}Title` as keyof PreviewData, e.target.value)
+                      }
+                    />
+                  </PanelFieldBlock>
+                  <PanelFieldBlock label={sf.timelineDate} tag="" isDark={isDark}>
+                    <input
+                      className={inputClass}
+                      value={preview[`timeline${n}Date` as keyof PreviewData]}
+                      onChange={(e) =>
+                        onChange(`timeline${n}Date` as keyof PreviewData, e.target.value)
+                      }
+                    />
+                  </PanelFieldBlock>
+                  <PanelFieldBlock label={sf.timelineBody} tag="" isDark={isDark}>
+                    <textarea
+                      className={textareaClass}
+                      value={preview[`timeline${n}Body` as keyof PreviewData]}
+                      onChange={(e) =>
+                        onChange(`timeline${n}Body` as keyof PreviewData, e.target.value)
+                      }
+                      rows={3}
+                    />
+                  </PanelFieldBlock>
+                </div>
+              ))}
+              </SlideFlexWorkspaceSection>
+
+              <SlideFlexWorkspaceSection
+                title={sf.partySection}
+                inventory={sf.partySectionInventory}
+                isDark={isDark}
+              >
+              <p className="text-xs font-medium text-[var(--color-sage)]">{sf.bridesmaidBlock}</p>
+              {[1, 2].map((n) => (
+                <div
+                  key={`bm-${n}`}
+                  className={`grid gap-2 rounded-xl border px-3 py-3 ${isDark ? "border-white/12" : "border-[var(--color-ink)]/10"}`}
+                >
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--color-sage)]">
+                    {sf.tagPartyPerson}
+                  </span>
+                  <div className="grid min-w-0 grid-cols-1 gap-3">
+                    <PanelFieldBlock label={sf.personRole} tag="" isDark={isDark}>
+                      <input
+                        className={inputClass}
+                        value={preview[`bm${n}Role` as keyof PreviewData]}
+                        onChange={(e) => onChange(`bm${n}Role` as keyof PreviewData, e.target.value)}
+                      />
+                    </PanelFieldBlock>
+                    <PanelFieldBlock label={sf.personName} tag="" isDark={isDark}>
+                      <input
+                        className={inputClass}
+                        value={preview[`bm${n}Name` as keyof PreviewData]}
+                        onChange={(e) => onChange(`bm${n}Name` as keyof PreviewData, e.target.value)}
+                      />
+                    </PanelFieldBlock>
+                    <PanelFieldBlock label={sf.personBio} tag="" isDark={isDark}>
+                      <textarea
+                        className={textareaClass}
+                        value={preview[`bm${n}Bio` as keyof PreviewData]}
+                        onChange={(e) =>
+                          onChange(`bm${n}Bio` as keyof PreviewData, e.target.value)
+                        }
+                        rows={2}
+                      />
+                    </PanelFieldBlock>
+                  </div>
+                </div>
+              ))}
+              <p className="text-xs font-medium text-[var(--color-sage)]">{sf.groomsmenBlock}</p>
+              {[1, 2].map((n) => (
+                <div
+                  key={`gm-${n}`}
+                  className={`grid gap-2 rounded-xl border px-3 py-3 ${isDark ? "border-white/12" : "border-[var(--color-ink)]/10"}`}
+                >
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--color-sage)]">
+                    {sf.tagPartyPerson}
+                  </span>
+                  <div className="grid min-w-0 grid-cols-1 gap-3">
+                    <PanelFieldBlock label={sf.personRole} tag="" isDark={isDark}>
+                      <input
+                        className={inputClass}
+                        value={preview[`gm${n}Role` as keyof PreviewData]}
+                        onChange={(e) => onChange(`gm${n}Role` as keyof PreviewData, e.target.value)}
+                      />
+                    </PanelFieldBlock>
+                    <PanelFieldBlock label={sf.personName} tag="" isDark={isDark}>
+                      <input
+                        className={inputClass}
+                        value={preview[`gm${n}Name` as keyof PreviewData]}
+                        onChange={(e) => onChange(`gm${n}Name` as keyof PreviewData, e.target.value)}
+                      />
+                    </PanelFieldBlock>
+                    <PanelFieldBlock label={sf.personBio} tag="" isDark={isDark}>
+                      <textarea
+                        className={textareaClass}
+                        value={preview[`gm${n}Bio` as keyof PreviewData]}
+                        onChange={(e) =>
+                          onChange(`gm${n}Bio` as keyof PreviewData, e.target.value)
+                        }
+                        rows={2}
+                      />
+                    </PanelFieldBlock>
+                  </div>
+                </div>
+              ))}
+              </SlideFlexWorkspaceSection>
+
+              <SlideFlexWorkspaceSection
+                title={sf.wishSection}
+                inventory={sf.wishSectionInventory}
+                isDark={isDark}
+              >
+              <PanelFieldBlock
+                label={sf.wishSuggestion1}
+                tag={sf.tagWishSuggestion1}
+                isDark={isDark}
+              >
+                <input
+                  className={inputClass}
+                  value={preview.wishSuggestion1}
+                  onChange={(e) => onChange("wishSuggestion1", e.target.value)}
+                />
+              </PanelFieldBlock>
+              <PanelFieldBlock
+                label={sf.wishSuggestion2}
+                tag={sf.tagWishSuggestion2}
+                isDark={isDark}
+              >
+                <input
+                  className={inputClass}
+                  value={preview.wishSuggestion2}
+                  onChange={(e) => onChange("wishSuggestion2", e.target.value)}
+                />
+              </PanelFieldBlock>
+              <PanelFieldBlock
+                label={sf.wishSuggestion3}
+                tag={sf.tagWishSuggestion3}
+                isDark={isDark}
+              >
+                <input
+                  className={inputClass}
+                  value={preview.wishSuggestion3}
+                  onChange={(e) => onChange("wishSuggestion3", e.target.value)}
+                />
+              </PanelFieldBlock>
+              </SlideFlexWorkspaceSection>
+
+              <SlideFlexWorkspaceSection
+                title={sf.mediaSection}
+                inventory={sf.mediaSectionInventory}
+                isDark={isDark}
+              >
+              <PanelFieldBlock label={sf.videoCaption} tag={sf.tagVideoCaption} isDark={isDark}>
+                <textarea
+                  className={textareaClass}
+                  value={preview.videoCaption}
+                  onChange={(e) => onChange("videoCaption", e.target.value)}
+                  rows={2}
+                />
+              </PanelFieldBlock>
+              </SlideFlexWorkspaceSection>
+
+              <SlideFlexWorkspaceSection
+                title={sf.footerSection}
+                inventory={sf.footerSectionInventory}
+                isDark={isDark}
+              >
+              <PanelFieldBlock
+                label={sf.footerThanksHeadline}
+                tag={sf.tagFooterHeadline}
+                isDark={isDark}
+              >
+                <input
+                  className={inputClass}
+                  value={preview.footerThanksHeadline}
+                  onChange={(e) => onChange("footerThanksHeadline", e.target.value)}
+                />
+              </PanelFieldBlock>
+              <PanelFieldBlock label={sf.footerThanksBody} tag={sf.tagFooterBody} isDark={isDark}>
+                <textarea
+                  className={textareaClass}
+                  value={preview.footerThanksBody}
+                  onChange={(e) => onChange("footerThanksBody", e.target.value)}
+                  rows={3}
+                />
+              </PanelFieldBlock>
+              </SlideFlexWorkspaceSection>
+            </div>
+          ) : null}
         </div>
       </div>
 
@@ -406,6 +1191,32 @@ export default function TemplateWorkspace({
     });
   };
 
+  const revokeObjectUrlIfBlob = useCallback((url: string) => {
+    if (url.startsWith("blob:")) URL.revokeObjectURL(url);
+  }, []);
+
+  const handleGroomPortraitImageChange = useCallback(
+    (file: File | null) => {
+      setImages((current) => {
+        revokeObjectUrlIfBlob(current.groomPortraitImage);
+        if (!file) return { ...current, groomPortraitImage: "" };
+        return { ...current, groomPortraitImage: URL.createObjectURL(file) };
+      });
+    },
+    [revokeObjectUrlIfBlob],
+  );
+
+  const handleBridePortraitImageChange = useCallback(
+    (file: File | null) => {
+      setImages((current) => {
+        revokeObjectUrlIfBlob(current.bridePortraitImage);
+        if (!file) return { ...current, bridePortraitImage: "" };
+        return { ...current, bridePortraitImage: URL.createObjectURL(file) };
+      });
+    },
+    [revokeObjectUrlIfBlob],
+  );
+
   const previewProps = useMemo(
     () => ({
       template,
@@ -433,6 +1244,8 @@ export default function TemplateWorkspace({
         images={images}
         onCoverImageChange={handleCoverImageChange}
         onGalleryImageChange={handleGalleryImageChange}
+        onGroomPortraitImageChange={handleGroomPortraitImageChange}
+        onBridePortraitImageChange={handleBridePortraitImageChange}
         isCollapsed={isConfiguratorCollapsed}
         onToggleCollapsed={() =>
           setIsConfiguratorCollapsed((current) => !current)

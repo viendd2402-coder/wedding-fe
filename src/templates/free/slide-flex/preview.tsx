@@ -11,9 +11,10 @@ import {
 } from "react";
 import Link from "next/link";
 import { Quicksand } from "next/font/google";
+import type { AppLanguage } from "@/components/global-preferences-provider";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
 import { slideFlexPreviewMessages } from "@/i18n/messages/template-previews/slide-flex";
-import type { TemplatePreviewProps } from "@/templates/preview-types";
+import type { PreviewData, TemplatePreviewProps } from "@/templates/preview-types";
 import {
   defaultBrideBioEn,
   defaultBrideBioVi,
@@ -21,13 +22,59 @@ import {
   defaultGroomBioVi,
   partyEn,
   partyVi,
+  slideFlexBrideCardFallback,
   slideFlexGallery,
+  slideFlexGroomCardFallback,
+  slideFlexHeroAmbientSlides,
   timelineEn,
   timelineVi,
+  type TimelineEntry,
   wishSuggestionsEn,
   wishSuggestionsVi,
 } from "./data";
 import styles from "./slide-flex.module.css";
+
+function slideFlexTimelineFromPreview(preview: PreviewData, language: AppLanguage): TimelineEntry[] {
+  const slots = [1, 2, 3, 4] as const;
+  const rows: TimelineEntry[] = slots.map((i) => {
+    const r = preview as Record<string, string>;
+    return {
+      title: (r[`timeline${i}Title`] ?? "").trim(),
+      date: (r[`timeline${i}Date`] ?? "").trim(),
+      body: (r[`timeline${i}Body`] ?? "").trim(),
+    };
+  });
+  if (rows.some((row) => row.title || row.date || row.body)) {
+    return rows.filter((row) => row.title || row.date || row.body);
+  }
+  return language === "vi" ? timelineVi : timelineEn;
+}
+
+function slideFlexPartyFromPreview(preview: PreviewData, language: AppLanguage) {
+  const def = language === "vi" ? partyVi : partyEn;
+  const bmDefaultRole = def.bridesmaids[0]?.role ?? "Bridesmaid";
+  const gmDefaultRole = def.groomsmen[0]?.role ?? "Groomsman";
+  const r = preview as Record<string, string>;
+  const bms = [1, 2].flatMap((i) => {
+    const name = (r[`bm${i}Name`] ?? "").trim();
+    if (!name) return [];
+    const role = (r[`bm${i}Role`] ?? "").trim() || bmDefaultRole;
+    const bio = (r[`bm${i}Bio`] ?? "").trim() || "…";
+    return [{ role, name, bio }];
+  });
+  const gms = [1, 2].flatMap((i) => {
+    const name = (r[`gm${i}Name`] ?? "").trim();
+    if (!name) return [];
+    const role = (r[`gm${i}Role`] ?? "").trim() || gmDefaultRole;
+    const bio = (r[`gm${i}Bio`] ?? "").trim() || "…";
+    return [{ role, name, bio }];
+  });
+  if (!bms.length && !gms.length) return def;
+  return {
+    bridesmaids: bms.length ? bms : def.bridesmaids,
+    groomsmen: gms.length ? gms : def.groomsmen,
+  };
+}
 
 const quicksand = Quicksand({
   subsets: ["latin", "vietnamese"],
@@ -42,7 +89,8 @@ const quicksand = Quicksand({
  */
 const ioOpts: IntersectionObserverInit = {
   root: null,
-  rootMargin: "0px",
+  /** Mở rộng vùng giao viewport để scroll-reveal (vd. thẻ cặp đôi) bật ổn định trong khung preview thấp. */
+  rootMargin: "140px 0px 180px 0px",
   threshold: 0,
 };
 
@@ -232,11 +280,20 @@ export default function SlideFlexPreview({
     images.galleryImages.length > 0 ? images.galleryImages : slideFlexGallery;
   const cover = images.coverImage || template.image;
 
+  /**
+   * Slider hero: ảnh bìa (hoặc ảnh mẫu template) luôn là slide 1; các slide sau chỉ từ
+   * `slideFlexHeroAmbientSlides` — không lấy từ album để album vẫn là phần riêng trên thiệp.
+   */
   const slides = useMemo(() => {
-    const list = [cover, ...gallery].filter(Boolean);
-    const uniq = [...new Set(list)];
+    if (!cover) return [];
+    const extras = slideFlexHeroAmbientSlides.filter((u) => u !== cover);
+    const ordered = [cover, ...extras];
+    const uniq: string[] = [];
+    for (const u of ordered) {
+      if (u && !uniq.includes(u)) uniq.push(u);
+    }
     return uniq.slice(0, 6);
-  }, [cover, gallery]);
+  }, [cover]);
 
   const [slideIdx, setSlideIdx] = useState(0);
   const [navOpen, setNavOpen] = useState(false);
@@ -267,11 +324,59 @@ export default function SlideFlexPreview({
 
   const copy = slideFlexPreviewMessages[language];
 
-  const timeline = language === "vi" ? timelineVi : timelineEn;
-  const party = language === "vi" ? partyVi : partyEn;
-  const groomBio = language === "vi" ? defaultGroomBioVi : defaultGroomBioEn;
-  const brideBio = language === "vi" ? defaultBrideBioVi : defaultBrideBioEn;
-  const wishOptions = language === "vi" ? wishSuggestionsVi : wishSuggestionsEn;
+  const timeline = useMemo(
+    () => slideFlexTimelineFromPreview(preview, language),
+    [language, preview],
+  );
+  const party = useMemo(() => slideFlexPartyFromPreview(preview, language), [language, preview]);
+
+  const groomBio =
+    preview.groomBio.trim() ||
+    (language === "vi" ? defaultGroomBioVi : defaultGroomBioEn);
+  const brideBio =
+    preview.brideBio.trim() ||
+    (language === "vi" ? defaultBrideBioVi : defaultBrideBioEn);
+  const wishOptions = useMemo(() => {
+    const custom = [preview.wishSuggestion1, preview.wishSuggestion2, preview.wishSuggestion3]
+      .map((s) => s.trim())
+      .filter(Boolean);
+    if (custom.length) return custom;
+    return language === "vi" ? wishSuggestionsVi : wishSuggestionsEn;
+  }, [
+    language,
+    preview.wishSuggestion1,
+    preview.wishSuggestion2,
+    preview.wishSuggestion3,
+  ]);
+
+  const groomCardBg =
+    images.groomPortraitImage.trim() ||
+    preview.groomPhotoUrl.trim() ||
+    slideFlexGroomCardFallback;
+  const brideCardBg =
+    images.bridePortraitImage.trim() ||
+    preview.bridePhotoUrl.trim() ||
+    slideFlexBrideCardFallback;
+  const heroEyebrow = preview.heroEyebrow.trim() || copy.heroEyebrow;
+  const heroGettingMarried = preview.heroGettingMarried.trim() || copy.gettingMarried;
+  const sectionCoupleTitle = preview.sectionCoupleTitle.trim() || copy.coupleTitle;
+  const sectionStoryTitle = preview.sectionStoryTitle.trim() || copy.storyTitle;
+  const sectionPartyTitle = preview.sectionPartyTitle.trim() || copy.partyTitle;
+  const sectionPartyLead = preview.sectionPartyLead.trim() || copy.partyLead;
+  const sectionEventsTitle = preview.sectionEventsTitle.trim() || copy.eventsTitle;
+  const sectionEventsLead = preview.sectionEventsLead.trim() || copy.eventsLead;
+  const sectionGalleryTitle = preview.sectionGalleryTitle.trim() || copy.galleryTitle;
+  const sectionVideoTitle = preview.sectionVideoTitle.trim() || copy.videoTitle;
+  const sectionGuestbookTitle = preview.sectionGuestbookTitle.trim() || copy.guestbook;
+  const sectionGuestbookLead = preview.sectionGuestbookLead.trim() || copy.guestLead;
+  const sectionGiftTitle = preview.sectionGiftTitle.trim() || copy.giftTitle;
+  const videoCaption = preview.videoCaption.trim() || copy.videoCap;
+  const footerThanksHeadline = preview.footerThanksHeadline.trim() || copy.footerThanksHeadline;
+  const footerThanksBody = preview.footerThanksBody.trim() || copy.footerThanksBody;
+  const groomParent1 = preview.groomParentLine1.trim() || copy.tbd;
+  const groomParent2 = preview.groomParentLine2.trim() || copy.tbd;
+  const brideParent1 = preview.brideParentLine1.trim() || copy.tbd;
+  const brideParent2 = preview.brideParentLine2.trim() || copy.tbd;
 
   const mapsUrl = useMemo(() => {
     const q = `${preview.venue} ${preview.location}`.trim();
@@ -430,7 +535,7 @@ export default function SlideFlexPreview({
             revealAxis="left"
             className={`${styles.heroRevealWrap} ${styles.heroRevealStagger0}`}
           >
-            <p className={styles.heroEyebrow}>{copy.heroEyebrow}</p>
+            <p className={styles.heroEyebrow}>{heroEyebrow}</p>
           </ScrollRevealDiv>
           <ScrollRevealDiv
             revealAxis="right"
@@ -446,7 +551,7 @@ export default function SlideFlexPreview({
             revealAxis="left"
             className={`${styles.heroRevealWrap} ${styles.heroRevealStagger2}`}
           >
-            <p className={styles.heroSub}>{copy.gettingMarried}</p>
+            <p className={styles.heroSub}>{heroGettingMarried}</p>
           </ScrollRevealDiv>
           <ScrollRevealDiv
             revealAxis="right"
@@ -483,21 +588,21 @@ export default function SlideFlexPreview({
         <section id="couple" className={`${styles.section} ${styles.sectionAlt}`}>
           <div className={styles.container}>
             <ScrollRevealDiv variant="title" revealAxis="left">
-              <h2 className={styles.sectionTitle}>{copy.coupleTitle}</h2>
+              <h2 className={styles.sectionTitle}>{sectionCoupleTitle}</h2>
             </ScrollRevealDiv>
             <div className={styles.coupleGrid}>
               <ScrollRevealArticle className={styles.coupleCard} revealAxis="left">
                 <div
                   className={styles.coupleImg}
-                  style={{ backgroundImage: `url(${cover})` }}
+                  style={{ backgroundImage: `url(${groomCardBg})` }}
                 />
                 <div className={styles.coupleBody}>
                   <p className={styles.coupleTag}>{copy.groom}</p>
                   <h3 className={styles.coupleName}>{preview.groom}</h3>
                   <p className={styles.coupleParents}>
-                    {copy.sonOf}: <strong>{copy.tbd}</strong>
+                    {copy.sonOf}: <strong>{groomParent1}</strong>
                     <br />
-                    {copy.dauOf}: <strong>{copy.tbd}</strong>
+                    {copy.dauOf}: <strong>{groomParent2}</strong>
                   </p>
                   <p className={styles.coupleBio}>{groomBio}</p>
                 </div>
@@ -506,16 +611,16 @@ export default function SlideFlexPreview({
                 <div
                   className={styles.coupleImg}
                   style={{
-                    backgroundImage: `url(${gallery[1] ?? gallery[0]})`,
+                    backgroundImage: `url(${brideCardBg})`,
                   }}
                 />
                 <div className={styles.coupleBody}>
                   <p className={styles.coupleTag}>{copy.bride}</p>
                   <h3 className={styles.coupleName}>{preview.bride}</h3>
                   <p className={styles.coupleParents}>
-                    {copy.sonOf}: <strong>{copy.tbd}</strong>
+                    {copy.sonOf}: <strong>{brideParent1}</strong>
                     <br />
-                    {copy.dauOf}: <strong>{copy.tbd}</strong>
+                    {copy.dauOf}: <strong>{brideParent2}</strong>
                   </p>
                   <p className={styles.coupleBio}>{brideBio}</p>
                 </div>
@@ -527,12 +632,12 @@ export default function SlideFlexPreview({
         <section id="story" className={styles.section}>
           <div className={styles.container}>
             <ScrollRevealDiv variant="title" revealAxis="right">
-              <h2 className={styles.sectionTitle}>{copy.storyTitle}</h2>
+              <h2 className={styles.sectionTitle}>{sectionStoryTitle}</h2>
             </ScrollRevealDiv>
             <div className={styles.timeline}>
               {timeline.map((item, i) => (
                 <ScrollRevealDiv
-                  key={item.title}
+                  key={`${i}-${item.date}-${item.title}`}
                   revealAxis={i % 2 === 0 ? "left" : "right"}
                 >
                   <div className={styles.tlItem}>
@@ -549,8 +654,8 @@ export default function SlideFlexPreview({
         <section id="party" className={`${styles.section} ${styles.sectionAlt}`}>
           <div className={styles.container}>
             <ScrollRevealDiv variant="title" revealAxis="left">
-              <h2 className={styles.sectionTitle}>{copy.partyTitle}</h2>
-              <p className={styles.sectionLead}>{copy.partyLead}</p>
+              <h2 className={styles.sectionTitle}>{sectionPartyTitle}</h2>
+              <p className={styles.sectionLead}>{sectionPartyLead}</p>
             </ScrollRevealDiv>
             <div className={styles.partyGrid}>
               <ScrollRevealDiv className={styles.partyCol} revealAxis="left">
@@ -582,8 +687,8 @@ export default function SlideFlexPreview({
         <section id="events" className={styles.section}>
           <div className={styles.container}>
             <ScrollRevealDiv variant="title" revealAxis="right">
-              <h2 className={styles.sectionTitle}>{copy.eventsTitle}</h2>
-              <p className={styles.sectionLead}>{copy.eventsLead}</p>
+              <h2 className={styles.sectionTitle}>{sectionEventsTitle}</h2>
+              <p className={styles.sectionLead}>{sectionEventsLead}</p>
             </ScrollRevealDiv>
             <ScrollRevealDiv revealAxis="up" className={styles.eventsCountWrap}>
               <div className={styles.eventsCountAccent} aria-hidden="true" />
@@ -719,7 +824,7 @@ export default function SlideFlexPreview({
         <section id="gallery" className={`${styles.section} ${styles.sectionAlt}`}>
           <div className={styles.container}>
             <ScrollRevealDiv variant="title" revealAxis="left">
-              <h2 className={styles.sectionTitle}>{copy.galleryTitle}</h2>
+              <h2 className={styles.sectionTitle}>{sectionGalleryTitle}</h2>
             </ScrollRevealDiv>
             <div className={styles.galleryGrid}>
               {gallery.map((src, i) => (
@@ -729,7 +834,7 @@ export default function SlideFlexPreview({
                   className={styles.galleryBtn}
                   revealAxis={i % 2 === 0 ? "left" : "right"}
                   onClick={() =>
-                    onPreviewImage({ src, alt: `${copy.galleryTitle} ${i + 1}` })
+                    onPreviewImage({ src, alt: `${sectionGalleryTitle} ${i + 1}` })
                   }
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -743,7 +848,7 @@ export default function SlideFlexPreview({
         <section id="video" className={styles.section}>
           <div className={styles.container}>
             <ScrollRevealDiv variant="title" revealAxis="right">
-              <h2 className={styles.sectionTitle}>{copy.videoTitle}</h2>
+              <h2 className={styles.sectionTitle}>{sectionVideoTitle}</h2>
             </ScrollRevealDiv>
             <ScrollRevealDiv revealAxis="left">
               <div>
@@ -752,7 +857,9 @@ export default function SlideFlexPreview({
                     ▶
                   </button>
                 </div>
-                <p className={styles.videoCaption}>{copy.videoCap}</p>
+                <p className={styles.videoCaption}>
+                  {videoCaption}
+                </p>
               </div>
             </ScrollRevealDiv>
           </div>
@@ -761,8 +868,8 @@ export default function SlideFlexPreview({
         <section id="rsvp" className={`${styles.section} ${styles.sectionAlt}`}>
           <div className={styles.container}>
             <ScrollRevealDiv variant="title" revealAxis="left">
-              <h2 className={styles.sectionTitle}>{copy.guestbook}</h2>
-              <p className={styles.sectionLead}>{copy.guestLead}</p>
+              <h2 className={styles.sectionTitle}>{sectionGuestbookTitle}</h2>
+              <p className={styles.sectionLead}>{sectionGuestbookLead}</p>
             </ScrollRevealDiv>
             <ScrollRevealDiv revealAxis="right">
               <form
@@ -787,7 +894,12 @@ export default function SlideFlexPreview({
                 <label className={styles.srOnly} htmlFor="sf-wish">
                   {copy.wishHint}
                 </label>
-                <select id="sf-wish" className={styles.select} defaultValue="">
+                <select
+                  id="sf-wish"
+                  key={wishOptions.join("\u0001")}
+                  className={styles.select}
+                  defaultValue=""
+                >
                   <option value="" disabled>
                     {copy.wishHint}
                   </option>
@@ -814,7 +926,7 @@ export default function SlideFlexPreview({
         <section id="gift" className={styles.section}>
           <div className={styles.container}>
             <ScrollRevealDiv variant="title" revealAxis="right">
-              <h2 className={styles.sectionTitle}>{copy.giftTitle}</h2>
+              <h2 className={styles.sectionTitle}>{sectionGiftTitle}</h2>
             </ScrollRevealDiv>
             <div className={styles.giftGrid}>
               <ScrollRevealDiv revealAxis="left">
@@ -860,8 +972,8 @@ export default function SlideFlexPreview({
 
       <SlideFlexThanksFooter
         cover={cover}
-        headline={copy.footerThanksHeadline}
-        body={copy.footerThanksBody}
+        headline={footerThanksHeadline}
+        body={footerThanksBody}
         groom={preview.groom}
         bride={preview.bride}
         tier={template.tier}
