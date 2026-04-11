@@ -16,6 +16,7 @@ import {
 } from "@/templates/preview-types";
 import type { WeddingTemplate } from "@/lib/templates/types";
 import { forceDocumentScrollTop } from "@/lib/force-document-scroll-top";
+import { getStoredAuthToken } from "@/lib/auth-client";
 
 function ImageLightbox({
   image,
@@ -144,11 +145,16 @@ function PreviewConfigurator({
     setPayError(null);
     setPayLoading(true);
     try {
-      const res = await fetch("/api/payos/checkout", {
+      const token = getStoredAuthToken();
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) headers.Authorization = `Bearer ${token}`;
+
+      
+      const res = await fetch("/api/payments/payment-link", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
+        credentials: "include",
         body: JSON.stringify({
-          buyerName: payBuyerName,
           templateSlug: template.slug,
           clientNote,
         }),
@@ -174,7 +180,7 @@ function PreviewConfigurator({
     } finally {
       setPayLoading(false);
     }
-  }, [clientNote, copy.paymentFailed, copy.paymentNotConfigured, payBuyerName, template.slug]);
+  }, [clientNote, copy.paymentFailed, copy.paymentNotConfigured, template.slug]);
 
   if (isCollapsed) {
     return (

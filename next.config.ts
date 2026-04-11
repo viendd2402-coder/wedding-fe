@@ -8,6 +8,16 @@ const nextConfig: NextConfig = {
    */
   allowedDevOrigins: ["10.5.10.155", "10.5.10.155:3000", "localhost", "localhost:3000", "nonaccelerative-noah-unoriginally.ngrok-free.dev"],
 
+  // async redirects() {
+  //   return [
+  //     {
+  //       source: "/thanh-toan/thanh-cong",
+  //       destination: "/payment/success",
+  //       permanent: true,
+  //     },
+  //   ];
+  // },
+
   images: {
     remotePatterns: [
       {
