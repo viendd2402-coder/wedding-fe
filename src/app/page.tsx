@@ -538,9 +538,9 @@ export default function Home() {
                 {copy.featuresTitle}
               </h2>
             </div>
-            <p className={`max-w-md text-xs leading-6 sm:text-sm sm:leading-7 ${isDark ? "text-white/68" : "text-[var(--color-ink)]/86"}`}>
+            {/* <p className={`max-w-md text-xs leading-6 sm:text-sm sm:leading-7 ${isDark ? "text-white/68" : "text-[var(--color-ink)]/86"}`}>
               {copy.featuresBody}
-            </p>
+            </p> */}
           </div>
 
           <div
@@ -658,9 +658,9 @@ export default function Home() {
             </p>
             <h2 className="mt-3 font-display text-2xl sm:mt-4 sm:text-3xl md:text-4xl md:leading-tight lg:text-[2.75rem]">{copy.processTitle}</h2>
           </div>
-          <p className={`max-w-md text-xs leading-6 sm:text-sm sm:leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/86"}`}>
+          {/* <p className={`max-w-md text-xs leading-6 sm:text-sm sm:leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/86"}`}>
             {copy.processBody}
-          </p>
+          </p> */}
         </div>
 
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">

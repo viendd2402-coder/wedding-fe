@@ -74,9 +74,9 @@ export default function TemplateCarouselSection({
           <h3 className="mt-2 font-display text-2xl sm:mt-3 sm:text-3xl md:text-4xl">{title}</h3>
         </div>
         <div className="flex flex-col gap-4 md:items-end">
-          <p className={`max-w-md text-xs leading-6 sm:text-sm sm:leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/86"}`}>
+          {/* <p className={`max-w-md text-xs leading-6 sm:text-sm sm:leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/86"}`}>
             {description}
-          </p>
+          </p> */}
           <a
             href={ctaHref}
             className="btn-ghost inline-flex w-fit rounded-full px-5 py-3 text-sm font-medium transition"

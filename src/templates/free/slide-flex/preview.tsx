@@ -702,19 +702,19 @@ export default function SlideFlexPreview({
                   aria-label={copy.countdownEyebrow}
                 >
                   <div className={styles.eventsCountUnit}>
-                    <span className={styles.eventsCountVal} aria-live="polite">
+                    <span className={styles.eventsCountVal} aria-live="polite" suppressHydrationWarning>
                       {countdownLive.days}
                     </span>
                     <span className={styles.eventsCountLbl}>{copy.countdownDays}</span>
                   </div>
                   <div className={styles.eventsCountUnit}>
-                    <span className={styles.eventsCountVal}>
+                    <span className={styles.eventsCountVal} suppressHydrationWarning>
                       {String(countdownLive.hours).padStart(2, "0")}
                     </span>
                     <span className={styles.eventsCountLbl}>{copy.countdownHours}</span>
                   </div>
                   <div className={styles.eventsCountUnit}>
-                    <span className={styles.eventsCountVal}>
+                    <span className={styles.eventsCountVal} suppressHydrationWarning>
                       {String(countdownLive.minutes).padStart(2, "0")}
                     </span>
                     <span className={styles.eventsCountLbl}>{copy.countdownMinutes}</span>
@@ -722,7 +722,7 @@ export default function SlideFlexPreview({
                   <div
                     className={`${styles.eventsCountUnit} ${styles.eventsCountUnitLive}`.trim()}
                   >
-                    <span className={styles.eventsCountVal} aria-live="polite">
+                    <span className={styles.eventsCountVal} aria-live="polite" suppressHydrationWarning>
                       {String(countdownLive.seconds).padStart(2, "0")}
                     </span>
                     <span className={styles.eventsCountLbl}>{copy.countdownSeconds}</span>

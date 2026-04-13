@@ -34,6 +34,10 @@ function getCountdownParts(
   ];
 }
 
+function zeroParts(labels: [string, string, string, string]): CountdownPart[] {
+  return labels.map((label) => ({ label, value: "00" }));
+}
+
 export default function WeddingCountdown({
   targetDate,
   variant = "minimal",
@@ -43,15 +47,13 @@ export default function WeddingCountdown({
     () => [cd.day, cd.hour, cd.minute, cd.second],
     [cd.day, cd.hour, cd.minute, cd.second],
   );
-  const [parts, setParts] = useState<CountdownPart[]>(() =>
-    getCountdownParts(targetDate, labels),
-  );
+  /** Không gọi `Date` trong initial state — tránh lệch SSR vs hydrate. */
+  const [parts, setParts] = useState<CountdownPart[]>(() => zeroParts(labels));
 
   useEffect(() => {
-    const timer = window.setInterval(() => {
-      setParts(getCountdownParts(targetDate, labels));
-    }, 1000);
-
+    const tick = () => setParts(getCountdownParts(targetDate, labels));
+    tick();
+    const timer = window.setInterval(tick, 1000);
     return () => window.clearInterval(timer);
   }, [labels, targetDate]);
 

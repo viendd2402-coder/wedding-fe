@@ -295,7 +295,7 @@ export default function MyInvitationsScreen() {
           <p className={`max-w-2xl text-sm leading-relaxed ${muted}`}>{copy.subtitle}</p>
         </div>
 
-        <div className="mb-10 grid gap-3 sm:grid-cols-3">
+        {/* <div className="mb-10 grid gap-3 sm:grid-cols-3">
           {[
             { n: "01", t: copy.step1 },
             { n: "02", t: copy.step2 },
@@ -315,7 +315,7 @@ export default function MyInvitationsScreen() {
               <p className="text-sm font-semibold leading-snug">{s.t}</p>
             </div>
           ))}
-        </div>
+        </div> */}
 
         <div className={`overflow-hidden rounded-[2rem] ${panelOuter} ${panelInner}`}>
           <div className="px-6 py-10 sm:px-10 sm:py-12 lg:px-12 lg:py-14">
@@ -667,7 +667,7 @@ export default function MyInvitationsScreen() {
             </ul>
             ) : null}
 
-            <div
+            {/* <div
               className={`mx-auto mt-12 max-w-2xl rounded-2xl border px-5 py-5 sm:px-6 sm:py-6 ${
                 isDark
                   ? "border-[var(--color-sage)]/20 bg-[var(--color-sage)]/[0.06]"
@@ -690,7 +690,7 @@ export default function MyInvitationsScreen() {
               >
                 {copy.ctaBrowse}
               </Link>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

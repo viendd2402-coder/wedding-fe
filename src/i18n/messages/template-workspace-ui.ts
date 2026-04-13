@@ -148,6 +148,12 @@ export type TemplateWorkspacePanelMessages = {
   paymentFailed: string;
   paymentInviteIncomplete: string;
   paymentFreeHint: string;
+  paymentFreeEyebrow: string;
+  paymentFreeTitle: string;
+  paymentFreeCta: string;
+  paymentFreeLoading: string;
+  paymentFreeFailed: string;
+  paymentNotFree: string;
   paymentEmailCta: string;
   paymentMailSubject: string;
   slideFlex: SlideFlexWorkspacePanel;
@@ -317,7 +323,13 @@ const vi: TemplateWorkspaceMessages = {
     paymentInviteIncomplete:
       "Vui lòng nhập tên cô dâu và chú rể, địa điểm tiệc hoặc thành phố, và chỉnh ngày đếm ngược (ISO) hợp lệ trước khi thanh toán.",
     paymentFreeHint:
-      "Đây là mẫu miễn phí — không cần thanh toán. Gửi nội dung đã nhập phía trên qua email để được tư vấn.",
+      "Đây là mẫu miễn phí — không cần thanh toán. Bấm “Tạo thiệp” để lưu thiệp với cùng bộ dữ liệu như luồng trả phí (tên, ngày, địa điểm, album).",
+    paymentFreeEyebrow: "Thiệp miễn phí",
+    paymentFreeTitle: "Tạo thiệp trên tài khoản",
+    paymentFreeCta: "Tạo thiệp",
+    paymentFreeLoading: "Đang tạo thiệp…",
+    paymentFreeFailed: "Không tạo được thiệp. Thử lại sau.",
+    paymentNotFree: "Mẫu này không thuộc gói miễn phí.",
     paymentEmailCta: "Gửi yêu cầu qua email",
     paymentMailSubject: "Yêu cầu mẫu Lumiere",
     slideFlex: viSlideFlexPanel,
@@ -483,7 +495,13 @@ const en: TemplateWorkspaceMessages = {
     paymentInviteIncomplete:
       "Please enter bride and groom names, a reception venue or city, and a valid countdown date before paying.",
     paymentFreeHint:
-      "This is a free template — no payment. Email us the details you entered above for setup help.",
+      "This is a free template — no payment. Use “Create invitation” to save with the same invitation fields as checkout (names, date, venue, album). Or email us for help.",
+    paymentFreeEyebrow: "Free invitation",
+    paymentFreeTitle: "Save to your account",
+    paymentFreeCta: "Create invitation",
+    paymentFreeLoading: "Creating…",
+    paymentFreeFailed: "Could not create the invitation. Try again later.",
+    paymentNotFree: "This template is not in the free tier.",
     paymentEmailCta: "Send request by email",
     paymentMailSubject: "Lumiere template request",
     slideFlex: enSlideFlexPanel,

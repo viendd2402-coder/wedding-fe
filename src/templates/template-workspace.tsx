@@ -9,7 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
 import { useMessages } from "@/i18n/use-messages";
 import { siteContact } from "@/lib/site-contact";
@@ -399,6 +399,7 @@ function PreviewConfigurator({
   isCollapsed: boolean;
   onToggleCollapsed: () => void;
 }) {
+  const router = useRouter();
   const { theme } = useGlobalPreferences();
   const { templateWorkspace } = useMessages();
   const copy = templateWorkspace.panel;
@@ -406,6 +407,8 @@ function PreviewConfigurator({
 
   const [payLoading, setPayLoading] = useState(false);
   const [payError, setPayError] = useState<string | null>(null);
+  const [freeLoading, setFreeLoading] = useState(false);
+  const [freeError, setFreeError] = useState<string | null>(null);
 
   const isPremium = template.tier === "Trả phí";
 
@@ -487,6 +490,59 @@ function PreviewConfigurator({
     copy.paymentNotConfigured,
     images,
     preview,
+    template.slug,
+  ]);
+
+  const startFreeInvitation = useCallback(async () => {
+    setFreeError(null);
+    const invitation = buildPaymentInvitationFromPreview(template.slug, preview, images);
+    if (!invitation) {
+      setFreeError(copy.paymentInviteIncomplete);
+      return;
+    }
+    setFreeLoading(true);
+    try {
+      const token = getStoredAuthToken();
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) headers.Authorization = `Bearer ${token}`;
+
+      const res = await fetch("/api/payments/free-invitation", {
+        method: "POST",
+        headers,
+        credentials: "include",
+        body: JSON.stringify({ invitation }),
+      });
+      const data = (await res.json()) as { checkoutUrl?: string; error?: string };
+      if (!res.ok) {
+        if (data.error === "payment_config") {
+          setFreeError(copy.paymentNotConfigured);
+        } else if (data.error === "not_free") {
+          setFreeError(copy.paymentNotFree);
+        } else if (data.error === "invalid_invitation") {
+          setFreeError(copy.paymentInviteIncomplete);
+        } else {
+          setFreeError(copy.paymentFreeFailed);
+        }
+        return;
+      }
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+        return;
+      }
+      router.push("/my-invitations");
+    } catch {
+      setFreeError(copy.paymentFreeFailed);
+    } finally {
+      setFreeLoading(false);
+    }
+  }, [
+    copy.paymentFreeFailed,
+    copy.paymentInviteIncomplete,
+    copy.paymentNotConfigured,
+    copy.paymentNotFree,
+    images,
+    preview,
+    router,
     template.slug,
   ]);
 
@@ -1079,9 +1135,11 @@ function PreviewConfigurator({
       <div
         className={`shrink-0 space-y-3 border-t pt-4 ${isDark ? "border-white/10" : "border-[var(--color-ink)]/10"}`}
       >
-        <p className="text-xs uppercase tracking-[0.28em] text-[var(--color-rose)]">{copy.paymentEyebrow}</p>
+        <p className="text-xs uppercase tracking-[0.28em] text-[var(--color-rose)]">
+          {isPremium ? copy.paymentEyebrow : copy.paymentFreeEyebrow}
+        </p>
         <p className={`text-sm font-medium ${isDark ? "text-white/90" : "text-[var(--color-ink)]"}`}>
-          {copy.paymentTitle}
+          {isPremium ? copy.paymentTitle : copy.paymentFreeTitle}
         </p>
         <p className={`text-xs leading-relaxed ${isDark ? "text-white/70" : "text-[var(--color-ink)]/72"}`}>
           {payBuyerName ? (
@@ -1093,9 +1151,14 @@ function PreviewConfigurator({
             copy.paymentBuyerUnset
           )}
         </p>
-        {payError ? (
+        {isPremium && payError ? (
           <p className="text-xs text-red-600 dark:text-red-400" role="alert">
             {payError}
+          </p>
+        ) : null}
+        {!isPremium && freeError ? (
+          <p className="text-xs text-red-600 dark:text-red-400" role="alert">
+            {freeError}
           </p>
         ) : null}
         {isPremium ? (
@@ -1109,20 +1172,17 @@ function PreviewConfigurator({
           </button>
         ) : (
           <>
+            <button
+              type="button"
+              disabled={freeLoading}
+              onClick={startFreeInvitation}
+              className="btn-primary w-full rounded-full px-4 py-3 text-sm font-medium disabled:opacity-60"
+            >
+              {freeLoading ? copy.paymentFreeLoading : copy.paymentFreeCta}
+            </button>
             <p className={`text-xs leading-relaxed ${isDark ? "text-white/65" : "text-[var(--color-ink)]/65"}`}>
               {copy.paymentFreeHint}
             </p>
-            <button
-              type="button"
-              onClick={sendConsultEmail}
-              className={`w-full rounded-full border px-4 py-3 text-sm font-medium transition ${
-                isDark
-                  ? "border-white/15 text-white/88 hover:bg-white/8"
-                  : "border-[var(--color-ink)]/15 text-[var(--color-ink)]/88 hover:bg-[var(--color-ink)]/[0.04]"
-              }`}
-            >
-              {copy.paymentEmailCta}
-            </button>
           </>
         )}
       </div>

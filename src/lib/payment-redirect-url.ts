@@ -4,7 +4,15 @@
 export function extractPaymentRedirectUrl(data: unknown): string | null {
   if (!data || typeof data !== "object") return null;
   const o = data as Record<string, unknown>;
-  const keys = ["paymentUrl", "checkoutUrl", "url", "vnpUrl", "paymentLink"] as const;
+  const keys = [
+    "paymentUrl",
+    "checkoutUrl",
+    "inviteUrl",
+    "publicUrl",
+    "url",
+    "vnpUrl",
+    "paymentLink",
+  ] as const;
   for (const k of keys) {
     const v = o[k];
     if (typeof v === "string" && /^https?:\/\//i.test(v.trim())) return v.trim();
