@@ -89,7 +89,7 @@ featureTableHeaders: ["Tính năng", "Miễn phí", "Premium"],
 featureRows: [
   {
     label: "Thời hạn website được công khai",
-    free: "6 tháng",
+    free: "3 tháng",
     premium: "24 tháng",
   },
   {
@@ -102,20 +102,25 @@ featureRows: [
     free: "Có — trong khung mẫu miễn phí",
     premium: "Có — mở rộng, nhiều khối & bố cục nâng cao",
   },
-  {
-    label: "Loại bỏ quảng cáo / nội dung chen giữa trải nghiệm khách",
-    free: "—",
-    premium: "Có",
-  },
-  {
-    label: "Đếm lượt truy cập / thống kê xem trang",
-    free: "—",
-    premium: "Có",
-  },
+  // {
+  //   label: "Đếm lượt truy cập / thống kê xem trang",
+  //   free: "—",
+  //   premium: "Có",
+  // },
   {
     label: "Album ảnh dạng photobook / trình chiếu online",
     free: "Dạng lưới cơ bản",
     premium: "Bố cục phong phú, nhiều mẫu trình bày",
+  },
+  {
+    label: "Bản đồ & chỉ đường (tiệc, nhà thờ, tiệc cưới…)",
+    free: "Có",
+    premium: "Có",
+  },
+  {
+    label: "Loại bỏ quảng cáo / nội dung chen giữa trải nghiệm khách",
+    free: "—",
+    premium: "Có",
   },
   {
     label: "Hộp lời chúc & phản hồi lời chúc từ bạn bè",
@@ -128,45 +133,40 @@ featureRows: [
     premium: "Có",
   },
   {
-    label: "Hiển thị thông tin song thân (bố mẹ hai bên)",
-    free: "Theo ô cố định trên mẫu",
-    premium: "Có — tuỳ bố cục mẫu Premium",
-  },
-  {
     label: "Tải lên nhạc nền cá nhân",
     free: "—",
     premium: "Có (theo mẫu hỗ trợ)",
   },
-  {
-    label: "Thay đổi giao diện đã chọn sau khi tạo",
-    free: "Hạn chế / trong phạm vi kho miễn phí",
-    premium: "Nhiều lần theo gói & kho mẫu trả phí",
-  },
+  // {
+  //   label: "Thay đổi giao diện đã chọn sau khi tạo",
+  //   free: "Hạn chế / trong phạm vi kho miễn phí",
+  //   premium: "Nhiều lần theo gói & kho mẫu trả phí",
+  // },
   {
     label: "Loại bỏ logo và thông tin Lumiere trên website",
     free: "—",
     premium: "Có (theo gói)",
   },
-  {
-    label: "Tuỳ chỉnh mã nguồn (custom HTML / CSS)",
-    free: "—",
-    premium: "Tuỳ chọn — liên hệ phạm vi",
-  },
+  // {
+  //   label: "Tuỳ chỉnh mã nguồn (custom HTML / CSS)",
+  //   free: "—",
+  //   premium: "Tuỳ chọn — liên hệ phạm vi",
+  // },
   {
     label: "Tính năng quản lý danh sách khách mời",
     free: "—",
-    premium: "Có (theo lộ trình sản phẩm)",
-  },
-  {
-    label: "Tuỳ chỉnh mã QR (nội dung, màu sắc)",
-    free: "—",
     premium: "Có",
   },
-  {
-    label: "Thiết lập thông báo / nhắc cho người xem website",
-    free: "—",
-    premium: "Tuỳ chọn — liên hệ",
-  },
+  // {
+  //   label: "Tuỳ chỉnh mã QR (nội dung, màu sắc)",
+  //   free: "—",
+  //   premium: "Có",
+  // },
+  // {
+  //   label: "Thiết lập thông báo / nhắc cho người xem website",
+  //   free: "—",
+  //   premium: "Tuỳ chọn — liên hệ",
+  // },
   {
     label: "Sử dụng mẫu Save the Date",
     free: "—",
@@ -175,7 +175,7 @@ featureRows: [
   {
     label: "Tạo và gửi thiệp / link mời riêng cho từng khách",
     free: "—",
-    premium: "Tuỳ chọn — liên hệ triển khai",
+    premium: "Có",
   },
   {
     label: "Tải xuống danh sách lời chúc (xuất file)",
@@ -183,7 +183,7 @@ featureRows: [
     premium: "Có",
   },
   {
-    label: "Sử dụng giao diện cao cấp (mẫu Premium / editorial)",
+    label: "Sử dụng giao diện cao cấp (mẫu Premium)",
     free: "—",
     premium: "Có",
   },
@@ -200,27 +200,17 @@ featureRows: [
   {
     label: "Cho phép tích hợp tên miền riêng (custom domain)",
     free: "—",
-    premium: "Tuỳ chọn — liên hệ triển khai",
+    premium: "Có",
   },
   {
-    label: "Xác nhận tham dự (RSVP) — độ sâu tuỳ chỉnh",
-    free: "Ghi nhận nhanh, biểu mẫu đơn giản",
-    premium: "Tuỳ chỉnh câu hỏi & luồng đăng ký",
-  },
-  {
-    label: "Bản đồ & chỉ đường (tiệc, nhà thờ, tiệc cưới…)",
-    free: "Có — Google Maps",
-    premium: "Có — thêm chỉ đường nhà cô dâu / chú rể",
+    label: "Xác nhận tham dự (RSVP)",
+    free: "-",
+    premium: "Có",
   },
   {
     label: "Song ngữ Việt / Anh",
     free: "—",
     premium: "Có",
-  },
-  {
-    label: "Tuỳ chỉnh màu sắc & bố cục theo brand tiệc",
-    free: "Theo khung mẫu miễn phí",
-    premium: "Tuỳ chỉnh sâu",
   },
   {
     label: "Vòng chỉnh sửa nội dung & hỗ trợ vận hành",
@@ -231,31 +221,31 @@ featureRows: [
 processEyebrow: "Quy trình",
 processTitle: "Bốn bước gọn, rõ ràng",
 processBody:
-  "Chúng tôi giữ quy trình ngắn gọn: chọn mẫu, bổ sung thông tin, chỉnh theo ý bạn và bàn giao link để chia sẻ.",
+  "Chọn mẫu → chỉnh nội dung cá nhân trong trình xem thử → thanh toán khi chọn Premium hoặc tạo bản miễn phí → nhận link để gửi khách.",
 process: [
   {
     step: "01",
-    title: "Chọn mẫu giao diện",
+    title: "Chọn mẫu",
     description:
-      "Hai bạn chọn mẫu có sẵn hoặc gửi hình ảnh tham khảo — chúng tôi gợi ý phong cách phù hợp.",
+      "Dạo bộ sưu tập, chọn mẫu miễn phí hoặc trả phí gần gu nhất với ngày trọng đại của hai bạn.",
   },
   {
     step: "02",
-    title: "Gửi nội dung và hình ảnh",
+    title: "Chỉnh sửa nội dung cá nhân",
     description:
-      "Tên, lịch cưới, địa điểm, album ảnh, tông màu và mọi chi tiết muốn hiển thị cho khách mời.",
+      "Tên, lịch, địa điểm, ảnh, lời mời và mọi dòng hiển thị trên thiệp — chỉnh trực tiếp trong giao diện xem thử.",
   },
   {
     step: "03",
-    title: "Hoàn thiện và tinh chỉnh",
+    title: "Thanh toán hoặc tạo mẫu miễn phí",
     description:
-      "Bản xem thử được dựng nhanh; sau đó chỉnh sửa theo ý hai bạn cho đến khi mọi thứ vừa ý.",
+      "Mẫu Premium: thanh toán trực tuyến (VNPay) để kích hoạt. Mẫu miễn phí: tạo thiệp ngay, không cần thanh toán.",
   },
   {
     step: "04",
     title: "Bàn giao và chia sẻ",
     description:
-      "Nhận link website để gửi qua Zalo, Messenger, Instagram hoặc in kèm mã QR trên thiệp giấy.",
+      "Nhận link thiệp để gửi Zalo, Messenger, Instagram hoặc in kèm mã QR trên thiệp giấy.",
   },
 ],
 valueEyebrow: "Điểm nhấn",
@@ -320,6 +310,48 @@ testimonials: [
       "Bạn thân bảo trang mời cưới nhìn như tạp chí — đúng gu editorial chúng tôi mong muốn từ đầu.",
     name: "An & Chi",
     detail: "Neela Classic · Đà Nẵng",
+  },
+  {
+    quote:
+      "Tiệc nhỏ nên dùng mẫu miễn phí trước; khách vẫn xem được giờ lễ và bản đồ — không phải in thêm tờ rơi.",
+    name: "Tuấn & Mai",
+    detail: "Mẫu miễn phí · Huế",
+  },
+  {
+    quote:
+      "Khách ở nước ngoài bật tiếng Anh một cái là đọc được; ông bà ở quê xem bản tiếng Việt — cả nhà đều vui.",
+    name: "Đức & Hương",
+    detail: "Gói Premium · Cần Thơ",
+  },
+  {
+    quote:
+      "Chúng tôi in QR lên thiệp giấy, đám bạn quét ra là vào đúng trang RSVP — đếm số người đi tiệc gọn hẳn.",
+    name: "Khoa & Vy",
+    detail: "Slide Flex · Nha Trang",
+  },
+  {
+    quote:
+      "Album ảnh cưới lên web đẹp hơn mong đợi; cô dì chú bác xem trên điện thoại vẫn rõ, không bị nhỏ tị.",
+    name: "Bảo & Linh",
+    detail: "Gói Premium · Hải Phòng",
+  },
+  {
+    quote:
+      "Làm gấp trong tuần mà vẫn chỉnh được font, màu và lời mời — gửi link cho sếp và team cũng không ngại.",
+    name: "Nam & Phương",
+    detail: "Minimal Muse · Hà Nội",
+  },
+  {
+    quote:
+      "Khách để lời chúc trên trang, tụi mình đọc lại sau đám cưới vẫn thấy ấm — như một sổ kỷ niệm nhỏ.",
+    name: "Gia & Trâm",
+    detail: "Gói Premium · TP.HCM",
+  },
+  {
+    quote:
+      "Ban đầu lo khách lớn tuổi không quen link; thực tế chỉ cần nhắn Zalo kèm một dòng là mọi người mở được.",
+    name: "Hiếu & Nga",
+    detail: "Mẫu miễn phí · Đắk Lắk",
   },
 ],
 contactEyebrow: "Liên hệ",

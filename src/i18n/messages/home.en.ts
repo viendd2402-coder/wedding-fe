@@ -233,31 +233,31 @@ featureRows: [
 processEyebrow: "Process",
 processTitle: "Four calm, transparent steps",
 processBody:
-  "We keep it short: choose a template, share your details, refine together, then receive a link you can share anywhere.",
+  "Choose a template → edit your personal content in the live preview → pay for Premium or create a free invite → get your link to share.",
 process: [
   {
     step: "01",
     title: "Choose a template",
     description:
-      "Pick a design from the gallery or send reference images—we suggest a mood that fits your day.",
+      "Browse the gallery and pick a free or paid design that matches the tone of your celebration.",
   },
   {
     step: "02",
-    title: "Share content and photos",
+    title: "Edit your personal content",
     description:
-      "Names, schedule, venues, gallery, palette, and every line you want guests to read.",
+      "Names, schedule, venues, photos, wording—everything guests see, updated right in the preview.",
   },
   {
     step: "03",
-    title: "Refine together",
+    title: "Checkout or create a free invite",
     description:
-      "We build a preview quickly, then adjust with you until every detail feels right.",
+      "Premium: pay online (VNPay) to activate. Free tier: create your invite with no payment step.",
   },
   {
     step: "04",
     title: "Handoff and share",
     description:
-      "Receive your link for Zalo, Messenger, Instagram, or a printed QR on paper invitations.",
+      "Use your invitation link on chat apps, social posts, or print a QR on paper cards.",
   },
 ],
 valueEyebrow: "Highlights",
@@ -322,6 +322,48 @@ testimonials: [
       "Friends told us it felt like a magazine—exactly the editorial mood we had in mind from day one.",
     name: "An & Chi",
     detail: "Neela Classic · Da Nang",
+  },
+  {
+    quote:
+      "We kept the celebration small and started on a free template—guests still saw the schedule and map without extra flyers.",
+    name: "Tuan & Mai",
+    detail: "Free template · Hue",
+  },
+  {
+    quote:
+      "Relatives abroad switched to English in one tap; grandparents read the Vietnamese page at home—everyone felt included.",
+    name: "Duc & Huong",
+    detail: "Premium · Can Tho",
+  },
+  {
+    quote:
+      "We printed a QR on paper cards; friends scanned straight into RSVP—headcount for the reception got much easier.",
+    name: "Khoa & Vy",
+    detail: "Slide Flex · Nha Trang",
+  },
+  {
+    quote:
+      "Our wedding gallery on the site looked better than we expected; aunts and uncles could browse comfortably on their phones.",
+    name: "Bao & Linh",
+    detail: "Premium · Hai Phong",
+  },
+  {
+    quote:
+      "We had a tight week but still tuned fonts, colors, and wording—sharing the link with colleagues felt effortless.",
+    name: "Nam & Phuong",
+    detail: "Minimal Muse · Hanoi",
+  },
+  {
+    quote:
+      "Guests left wishes on the page; reading them after the wedding still feels warm—like a tiny guestbook we can reopen.",
+    name: "Gia & Tram",
+    detail: "Premium · Ho Chi Minh City",
+  },
+  {
+    quote:
+      "We worried older guests would not open a link; in practice, one Zalo message with the URL was enough.",
+    name: "Hieu & Nga",
+    detail: "Free template · Dak Lak",
   },
 ],
 contactEyebrow: "Contact",

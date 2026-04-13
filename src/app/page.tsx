@@ -663,21 +663,25 @@ export default function Home() {
           </p> */}
         </div>
 
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid auto-rows-fr gap-5 md:grid-cols-2 lg:grid-cols-4">
           {copy.process.map((item) => (
             <article
               key={item.step}
-              className={`hover-lift-strong rounded-[1.5rem] p-5 sm:rounded-[2rem] sm:p-6 ${
+              className={`flex h-full min-h-0 flex-col hover-lift-strong rounded-[1.5rem] p-5 sm:rounded-[2rem] sm:p-6 ${
                 isDark
                   ? "border border-white/10 bg-white/6 shadow-[0_16px_40px_rgba(0,0,0,0.24)]"
                   : "home-lux-panel--compact border-0 ring-1 ring-[color-mix(in_srgb,var(--luxury-gold)_22%,transparent)]"
               }`}
             >
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[color-mix(in_srgb,var(--luxury-gold)_22%,var(--color-sage))] sm:text-sm sm:tracking-[0.32em]">
+              <p className="shrink-0 text-xs font-semibold uppercase tracking-[0.28em] text-[color-mix(in_srgb,var(--luxury-gold)_22%,var(--color-sage))] sm:text-sm sm:tracking-[0.32em]">
                 {item.step}
               </p>
-              <h3 className="mt-3 font-display text-2xl sm:mt-4 sm:text-3xl">{item.title}</h3>
-              <p className={`mt-3 text-xs leading-6 sm:mt-4 sm:text-sm sm:leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/86"}`}>
+              <h3 className="mt-3 min-h-0 shrink-0 font-display text-2xl leading-snug sm:mt-4 sm:text-3xl md:min-h-[4.5rem] lg:min-h-[6.25rem]">
+                {item.title}
+              </h3>
+              <p
+                className={`mt-3 min-h-0 flex-1 text-xs leading-6 sm:mt-4 sm:text-sm sm:leading-7 ${isDark ? "text-white/70" : "text-[var(--color-ink)]/86"}`}
+              >
                 {item.description}
               </p>
             </article>
@@ -685,7 +689,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section
+      {/* <section
         className={`animate-fade-scale-soft-delay-2 grid gap-6 py-12 sm:py-16 lg:grid-cols-[1fr_0.9fr] ${homeOuter}`}
       >
         <div
@@ -734,7 +738,7 @@ export default function Home() {
             {copy.positioningBody}
           </p>
         </div>
-      </section>
+      </section> */}
 
       <section
         id="pricing"
