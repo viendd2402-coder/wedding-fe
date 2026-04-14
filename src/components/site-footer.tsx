@@ -46,6 +46,7 @@ export default function SiteFooter() {
       [
         { href: "/", label: copy.home },
         { href: "/#templates", label: copy.templates },
+        { href: "/saved-templates", label: copy.savedTemplates },
         { href: "/#why-us", label: copy.whyUs },
         { href: "/templates/free", label: copy.free },
         { href: "/templates/premium", label: copy.premium },

@@ -142,13 +142,11 @@ export default function MinimalMusePreview({
           <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
             <ScrollRevealDiv revealAxis="left" className={scroll.block}>
             <div className="max-w-2xl">
-              <p className="text-sm uppercase tracking-[0.35em] text-[var(--color-sage)]">{template.style}</p>
-              <h1 className="mt-5 break-words font-display text-4xl leading-[1.06] sm:text-6xl lg:text-8xl">
+              <h1 className="break-words font-display text-4xl leading-[1.06] sm:text-6xl lg:text-8xl">
                 {preview.groom}
                 <br />
                 <span className="text-[var(--color-sage)]/78">&</span> {preview.bride}
               </h1>
-              <p className={`mt-6 max-w-lg text-lg leading-8 ${isDark ? "text-white/74" : "text-[var(--color-ink)]/74"}`}>{template.heroTitle}</p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <div className={`rounded-full px-5 py-3 text-sm shadow-[0_12px_30px_rgba(49,42,40,0.06)] ${
                   isDark ? "border border-white/10 bg-white/8 text-white/70" : "bg-white text-[var(--color-ink)]/70"
@@ -195,11 +193,9 @@ export default function MinimalMusePreview({
                     <div className={`rounded-[1.6rem] p-6 shadow-[0_18px_40px_rgba(49,42,40,0.08)] ${
                       isDark ? "bg-[#111214]/88 text-white" : "bg-white/88 text-[var(--color-ink)]"
                     }`}>
-                      <p className="text-xs uppercase tracking-[0.3em] text-[var(--color-sage)]">{template.previewLabel}</p>
-                      <p className="mt-4 break-words font-display text-3xl leading-tight sm:text-4xl sm:leading-none lg:text-5xl">
+                      <p className="break-words font-display text-3xl leading-tight sm:text-4xl sm:leading-none lg:text-5xl">
                         {preview.groom} & {preview.bride}
                       </p>
-                      <p className={`mt-4 text-sm leading-7 ${isDark ? "text-white/68" : "text-[var(--color-ink)]/68"}`}>{template.description}</p>
                     </div>
                   </div>
                 </div>
@@ -210,7 +206,6 @@ export default function MinimalMusePreview({
                 }`}>
                   <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-sage)]">Save the date</p>
                   <p className="mt-3 font-display text-4xl">20.10.2026</p>
-                  <p className={`mt-3 text-sm leading-7 ${isDark ? "text-white/68" : "text-[var(--color-ink)]/68"}`}>{template.sectionProfile}</p>
                 </div>
                 <div className={`rounded-[1.8rem] p-6 ${isDark ? "border border-white/10 bg-[rgba(255,255,255,0.04)]" : "bg-[var(--color-cream)]"}`}>
                   <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-sage)]">Countdown</p>
@@ -241,7 +236,6 @@ export default function MinimalMusePreview({
                 <span className="inline-block px-1.5 text-[var(--color-rose)]/80 sm:px-3">&</span>
                 {preview.bride}
               </p>
-              <p className={`mt-5 text-sm leading-7 ${isDark ? "text-white/68" : "text-[var(--color-ink)]/68"}`}>{template.heroSubtitle}</p>
             </div>
           </div>
           </ScrollRevealDiv>

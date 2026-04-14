@@ -44,9 +44,9 @@ export const minimalMuseEvents = [
 ];
 
 export const minimalMuseGallery = [
-  "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1525258946800-98cfd641d0de?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1621621667797-e06afc217fb0?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1550784718-990c6de52adf?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1591604466107-ec97de577aff?auto=format&fit=crop&w=1200&q=80",
   "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=1200&q=80",
 ];
 

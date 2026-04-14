@@ -298,9 +298,6 @@ export default function AzurePromisePreview({
                   <span className="rounded-full bg-[#dff1ff] px-3 py-1 text-[11px] font-medium uppercase tracking-[0.24em] text-[#4d88a8]">
                     {copy.freeBadge}
                   </span>
-                  <span className="rounded-full bg-[#fff3d4] px-3 py-1 text-[11px] font-medium uppercase tracking-[0.24em] text-[#a9831d]">
-                    {template.style}
-                  </span>
                 </div>
 
                 <div className="mt-5 grid gap-5 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">

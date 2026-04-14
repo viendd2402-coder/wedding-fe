@@ -315,7 +315,7 @@ const vi: TemplateWorkspaceMessages = {
     paymentBuyerLine: "Tên trên đơn thanh toán:",
     paymentBuyerUnset:
       "Chưa nhập tên cô dâu / chú rể — cần đủ hai tên để tạo đơn thanh toán kèm thiệp.",
-    paymentPay: "Thanh toán — 2.490.000đ",
+    paymentPay: "Thanh toán — 199.000đ",
     paymentLoading: "Đang tạo link…",
     paymentNotConfigured:
       "Cổng thanh toán chưa được cấu hình trên máy chủ. Vui lòng thử lại sau hoặc liên hệ hỗ trợ.",

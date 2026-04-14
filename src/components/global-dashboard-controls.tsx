@@ -83,6 +83,7 @@ export default function GlobalDashboardControls() {
   const homeActive = pathname === "/";
   const profileActive = pathname === "/profile";
   const myInvitationsActive = pathname === "/my-invitations";
+  const savedTemplatesActive = pathname === "/saved-templates";
 
   /** Đang ở trang chủ: click logo / Trang chủ → về đầu trang (và bỏ hash). */
   const handleHomeLinkClick = useCallback(
@@ -309,6 +310,13 @@ export default function GlobalDashboardControls() {
                   onClick={closeMobile}
                 >
                   {accountCopy.myInvitations}
+                </Link>
+                <Link
+                  href="/saved-templates"
+                  className={mobileNavTile(savedTemplatesActive)}
+                  onClick={closeMobile}
+                >
+                  {accountCopy.savedTemplates}
                 </Link>
               </div>
             ) : null}

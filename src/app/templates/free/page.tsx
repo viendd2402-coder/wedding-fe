@@ -61,9 +61,9 @@ export default function FreeTemplatesPage() {
               item={item}
               isDark={isDark}
               badgeClassName={badgeClassName}
-              demoLabel={copy.demo}
-              secondaryHref="/#contact"
-              secondaryLabel={copy.useTemplate}
+              demoLabel={copy.viewDemo}
+              secondarySaveSlug={item.slug}
+              secondaryLabel={copy.saveTemplate}
               secondaryClassName="btn-ghost inline-flex rounded-full px-4 py-3 text-sm font-medium transition"
               cardClassName="h-full"
             />

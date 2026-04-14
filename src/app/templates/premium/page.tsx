@@ -61,9 +61,9 @@ export default function PremiumTemplatesPage() {
               item={item}
               isDark={isDark}
               badgeClassName={badgeClassName}
-              demoLabel={copy.demo}
-              secondaryHref="/#pricing"
-              secondaryLabel={copy.seePricing}
+              demoLabel={copy.viewDemo}
+              secondarySaveSlug={item.slug}
+              secondaryLabel={copy.saveTemplate}
               secondaryClassName="btn-secondary inline-flex rounded-full px-4 py-3 text-sm font-medium transition"
               cardClassName="h-full"
             />

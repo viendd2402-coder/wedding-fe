@@ -29,7 +29,7 @@ export async function generateMetadata({
 
   return {
     title: `Demo ${template.name} | Lumiere Wedding Websites`,
-    description: template.description,
+    description: `Xem và chỉnh thử mẫu ${template.name} trên Lumiere Wedding Websites.`,
   };
 }
 

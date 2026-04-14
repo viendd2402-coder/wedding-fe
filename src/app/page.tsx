@@ -413,10 +413,9 @@ export default function Home() {
           ctaLabel={copy.freeCta}
           templates={freeTemplates}
           badgeClassName="rounded-full bg-[var(--color-sage)]/10 px-3 py-1 text-xs font-medium text-[var(--color-sage)]"
-          secondaryActionHref="#contact"
-          secondaryActionLabel={copy.freeSecondary}
+          secondaryUsesLocalSave
+          secondaryActionLabel={copy.templateCardSave}
           secondaryActionClassName="btn-ghost inline-flex rounded-full px-5 py-3 text-sm font-medium transition"
-          demoLinkLabel={copy.templateCardDemo}
         />
 
         <TemplateCarouselSection
@@ -428,10 +427,9 @@ export default function Home() {
           ctaLabel={copy.premiumCta}
           templates={premiumTemplates}
           badgeClassName="rounded-full bg-[var(--color-rose)]/12 px-3 py-1 text-xs font-medium text-[var(--color-rose)]"
-          secondaryActionHref="#pricing"
-          secondaryActionLabel={copy.premiumSecondary}
+          secondaryUsesLocalSave
+          secondaryActionLabel={copy.templateCardSave}
           secondaryActionClassName="btn-secondary inline-flex rounded-full px-5 py-3 text-sm font-medium transition"
-          demoLinkLabel={copy.templateCardDemo}
           stackedBelowFree
         />
       </section>

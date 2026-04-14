@@ -5,8 +5,8 @@ export type TemplatesGalleryFreeMessages = {
   eyebrow: string;
   title: string;
   body: string;
-  demo: string;
-  useTemplate: string;
+  viewDemo: string;
+  saveTemplate: string;
 };
 
 export type TemplatesGalleryPremiumMessages = {
@@ -14,8 +14,8 @@ export type TemplatesGalleryPremiumMessages = {
   eyebrow: string;
   title: string;
   body: string;
-  demo: string;
-  seePricing: string;
+  viewDemo: string;
+  saveTemplate: string;
 };
 
 const freeVi: TemplatesGalleryFreeMessages = {
@@ -23,8 +23,8 @@ const freeVi: TemplatesGalleryFreeMessages = {
   eyebrow: "Bộ sưu tập",
   title: "Mẫu miễn phí",
   body: "",
-  demo: "Xem demo",
-  useTemplate: "Dùng mẫu này",
+  viewDemo: "Xem demo",
+  saveTemplate: "Lưu mẫu này",
 };
 
 const freeEn: TemplatesGalleryFreeMessages = {
@@ -32,8 +32,8 @@ const freeEn: TemplatesGalleryFreeMessages = {
   eyebrow: "Gallery",
   title: "Free templates",
   body: "",
-  demo: "View demo",
-  useTemplate: "Use this template",
+  viewDemo: "View demo",
+  saveTemplate: "Save this template",
 };
 
 const premiumVi: TemplatesGalleryPremiumMessages = {
@@ -41,8 +41,8 @@ const premiumVi: TemplatesGalleryPremiumMessages = {
   eyebrow: "Bộ sưu tập",
   title: "Mẫu trả phí",
   body: "",
-  demo: "Xem demo",
-  seePricing: "Xem bảng giá",
+  viewDemo: "Xem demo",
+  saveTemplate: "Lưu mẫu này",
 };
 
 const premiumEn: TemplatesGalleryPremiumMessages = {
@@ -50,8 +50,8 @@ const premiumEn: TemplatesGalleryPremiumMessages = {
   eyebrow: "Gallery",
   title: "Premium templates",
   body: "",
-  demo: "View demo",
-  seePricing: "See pricing",
+  viewDemo: "View demo",
+  saveTemplate: "Save this template",
 };
 
 export const templatesGalleryFree: Record<AppLanguage, TemplatesGalleryFreeMessages> =

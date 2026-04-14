@@ -1,11 +1,11 @@
 /** Ảnh mặc định cho album (tông ấm / pastel, gần vibe Gentle). */
 export const gentleDriftGallery = [
-  "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1606800052052-a37c2a311d95?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1529636799528-92138946795e?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1599462616558-2b75fd26a283?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1630526720753-aa4e71acf67d?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1561287495-a3fe1fd28504?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1563808599481-34a342e44508?auto=format&fit=crop&w=900&q=80",
 ] as const;
 
 export type GentleDriftStory = { year: string; title: string; body: string };

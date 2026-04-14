@@ -11,7 +11,7 @@ export const brightlyBasicTemplate: WeddingTemplate = {
   description:
     "Bố cục và màu Neela (#8eaeba) như template iWedding phổ biến: hero full màn, cặp đôi hai cột, thiệp Save the Date, album, sự kiện parallax, sổ lưu bút và hộp mừng cưới.",
   image:
-    "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1596457221755-b96bc3a6df18?auto=format&fit=crop&w=2400&q=92",
   accent: "#8eaeba",
   heroTitle:
     "Giao diện quen thuộc kiểu iWedding: xanh Neela dịu, chữ Marmelad, khung thiệp và album ảnh rõ ràng.",

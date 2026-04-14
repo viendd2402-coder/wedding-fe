@@ -38,6 +38,10 @@ import {
   inviteSnapshotMessages,
   type InviteSnapshotMessages,
 } from "@/i18n/messages/invite-snapshot";
+import {
+  savedTemplatesMessages,
+  type SavedTemplatesMessages,
+} from "@/i18n/messages/saved-templates";
 
 export type Messages = {
   home: HomeMessages;
@@ -53,6 +57,7 @@ export type Messages = {
   templateWorkspace: TemplateWorkspaceMessages;
   myInvitations: MyInvitationsMessages;
   inviteSnapshot: InviteSnapshotMessages;
+  savedTemplates: SavedTemplatesMessages;
 };
 
 export const messagesByLocale: Record<AppLanguage, Messages> = {
@@ -70,6 +75,7 @@ export const messagesByLocale: Record<AppLanguage, Messages> = {
     templateWorkspace: templateWorkspaceMessages.vi,
     myInvitations: myInvitationsMessages.vi,
     inviteSnapshot: inviteSnapshotMessages.vi,
+    savedTemplates: savedTemplatesMessages.vi,
   },
   en: {
     home: homeEn,
@@ -85,5 +91,6 @@ export const messagesByLocale: Record<AppLanguage, Messages> = {
     templateWorkspace: templateWorkspaceMessages.en,
     myInvitations: myInvitationsMessages.en,
     inviteSnapshot: inviteSnapshotMessages.en,
+    savedTemplates: savedTemplatesMessages.en,
   },
 };

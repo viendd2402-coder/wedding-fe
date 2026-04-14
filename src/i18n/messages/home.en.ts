@@ -22,14 +22,13 @@ freeTitle: "Free templates",
 freeDescription:
   "Light, clear, and ready to send: introductions, schedule, and RSVP so guests know what to expect—without clutter.",
 freeCta: "View all free templates",
-freeSecondary: "Use this template",
 templateCardDemo: "View demo",
+templateCardSave: "Save this template",
 premiumEyebrow: "Premium templates",
 premiumTitle: "Premium templates",
 premiumDescription:
   "For couples who want more presence: striking layouts, a richer gallery, and details that make your page feel like a true invitation.",
 premiumCta: "View all premium templates",
-premiumSecondary: "See pricing",
 whyUsEyebrow: "Why Lumiere",
 whyUsTitle: "Why build your online invitation and wedding website with Lumiere?",
 whyUsBody:
@@ -292,7 +291,7 @@ pricing: [
   {
     name: "Premium",
     tagline: "Advanced experience—all paid features in one tier",
-    price: "2.490.000đ",
+    price: "199.000đ",
     note:
       "Every row marked Yes or advanced in the Premium column: longer hosting, large gallery, clean guest experience without third-party ads, analytics, richer photobook, wishes + replies, gift QR, parents section, custom music, flexible theme changes, remove Lumiere branding, custom QR, Save the Date, premium templates, motion effects, logo/favicon options, optional domain & custom code, deeper RSVP, family-home maps, bilingual support, deep layout tuning, and priority support.",
     featured: true,

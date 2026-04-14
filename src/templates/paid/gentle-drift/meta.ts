@@ -11,7 +11,7 @@ export const gentleDriftTemplate: WeddingTemplate = {
   description:
     "Mẫu trả phí bố cục editorial: màn mở có khung giấy, hero phủ ảnh bìa, vé lịch, lời mời có cột màu, cặp đôi hai thẻ lệch, timeline chuyện tình, sự kiện số 01/02, album dạng bento, đếm ngược champagne / vàng đồng bộ.",
   image:
-    "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1563808599481-34a342e44508?auto=format&fit=crop&w=2400&q=92",
   accent: "#b8956a",
   heroTitle: "Thiệp drift kiểu tạp chí: serif lớn, nền giấy, accent đất nung và xanh rêu.",
   heroSubtitle:

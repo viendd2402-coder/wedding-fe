@@ -179,6 +179,37 @@ export default function HeaderAccountMenu({
             </span>
             <span className="min-w-0 leading-snug">{copy.myInvitations}</span>
           </Link>
+          <Link
+            role="menuitem"
+            href="/saved-templates"
+            className={`flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition ${
+              isDark ? "hover:bg-white/10" : "hover:bg-[var(--color-cream)]"
+            }`}
+            onClick={() => setOpen(false)}
+          >
+            <span
+              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border ${
+                isDark
+                  ? "border-white/10 bg-white/[0.06] text-[var(--color-sage)]/90"
+                  : "border-[var(--color-ink)]/10 bg-[var(--color-sage)]/[0.1] text-[var(--color-sage)]"
+              }`}
+              aria-hidden
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.65"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-4 w-4"
+              >
+                <path d="M6 4h12a2 2 0 0 1 2 2v15.5l-8-5.5-8 5.5V6a2 2 0 0 1 2-2Z" />
+              </svg>
+            </span>
+            <span className="min-w-0 leading-snug">{copy.savedTemplates}</span>
+          </Link>
           <button
             role="menuitem"
             type="button"

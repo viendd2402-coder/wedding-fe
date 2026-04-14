@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
@@ -171,11 +172,14 @@ export default function HomeHeroSpotlight() {
                 className={`group flex overflow-hidden rounded-[1.75rem] border transition ${cardClass}`}
                 aria-label={`${copy.rankLabelTpl.replace("__N__", String(rank))}: ${displayName}`}
               >
-                <div className="relative shrink-0">
-                  <div
-                    className="aspect-[3/4] w-[6.75rem] bg-cover bg-center sm:w-[7.75rem]"
-                    style={{ backgroundImage: `url(${template.image})` }}
-                    role="presentation"
+                <div className="relative aspect-[3/4] w-[6.75rem] shrink-0 overflow-hidden sm:w-[7.75rem]">
+                  <Image
+                    src={template.image}
+                    alt=""
+                    fill
+                    sizes="124px"
+                    className="object-cover object-center"
+                    quality={92}
                   />
                   <span
                     className={`absolute left-2 top-2 flex h-7 min-w-7 items-center justify-center rounded-full px-1.5 font-display text-sm tabular-nums backdrop-blur-sm ${rankBadgeClass}`}
@@ -187,11 +191,6 @@ export default function HomeHeroSpotlight() {
                   <div className="flex flex-wrap items-center gap-2">
                     <span className={`rounded-full px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.18em] ${tierClass}`}>
                       {tierLabel(template.tier)}
-                    </span>
-                    <span
-                      className={`text-[11px] uppercase tracking-[0.2em] ${isDark ? "text-white/48" : "text-[var(--color-ink)]/70"}`}
-                    >
-                      {template.style}
                     </span>
                   </div>
                   <p className="font-display text-lg leading-tight sm:text-xl md:text-[1.65rem]">

@@ -8,6 +8,7 @@ export type FooterMessages = {
   navSupportTitle: string;
   home: string;
   templates: string;
+  savedTemplates: string;
   whyUs: string;
   free: string;
   premium: string;
@@ -33,6 +34,7 @@ const vi: FooterMessages = {
   navSupportTitle: "Dịch vụ",
   home: "Trang chủ",
   templates: "Mẫu giao diện",
+  savedTemplates: "Mẫu đã lưu",
   whyUs: "Vì sao chọn chúng tôi",
   free: "Mẫu miễn phí",
   premium: "Mẫu trả phí",
@@ -58,6 +60,7 @@ const en: FooterMessages = {
   navSupportTitle: "Service",
   home: "Home",
   templates: "Templates",
+  savedTemplates: "Saved templates",
   whyUs: "Why Lumiere",
   free: "Free templates",
   premium: "Premium templates",

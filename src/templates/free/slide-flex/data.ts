@@ -1,10 +1,10 @@
 /** Ảnh mặc định khi chưa upload — chỉ dùng cho lưới mục Album. */
 export const slideFlexGallery: string[] = [
   "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1400&q=80",
-  "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=1400&q=80",
-  "https://images.unsplash.com/photo-1523438885200-e635ba2c476e?auto=format&fit=crop&w=1400&q=80",
-  "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1400&q=80",
   "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1400&q=80",
+  "https://images.unsplash.com/photo-1606216794079-73f85bbd57d5?auto=format&fit=crop&w=1400&q=80",
+  "https://images.unsplash.com/photo-1550784718-990c6de52adf?auto=format&fit=crop&w=1400&q=80",
+  "https://images.unsplash.com/photo-1532712938310-34cb3982ef74?auto=format&fit=crop&w=1400&q=80",
 ];
 
 /**
@@ -17,10 +17,10 @@ export const slideFlexHeroAmbientSlides: string[] = slideFlexGallery.slice(1);
  * Ảnh mặc định thẻ chú rể / cô dâu — URL riêng, **không** nằm trong `slideFlexGallery` (một số id cũ đã 404).
  */
 export const slideFlexGroomCardFallback =
-  "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=1000&q=80";
+  "https://images.unsplash.com/photo-1621621667797-e06afc217fb0?auto=format&fit=crop&w=1000&q=80";
 
 export const slideFlexBrideCardFallback =
-  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=1000&q=80";
+  "https://images.unsplash.com/photo-1606216794079-73f85bbd57d5?auto=format&fit=crop&w=1000&q=80";
 
 export const defaultGroomBioVi =
   "Chú rể trầm tính, coi trọng gia đình và những điều giản dị. Luôn muốn xây một mái ấm ấm áp bên người mình yêu.";

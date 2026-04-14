@@ -11,7 +11,7 @@ export const slideFlexTemplate: WeddingTemplate = {
   description:
     "Hero ảnh bìa full màn (tách khỏi album), nút gradient cyan–tím, font Quicksand và layout đầy đủ section như mẫu SlideFlex (Biihappy / iWedding).",
   image:
-    "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=2400&q=92",
   accent: "#1DCFFC",
   heroTitle: "Ảnh bìa full màn, gradient sống động và chữ Quicksand thân thiện.",
   heroSubtitle:

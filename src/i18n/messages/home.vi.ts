@@ -20,14 +20,13 @@ freeTitle: "Mẫu miễn phí",
 freeDescription:
   "Thanh nhã, rõ ràng, sẵn sàng gửi đi: đủ phần giới thiệu, lịch cưới và xác nhận tham dự để mời khách mà không rối.",
 freeCta: "Xem tất cả mẫu miễn phí",
-freeSecondary: "Dùng mẫu này",
 templateCardDemo: "Xem demo",
+templateCardSave: "Lưu mẫu này",
 premiumEyebrow: "Mẫu trả phí",
 premiumTitle: "Mẫu trả phí",
 premiumDescription:
   "Dành cho cặp đôi muốn thêm chiều sâu: bố cục ấn tượng, thư viện ảnh phong phú và những chi tiết khiến trang mời cưới giống một lời mời thật sự.",
 premiumCta: "Xem tất cả mẫu trả phí",
-premiumSecondary: "Xem bảng giá",
 whyUsEyebrow: "Vì sao chọn chúng tôi",
 whyUsTitle: "Tại sao nên làm thiệp mời online & website cưới với Lumiere?",
 whyUsBody:
@@ -280,7 +279,7 @@ pricing: [
   {
     name: "Premium",
     tagline: "Trải nghiệm nâng cao — gộp mọi tính năng trả phí",
-    price: "2.490.000đ",
+    price: "199.000đ",
     note:
       "Gồm toàn bộ hạng mục đánh dấu Có / nâng cao ở cột Premium trong bảng so sánh: thời hạn dài, album lớn, không quảng cáo chen ngang, thống kê truy cập, photobook đẹp hơn, sổ chúc & phản hồi, QR mừng cưới, song thân, nhạc nền, đổi giao diện linh hoạt, gỡ branding, QR tuỳ chỉnh, Save the Date, mẫu cao cấp, hiệu ứng, favicon/logo, tên miền (tuỳ chọn), RSVP sâu, chỉ đường nhà, song ngữ, tuỳ chỉnh sâu & hỗ trợ ưu tiên.",
     featured: true,

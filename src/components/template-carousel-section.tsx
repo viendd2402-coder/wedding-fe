@@ -15,10 +15,12 @@ type TemplateCarouselSectionProps = {
   ctaLabel: string;
   templates: WeddingTemplate[];
   badgeClassName: string;
-  secondaryActionHref: string;
+  /** Bỏ qua khi `secondaryUsesLocalSave` — mỗi thẻ lưu slug qua localStorage. */
+  secondaryActionHref?: string;
+  secondaryUsesLocalSave?: boolean;
   secondaryActionLabel: string;
   secondaryActionClassName: string;
-  /** Nhãn nút demo (thẻ có thể bấm cả vùng; nút chỉ là gợi ý). */
+  /** Nhãn nút demo (mặc định home.templateCardDemo). */
   demoLinkLabel?: string;
   /** Premium xếp dưới free trong cùng section — tách nhịp bằng rule + padding. */
   stackedBelowFree?: boolean;
@@ -34,6 +36,7 @@ export default function TemplateCarouselSection({
   templates,
   badgeClassName,
   secondaryActionHref,
+  secondaryUsesLocalSave = false,
   secondaryActionLabel,
   secondaryActionClassName,
   demoLinkLabel,
@@ -147,7 +150,8 @@ export default function TemplateCarouselSection({
                 isDark={isDark}
                 badgeClassName={badgeClassName}
                 demoLabel={resolvedDemoLabel}
-                secondaryHref={secondaryActionHref}
+                secondaryHref={secondaryUsesLocalSave ? undefined : secondaryActionHref}
+                secondarySaveSlug={secondaryUsesLocalSave ? item.slug : undefined}
                 secondaryLabel={secondaryActionLabel}
                 secondaryClassName={secondaryActionClassName}
                 cardClassName="w-[min(100%,400px)] min-w-[292px] shrink-0 sm:w-[400px]"
@@ -164,7 +168,8 @@ export default function TemplateCarouselSection({
               isDark={isDark}
               badgeClassName={badgeClassName}
               demoLabel={resolvedDemoLabel}
-              secondaryHref={secondaryActionHref}
+              secondaryHref={secondaryUsesLocalSave ? undefined : secondaryActionHref}
+              secondarySaveSlug={secondaryUsesLocalSave ? item.slug : undefined}
               secondaryLabel={secondaryActionLabel}
               secondaryClassName={secondaryActionClassName}
               cardClassName="h-full"

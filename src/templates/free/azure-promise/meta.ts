@@ -11,7 +11,7 @@ export const azurePromiseTemplate: WeddingTemplate = {
   description:
     "Mẫu sáng, nhẹ và dễ dùng với tinh thần trẻ trung, phù hợp các cặp đôi thích cảm giác thân thiện như những template cưới phổ biến.",
   image:
-    "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1546032996-6dfacbacbf3f?auto=format&fit=crop&w=2400&q=92",
   accent: "#7aa6c2",
   heroTitle:
     "Một website cưới sáng sủa, dễ nhìn và phù hợp gửi nhanh cho khách qua Zalo hoặc điện thoại.",

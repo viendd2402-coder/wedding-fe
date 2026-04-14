@@ -11,7 +11,7 @@ export const minimalMuseTemplate: WeddingTemplate = {
   description:
     "Tông màu kem, typography thanh lịch, phù hợp các cặp đôi thích giao diện tinh gọn.",
   image:
-    "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=2400&q=92",
   accent: "#7d8c79",
   heroTitle: "Một website cưới tinh gọn với màu sắc dịu nhẹ và bố cục thanh lịch.",
   heroSubtitle:
