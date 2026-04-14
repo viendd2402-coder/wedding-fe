@@ -1,13 +1,60 @@
 ---
-description: Mỗi mẫu thiệp cưới phải thiết kế riêng, không dùng chung layout/component thiệp
+description: Quy tắc thiết kế & triển khai mẫu thiệp — mỗi mẫu một kiến trúc; panel nhập thử theo từng mẫu. Đọc trước khi thêm/sửa template hoặc template-workspace.
 alwaysApply: true
 ---
 
 # Wedding templates — một mẫu một thiết kế
 
-- Mỗi template (miễn phí / trả phí) phải có **bố cục và kiến trúc trang riêng**: không được dùng lại cùng một “khung” (cùng thứ tự section, cùng nhịp hero → cột → RSVP, v.v.) giữa hai mẫu.
-- **Không** tách component hay layout dùng chung cho nội dung thiệp giữa các mẫu (không `SharedHeader`, `WeddingHero`, layout dùng lại). Nếu cần giống kỹ thuật, **copy code** vào từng thư mục mẫu thay vì import chéo.
-- Mỗi mẫu nên tự chứa markup + style trong phạm vi module của nó (`src/templates/<tier>/<slug>/` và file preview tương ứng): Tailwind viết trong file đó, hoặc **CSS Module** chỉ dùng cho slug đó (ví dụ `azure-promise.module.css`). **Không** import UI/layout từ thư mục mẫu khác.
-- **Ngoại lệ:** phần “vỏ demo” của app (ví dụ lightbox, panel chỉnh preview trong `template-workspace`) có thể dùng chung vì **không phải** giao diện thiệp gửi khách. Phần **thiệp thật** render trong component preview của từng mẫu vẫn phải độc lập hoàn toàn.
-- **Template detail — nhập thử thông tin:** phần form / panel nhập thử (preview chỉnh tay trên trang chi tiết mẫu) cần **tùy biến tối đa theo từng mẫu** để khách hàng thấy đúng những gì họ có thể chỉnh trên thiệc đó. Chia **rõ từng nhóm** (theo block / section thiệp hoặc theo loại nội dung), đặt nhãn và ranh giới UI rõ ràng để khách **không bối rối**; tránh gộp nhiều phần vào một khối mơ hồ, tránh chồng lấn layout hay ý nghĩa giữa các vùng (một phần không “lẫn” sang phần khác về cả giao diện lẫn luồng nhập liệu).
-- Thêm mẫu mới: so sánh trực quan với các mẫu hiện có để chắc chắn không trùng cấu trúc HTML và không trùng “bộ” class/layout.
+**Agent:** trước khi thêm mẫu mới, sửa preview thiệp, hoặc sửa panel nhập thử trên trang chi tiết mẫu (`template-workspace`), **đọc toàn bộ file này** để khớp ý đồ thiết kế đã thống nhất, tránh lặp lại yêu cầu từ chủ dự án.
+
+---
+
+## 1. Kiến trúc trang & luồng nội dung (thiệp thật)
+
+- Mỗi template (miễn phí / trả phí) phải có **bố cục và kiến trúc trang riêng**: không dùng lại cùng một “khung” giữa hai mẫu (cùng thứ tự section, cùng nhịp hero → cột → RSVP, v.v.).
+- **Không** tách component hay layout **dùng chung cho nội dung thiệp** giữa các mẫu (không `SharedHeader`, `WeddingHero`, khung section dùng lại). Nếu cần cùng kỹ thuật, **copy code** vào từng thư mục mẫu thay vì import chéo giữa các slug.
+- Mỗi mẫu tự chứa **markup + style** trong phạm vi của nó (`src/templates/<tier>/<slug>/` và preview tương ứng): Tailwind viết trong file đó, hoặc **CSS Module** chỉ gắn với slug đó (ví dụ `gentle-drift.module.css`). **Không** import UI/layout thiệp từ thư mục mẫu khác.
+- **Ngôn ngữ / copy trên thiệp:** bản dịch & chuỗi mặc định theo từng mẫu nên nằm trong message/preview riêng của mẫu đó (ví dụ `template-previews/<slug>`), không “ăn ké” copy của mẫu khác cho phần nội dung thiệp.
+- Thêm mẫu mới: **so sánh trực quan** với các mẫu hiện có để chắc chắn không trùng cấu trúc HTML và không trùng “bộ” class/layout (nhịp section, hero, form, footer…).
+
+---
+
+## 2. Vỏ demo app vs giao diện thiệp gửi khách
+
+- **Ngoại lệ:** phần “vỏ demo” (lightbox ảnh, **panel chỉnh preview** trong `template-workspace`, nút thu gọn panel…) **có thể dùng chung** vì không phải UI thiệp gửi khách.
+- Phần **thiệp thật** (component `preview.tsx` / render trong khung preview) vẫn phải **độc lập hoàn toàn** theo từng mẫu.
+
+---
+
+## 3. Trang chi tiết mẫu — form / panel nhập thử
+
+Panel nhập là nơi khách hình dung “mình sẽ chỉnh được gì”. Quy tắc:
+
+- **Tùy biến theo từng mẫu (theo `slug`):** không dùng một form chung cho mọi mẫu nếu các mẫu khác nhau về block; nhánh theo `template.slug` trong `template-workspace.tsx` (hoặc tách helper **chỉ cho workspace**, không phải component thiệp).
+- **Chia nhóm rõ ràng** theo block trên thiệp hoặc theo loại nội dung (hero, lời mời, cặp đôi, timeline, địa điểm, album, mừng cưới, footer…). Mỗi nhóm có tiêu đề + đoạn **inventory** (bullet) giải thích ô nào map lên đâu; **để trống = fallback** nên được nói rõ trong inventory hoặc hint dưới ô.
+- **Thứ tự nhóm trong panel:** ưu tiên **theo thứ tự đọc thiệp** (trên xuống dưới). Phần **cuối trang** trên thiệp (ví dụ **footer — ảnh & lời cảm ơn**) nên nằm **cuối form**, sau các block phía trước (tránh nhập footer xong mới thấy mừng cưới).
+- **Nhãn, hint, tag vị trí:** nhãn ô nhập và “thẻ vị trí” (tag) phải giúp khách không nhầm sang section khác; tránh hai nhóm chồng ý nghĩa (một ô không vừa hero vừa footer).
+- **Tránh gộp mơ hồ:** không nhét nhiều section thiệp vào một khối panel không có ranh giới; tránh layout panel chồng chéo khó hiểu.
+
+---
+
+## 4. Dữ liệu preview & type
+
+- Trường preview dùng chung nhiều mẫu nằm ở `preview-types.ts`; phần **riêng từng mẫu** dùng type/extra có tiền tố hoặc namespace rõ (ví dụ `GentleDriftPreviewExtra`, `gd*`, ảnh `gdFooterImage`). Khi thêm field mới: cập nhật type, `defaultPreviewData` / empty objects, snapshot hoặc API public-invite nếu có map field đó.
+- Ảnh mặc định / gallery mẫu có thể đặt trong `data.ts` của từng slug; không bắt buộc dùng chung một bộ ảnh giữa các mẫu nếu muốn tách vibe.
+
+---
+
+## 5. Checklist ngắn trước khi merge thay đổi mẫu
+
+- [ ] Preview mẫu không import UI từ mẫu khác.
+- [ ] Section order / nhịp trang khác đủ rõ với ít nhất một mẫu trả phí / miễn phí khác.
+- [ ] Panel nhập (nếu đụng) khớp slug, nhóm rõ, thứ tự hợp lý, có inventory/hint cho fallback.
+- [ ] i18n thiệp + i18n panel workspace (nếu có chuỗi mới) đủ VI/EN tương ứng chỗ cần.
+
+---
+
+## 6. Tham chiếu thêm
+
+- Tiếng Anh, cùng tinh thần: `AGENTS.md` (mục *Wedding invitation templates*).
+- Chi tiết Next.js trong repo: làm theo `node_modules/next/dist/docs/` khi đụng API Next.

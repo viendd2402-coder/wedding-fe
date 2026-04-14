@@ -135,9 +135,23 @@ function introBannerHttpsFromCandidates(candidates: Record<string, unknown>[]): 
   return "";
 }
 
+function gdFooterHttpsFromCandidates(candidates: Record<string, unknown>[]): string {
+  for (const o of candidates) {
+    const u = pickTrimmedString(o, [
+      "gdFooterImage",
+      "gd_footer_image",
+      "gentleDriftFooterImage",
+      "gentle_drift_footer_image",
+    ]);
+    if (u && /^https?:\/\//i.test(u)) return u;
+  }
+  return "";
+}
+
 function collectImageUrls(candidates: Record<string, unknown>[]): PreviewImages {
   const portraits = portraitHttpsFromCandidates(candidates);
   const introBannerImage = introBannerHttpsFromCandidates(candidates);
+  const gdFooterImage = gdFooterHttpsFromCandidates(candidates);
   for (const o of candidates) {
     const coverDirect = pickTrimmedString(o, [
       "coverImage",
@@ -165,6 +179,7 @@ function collectImageUrls(candidates: Record<string, unknown>[]): PreviewImages 
         introBannerImage,
         groomPortraitImage: portraits.groomPortraitImage,
         bridePortraitImage: portraits.bridePortraitImage,
+        gdFooterImage,
       };
     }
 
@@ -186,6 +201,7 @@ function collectImageUrls(candidates: Record<string, unknown>[]): PreviewImages 
           introBannerImage,
           groomPortraitImage: portraits.groomPortraitImage,
           bridePortraitImage: portraits.bridePortraitImage,
+          gdFooterImage,
         };
       }
     }
@@ -196,6 +212,7 @@ function collectImageUrls(candidates: Record<string, unknown>[]): PreviewImages 
     introBannerImage,
     groomPortraitImage: portraits.groomPortraitImage,
     bridePortraitImage: portraits.bridePortraitImage,
+    gdFooterImage,
   };
 }
 

@@ -26,6 +26,18 @@ export type SlideFlexPreviewExtra = {
   timeline4Title: string;
   timeline4Date: string;
   timeline4Body: string;
+  timeline5Title: string;
+  timeline5Date: string;
+  timeline5Body: string;
+  timeline6Title: string;
+  timeline6Date: string;
+  timeline6Body: string;
+  timeline7Title: string;
+  timeline7Date: string;
+  timeline7Body: string;
+  timeline8Title: string;
+  timeline8Date: string;
+  timeline8Body: string;
   bm1Role: string;
   bm1Name: string;
   bm1Bio: string;
@@ -84,6 +96,8 @@ export type GentleDriftPreviewExtra = {
   gdBrideBankName: string;
   gdBrideAccountName: string;
   gdBrideAccountNumber: string;
+  /** Số mốc timeline hiển thị / chỉnh trên Gentle Drift (chuỗi số "3"–"8"). */
+  gdTimelineBeatCount: string;
 };
 
 export const emptyGentleDriftPreviewExtra: GentleDriftPreviewExtra = {
@@ -104,6 +118,7 @@ export const emptyGentleDriftPreviewExtra: GentleDriftPreviewExtra = {
   gdBrideBankName: "",
   gdBrideAccountName: "",
   gdBrideAccountNumber: "",
+  gdTimelineBeatCount: "3",
 };
 
 export const emptySlideFlexPreviewExtra: SlideFlexPreviewExtra = {
@@ -127,6 +142,18 @@ export const emptySlideFlexPreviewExtra: SlideFlexPreviewExtra = {
   timeline4Title: "",
   timeline4Date: "",
   timeline4Body: "",
+  timeline5Title: "",
+  timeline5Date: "",
+  timeline5Body: "",
+  timeline6Title: "",
+  timeline6Date: "",
+  timeline6Body: "",
+  timeline7Title: "",
+  timeline7Date: "",
+  timeline7Body: "",
+  timeline8Title: "",
+  timeline8Date: "",
+  timeline8Body: "",
   bm1Role: "",
   bm1Name: "",
   bm1Bio: "",
@@ -186,6 +213,8 @@ export type PreviewImages = {
   groomPortraitImage: string;
   /** Slide-flex: ảnh upload ô cô dâu. Trống = preview.bridePhotoUrl hoặc ảnh mặc định thẻ (không dùng album). */
   bridePortraitImage: string;
+  /** Gentle Drift: ảnh khu vực footer cảm ơn (trên dòng chữ). Trống = chỉ hiện chữ. */
+  gdFooterImage: string;
 };
 
 export type LightboxImage = {
@@ -224,4 +253,5 @@ export const defaultPreviewImages: PreviewImages = {
   introBannerImage: "",
   groomPortraitImage: "",
   bridePortraitImage: "",
+  gdFooterImage: "",
 };

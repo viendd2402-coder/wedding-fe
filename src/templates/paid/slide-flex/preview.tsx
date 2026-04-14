@@ -35,7 +35,7 @@ import {
 import styles from "./slide-flex.module.css";
 
 function slideFlexTimelineFromPreview(preview: PreviewData, language: AppLanguage): TimelineEntry[] {
-  const slots = [1, 2, 3, 4] as const;
+  const slots = [1, 2, 3, 4, 5, 6, 7, 8] as const;
   const rows: TimelineEntry[] = slots.map((i) => {
     const r = preview as Record<string, string>;
     return {

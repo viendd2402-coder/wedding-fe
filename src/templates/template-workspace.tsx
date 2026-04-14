@@ -422,6 +422,7 @@ function PreviewConfigurator({
   onIntroBannerImageChange,
   onGroomPortraitImageChange,
   onBridePortraitImageChange,
+  onGdFooterImageChange,
   isCollapsed,
   onToggleCollapsed,
 }: {
@@ -434,6 +435,7 @@ function PreviewConfigurator({
   onIntroBannerImageChange: (file: File | null) => void;
   onGroomPortraitImageChange: (file: File | null) => void;
   onBridePortraitImageChange: (file: File | null) => void;
+  onGdFooterImageChange: (file: File | null) => void;
   isCollapsed: boolean;
   onToggleCollapsed: () => void;
 }) {
@@ -584,6 +586,31 @@ function PreviewConfigurator({
     template.slug,
   ]);
 
+  const isSlideFlex = template.slug === "slide-flex";
+  const isGentleDrift = template.slug === "gentle-drift";
+  const sf = copy.slideFlex;
+  const gd = copy.gentleDrift;
+  const gallerySlotTags = useMemo((): readonly string[] => {
+    const six = [
+      copy.tagGallerySlot1,
+      copy.tagGallerySlot2,
+      copy.tagGallerySlot3,
+      copy.tagGallerySlot4,
+      copy.tagGallerySlot5,
+      copy.tagGallerySlot6,
+    ] as const;
+    if (!isGentleDrift) return six;
+    return [
+      ...six,
+      gd.tagGallerySlot7,
+      gd.tagGallerySlot8,
+      gd.tagGallerySlot9,
+      gd.tagGallerySlot10,
+      gd.tagGallerySlot11,
+      gd.tagGallerySlot12,
+    ];
+  }, [copy, gd, isGentleDrift]);
+
   if (isCollapsed) {
     return (
       <button
@@ -611,30 +638,10 @@ function PreviewConfigurator({
 
   const textareaClass = `${inputClass} min-h-[5.5rem] resize-y`;
 
-  const isSlideFlex = template.slug === "slide-flex";
-  const isGentleDrift = template.slug === "gentle-drift";
-  const sf = copy.slideFlex;
-  const gd = copy.gentleDrift;
-  const gallerySlotTags = useMemo((): readonly string[] => {
-    const six = [
-      copy.tagGallerySlot1,
-      copy.tagGallerySlot2,
-      copy.tagGallerySlot3,
-      copy.tagGallerySlot4,
-      copy.tagGallerySlot5,
-      copy.tagGallerySlot6,
-    ] as const;
-    if (!isGentleDrift) return six;
-    return [
-      ...six,
-      gd.tagGallerySlot7,
-      gd.tagGallerySlot8,
-      gd.tagGallerySlot9,
-      gd.tagGallerySlot10,
-      gd.tagGallerySlot11,
-      gd.tagGallerySlot12,
-    ];
-  }, [copy, gd, isGentleDrift]);
+  const gdBeatCount = isGentleDrift
+    ? Math.min(8, Math.max(3, Number.parseInt(preview.gdTimelineBeatCount || "3", 10) || 3))
+    : 3;
+  const gdBeatSlots = Array.from({ length: gdBeatCount }, (_, i) => i + 1);
 
   return (
     <div
@@ -849,7 +856,7 @@ function PreviewConfigurator({
                     placeholder={gd.storyLeadLabel}
                   />
                 </PanelFieldBlock>
-                {[1, 2, 3].map((n) => (
+                {gdBeatSlots.map((n) => (
                   <div
                     key={n}
                     className={`grid gap-2.5 rounded-xl border px-3 py-3 text-xs ${isDark ? "border-white/12 bg-white/[0.03]" : "border-[var(--color-ink)]/10 bg-[var(--color-cream)]"}`}
@@ -890,6 +897,45 @@ function PreviewConfigurator({
                     </PanelFieldBlock>
                   </div>
                 ))}
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <button
+                    type="button"
+                    disabled={gdBeatCount >= 8}
+                    onClick={() =>
+                      onChange("gdTimelineBeatCount", String(Math.min(8, gdBeatCount + 1)))
+                    }
+                    className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border text-lg font-semibold leading-none transition disabled:cursor-not-allowed disabled:opacity-40 ${
+                      isDark
+                        ? "border-white/14 bg-white/8 text-white hover:bg-white/12"
+                        : "border-[var(--color-ink)]/12 bg-white text-[var(--color-ink)] hover:bg-[var(--color-cream)]"
+                    }`}
+                    aria-label={gd.addTimelineBeatLabel}
+                    title={gd.addTimelineBeatLabel}
+                  >
+                    +
+                  </button>
+                  <button
+                    type="button"
+                    disabled={gdBeatCount <= 3}
+                    onClick={() =>
+                      onChange("gdTimelineBeatCount", String(Math.max(3, gdBeatCount - 1)))
+                    }
+                    className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border text-lg font-semibold leading-none transition disabled:cursor-not-allowed disabled:opacity-40 ${
+                      isDark
+                        ? "border-white/14 bg-white/8 text-white hover:bg-white/12"
+                        : "border-[var(--color-ink)]/12 bg-white text-[var(--color-ink)] hover:bg-[var(--color-cream)]"
+                    }`}
+                    aria-label={gd.removeTimelineBeatLabel}
+                    title={gd.removeTimelineBeatLabel}
+                  >
+                    −
+                  </button>
+                  <p
+                    className={`min-w-0 flex-1 text-[11px] leading-relaxed ${isDark ? "text-white/55" : "text-[var(--color-ink)]/60"}`}
+                  >
+                    {gd.timelineBeatCountHint}
+                  </p>
+                </div>
               </SlideFlexWorkspaceSection>
               <SlideFlexWorkspaceSection
                 title={gd.venueScheduleSectionTitle}
@@ -1112,6 +1158,69 @@ function PreviewConfigurator({
                     onChange={(event) => onChange("gdBrideAccountNumber", event.target.value)}
                     placeholder={copy.accountNumber}
                   />
+                </PanelFieldBlock>
+              </SlideFlexWorkspaceSection>
+              <SlideFlexWorkspaceSection
+                title={gd.footerThanksSectionTitle}
+                inventory={gd.footerThanksSectionInventory}
+                isDark={isDark}
+              >
+                <div
+                  className={`rounded-2xl border border-dashed px-4 py-3 text-sm ${isDark ? "border-white/14 bg-white/4" : "border-[var(--color-ink)]/12 bg-[var(--color-cream)]"}`}
+                >
+                  <PanelFieldBlock
+                    label={gd.footerThanksImageLabel}
+                    tag={gd.tagFooterThanksImage}
+                    isDark={isDark}
+                  >
+                    <span
+                      className={`block text-xs ${isDark ? "text-white/65" : "text-[var(--color-ink)]/65"}`}
+                    >
+                      {images.gdFooterImage ? copy.coverSelected : gd.footerThanksImageHint}
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="mt-3 block w-full min-w-0 cursor-pointer text-xs"
+                      onChange={(event) => onGdFooterImageChange(event.target.files?.[0] ?? null)}
+                    />
+                  </PanelFieldBlock>
+                </div>
+                <PanelFieldBlock
+                  label={sf.footerThanksHeadline}
+                  tag={gd.tagFooterThanksHeadline}
+                  isDark={isDark}
+                >
+                  <textarea
+                    className={textareaClass}
+                    value={preview.footerThanksHeadline}
+                    onChange={(event) => onChange("footerThanksHeadline", event.target.value)}
+                    rows={2}
+                    placeholder={sf.footerThanksHeadline}
+                  />
+                  <p
+                    className={`mt-1.5 text-xs leading-relaxed ${isDark ? "text-white/55" : "text-[var(--color-ink)]/60"}`}
+                  >
+                    {gd.footerThanksHeadlineHint}
+                  </p>
+                </PanelFieldBlock>
+                <PanelFieldBlock
+                  label={sf.footerThanksBody}
+                  tag={gd.tagFooterThanksBody}
+                  isDark={isDark}
+                >
+                  <textarea
+                    className={textareaClass}
+                    value={preview.footerThanksBody}
+                    onChange={(event) => onChange("footerThanksBody", event.target.value)}
+                    rows={3}
+                    placeholder={sf.footerThanksBody}
+                  />
+                  <p
+                    className={`mt-1.5 text-xs leading-relaxed ${isDark ? "text-white/55" : "text-[var(--color-ink)]/60"}`}
+                  >
+                    {gd.footerThanksBodyHint}
+                  </p>
                 </PanelFieldBlock>
               </SlideFlexWorkspaceSection>
             </>
@@ -1791,6 +1900,17 @@ export default function TemplateWorkspace({
     [revokeObjectUrlIfBlob],
   );
 
+  const handleGdFooterImageChange = useCallback(
+    (file: File | null) => {
+      setImages((current) => {
+        revokeObjectUrlIfBlob(current.gdFooterImage);
+        if (!file) return { ...current, gdFooterImage: "" };
+        return { ...current, gdFooterImage: URL.createObjectURL(file) };
+      });
+    },
+    [revokeObjectUrlIfBlob],
+  );
+
   const previewProps = useMemo(
     () => ({
       template,
@@ -1821,6 +1941,7 @@ export default function TemplateWorkspace({
         onIntroBannerImageChange={handleIntroBannerImageChange}
         onGroomPortraitImageChange={handleGroomPortraitImageChange}
         onBridePortraitImageChange={handleBridePortraitImageChange}
+        onGdFooterImageChange={handleGdFooterImageChange}
         isCollapsed={isConfiguratorCollapsed}
         onToggleCollapsed={() =>
           setIsConfiguratorCollapsed((current) => !current)

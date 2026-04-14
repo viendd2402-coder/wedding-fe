@@ -128,6 +128,21 @@ export type GentleDriftWorkspacePanel = {
   timelineYearFieldLabel: string;
   timelineTitleFieldLabel: string;
   timelineBodyFieldLabel: string;
+  /** Nút thêm mốc timeline (Gentle Drift). */
+  addTimelineBeatLabel: string;
+  /** Nút bớt mốc timeline (Gentle Drift). */
+  removeTimelineBeatLabel: string;
+  /** Gợi ý số mốc (vd. 3–8). */
+  timelineBeatCountHint: string;
+  footerThanksSectionTitle: string;
+  footerThanksSectionInventory: string;
+  footerThanksImageLabel: string;
+  footerThanksImageHint: string;
+  tagFooterThanksImage: string;
+  tagFooterThanksHeadline: string;
+  tagFooterThanksBody: string;
+  footerThanksHeadlineHint: string;
+  footerThanksBodyHint: string;
   venueScheduleSectionTitle: string;
   venueScheduleSectionInventory: string;
   vuQuyEventFieldsTitle: string;
@@ -376,12 +391,26 @@ const viGentleDriftPanel: GentleDriftWorkspacePanel = {
   coupleDetailsSectionTitle: "Cặp đôi — trích dẫn, họ nhà & giới thiệu",
   coupleDetailsSectionInventory:
     "• Trích dẫn dưới tiêu đề mục Cặp đôi — để trống thì dùng câu mẫu\n• Hai dòng “Con ông / Con bà” cho chú rể và cô dâu\n• Đoạn giới thiệu dưới tên — để trống thì dùng đoạn mẫu",
-  timelineSectionTitle: "Chuyện tình yêu — đoạn dẫn & 3 mốc timeline",
+  timelineSectionTitle: "Chuyện tình yêu — đoạn dẫn & các mốc timeline",
   timelineSectionInventory:
-    "• Đoạn lead dưới tiêu đề mục — để trống thì dùng bản mẫu\n• Mỗi mốc: ô thứ nhất = năm (hiển thị to), ô thứ hai = tiêu đề mốc, ô thứ ba = đoạn kể\n• Để trống cả ba ô của một mốc thì mốc đó lấy nội dung mẫu",
+    "• Đoạn lead dưới tiêu đề mục — để trống thì dùng bản mẫu\n• Mỗi mốc: ô thứ nhất = năm (hiển thị to), ô thứ hai = tiêu đề mốc, ô thứ ba = đoạn kể\n• Để trống cả ba ô của một mốc thì mốc đó lấy nội dung mẫu (nếu có)\n• Nút + / −: thêm hoặc bớt mốc (tối thiểu 3, tối đa 8)",
   timelineYearFieldLabel: "Năm (số / nhãn thời gian)",
   timelineTitleFieldLabel: "Tiêu đề mốc",
   timelineBodyFieldLabel: "Đoạn kể",
+  addTimelineBeatLabel: "Thêm một mốc timeline",
+  removeTimelineBeatLabel: "Bớt một mốc timeline",
+  timelineBeatCountHint: "Hiện có thể chỉnh từ 3 đến 8 mốc trên thiệp.",
+  footerThanksSectionTitle: "Footer — ảnh & lời cảm ơn",
+  footerThanksSectionInventory:
+    "• Ảnh full-bleed lớn — không chọn file thì dùng ảnh mẫu\n• Dòng cảm ơn chính — để trống thì dùng bản mẫu theo ngôn ngữ trang\n• Đoạn phụ (tuỳ chọn) hiển thị nhỏ hơn bên dưới",
+  footerThanksImageLabel: "Ảnh footer (cảm ơn)",
+  footerThanksImageHint: "Không chọn file thì dùng ảnh mẫu lớn phía trên lời cảm ơn — chọn ảnh để thay.",
+  tagFooterThanksImage: "Footer cuối trang · ảnh minh họa phía trên lời cảm ơn",
+  tagFooterThanksHeadline: "Footer cuối trang · dòng lời cảm ơn chính",
+  tagFooterThanksBody: "Footer cuối trang · đoạn phụ (tuỳ chọn)",
+  footerThanksHeadlineHint:
+    "Để trống thì hiển thị câu mẫu theo ngôn ngữ (giống bản dịch trên thiệp khi chưa tuỳ chỉnh).",
+  footerThanksBodyHint: "Tuỳ chọn — chỉ hiện khi có nội dung; dùng cho lời ký tên hoặc một câu nhắn thêm.",
   venueScheduleSectionTitle: "Địa điểm & giờ (thẻ Lễ / Tiệc · bản đồ)",
   venueScheduleSectionInventory:
     "• Giờ lễ / giờ tiệc & địa điểm chung — mặc định cho lễ vu quy và hai tiệc nếu bạn chưa nhập riêng\n• Ba khối: lễ vu quy, tiệc nhà cô dâu, tiệc nhà chú rể — mỗi thẻ trên thiệp có bản đồ riêng",
@@ -641,12 +670,26 @@ const enGentleDriftPanel: GentleDriftWorkspacePanel = {
   coupleDetailsSectionTitle: "Couple — quote, parents & bios",
   coupleDetailsSectionInventory:
     "• Quote under the couple heading — empty uses the built-in sample\n• Two “child of” lines for groom and bride\n• Short bios under names — empty uses sample copy",
-  timelineSectionTitle: "Our story — lead & three timeline beats",
+  timelineSectionTitle: "Our story — lead & timeline beats",
   timelineSectionInventory:
-    "• Lead under the section title — empty uses the built-in sample\n• Each beat: field 1 = year (large), field 2 = title, field 3 = paragraph\n• If all three are empty for a beat, the built-in sample is used",
+    "• Lead under the section title — empty uses the built-in sample\n• Each beat: field 1 = year (large), field 2 = title, field 3 = paragraph\n• If all three are empty for a beat, the built-in sample is used when available\n• + / − buttons: add or remove a beat (minimum 3, maximum 8)",
   timelineYearFieldLabel: "Year (number / label)",
   timelineTitleFieldLabel: "Beat title",
   timelineBodyFieldLabel: "Story paragraph",
+  addTimelineBeatLabel: "Add a timeline beat",
+  removeTimelineBeatLabel: "Remove a timeline beat",
+  timelineBeatCountHint: "You can show between 3 and 8 beats on the invite.",
+  footerThanksSectionTitle: "Footer — image & thank-you",
+  footerThanksSectionInventory:
+    "• Large full-bleed footer photo — empty upload keeps the stock image\n• Main thank-you line — empty uses the built-in copy for the page language\n• Optional second line shown smaller underneath",
+  footerThanksImageLabel: "Footer thank-you image",
+  footerThanksImageHint: "Leave the upload empty to keep the built-in large footer photo — pick a file to replace it.",
+  tagFooterThanksImage: "Page footer · image above the thank-you line",
+  tagFooterThanksHeadline: "Page footer · main thank-you line",
+  tagFooterThanksBody: "Page footer · optional supporting line",
+  footerThanksHeadlineHint:
+    "Leave empty to use the built-in thank-you line for the current language.",
+  footerThanksBodyHint: "Optional — only renders when filled; nice for a sign-off or extra note.",
   venueScheduleSectionTitle: "Venue & schedule (ceremony / reception · maps)",
   venueScheduleSectionInventory:
     "• Shared ceremony/reception time, venue, and city — defaults when the three detail blocks are empty\n• Three blocks: ceremony, bride’s reception, groom’s reception — each card has its own map link",

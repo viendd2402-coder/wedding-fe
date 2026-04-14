@@ -16,6 +16,7 @@ import WeddingCountdown from "@/components/wedding-countdown";
 import { gentleDriftPreviewMessages } from "@/i18n/messages/template-previews/gentle-drift";
 import type { PreviewData, TemplatePreviewProps } from "@/templates/preview-types";
 import {
+  gentleDriftFooterPhotoDefault,
   gentleDriftGallery,
   gentleDriftStoryEn,
   gentleDriftStoryVi,
@@ -123,12 +124,19 @@ function gentleDriftGalleryResolved(
   return out;
 }
 
+function clampGentleDriftTimelineBeatCount(raw: string | undefined): number {
+  const n = Number.parseInt(String(raw ?? "").trim(), 10);
+  if (!Number.isFinite(n)) return 3;
+  return Math.min(8, Math.max(3, n));
+}
+
 /** `timeline{n}Title` → năm trên thẻ, `Date` → tiêu đề, `Body` → đoạn kể (mẫu Gentle Drift). */
 function gentleDriftStoryFromPreview(
   preview: PreviewData,
   defaults: GentleDriftStory[],
 ): GentleDriftStory[] {
-  const slots = [1, 2, 3] as const;
+  const beatCount = clampGentleDriftTimelineBeatCount(preview.gdTimelineBeatCount);
+  const slots = Array.from({ length: beatCount }, (_, i) => i + 1);
   return slots.map((n, i) => {
     const r = preview as Record<string, string>;
     const year = (r[`timeline${n}Title`] ?? "").trim();
@@ -169,6 +177,11 @@ export default function GentleDriftPreview({
     () => gentleDriftStoryFromPreview(preview, [...storyDefaults]),
     [preview, storyDefaults],
   );
+  const footerPhotoResolved =
+    images.gdFooterImage?.trim() || gentleDriftFooterPhotoDefault;
+  const footerThanksMain =
+    preview.footerThanksHeadline.trim() || copy.footerThanks;
+  const footerThanksSub = preview.footerThanksBody.trim();
 
   const [introLeaving, setIntroLeaving] = useState(false);
   const [introDone, setIntroDone] = useState(false);
@@ -788,7 +801,37 @@ export default function GentleDriftPreview({
           </section>
 
           <footer className={styles.footer}>
-            <p>{copy.footerThanks}</p>
+            <div className={styles.footerStack}>
+              <div className={styles.footerMedia}>
+                <button
+                  type="button"
+                  className={styles.footerPhotoHit}
+                  onClick={() =>
+                    onPreviewImage({
+                      src: footerPhotoResolved,
+                      alt: footerThanksMain,
+                    })
+                  }
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={footerPhotoResolved} alt="" className={styles.footerPhoto} />
+                  <span className={styles.footerPhotoScrim} aria-hidden />
+                </button>
+              </div>
+              <div className={styles.footerBar}>
+                <div className={styles.footerBarInner}>
+                  <span className={styles.footerOrnament} aria-hidden>
+                    ◆
+                  </span>
+                  <div className={styles.footerThanksWrap}>
+                    <p className={styles.footerThanks}>{footerThanksMain}</p>
+                    {footerThanksSub ? (
+                      <p className={styles.footerThanksSub}>{footerThanksSub}</p>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+            </div>
           </footer>
           </div>
         </main>

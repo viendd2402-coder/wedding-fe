@@ -16,6 +16,10 @@ export const gentleDriftGallery = [
   "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=900&q=80",
 ] as const;
 
+/** Ảnh footer cảm ơn mặc định (full-bleed, tông ấm — khi chưa upload). */
+export const gentleDriftFooterPhotoDefault =
+  "https://images.unsplash.com/photo-1599462616558-2b75fd26a283?auto=format&fit=crop&w=1800&q=82";
+
 export type GentleDriftStory = { year: string; title: string; body: string };
 
 export const gentleDriftStoryVi: GentleDriftStory[] = [
