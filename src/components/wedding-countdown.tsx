@@ -5,7 +5,11 @@ import { useMessages } from "@/i18n/use-messages";
 
 type WeddingCountdownProps = {
   targetDate: string;
-  variant?: "minimal" | "editorial" | "romance" | "dark" | "coastal";
+  variant?: "minimal" | "editorial" | "romance" | "dark" | "coastal" | "gentleDrift";
+  /**
+   * Chỉ dùng với `variant="gentleDrift"`: ô đếm giấy champagne (warm) hoặc nâu ấm tối (midnight), không dùng nền đen tuyền.
+   */
+  gentleDriftTone?: "warm" | "midnight";
 };
 
 type CountdownPart = {
@@ -41,6 +45,7 @@ function zeroParts(labels: [string, string, string, string]): CountdownPart[] {
 export default function WeddingCountdown({
   targetDate,
   variant = "minimal",
+  gentleDriftTone = "warm",
 }: WeddingCountdownProps) {
   const { countdown: cd } = useMessages();
   const labels = useMemo<[string, string, string, string]>(
@@ -74,29 +79,59 @@ export default function WeddingCountdown({
       return "bg-[rgba(123,168,184,0.16)]";
     }
 
-    return "bg-[var(--color-cream)]";
-  }, [variant]);
+    if (variant === "gentleDrift") {
+      if (gentleDriftTone === "midnight") {
+        return [
+          "border border-[rgba(212,184,122,0.26)]",
+          "bg-[linear-gradient(168deg,#2f2a25_0%,#1e1b18_48%,#161412_100%)]",
+          "text-[#f7f1ea]",
+          "shadow-[0_10px_32px_rgba(0,0,0,0.22),inset_0_1px_0_rgba(255,255,255,0.05)]",
+        ].join(" ");
+      }
+      return [
+        "border border-[rgba(184,149,106,0.4)]",
+        "bg-[linear-gradient(180deg,#fffdf9_0%,#efe8de_55%,#e8dfd4_100%)]",
+        "text-[#16110d]",
+        "shadow-[0_8px_26px_rgba(20,14,10,0.065),inset_0_1px_0_rgba(255,255,255,0.9)]",
+      ].join(" ");
+    }
 
-  const labelClassName =
-    variant === "editorial"
-      ? "text-white/68"
-      : variant === "dark"
-        ? "text-white/62"
-      : "text-[var(--color-sage)]";
+    return "bg-[var(--color-cream)]";
+  }, [gentleDriftTone, variant]);
+
+  const labelClassName = useMemo(() => {
+    if (variant === "editorial") return "text-white/68";
+    if (variant === "dark") return "text-white/62";
+    if (variant === "gentleDrift") {
+      return gentleDriftTone === "midnight"
+        ? "text-[rgba(247,241,234,0.58)]"
+        : "text-[#6e655b]";
+    }
+    return "text-[var(--color-sage)]";
+  }, [gentleDriftTone, variant]);
+
+  const gridGap =
+    variant === "gentleDrift" ? "grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4" : "grid grid-cols-2 gap-4 sm:grid-cols-4";
+
+  const cellRadius = variant === "gentleDrift" ? "rounded-[1.05rem]" : "rounded-[1.6rem]";
+
+  const cellPad = variant === "gentleDrift" ? "p-4 sm:p-[1.15rem]" : "p-5";
+
+  const valueClass =
+    variant === "gentleDrift"
+      ? "font-display text-[2.1rem] leading-none tracking-[-0.02em] sm:text-[2.65rem]"
+      : "font-display text-5xl leading-none";
+
+  const labelGap = variant === "gentleDrift" ? "mt-2.5" : "mt-3";
+
+  const labelTrack = variant === "gentleDrift" ? "tracking-[0.26em]" : "tracking-[0.28em]";
 
   return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+    <div className={gridGap}>
       {parts.map((item) => (
-        <div
-          key={item.label}
-          className={`rounded-[1.6rem] p-5 text-center ${itemClassName}`}
-        >
-          <p className="font-display text-5xl leading-none">{item.value}</p>
-          <p
-            className={`mt-3 text-xs uppercase tracking-[0.28em] ${labelClassName}`}
-          >
-            {item.label}
-          </p>
+        <div key={item.label} className={`${cellRadius} ${cellPad} text-center ${itemClassName}`}>
+          <p className={valueClass}>{item.value}</p>
+          <p className={`${labelGap} text-xs uppercase ${labelTrack} ${labelClassName}`}>{item.label}</p>
         </div>
       ))}
     </div>

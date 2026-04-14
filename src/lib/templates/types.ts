@@ -24,7 +24,8 @@ export type CountdownVariant =
   | "editorial"
   | "romance"
   | "dark"
-  | "coastal";
+  | "coastal"
+  | "gentleDrift";
 
 export type WeddingTemplate = {
   slug: string;
