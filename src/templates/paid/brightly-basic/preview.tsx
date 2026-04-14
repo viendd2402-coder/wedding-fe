@@ -15,6 +15,11 @@ import { useGlobalPreferences } from "@/components/global-preferences-provider";
 import { brightlyBasicPreviewMessages } from "@/i18n/messages/template-previews/brightly-basic";
 import type { TemplatePreviewProps } from "@/templates/preview-types";
 import {
+  brightlyBasicDefaultBridePortrait,
+  brightlyBasicDefaultEventsBg,
+  brightlyBasicDefaultFooterBg,
+  brightlyBasicDefaultGroomPortrait,
+  brightlyBasicDefaultInvitationBg,
   brightlyBasicGallery,
   defaultBrideBio,
   defaultGroomBio,
@@ -256,6 +261,33 @@ export default function BrightlyBasicPreview({
   const copy = brightlyBasicPreviewMessages[language];
   const gallery = images.galleryImages.length ? images.galleryImages : brightlyBasicGallery;
   const cover = images.coverImage || template.image;
+  const groomCardPhoto =
+    images.groomPortraitImage.trim() || brightlyBasicDefaultGroomPortrait;
+  const brideCardPhoto =
+    images.bridePortraitImage.trim() || brightlyBasicDefaultBridePortrait;
+  const invitationBg =
+    images.bbInvitationBgImage.trim() || brightlyBasicDefaultInvitationBg;
+  const eventsParallaxBg =
+    images.bbEventsBgImage.trim() || brightlyBasicDefaultEventsBg;
+  const footerBackdrop =
+    images.bbFooterBgImage.trim() || brightlyBasicDefaultFooterBg;
+
+  const brideGiftBank = preview.bbBrideBankName.trim() || preview.bankName;
+  const brideGiftName = preview.bbBrideAccountName.trim() || preview.accountName;
+  const brideGiftNumber = preview.bbBrideAccountNumber.trim() || preview.accountNumber;
+
+  const heroSaveDateLine = preview.bbHeroSaveDateLine.trim() || copy.saveDate;
+  const gettingMarriedTitle = preview.bbGettingMarriedTitle.trim() || copy.gettingMarried;
+  const coupleThanksBodyText = preview.bbThanksBody.trim() || copy.thanksBody;
+  const inviteBigDayTitle = preview.bbBigDayTitle.trim() || copy.bigDay;
+  const inviteLeadText = preview.bbInviteLead.trim() || copy.inviteLead;
+  const gallerySectionTitle = preview.bbGalleryTitle.trim() || copy.galleryTitle;
+  const eventsSectionTitle = preview.bbEventsTitle.trim() || copy.eventsTitle;
+  const eventsSectionDesc = preview.bbEventsDesc.trim() || copy.eventsDesc;
+  const guestbookSectionTitle = preview.bbGuestbookTitle.trim() || copy.guestbook;
+  const giftSectionTitle = preview.bbGiftTitle.trim() || copy.giftTitle;
+  const footerEyebrowText = preview.bbFooterThanksEyebrow.trim() || copy.footerThanksEyebrow;
+  const footerThanksText = preview.bbFooterThanks.trim() || copy.footerThanks;
 
   const [countdownTick, setCountdownTick] = useState(0);
   useEffect(() => {
@@ -310,12 +342,42 @@ export default function BrightlyBasicPreview({
     return { dom, cells, monthTitle, weekdays };
   }, [language, preview.countdownTarget]);
 
-  const wishOptions = language === "vi" ? wishSuggestionsVi : wishSuggestionsEn;
+  const wishOptions = useMemo(() => {
+    const custom = [preview.wishSuggestion1, preview.wishSuggestion2, preview.wishSuggestion3]
+      .map((s) => s.trim())
+      .filter(Boolean);
+    if (custom.length > 0) return custom;
+    return language === "vi" ? wishSuggestionsVi : wishSuggestionsEn;
+  }, [
+    language,
+    preview.wishSuggestion1,
+    preview.wishSuggestion2,
+    preview.wishSuggestion3,
+  ]);
 
   const mapsUrl = useMemo(() => {
     const q = `${preview.venue} ${preview.location}`.trim();
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
   }, [preview.location, preview.venue]);
+
+  const groomReceptionTime = preview.bbGroomReceptionTime.trim() || preview.partyTime;
+  const groomReceptionVenue = preview.bbGroomReceptionVenue.trim() || preview.venue;
+  const groomReceptionLocation =
+    preview.bbGroomReceptionLocation.trim() || preview.location;
+  const brideReceptionTime = preview.bbBrideReceptionTime.trim() || preview.partyTime;
+  const brideReceptionVenue = preview.bbBrideReceptionVenue.trim() || preview.venue;
+  const brideReceptionLocation =
+    preview.bbBrideReceptionLocation.trim() || preview.location;
+
+  const groomReceptionMapsUrl = useMemo(() => {
+    const q = `${groomReceptionVenue} ${groomReceptionLocation}`.trim();
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+  }, [groomReceptionLocation, groomReceptionVenue]);
+
+  const brideReceptionMapsUrl = useMemo(() => {
+    const q = `${brideReceptionVenue} ${brideReceptionLocation}`.trim();
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+  }, [brideReceptionLocation, brideReceptionVenue]);
 
   const calendarUrl = useMemo(() => {
     const start = new Date(preview.countdownTarget);
@@ -331,16 +393,26 @@ export default function BrightlyBasicPreview({
     return `https://calendar.google.com/calendar/render?${params.toString()}`;
   }, [preview.bride, preview.countdownTarget, preview.groom, preview.location, preview.venue]);
 
-  const [giftCopied, setGiftCopied] = useState(false);
-  const copyAccount = useCallback(async () => {
+  const [giftCopiedGroom, setGiftCopiedGroom] = useState(false);
+  const [giftCopiedBride, setGiftCopiedBride] = useState(false);
+  const copyGroomAccount = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(preview.accountNumber.replace(/\s/g, ""));
-      setGiftCopied(true);
-      window.setTimeout(() => setGiftCopied(false), 2000);
+      setGiftCopiedGroom(true);
+      window.setTimeout(() => setGiftCopiedGroom(false), 2000);
     } catch {
-      setGiftCopied(false);
+      setGiftCopiedGroom(false);
     }
   }, [preview.accountNumber]);
+  const copyBrideAccount = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(brideGiftNumber.replace(/\s/g, ""));
+      setGiftCopiedBride(true);
+      window.setTimeout(() => setGiftCopiedBride(false), 2000);
+    } catch {
+      setGiftCopiedBride(false);
+    }
+  }, [brideGiftNumber]);
 
   const fontVars = `${marmelad.variable} ${openSans.variable} ${ooohBaby.variable}`;
 
@@ -386,7 +458,7 @@ export default function BrightlyBasicPreview({
                 revealAxis="left"
                 className={`${styles.heroRevealWrap} ${styles.heroRevealStagger0}`}
               >
-                <p className={styles.heroKicker}>{copy.saveDate}</p>
+                <p className={styles.heroKicker}>{heroSaveDateLine}</p>
               </ScrollRevealDiv>
               <ScrollRevealDiv
                 revealAxis="right"
@@ -423,7 +495,7 @@ export default function BrightlyBasicPreview({
                 <ScrollRevealArticle className={styles.coupleCard} revealAxis="left">
                   <div className={styles.coupleImgWrap}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={cover} alt="" className={styles.coupleImg} />
+                    <img src={groomCardPhoto} alt="" className={styles.coupleImg} />
                     <div className={styles.coupleHover}>
                       <span className={styles.coupleHLines} aria-hidden />
                       <span className={styles.coupleVLines} aria-hidden />
@@ -432,7 +504,9 @@ export default function BrightlyBasicPreview({
                           {preview.groom}
                           <small>{copy.groom}</small>
                         </h3>
-                        <p className={styles.coupleBio}>{defaultGroomBio}</p>
+                        <p className={styles.coupleBio}>
+                          {preview.groomBio.trim() ? preview.groomBio : defaultGroomBio}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -440,11 +514,7 @@ export default function BrightlyBasicPreview({
                 <ScrollRevealArticle className={styles.coupleCard} revealAxis="right">
                   <div className={styles.coupleImgWrap}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={gallery[1] ?? gallery[0]}
-                      alt=""
-                      className={styles.coupleImg}
-                    />
+                    <img src={brideCardPhoto} alt="" className={styles.coupleImg} />
                     <div className={styles.coupleHover}>
                       <span className={styles.coupleHLines} aria-hidden />
                       <span className={styles.coupleVLines} aria-hidden />
@@ -453,7 +523,9 @@ export default function BrightlyBasicPreview({
                           {preview.bride}
                           <small>{copy.bride}</small>
                         </h3>
-                        <p className={styles.coupleBio}>{defaultBrideBio}</p>
+                        <p className={styles.coupleBio}>
+                          {preview.brideBio.trim() ? preview.brideBio : defaultBrideBio}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -468,8 +540,8 @@ export default function BrightlyBasicPreview({
             </div>
 
             <ScrollRevealDiv variant="title" revealAxis="left" className={styles.aboutBlock}>
-              <h3 className={styles.aboutTitle}>{copy.gettingMarried}</h3>
-              <p className={styles.aboutText}>{copy.thanksBody}</p>
+              <h3 className={styles.aboutTitle}>{gettingMarriedTitle}</h3>
+              <p className={styles.aboutText}>{coupleThanksBodyText}</p>
               <p className={styles.signature}>
                 <span>{preview.groom}</span>
                 {" & "}
@@ -479,19 +551,23 @@ export default function BrightlyBasicPreview({
                 <div className={styles.parentCol}>
                   <p className={styles.parentLabel}>{copy.parentGroom}</p>
                   <p>
-                    {copy.sonOf}: <strong>{copy.tbd}</strong>
+                    {copy.sonOf}:{" "}
+                    <strong>{preview.groomParentLine1.trim() || copy.tbd}</strong>
                   </p>
                   <p>
-                    {copy.dauOf}: <strong>{copy.tbd}</strong>
+                    {copy.dauOf}:{" "}
+                    <strong>{preview.groomParentLine2.trim() || copy.tbd}</strong>
                   </p>
                 </div>
                 <div className={styles.parentCol}>
                   <p className={styles.parentLabel}>{copy.parentBride}</p>
                   <p>
-                    {copy.sonOf}: <strong>{copy.tbd}</strong>
+                    {copy.sonOf}:{" "}
+                    <strong>{preview.brideParentLine1.trim() || copy.tbd}</strong>
                   </p>
                   <p>
-                    {copy.dauOf}: <strong>{copy.tbd}</strong>
+                    {copy.dauOf}:{" "}
+                    <strong>{preview.brideParentLine2.trim() || copy.tbd}</strong>
                   </p>
                 </div>
               </div>
@@ -502,11 +578,11 @@ export default function BrightlyBasicPreview({
         <RevealSection
           id="invitation"
           className={styles.invitation}
-          style={{ backgroundImage: `url(${gallery[2] ?? cover})` }}
+          style={{ backgroundImage: `url(${invitationBg})` }}
         >
           <div className={styles.invitationOverlay} />
           <div className={styles.container}>
-            <h2 className={`${styles.sectionTitle} ${styles.sectionTitleLight}`}>{copy.bigDay}</h2>
+            <h2 className={`${styles.sectionTitle} ${styles.sectionTitleLight}`}>{inviteBigDayTitle}</h2>
             <div className={styles.inviteCard}>
               <span className={styles.hLines} aria-hidden />
               <span className={styles.vLines} aria-hidden />
@@ -522,7 +598,7 @@ export default function BrightlyBasicPreview({
                   <h3 className={styles.inviteNames}>
                     {preview.groom} <small>&amp;</small> {preview.bride}
                   </h3>
-                  <p>{copy.inviteLead}</p>
+                  <p>{inviteLeadText}</p>
                   <div className={styles.inviteBtns}>
                     <a href="#rsvp" className={`${styles.btnOutline} ${styles.btnOutlineLight}`}>
                       {copy.sendWish}
@@ -607,7 +683,7 @@ export default function BrightlyBasicPreview({
         <section id="gallery" className={`${styles.section} ${styles.gallerySection}`}>
           <div className={styles.container}>
             <ScrollRevealDiv variant="title" revealAxis="left">
-              <h2 className={styles.sectionTitle}>{copy.galleryTitle}</h2>
+              <h2 className={styles.sectionTitle}>{gallerySectionTitle}</h2>
             </ScrollRevealDiv>
           </div>
           <div className={styles.galleryMasonry}>
@@ -618,7 +694,7 @@ export default function BrightlyBasicPreview({
                 className={styles.galleryItem}
                 revealAxis={i % 2 === 0 ? "left" : "right"}
                 onClick={() =>
-                  onPreviewImage({ src, alt: `${copy.galleryTitle} ${i + 1}` })
+                  onPreviewImage({ src, alt: `${gallerySectionTitle} ${i + 1}` })
                 }
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -631,13 +707,13 @@ export default function BrightlyBasicPreview({
         <RevealSection
           id="events"
           className={styles.eventsParallax}
-          style={{ backgroundImage: `url(${gallery[3] ?? cover})` }}
+          style={{ backgroundImage: `url(${eventsParallaxBg})` }}
         >
           <div className={styles.eventsOverlay} />
           <div className={styles.container}>
             <div className={styles.eventsBox}>
-              <h2 className={styles.eventsTitle}>{copy.eventsTitle}</h2>
-              <p className={styles.eventsDesc}>{copy.eventsDesc}</p>
+              <h2 className={styles.eventsTitle}>{eventsSectionTitle}</h2>
+              <p className={styles.eventsDesc}>{eventsSectionDesc}</p>
               <ul className={styles.eventList}>
                 <li className={styles.eventLi}>
                   <div className={styles.eventNeela}>
@@ -686,31 +762,71 @@ export default function BrightlyBasicPreview({
                     <span className={styles.hLines} aria-hidden />
                     <span className={styles.vLines} aria-hidden />
                     <div className={styles.eventBody}>
-                      <div className={styles.eventRow}>
-                        <div className={styles.eventAvatar} aria-hidden>
-                          ♡
-                        </div>
-                        <div>
-                          <h3 className={styles.eventH3}>{copy.reception}</h3>
-                          <p className={styles.eventMeta}>
-                            <strong>{preview.partyTime}</strong>
-                            {" · "}
-                            {preview.dateLabel}
-                          </p>
-                          <p className={styles.eventPlace}>
-                            {preview.venue} · {preview.location}
-                          </p>
-                        </div>
-                      </div>
-                      <div className={styles.eventActions}>
-                        <a
-                          href={mapsUrl}
-                          className={`${styles.btnPrimary} ${styles.btnReverse}`}
-                          target="_blank"
-                          rel="noreferrer"
+                      <div className={styles.eventReceptionPair}>
+                        <article
+                          className={`${styles.eventReceptionCard} ${styles.eventReceptionCardGroom}`}
+                          aria-label={`${copy.reception} — ${copy.parentGroom}`}
                         >
-                          {copy.viewMap}
-                        </a>
+                          <span className={styles.eventReceptionBadge}>{copy.parentGroom}</span>
+                          <h3 className={styles.eventReceptionCardTitle}>{copy.reception}</h3>
+                          <p className={styles.eventReceptionWhen}>
+                            <strong>{groomReceptionTime}</strong>
+                            <span className={styles.eventReceptionWhenSep} aria-hidden>
+                              ·
+                            </span>
+                            <span>{preview.dateLabel}</span>
+                          </p>
+                          <p className={styles.eventReceptionWhere}>
+                            <span className={styles.eventReceptionVenueLine}>{groomReceptionVenue}</span>
+                            <span className={styles.eventReceptionWhereSep} aria-hidden>
+                              ·
+                            </span>
+                            <span className={styles.eventReceptionCityLine}>{groomReceptionLocation}</span>
+                          </p>
+                          <div className={styles.eventReceptionCardActions}>
+                            <a
+                              href={groomReceptionMapsUrl}
+                              className={`${styles.btnPrimary} ${styles.eventReceptionMapBtn}`}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              {copy.viewMap}
+                            </a>
+                          </div>
+                        </article>
+                        <article
+                          className={`${styles.eventReceptionCard} ${styles.eventReceptionCardBride}`}
+                          aria-label={`${copy.reception} — ${copy.parentBride}`}
+                        >
+                          <span className={`${styles.eventReceptionBadge} ${styles.eventReceptionBadgeBride}`}>
+                            {copy.parentBride}
+                          </span>
+                          <h3 className={styles.eventReceptionCardTitle}>{copy.reception}</h3>
+                          <p className={styles.eventReceptionWhen}>
+                            <strong>{brideReceptionTime}</strong>
+                            <span className={styles.eventReceptionWhenSep} aria-hidden>
+                              ·
+                            </span>
+                            <span>{preview.dateLabel}</span>
+                          </p>
+                          <p className={styles.eventReceptionWhere}>
+                            <span className={styles.eventReceptionVenueLine}>{brideReceptionVenue}</span>
+                            <span className={styles.eventReceptionWhereSep} aria-hidden>
+                              ·
+                            </span>
+                            <span className={styles.eventReceptionCityLine}>{brideReceptionLocation}</span>
+                          </p>
+                          <div className={styles.eventReceptionCardActions}>
+                            <a
+                              href={brideReceptionMapsUrl}
+                              className={`${styles.btnPrimary} ${styles.eventReceptionMapBtn}`}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              {copy.viewMap}
+                            </a>
+                          </div>
+                        </article>
                       </div>
                     </div>
                   </div>
@@ -726,7 +842,7 @@ export default function BrightlyBasicPreview({
               <span className={styles.hLines} aria-hidden />
               <span className={styles.vLines} aria-hidden />
               <div className={styles.formInner}>
-                <h2 className={styles.sectionTitle}>{copy.guestbook}</h2>
+                <h2 className={styles.sectionTitle}>{guestbookSectionTitle}</h2>
                 <form
                   className={styles.form}
                   onSubmit={(e) => {
@@ -779,30 +895,60 @@ export default function BrightlyBasicPreview({
         <RevealSection id="donate" className={styles.section}>
           <div className={styles.container}>
             <ScrollRevealDiv variant="title" revealAxis="right" className={styles.donateTitleWrap}>
-              <h2 className={styles.sectionTitle}>{copy.giftTitle}</h2>
+              <h2 className={styles.sectionTitle}>{giftSectionTitle}</h2>
             </ScrollRevealDiv>
             <div className={styles.donateGrid}>
               <ScrollRevealDiv revealAxis="left" className={styles.donateCardWrap}>
-              <div className={styles.donateCard}>
-                <span className={styles.hLines} aria-hidden />
-                <span className={styles.vLines} aria-hidden />
-                <div className={styles.donateInner}>
-                  <h4 className={styles.donateH4}>{copy.giftToCouple}</h4>
-                  <p>
-                    {copy.bank}: <strong>{preview.bankName}</strong>
-                  </p>
-                  <p>
-                    {copy.accName}: <strong>{preview.accountName}</strong>
-                  </p>
-                  <p>
-                    {copy.accNo}:{" "}
-                    <strong className={styles.mono}>{preview.accountNumber}</strong>
-                  </p>
-                  <button type="button" className={styles.btnGhost} onClick={() => void copyAccount()}>
-                    {giftCopied ? copy.copied : copy.copyStk}
-                  </button>
+                <div className={styles.donateCard}>
+                  <span className={styles.hLines} aria-hidden />
+                  <span className={styles.vLines} aria-hidden />
+                  <div className={styles.donateInner}>
+                    <h4 className={styles.donateH4}>{copy.giftGroomSide}</h4>
+                    <p>
+                      {copy.bank}: <strong>{preview.bankName}</strong>
+                    </p>
+                    <p>
+                      {copy.accName}: <strong>{preview.accountName}</strong>
+                    </p>
+                    <p>
+                      {copy.accNo}:{" "}
+                      <strong className={styles.mono}>{preview.accountNumber}</strong>
+                    </p>
+                    <button
+                      type="button"
+                      className={styles.btnGhost}
+                      onClick={() => void copyGroomAccount()}
+                    >
+                      {giftCopiedGroom ? copy.copied : copy.copyStk}
+                    </button>
+                  </div>
                 </div>
-              </div>
+              </ScrollRevealDiv>
+              <ScrollRevealDiv revealAxis="right" className={styles.donateCardWrap}>
+                <div className={styles.donateCard}>
+                  <span className={styles.hLines} aria-hidden />
+                  <span className={styles.vLines} aria-hidden />
+                  <div className={styles.donateInner}>
+                    <h4 className={styles.donateH4}>{copy.giftBrideSide}</h4>
+                    <p>
+                      {copy.bank}: <strong>{brideGiftBank}</strong>
+                    </p>
+                    <p>
+                      {copy.accName}: <strong>{brideGiftName}</strong>
+                    </p>
+                    <p>
+                      {copy.accNo}:{" "}
+                      <strong className={styles.mono}>{brideGiftNumber}</strong>
+                    </p>
+                    <button
+                      type="button"
+                      className={styles.btnGhost}
+                      onClick={() => void copyBrideAccount()}
+                    >
+                      {giftCopiedBride ? copy.copied : copy.copyStk}
+                    </button>
+                  </div>
+                </div>
               </ScrollRevealDiv>
             </div>
           </div>
@@ -811,11 +957,11 @@ export default function BrightlyBasicPreview({
 
       <RevealFooter className={styles.footer}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className={styles.footerBgImg} src={cover} alt="" />
+        <img className={styles.footerBgImg} src={footerBackdrop} alt="" />
         <div className={styles.footerVeil} aria-hidden="true" />
         <div className={styles.footerFrame}>
-          <p className={styles.footerEyebrow}>{copy.footerThanksEyebrow}</p>
-          <p className={styles.footerThanks}>{copy.footerThanks}</p>
+          <p className={styles.footerEyebrow}>{footerEyebrowText}</p>
+          <p className={styles.footerThanks}>{footerThanksText}</p>
           <div className={styles.footerLogo}>
             {preview.groom}
             <small>&amp;</small>

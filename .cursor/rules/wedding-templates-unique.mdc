@@ -45,12 +45,33 @@ Panel nhập là nơi khách hình dung “mình sẽ chỉnh được gì”. Q
 
 ---
 
+## 4a. Tuỳ chỉnh tối đa cho khách — copy giới thiệu & mô tả
+
+- **Mục tiêu:** khách cần chỉnh được **tối đa** nội dung chữ trên thiệp (tiêu đề mục, đoạn dẫn, lời cảm ơn, mô tả sự kiện, footer…) cho đúng giọng văn và từng tình huống — không giam họ vào vài ô tên/ngày/STK.
+- **Cách làm:** với mỗi đoạn copy “marketing” / giới thiệu trên thiệp, ưu tiên **ô preview + type riêng theo slug** (tiền tố `bb*`, `gd*`, …), **để trống = fallback** sang chuỗi mẫu trong `template-previews/<slug>` hoặc i18n mẫu theo ngôn ngữ trang. Tránh hardcode dài trong JSX mà không có đường thoát cho khách.
+- **Hai ngôn ngữ thiệp (VI/EN):** một thiệp thường chọn **một ngôn ngữ nội dung** (khách gõ tiếng Việt hoặc Anh); fallback i18n vẫn theo toggle ngôn ngữ trang. Nếu sau này cần song song VI+EN trên cùng thiệp, phải thiết kế field đôi có chủ đích (không trộn một textarea chung).
+- **Panel `template-workspace`:** nhóm ô copy theo **thứ tự đọc thiệp**; inventory/hint nói rõ **ô nào map lên đâu** và **để trống = bản mẫu**. Tag vị trí giúp khách không nhầm section.
+- Khi thêm field copy mới: cập nhật `preview-types.ts`, `empty*Extra`, `defaultPreviewData` nếu cần, preview slug, panel slug, và **public-invite** (overlay từ JSON) nếu API gửi field đó.
+
+---
+
+## 4b. Ảnh & nội dung theo từng vùng (đặc biệt mẫu `brightly-basic` / Neela-style)
+
+- **Không tái sử dụng cùng một URL ảnh** cho hai vai trò khác nhau trên cùng một thiệp (ví dụ: ảnh bìa hero ≠ ảnh nền footer ≠ ảnh thẻ cô dâu/chú rể ≠ nền parallax lời mời/sự kiện ≠ từng ô album). Mỗi vùng có slot/upload hoặc fallback **URL riêng** trong `data.ts` của slug đó.
+- **Sự kiện cưới:** thiệp cần thể hiện rõ **lễ thành hôn** và **tiệc cưới** là phần trong ngày vui **chung của cô dâu và chú rể** (copy + panel inventory nên nói đúng ý đó).
+- **Hộp mừng cưới:** có **thông tin / cột cho nhà chú rể và nhà cô dâu** (hai cột hoặc hai khối tương đương); để trống phía nhà gái thì có thể fallback giống nhà trai nhưng vẫn là hai vùng UI riêng.
+- **Footer:** ảnh nền footer (nếu có) là **slot riêng**, không mặc định gán từ ảnh bìa hay album trừ khi chủ đích thiết kế khác và ghi rõ trong panel.
+
+---
+
 ## 5. Checklist ngắn trước khi merge thay đổi mẫu
 
 - [ ] Preview mẫu không import UI từ mẫu khác.
 - [ ] Section order / nhịp trang khác đủ rõ với ít nhất một mẫu trả phí / miễn phí khác.
 - [ ] Panel nhập (nếu đụng) khớp slug, nhóm rõ, thứ tự hợp lý, có inventory/hint cho fallback.
 - [ ] i18n thiệp + i18n panel workspace (nếu có chuỗi mới) đủ VI/EN tương ứng chỗ cần.
+- [ ] Copy giới thiệu / mô tả / tiêu đề mục: có ô preview + fallback rõ khi để trống; panel có inventory (mục **4a**).
+- [ ] Với mẫu nhiều ảnh theo vùng: không reuse URL giữa hero / thẻ cặp đôi / parallax / album / footer; mừng cưới đủ nhà trai & nhà gái nếu thiết kế yêu cầu.
 
 ---
 

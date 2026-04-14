@@ -6,6 +6,7 @@ import type {
   PublicInvitePersonalization,
 } from "@/lib/public-invite-types";
 import {
+  emptyBrightlyBasicPreviewExtra,
   emptyGentleDriftPreviewExtra,
   emptySlideFlexPreviewExtra,
   type PreviewData,
@@ -148,10 +149,39 @@ function gdFooterHttpsFromCandidates(candidates: Record<string, unknown>[]): str
   return "";
 }
 
+function brightlyBasicSceneHttpsFromCandidates(candidates: Record<string, unknown>[]): Pick<
+  PreviewImages,
+  "bbInvitationBgImage" | "bbEventsBgImage" | "bbFooterBgImage"
+> {
+  const invitation = firstPick(candidates, [
+    "bbInvitationBgImage",
+    "bb_invitation_bg_image",
+    "brightlyBasicInvitationBg",
+    "brightly_basic_invitation_bg",
+  ]);
+  const events = firstPick(candidates, [
+    "bbEventsBgImage",
+    "bb_events_bg_image",
+    "brightlyBasicEventsBg",
+    "brightly_basic_events_bg",
+  ]);
+  const footer = firstPick(candidates, [
+    "bbFooterBgImage",
+    "bb_footer_bg_image",
+    "brightlyBasicFooterBg",
+    "brightly_basic_footer_bg",
+  ]);
+  const inv = invitation && /^https?:\/\//i.test(invitation) ? invitation : "";
+  const ev = events && /^https?:\/\//i.test(events) ? events : "";
+  const ft = footer && /^https?:\/\//i.test(footer) ? footer : "";
+  return { bbInvitationBgImage: inv, bbEventsBgImage: ev, bbFooterBgImage: ft };
+}
+
 function collectImageUrls(candidates: Record<string, unknown>[]): PreviewImages {
   const portraits = portraitHttpsFromCandidates(candidates);
   const introBannerImage = introBannerHttpsFromCandidates(candidates);
   const gdFooterImage = gdFooterHttpsFromCandidates(candidates);
+  const bbScene = brightlyBasicSceneHttpsFromCandidates(candidates);
   for (const o of candidates) {
     const coverDirect = pickTrimmedString(o, [
       "coverImage",
@@ -180,6 +210,7 @@ function collectImageUrls(candidates: Record<string, unknown>[]): PreviewImages 
         groomPortraitImage: portraits.groomPortraitImage,
         bridePortraitImage: portraits.bridePortraitImage,
         gdFooterImage,
+        ...bbScene,
       };
     }
 
@@ -202,6 +233,7 @@ function collectImageUrls(candidates: Record<string, unknown>[]): PreviewImages 
           groomPortraitImage: portraits.groomPortraitImage,
           bridePortraitImage: portraits.bridePortraitImage,
           gdFooterImage,
+          ...bbScene,
         };
       }
     }
@@ -213,6 +245,7 @@ function collectImageUrls(candidates: Record<string, unknown>[]): PreviewImages 
     groomPortraitImage: portraits.groomPortraitImage,
     bridePortraitImage: portraits.bridePortraitImage,
     gdFooterImage,
+    ...bbScene,
   };
 }
 
@@ -236,6 +269,16 @@ function overlayGentleDriftExtraFromCandidates(
   candidates: Record<string, unknown>[],
 ) {
   for (const key of Object.keys(emptyGentleDriftPreviewExtra) as (keyof typeof emptyGentleDriftPreviewExtra)[]) {
+    const v = firstPick(candidates, [key, camelToSnakeKey(key)]);
+    if (v) (preview as Record<string, string>)[key] = v;
+  }
+}
+
+function overlayBrightlyBasicExtraFromCandidates(
+  preview: PreviewData,
+  candidates: Record<string, unknown>[],
+) {
+  for (const key of Object.keys(emptyBrightlyBasicPreviewExtra) as (keyof typeof emptyBrightlyBasicPreviewExtra)[]) {
     const v = firstPick(candidates, [key, camelToSnakeKey(key)]);
     if (v) (preview as Record<string, string>)[key] = v;
   }
@@ -334,10 +377,12 @@ export function parsePublicInviteBody(body: unknown): ParsedPublicInvite | null 
     accountNumber: accountNumber || "—",
     ...emptySlideFlexPreviewExtra,
     ...emptyGentleDriftPreviewExtra,
+    ...emptyBrightlyBasicPreviewExtra,
   };
 
   overlaySlideFlexExtraFromCandidates(preview, candidates);
   overlayGentleDriftExtraFromCandidates(preview, candidates);
+  overlayBrightlyBasicExtraFromCandidates(preview, candidates);
 
   const images = collectImageUrls(candidates);
   const personalization = parsePersonalization(candidates);

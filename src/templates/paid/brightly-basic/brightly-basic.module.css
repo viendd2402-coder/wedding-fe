@@ -1347,6 +1347,182 @@
   border-color: var(--white);
 }
 
+/* Hai tiệc — hai thẻ con, typography gọn, không avatar trùng */
+.eventReceptionPair {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 720px) {
+  .eventReceptionPair {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.15rem;
+    align-items: stretch;
+  }
+}
+
+.eventReceptionCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+  padding: 1.2rem 1.15rem 1.3rem;
+  border-radius: 14px;
+  text-align: center;
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(248, 251, 252, 0.94) 45%,
+    rgba(232, 242, 245, 0.88) 100%
+  );
+  border: 1px solid rgba(142, 174, 186, 0.38);
+  box-shadow:
+    0 10px 28px rgba(61, 89, 99, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  overflow: hidden;
+}
+
+.eventReceptionCard::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: 14px 0 0 14px;
+  background: linear-gradient(180deg, var(--neela-dark) 0%, var(--neela) 100%);
+  opacity: 0.9;
+}
+
+.eventReceptionCardBride::before {
+  background: linear-gradient(180deg, #7a9daa 0%, rgba(142, 174, 186, 0.75) 100%);
+}
+
+.eventReceptionBadge {
+  align-self: center;
+  margin-top: 0.1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.32rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--neela-dark);
+  background: rgba(142, 174, 186, 0.22);
+  border: 1px solid rgba(142, 174, 186, 0.35);
+}
+
+.eventReceptionBadgeBride {
+  color: #5a7782;
+  background: rgba(142, 174, 186, 0.14);
+  border-color: rgba(142, 174, 186, 0.28);
+}
+
+.eventReceptionCardTitle {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 3.5vw, 1.35rem);
+  font-weight: 400;
+  line-height: 1.2;
+  margin: 0.15rem 0 0;
+  color: var(--neela);
+}
+
+.eventReceptionWhen {
+  margin: 0.35rem 0 0;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.eventReceptionWhen strong {
+  font-weight: 600;
+  color: var(--neela-dark);
+}
+
+.eventReceptionWhenSep,
+.eventReceptionWhereSep {
+  margin: 0 0.28rem;
+  opacity: 0.55;
+}
+
+.eventReceptionWhere {
+  margin: 0;
+  flex: 1;
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: var(--text);
+  opacity: 0.95;
+}
+
+.eventReceptionVenueLine {
+  display: inline;
+  font-weight: 500;
+  color: #5f6569;
+}
+
+.eventReceptionCityLine {
+  display: inline;
+}
+
+.eventReceptionCardActions {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.65rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(142, 174, 186, 0.22);
+}
+
+.eventReceptionMapBtn {
+  min-width: 0 !important;
+  width: 100%;
+  max-width: 220px;
+  margin-inline: auto;
+  justify-content: center;
+  background: var(--white) !important;
+  color: var(--neela-dark) !important;
+  border: 2px solid rgba(142, 174, 186, 0.55) !important;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset;
+}
+
+.eventReceptionMapBtn:hover {
+  background: rgba(255, 255, 255, 0.96) !important;
+  color: var(--neela) !important;
+  border-color: var(--neela) !important;
+}
+
+@media (max-width: 380px) {
+  .eventReceptionWhereSep {
+    display: none;
+  }
+
+  .eventReceptionVenueLine {
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+
+  .eventReceptionCityLine {
+    display: block;
+    font-size: 0.8rem;
+    opacity: 0.92;
+  }
+}
+
+@media (min-width: 720px) {
+  .eventReceptionCard {
+    padding: 1.35rem 1.25rem 1.4rem;
+    min-height: 100%;
+  }
+
+  .eventReceptionWhere {
+    padding-inline: 0.15rem;
+  }
+}
+
 /* ——— RSVP ——— */
 .rsvpSection {
   background: var(--gray-bg);
@@ -1417,10 +1593,18 @@
 
 /* ——— Donate ——— */
 .donateGrid {
-  display: flex;
-  justify-content: center;
-  max-width: 480px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  max-width: 920px;
   margin-inline: auto;
+}
+
+@media (min-width: 640px) {
+  .donateGrid {
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
+  }
 }
 
 .donateCard {

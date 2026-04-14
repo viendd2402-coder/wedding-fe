@@ -30,7 +30,8 @@ export type BrightlyBasicPreviewCopy = {
   wishHint: string;
   submitWish: string;
   giftTitle: string;
-  giftToCouple: string;
+  giftGroomSide: string;
+  giftBrideSide: string;
   bank: string;
   accName: string;
   accNo: string;
@@ -72,7 +73,7 @@ const vi: BrightlyBasicPreviewCopy = {
   galleryTitle: "Album Hình Cưới",
   eventsTitle: "Sự Kiện Cưới",
   eventsDesc:
-    "Tình yêu đích thực đứng về phía nhau trong những ngày tốt đẹp và sát cánh hơn trong những ngày tồi tệ.",
+    "Trong ngày vui của chúng mình có lễ thành hôn chung và tiệc cưới tại nhà trai cùng nhà gái — mỗi bên một khung giờ và địa điểm (có thể trùng nếu cùng một điểm tiệc). Chúng mình rất mong được đón tiếp bạn.",
   ceremony: "Lễ thành hôn",
   reception: "Tiệc cưới",
   addCal: "Thêm vào lịch",
@@ -84,7 +85,8 @@ const vi: BrightlyBasicPreviewCopy = {
   wishHint: "Gợi ý lời chúc",
   submitWish: "Gửi lời chúc",
   giftTitle: "Hộp mừng cưới",
-  giftToCouple: "Thông tin chuyển khoản",
+  giftGroomSide: "Nhà chú rể — thông tin chuyển khoản",
+  giftBrideSide: "Nhà cô dâu — thông tin chuyển khoản",
   bank: "Ngân hàng",
   accName: "Tên tài khoản",
   accNo: "Số tài khoản",
@@ -127,9 +129,9 @@ const en: BrightlyBasicPreviewCopy = {
   galleryTitle: "Wedding Album",
   eventsTitle: "Wedding Events",
   eventsDesc:
-    "True love stands together in good days and even closer in hard ones.",
-  ceremony: "Ceremony",
-  reception: "Reception",
+    "Our wedding day includes the ceremony we share, plus receptions hosted by the groom’s family and the bride’s family — each with its own time and place (they can match if you celebrate in one venue). We would be honored to celebrate with you.",
+  ceremony: "Wedding ceremony",
+  reception: "Wedding reception",
   addCal: "Add to calendar",
   viewMap: "View map",
   guestbook: "Guestbook",
@@ -139,7 +141,8 @@ const en: BrightlyBasicPreviewCopy = {
   wishHint: "Suggested wishes",
   submitWish: "Send wishes",
   giftTitle: "Wedding gift",
-  giftToCouple: "Bank transfer",
+  giftGroomSide: "Groom’s family — bank transfer",
+  giftBrideSide: "Bride’s family — bank transfer",
   bank: "Bank",
   accName: "Account name",
   accNo: "Account number",

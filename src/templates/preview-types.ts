@@ -100,6 +100,34 @@ export type GentleDriftPreviewExtra = {
   gdTimelineBeatCount: string;
 };
 
+/** Brightly Basic: STK nhà cô dâu (cột phải; trống = hiển thị giống cột nhà chú rể). */
+export type BrightlyBasicPreviewExtra = {
+  bbBrideBankName: string;
+  bbBrideAccountName: string;
+  bbBrideAccountNumber: string;
+  /** Copy tuỳ khách — từng ô trống = bản mặc định theo ngôn ngữ trang trong `template-previews/brightly-basic`. */
+  bbHeroSaveDateLine: string;
+  bbGettingMarriedTitle: string;
+  bbThanksBody: string;
+  bbBigDayTitle: string;
+  bbInviteLead: string;
+  bbGalleryTitle: string;
+  bbEventsTitle: string;
+  bbEventsDesc: string;
+  bbGuestbookTitle: string;
+  bbGiftTitle: string;
+  bbFooterThanksEyebrow: string;
+  bbFooterThanks: string;
+  /** Tiệc nhà chú rể — từng ô trống = dùng giờ tiệc / địa điểm / thành phố chung. */
+  bbGroomReceptionTime: string;
+  bbGroomReceptionVenue: string;
+  bbGroomReceptionLocation: string;
+  /** Tiệc nhà cô dâu — từng ô trống = dùng giờ tiệc / địa điểm / thành phố chung. */
+  bbBrideReceptionTime: string;
+  bbBrideReceptionVenue: string;
+  bbBrideReceptionLocation: string;
+};
+
 export const emptyGentleDriftPreviewExtra: GentleDriftPreviewExtra = {
   gdHeroLead: "",
   gdInviteBody: "",
@@ -119,6 +147,30 @@ export const emptyGentleDriftPreviewExtra: GentleDriftPreviewExtra = {
   gdBrideAccountName: "",
   gdBrideAccountNumber: "",
   gdTimelineBeatCount: "3",
+};
+
+export const emptyBrightlyBasicPreviewExtra: BrightlyBasicPreviewExtra = {
+  bbBrideBankName: "",
+  bbBrideAccountName: "",
+  bbBrideAccountNumber: "",
+  bbHeroSaveDateLine: "",
+  bbGettingMarriedTitle: "",
+  bbThanksBody: "",
+  bbBigDayTitle: "",
+  bbInviteLead: "",
+  bbGalleryTitle: "",
+  bbEventsTitle: "",
+  bbEventsDesc: "",
+  bbGuestbookTitle: "",
+  bbGiftTitle: "",
+  bbFooterThanksEyebrow: "",
+  bbFooterThanks: "",
+  bbGroomReceptionTime: "",
+  bbGroomReceptionVenue: "",
+  bbGroomReceptionLocation: "",
+  bbBrideReceptionTime: "",
+  bbBrideReceptionVenue: "",
+  bbBrideReceptionLocation: "",
 };
 
 export const emptySlideFlexPreviewExtra: SlideFlexPreviewExtra = {
@@ -202,7 +254,8 @@ export type PreviewData = {
   accountName: string;
   accountNumber: string;
 } & SlideFlexPreviewExtra &
-  GentleDriftPreviewExtra;
+  GentleDriftPreviewExtra &
+  BrightlyBasicPreviewExtra;
 
 export type PreviewImages = {
   coverImage: string;
@@ -215,6 +268,12 @@ export type PreviewImages = {
   bridePortraitImage: string;
   /** Gentle Drift: ảnh khu vực footer cảm ơn (trên dòng chữ). Trống = chỉ hiện chữ. */
   gdFooterImage: string;
+  /** Brightly Basic: nền parallax khối lời mời — không dùng lại ảnh album/hero. */
+  bbInvitationBgImage: string;
+  /** Brightly Basic: nền parallax mục sự kiện. */
+  bbEventsBgImage: string;
+  /** Brightly Basic: ảnh nền footer cảm ơn — không dùng ảnh bìa nếu đã tách upload. */
+  bbFooterBgImage: string;
 };
 
 export type LightboxImage = {
@@ -245,6 +304,7 @@ export const defaultPreviewData: PreviewData = {
   accountNumber: "1234 5678 9999",
   ...emptySlideFlexPreviewExtra,
   ...emptyGentleDriftPreviewExtra,
+  ...emptyBrightlyBasicPreviewExtra,
 };
 
 export const defaultPreviewImages: PreviewImages = {
@@ -254,4 +314,7 @@ export const defaultPreviewImages: PreviewImages = {
   groomPortraitImage: "",
   bridePortraitImage: "",
   gdFooterImage: "",
+  bbInvitationBgImage: "",
+  bbEventsBgImage: "",
+  bbFooterBgImage: "",
 };
