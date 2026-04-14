@@ -1,6 +1,7 @@
 import type { AppLanguage } from "@/components/global-preferences-provider";
-import { brightlyBasicGallery } from "@/templates/free/brightly-basic/data";
-import { slideFlexGallery } from "@/templates/free/slide-flex/data";
+import { brightlyBasicGallery } from "@/templates/paid/brightly-basic/data";
+import { slideFlexGallery } from "@/templates/paid/slide-flex/data";
+import { gentleDriftGallery } from "@/templates/paid/gentle-drift/data";
 
 export type DemoInvitationStatus = "published" | "draft";
 
@@ -24,9 +25,6 @@ export type DemoInvitation = {
   publicInviteUrl: string;
 };
 
-const minimalMusePreviewImage =
-  "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1400&q=80";
-
 export const MY_INVITATIONS_DEMO_DATA: DemoInvitation[] = [
   {
     id: "xk7m2n8q",
@@ -35,7 +33,7 @@ export const MY_INVITATIONS_DEMO_DATA: DemoInvitation[] = [
     coupleLine: { vi: "Lê Minh & Linh Lan", en: "Minh Le & Linh Lan" },
     updatedAtISO: "2026-03-28T14:22:00.000Z",
     status: "published",
-    tier: "free",
+    tier: "premium",
     previewImageUrl: slideFlexGallery[4] ?? slideFlexGallery[0] ?? "",
     previewImageAlt: {
       vi: "Ảnh xem thử thiệp SlideFlex — Lê Minh và Linh Lan",
@@ -53,16 +51,16 @@ export const MY_INVITATIONS_DEMO_DATA: DemoInvitation[] = [
   },
   {
     id: "h3jw5q9f",
-    templateSlug: "minimal-muse",
-    templateName: { vi: "Minimal Muse", en: "Minimal Muse" },
+    templateSlug: "gentle-drift",
+    templateName: { vi: "Gentle Drift", en: "Gentle Drift" },
     coupleLine: { vi: "Quốc Anh · Thu Hà", en: "Quoc Anh & Thu Ha" },
     updatedAtISO: "2026-04-02T09:05:00.000Z",
     status: "draft",
     tier: "premium",
-    previewImageUrl: minimalMusePreviewImage,
+    previewImageUrl: gentleDriftGallery[5] ?? gentleDriftGallery[0] ?? "",
     previewImageAlt: {
-      vi: "Ảnh xem thử thiệp Minimal Muse — Quốc Anh và Thu Hà",
-      en: "Minimal Muse invitation preview — Quoc Anh and Thu Ha",
+      vi: "Ảnh xem thử thiệp Gentle Drift — Quốc Anh và Thu Hà",
+      en: "Gentle Drift invitation preview — Quoc Anh and Thu Ha",
     },
     eventSummary: {
       vi: "Chủ nhật, 10 tháng 5 năm 2026 · Hà Nội",
@@ -81,7 +79,7 @@ export const MY_INVITATIONS_DEMO_DATA: DemoInvitation[] = [
     coupleLine: { vi: "Hoàng Phúc & Ngọc Trâm", en: "Hoang Phuc & Ngoc Tram" },
     updatedAtISO: "2026-04-07T18:40:00.000Z",
     status: "published",
-    tier: "free",
+    tier: "premium",
     previewImageUrl: brightlyBasicGallery[2] ?? brightlyBasicGallery[0] ?? "",
     previewImageAlt: {
       vi: "Ảnh xem thử thiệp Neela Classic — Hoàng Phúc và Ngọc Trâm",

@@ -126,7 +126,7 @@ export function TemplateListCard({
         </span>
       </Link>
       <div className="relative z-[1] flex min-h-0 flex-1 flex-col pointer-events-none">
-        <div className="relative h-64 w-full shrink-0 overflow-hidden sm:h-72">
+        <div className="relative h-80 fshrink-0 overflow-hidden sm:h-96">
           <Image
             src={item.image}
             alt=""

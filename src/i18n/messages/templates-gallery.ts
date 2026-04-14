@@ -5,6 +5,8 @@ export type TemplatesGalleryFreeMessages = {
   eyebrow: string;
   title: string;
   body: string;
+  /** Hiển thị khi chưa có mẫu tier Miễn phí trong registry. */
+  emptyList: string;
   viewDemo: string;
   saveTemplate: string;
 };
@@ -23,6 +25,8 @@ const freeVi: TemplatesGalleryFreeMessages = {
   eyebrow: "Bộ sưu tập",
   title: "Mẫu miễn phí",
   body: "",
+  emptyList:
+    "Hiện chưa có mẫu miễn phí trong bộ sưu tập — xem các mẫu trả phí hoặc quay lại sau.",
   viewDemo: "Xem demo",
   saveTemplate: "Lưu mẫu này",
 };
@@ -32,6 +36,8 @@ const freeEn: TemplatesGalleryFreeMessages = {
   eyebrow: "Gallery",
   title: "Free templates",
   body: "",
+  emptyList:
+    "There are no free templates in the gallery right now — browse premium templates or check back later.",
   viewDemo: "View demo",
   saveTemplate: "Save this template",
 };

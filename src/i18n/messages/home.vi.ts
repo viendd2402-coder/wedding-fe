@@ -302,19 +302,19 @@ testimonials: [
     quote:
       "Chúng tôi thích mẫu tối giản, chỉnh màu theo tone tiệc xong là gửi Zalo cho bạn bè rất nhanh.",
     name: "Hùng & Thu",
-    detail: "Mẫu Minimal Muse · TP.HCM",
+    detail: "Gentle Drift · TP.HCM",
   },
   {
     quote:
       "Bạn thân bảo trang mời cưới nhìn như tạp chí — đúng gu editorial chúng tôi mong muốn từ đầu.",
     name: "An & Chi",
-    detail: "Neela Classic · Đà Nẵng",
+    detail: "Neela Classic (Premium) · Đà Nẵng",
   },
   {
     quote:
-      "Tiệc nhỏ nên dùng mẫu miễn phí trước; khách vẫn xem được giờ lễ và bản đồ — không phải in thêm tờ rơi.",
+      "Tiệc nhỏ nên chọn bản gọn trước; khách vẫn xem được giờ lễ và bản đồ — không phải in thêm tờ rơi.",
     name: "Tuấn & Mai",
-    detail: "Mẫu miễn phí · Huế",
+    detail: "Gói Premium · Huế",
   },
   {
     quote:
@@ -326,7 +326,7 @@ testimonials: [
     quote:
       "Chúng tôi in QR lên thiệp giấy, đám bạn quét ra là vào đúng trang RSVP — đếm số người đi tiệc gọn hẳn.",
     name: "Khoa & Vy",
-    detail: "Slide Flex · Nha Trang",
+    detail: "Slide Flex (Premium) · Nha Trang",
   },
   {
     quote:
@@ -338,7 +338,7 @@ testimonials: [
     quote:
       "Làm gấp trong tuần mà vẫn chỉnh được font, màu và lời mời — gửi link cho sếp và team cũng không ngại.",
     name: "Nam & Phương",
-    detail: "Minimal Muse · Hà Nội",
+    detail: "Gentle Drift · Hà Nội",
   },
   {
     quote:
@@ -350,7 +350,7 @@ testimonials: [
     quote:
       "Ban đầu lo khách lớn tuổi không quen link; thực tế chỉ cần nhắn Zalo kèm một dòng là mọi người mở được.",
     name: "Hiếu & Nga",
-    detail: "Mẫu miễn phí · Đắk Lắk",
+    detail: "Gói Premium · Đắk Lắk",
   },
 ],
 contactEyebrow: "Liên hệ",

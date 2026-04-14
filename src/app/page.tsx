@@ -404,19 +404,21 @@ export default function Home() {
           </h2>
         </div>
 
-        <TemplateCarouselSection
-          eyebrow={copy.freeEyebrow}
-          title={copy.freeTitle}
-          description={copy.freeDescription}
-          eyebrowColorClassName="text-[var(--color-sage)]"
-          ctaHref="/templates/free"
-          ctaLabel={copy.freeCta}
-          templates={freeTemplates}
-          badgeClassName="rounded-full bg-[var(--color-sage)]/10 px-3 py-1 text-xs font-medium text-[var(--color-sage)]"
-          secondaryUsesLocalSave
-          secondaryActionLabel={copy.templateCardSave}
-          secondaryActionClassName="btn-ghost inline-flex rounded-full px-5 py-3 text-sm font-medium transition"
-        />
+        {freeTemplates.length > 0 ? (
+          <TemplateCarouselSection
+            eyebrow={copy.freeEyebrow}
+            title={copy.freeTitle}
+            description={copy.freeDescription}
+            eyebrowColorClassName="text-[var(--color-sage)]"
+            ctaHref="/templates/free"
+            ctaLabel={copy.freeCta}
+            templates={freeTemplates}
+            badgeClassName="rounded-full bg-[var(--color-sage)]/10 px-3 py-1 text-xs font-medium text-[var(--color-sage)]"
+            secondaryUsesLocalSave
+            secondaryActionLabel={copy.templateCardSave}
+            secondaryActionClassName="btn-ghost inline-flex rounded-full px-5 py-3 text-sm font-medium transition"
+          />
+        ) : null}
 
         <TemplateCarouselSection
           eyebrow={copy.premiumEyebrow}
@@ -430,7 +432,7 @@ export default function Home() {
           secondaryUsesLocalSave
           secondaryActionLabel={copy.templateCardSave}
           secondaryActionClassName="btn-secondary inline-flex rounded-full px-5 py-3 text-sm font-medium transition"
-          stackedBelowFree
+          stackedBelowFree={freeTemplates.length > 0}
         />
       </section>
 

@@ -54,21 +54,29 @@ export default function FreeTemplatesPage() {
           </p>
         </header>
 
-        <div className="mt-14 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-          {freeTemplates.map((item) => (
-            <TemplateListCard
-              key={item.slug}
-              item={item}
-              isDark={isDark}
-              badgeClassName={badgeClassName}
-              demoLabel={copy.viewDemo}
-              secondarySaveSlug={item.slug}
-              secondaryLabel={copy.saveTemplate}
-              secondaryClassName="btn-ghost inline-flex rounded-full px-4 py-3 text-sm font-medium transition"
-              cardClassName="h-full"
-            />
-          ))}
-        </div>
+        {freeTemplates.length === 0 ? (
+          <p
+            className={`mt-14 max-w-2xl text-base leading-8 ${isDark ? "text-white/72" : "text-[var(--color-ink)]/72"}`}
+          >
+            {copy.emptyList}
+          </p>
+        ) : (
+          <div className="mt-14 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            {freeTemplates.map((item) => (
+              <TemplateListCard
+                key={item.slug}
+                item={item}
+                isDark={isDark}
+                badgeClassName={badgeClassName}
+                demoLabel={copy.viewDemo}
+                secondarySaveSlug={item.slug}
+                secondaryLabel={copy.saveTemplate}
+                secondaryClassName="btn-ghost inline-flex rounded-full px-4 py-3 text-sm font-medium transition"
+                cardClassName="h-full"
+              />
+            ))}
+          </div>
+        )}
       </div>
     </main>
   );

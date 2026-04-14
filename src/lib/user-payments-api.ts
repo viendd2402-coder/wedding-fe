@@ -9,7 +9,7 @@ export type UserPaymentListItemResponse = {
   paymentType: UserPaymentProductType;
   thumbnailUrl: string | null;
   templateName: string;
-  /** Slug mẫu thiệp (vd. slide-flex) — dùng link `/templates/[slug]`. */
+  /** Slug mẫu thiệp (vd. gentle-drift) — dùng link `/templates/[slug]`. */
   templateSlug: string | null;
   publicationStatus: InvitationPublicationStatus;
   updatedAt: string;

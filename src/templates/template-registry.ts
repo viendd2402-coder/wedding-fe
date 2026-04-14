@@ -1,10 +1,8 @@
 import type { ComponentType } from "react";
 import type { WeddingTemplate } from "@/lib/templates/types";
 import type { TemplatePreviewProps } from "@/templates/preview-types";
-import { minimalMuseModule } from "@/templates/free/minimal-muse";
-import { azurePromiseModule } from "@/templates/free/azure-promise";
-import { brightlyBasicModule } from "@/templates/free/brightly-basic";
-import { slideFlexModule } from "@/templates/free/slide-flex";
+import { brightlyBasicModule } from "@/templates/paid/brightly-basic";
+import { slideFlexModule } from "@/templates/paid/slide-flex";
 import { gentleDriftModule } from "@/templates/paid/gentle-drift";
 
 export type TemplateModule = {
@@ -14,11 +12,9 @@ export type TemplateModule = {
 };
 
 export const templateModules: TemplateModule[] = [
-  minimalMuseModule,
-  azurePromiseModule,
+  gentleDriftModule,
   brightlyBasicModule,
   slideFlexModule,
-  gentleDriftModule,
 ];
 
 export const weddingTemplates = templateModules.map((module) => module.meta);

@@ -314,19 +314,19 @@ testimonials: [
     quote:
       "We wanted something minimal, matched the palette to our reception, and shared it on chat in minutes.",
     name: "Hùng & Thu",
-    detail: "Minimal Muse · Ho Chi Minh City",
+    detail: "Gentle Drift · Ho Chi Minh City",
   },
   {
     quote:
       "Friends told us it felt like a magazine—exactly the editorial mood we had in mind from day one.",
     name: "An & Chi",
-    detail: "Neela Classic · Da Nang",
+    detail: "Neela Classic (Premium) · Da Nang",
   },
   {
     quote:
-      "We kept the celebration small and started on a free template—guests still saw the schedule and map without extra flyers.",
+      "We kept the celebration small and chose a streamlined invitation—guests still saw the schedule and map without extra flyers.",
     name: "Tuan & Mai",
-    detail: "Free template · Hue",
+    detail: "Premium · Hue",
   },
   {
     quote:
@@ -338,7 +338,7 @@ testimonials: [
     quote:
       "We printed a QR on paper cards; friends scanned straight into RSVP—headcount for the reception got much easier.",
     name: "Khoa & Vy",
-    detail: "Slide Flex · Nha Trang",
+    detail: "Slide Flex (Premium) · Nha Trang",
   },
   {
     quote:
@@ -350,7 +350,7 @@ testimonials: [
     quote:
       "We had a tight week but still tuned fonts, colors, and wording—sharing the link with colleagues felt effortless.",
     name: "Nam & Phuong",
-    detail: "Minimal Muse · Hanoi",
+    detail: "Gentle Drift · Hanoi",
   },
   {
     quote:
@@ -362,7 +362,7 @@ testimonials: [
     quote:
       "We worried older guests would not open a link; in practice, one Zalo message with the URL was enough.",
     name: "Hieu & Nga",
-    detail: "Free template · Dak Lak",
+    detail: "Premium · Dak Lak",
   },
 ],
 contactEyebrow: "Contact",
