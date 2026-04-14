@@ -14,11 +14,12 @@ import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import { useGlobalPreferences, type AppLanguage } from "@/components/global-preferences-provider";
 import WeddingCountdown from "@/components/wedding-countdown";
 import { gentleDriftPreviewMessages } from "@/i18n/messages/template-previews/gentle-drift";
-import type { TemplatePreviewProps } from "@/templates/preview-types";
+import type { PreviewData, TemplatePreviewProps } from "@/templates/preview-types";
 import {
   gentleDriftGallery,
   gentleDriftStoryEn,
   gentleDriftStoryVi,
+  type GentleDriftStory,
 } from "./data";
 import styles from "./gentle-drift.module.css";
 
@@ -108,6 +109,44 @@ function gentleCalendar(
   return { dom, cells, monthTitle, weekdays };
 }
 
+const GENTLE_DRIFT_ALBUM_TILES = 12;
+
+function gentleDriftGalleryResolved(
+  custom: string[],
+  defaults: readonly string[],
+): string[] {
+  const out: string[] = [];
+  for (let i = 0; i < GENTLE_DRIFT_ALBUM_TILES; i++) {
+    const u = custom[i]?.trim();
+    out.push(u && u.length > 0 ? u : (defaults[i] ?? defaults[0] ?? ""));
+  }
+  return out;
+}
+
+/** `timeline{n}Title` → năm trên thẻ, `Date` → tiêu đề, `Body` → đoạn kể (mẫu Gentle Drift). */
+function gentleDriftStoryFromPreview(
+  preview: PreviewData,
+  defaults: GentleDriftStory[],
+): GentleDriftStory[] {
+  const slots = [1, 2, 3] as const;
+  return slots.map((n, i) => {
+    const r = preview as Record<string, string>;
+    const year = (r[`timeline${n}Title`] ?? "").trim();
+    const title = (r[`timeline${n}Date`] ?? "").trim();
+    const body = (r[`timeline${n}Body`] ?? "").trim();
+    const d = defaults[i];
+    if (!d) return { year: year || "", title: title || "", body: body || "" };
+    if (year || title || body) {
+      return {
+        year: year || d.year,
+        title: title || d.title,
+        body: body || d.body,
+      };
+    }
+    return d;
+  });
+}
+
 export default function GentleDriftPreview({
   template,
   preview,
@@ -119,9 +158,17 @@ export default function GentleDriftPreview({
   const reducedMotion = usePrefersReducedMotion();
   const isDark = theme === "dark";
   const copy = gentleDriftPreviewMessages[language];
-  const gallery = images.galleryImages.length ? images.galleryImages : [...gentleDriftGallery];
+  const storyDefaults = language === "vi" ? gentleDriftStoryVi : gentleDriftStoryEn;
+  const gallery = useMemo(
+    () => gentleDriftGalleryResolved(images.galleryImages, gentleDriftGallery),
+    [images.galleryImages],
+  );
   const cover = images.coverImage || template.image;
-  const story = language === "vi" ? gentleDriftStoryVi : gentleDriftStoryEn;
+  const introBanner = images.introBannerImage || cover;
+  const storyRows = useMemo(
+    () => gentleDriftStoryFromPreview(preview, [...storyDefaults]),
+    [preview, storyDefaults],
+  );
 
   const [introLeaving, setIntroLeaving] = useState(false);
   const [introDone, setIntroDone] = useState(false);
@@ -144,6 +191,38 @@ export default function GentleDriftPreview({
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
   }, [preview.location, preview.venue]);
 
+  const eventResolved = useMemo(() => {
+    const vuTime = preview.gdVuQuyTime.trim() || preview.ceremonyTime;
+    const vuVenue = preview.gdVuQuyVenue.trim() || preview.venue;
+    const vuLocation = preview.gdVuQuyLocation.trim() || preview.location;
+    const brideTime = preview.gdBrideEventTime.trim() || preview.partyTime;
+    const brideVenue = preview.gdBrideEventVenue.trim() || preview.venue;
+    const brideLocation = preview.gdBrideEventLocation.trim() || preview.location;
+    const groomTime = preview.gdGroomEventTime.trim() || preview.partyTime;
+    const groomVenue = preview.gdGroomEventVenue.trim() || preview.venue;
+    const groomLocation = preview.gdGroomEventLocation.trim() || preview.location;
+    return {
+      vuQuy: { time: vuTime, venue: vuVenue, location: vuLocation },
+      brideParty: { time: brideTime, venue: brideVenue, location: brideLocation },
+      groomParty: { time: groomTime, venue: groomVenue, location: groomLocation },
+    };
+  }, [preview]);
+
+  const mapsUrlVuQuy = useMemo(() => {
+    const q = `${eventResolved.vuQuy.venue} ${eventResolved.vuQuy.location}`.trim();
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+  }, [eventResolved.vuQuy.location, eventResolved.vuQuy.venue]);
+
+  const mapsUrlBrideParty = useMemo(() => {
+    const q = `${eventResolved.brideParty.venue} ${eventResolved.brideParty.location}`.trim();
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+  }, [eventResolved.brideParty.location, eventResolved.brideParty.venue]);
+
+  const mapsUrlGroomParty = useMemo(() => {
+    const q = `${eventResolved.groomParty.venue} ${eventResolved.groomParty.location}`.trim();
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+  }, [eventResolved.groomParty.location, eventResolved.groomParty.venue]);
+
   const calendarUrl = useMemo(() => {
     const start = new Date(preview.countdownTarget);
     if (Number.isNaN(start.getTime())) return "#";
@@ -153,10 +232,10 @@ export default function GentleDriftPreview({
       action: "TEMPLATE",
       text: `${preview.groom} & ${preview.bride}`,
       dates: `${fmt(start)}/${fmt(end)}`,
-      location: `${preview.venue}, ${preview.location}`,
+      location: `${eventResolved.vuQuy.venue}, ${eventResolved.vuQuy.location}`,
     });
     return `https://calendar.google.com/calendar/render?${params.toString()}`;
-  }, [preview.bride, preview.countdownTarget, preview.groom, preview.location, preview.venue]);
+  }, [preview.bride, preview.countdownTarget, preview.groom, eventResolved.vuQuy.location, eventResolved.vuQuy.venue]);
 
   useEffect(() => {
     if (!introLeaving || reducedMotion) return;
@@ -167,18 +246,43 @@ export default function GentleDriftPreview({
     return () => window.clearTimeout(id);
   }, [introLeaving, reducedMotion]);
 
-  const [giftCopied, setGiftCopied] = useState(false);
-  const copyAccount = useCallback(async () => {
+  const [giftCopied, setGiftCopied] = useState<"groom" | "bride" | null>(null);
+  const brideGift = useMemo(
+    () => ({
+      bankName: preview.gdBrideBankName.trim() || preview.bankName,
+      accountName: preview.gdBrideAccountName.trim() || preview.accountName,
+      accountNumber: preview.gdBrideAccountNumber.trim() || preview.accountNumber,
+    }),
+    [
+      preview.accountName,
+      preview.accountNumber,
+      preview.bankName,
+      preview.gdBrideAccountName,
+      preview.gdBrideAccountNumber,
+      preview.gdBrideBankName,
+    ],
+  );
+  const copyGroomAccount = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(preview.accountNumber.replace(/\s/g, ""));
-      setGiftCopied(true);
-      window.setTimeout(() => setGiftCopied(false), 2000);
+      setGiftCopied("groom");
+      window.setTimeout(() => setGiftCopied(null), 2000);
     } catch {
-      setGiftCopied(false);
+      setGiftCopied(null);
     }
   }, [preview.accountNumber]);
+  const copyBrideAccount = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(brideGift.accountNumber.replace(/\s/g, ""));
+      setGiftCopied("bride");
+      window.setTimeout(() => setGiftCopied(null), 2000);
+    } catch {
+      setGiftCopied(null);
+    }
+  }, [brideGift.accountNumber]);
 
   const [attending, setAttending] = useState<"yes" | "no" | null>(null);
+  const [rsvpSide, setRsvpSide] = useState<"groom" | "bride" | null>(null);
 
   const heroCover = useMemo(
     () =>
@@ -209,7 +313,7 @@ export default function GentleDriftPreview({
               <div
                 className={styles.introLuxPhoto}
                 style={{
-                  backgroundImage: `url("${cover.replace(/"/g, '\\"')}")`,
+                  backgroundImage: `url("${introBanner.replace(/"/g, '\\"')}")`,
                 }}
                 aria-hidden
               />
@@ -281,7 +385,9 @@ export default function GentleDriftPreview({
                 {preview.bride}
               </h1>
               <p className={styles.heroDate}>{preview.dateLabel}</p>
-              <p className={styles.heroLead}>{copy.wishLead}</p>
+              <p className={styles.heroLead}>
+                {preview.gdHeroLead.trim() || copy.wishLead}
+              </p>
               <a href="#guestbook" className={styles.heroCta}>
                 {copy.wishCta}
               </a>
@@ -332,7 +438,9 @@ export default function GentleDriftPreview({
                   <div className={styles.inviteRule} aria-hidden />
                   <div className={styles.inviteCopy}>
                     <p className={styles.inviteKicker}>{copy.saveLine}</p>
-                    <p className={styles.inviteBody}>{copy.inviteBody}</p>
+                    <p className={styles.inviteBody}>
+                      {preview.gdInviteBody.trim() || copy.inviteBody}
+                    </p>
                     <div className={styles.ctaRow}>
                       <a href="#guestbook" className={styles.ctaPrimary}>
                         {copy.ctaRsvp}
@@ -354,7 +462,9 @@ export default function GentleDriftPreview({
             <div className={styles.luxBlock}>
               <div className={styles.sectionHead}>
                 <h2 className={styles.sectionTitle}>{copy.coupleTitle}</h2>
-                <p className={styles.sectionQuote}>{copy.coupleQuote}</p>
+                <p className={styles.sectionQuote}>
+                  {preview.gdCoupleQuote.trim() || copy.coupleQuote}
+                </p>
               </div>
               <GdReveal>
                 <div className={styles.duo}>
@@ -367,12 +477,16 @@ export default function GentleDriftPreview({
                   <div className={styles.duoBody}>
                     <h3 className={styles.duoName}>{preview.groom}</h3>
                     <p className={styles.duoParents}>
-                      {copy.sonOf}: <strong>{copy.tbd}</strong>
+                      {copy.sonOf}:{" "}
+                      <strong>{preview.groomParentLine1.trim() || copy.tbd}</strong>
                     </p>
                     <p className={styles.duoParents}>
-                      {copy.dauOf}: <strong>{copy.tbd}</strong>
+                      {copy.dauOf}:{" "}
+                      <strong>{preview.groomParentLine2.trim() || copy.tbd}</strong>
                     </p>
-                    <p className={styles.duoBio}>{copy.groomBio}</p>
+                    <p className={styles.duoBio}>
+                      {preview.groomBio.trim() || copy.groomBio}
+                    </p>
                   </div>
                 </article>
                 <article className={`${styles.duoCard} ${styles.duoCardAlt}`}>
@@ -384,12 +498,16 @@ export default function GentleDriftPreview({
                   <div className={styles.duoBody}>
                     <h3 className={styles.duoName}>{preview.bride}</h3>
                     <p className={styles.duoParents}>
-                      {copy.sonOf}: <strong>{copy.tbd}</strong>
+                      {copy.sonOf}:{" "}
+                      <strong>{preview.brideParentLine1.trim() || copy.tbd}</strong>
                     </p>
                     <p className={styles.duoParents}>
-                      {copy.dauOf}: <strong>{copy.tbd}</strong>
+                      {copy.dauOf}:{" "}
+                      <strong>{preview.brideParentLine2.trim() || copy.tbd}</strong>
                     </p>
-                    <p className={styles.duoBio}>{copy.brideBio}</p>
+                    <p className={styles.duoBio}>
+                      {preview.brideBio.trim() || copy.brideBio}
+                    </p>
                   </div>
                 </article>
                 </div>
@@ -401,12 +519,14 @@ export default function GentleDriftPreview({
             <div className={styles.luxBlock}>
               <div className={styles.sectionHead}>
                 <h2 className={styles.sectionTitle}>{copy.storyTitle}</h2>
-                <p className={styles.lead}>{copy.storyLead}</p>
+                <p className={styles.lead}>
+                  {preview.gdStoryLead.trim() || copy.storyLead}
+                </p>
               </div>
               <GdReveal>
                 <ol className={styles.timeline}>
-                {story.map((s, i) => (
-                  <li key={s.year + s.title} className={styles.timelineItem}>
+                {storyRows.map((s, i) => (
+                  <li key={`${s.year}-${s.title}-${i}`} className={styles.timelineItem}>
                     <span className={styles.timelineIndex} aria-hidden>
                       {String(i + 1).padStart(2, "0")}
                     </span>
@@ -431,7 +551,7 @@ export default function GentleDriftPreview({
               </div>
               <GdReveal>
                 <div className={styles.eventDeck}>
-                <article className={styles.eventCard}>
+                <article className={`${styles.eventCard} ${styles.eventCardFeatured}`}>
                   <span className={styles.eventNum} aria-hidden>
                     01
                   </span>
@@ -439,9 +559,10 @@ export default function GentleDriftPreview({
                     <span className={styles.eventBadge}>{copy.dressCode}</span>
                     <h3 className={styles.eventH}>{copy.ceremony}</h3>
                     <p className={styles.eventTime}>
-                      {preview.ceremonyTime} · {preview.dateLabel}
+                      {eventResolved.vuQuy.time} · {preview.dateLabel}
                     </p>
-                    <p className={styles.eventPlace}>{preview.venue}</p>
+                    <p className={styles.eventPlace}>{eventResolved.vuQuy.venue}</p>
+                    <p className={styles.eventPlaceMuted}>{eventResolved.vuQuy.location}</p>
                     <p className={styles.eventDressHint}>{copy.dressHint}</p>
                     <div className={styles.eventActions}>
                       {calendarUrl !== "#" ? (
@@ -450,7 +571,7 @@ export default function GentleDriftPreview({
                         </a>
                       ) : null}
                       <a
-                        href={mapsUrl}
+                        href={mapsUrlVuQuy}
                         className={`${styles.eventBtn} ${styles.eventBtnGhost}`}
                         target="_blank"
                         rel="noreferrer"
@@ -460,27 +581,48 @@ export default function GentleDriftPreview({
                     </div>
                   </div>
                 </article>
-                <article className={styles.eventCard}>
-                  <span className={styles.eventNum} aria-hidden>
-                    02
-                  </span>
-                  <div className={styles.eventBody}>
-                    <span className={styles.eventBadge}>{copy.dressCode}</span>
-                    <h3 className={styles.eventH}>{copy.reception}</h3>
-                    <p className={styles.eventTime}>
-                      {preview.partyTime} · {preview.dateLabel}
-                    </p>
-                    <p className={styles.eventPlace}>
-                      {preview.venue} · {preview.location}
-                    </p>
-                    <p className={styles.eventDressHint}>{copy.dressHint}</p>
-                    <div className={styles.eventActions}>
-                      <a href={mapsUrl} className={styles.eventBtn} target="_blank" rel="noreferrer">
-                        {copy.mapCta}
-                      </a>
+                <div className={styles.eventDeckRow}>
+                  <article className={`${styles.eventCard} ${styles.eventCardAlt}`}>
+                    <span className={styles.eventNum} aria-hidden>
+                      02
+                    </span>
+                    <div className={styles.eventBody}>
+                      <span className={styles.eventBadge}>{copy.dressCode}</span>
+                      <h3 className={styles.eventH}>{copy.brideFamilyReception}</h3>
+                      <p className={styles.eventTime}>
+                        {eventResolved.brideParty.time} · {preview.dateLabel}
+                      </p>
+                      <p className={styles.eventPlace}>{eventResolved.brideParty.venue}</p>
+                      <p className={styles.eventPlaceMuted}>{eventResolved.brideParty.location}</p>
+                      <p className={styles.eventDressHint}>{copy.dressHint}</p>
+                      <div className={styles.eventActions}>
+                        <a href={mapsUrlBrideParty} className={styles.eventBtn} target="_blank" rel="noreferrer">
+                          {copy.mapCta}
+                        </a>
+                      </div>
                     </div>
-                  </div>
-                </article>
+                  </article>
+                  <article className={styles.eventCard}>
+                    <span className={styles.eventNum} aria-hidden>
+                      03
+                    </span>
+                    <div className={styles.eventBody}>
+                      <span className={styles.eventBadge}>{copy.dressCode}</span>
+                      <h3 className={styles.eventH}>{copy.groomFamilyReception}</h3>
+                      <p className={styles.eventTime}>
+                        {eventResolved.groomParty.time} · {preview.dateLabel}
+                      </p>
+                      <p className={styles.eventPlace}>{eventResolved.groomParty.venue}</p>
+                      <p className={styles.eventPlaceMuted}>{eventResolved.groomParty.location}</p>
+                      <p className={styles.eventDressHint}>{copy.dressHint}</p>
+                      <div className={styles.eventActions}>
+                        <a href={mapsUrlGroomParty} className={styles.eventBtn} target="_blank" rel="noreferrer">
+                          {copy.mapCta}
+                        </a>
+                      </div>
+                    </div>
+                  </article>
+                </div>
                 </div>
               </GdReveal>
             </div>
@@ -490,7 +632,9 @@ export default function GentleDriftPreview({
             <div className={styles.luxBlock}>
               <div className={styles.sectionHead}>
                 <h2 className={styles.sectionTitle}>{copy.albumTitle}</h2>
-                <p className={styles.lead}>{copy.albumLead}</p>
+                <p className={styles.lead}>
+                  {preview.gdAlbumLead.trim() || copy.albumLead}
+                </p>
               </div>
               <GdReveal>
                 <div className={styles.bento}>
@@ -546,7 +690,7 @@ export default function GentleDriftPreview({
                 <p className={styles.lead}>{copy.guestbookLead}</p>
               </div>
               <GdReveal>
-                <div className={styles.twin}>
+                <div className={styles.formsComposite}>
                 <div className={styles.panel}>
                   <h3 className={styles.panelTitle}>{copy.rsvpTitle}</h3>
                   <p className={`${styles.lead} ${styles.panelLead}`}>{copy.rsvpLead}</p>
@@ -581,24 +725,62 @@ export default function GentleDriftPreview({
                         {copy.decline}
                       </button>
                     </div>
+                    <p className={styles.rsvpSideHint}>{copy.rsvpSideHint}</p>
+                    <div className={styles.rsvpSideRow}>
+                      <button
+                        type="button"
+                        className={styles.toggle}
+                        data-on={rsvpSide === "groom" ? "true" : undefined}
+                        onClick={() => setRsvpSide((s) => (s === "groom" ? null : "groom"))}
+                      >
+                        {copy.friendOfGroom}
+                      </button>
+                      <button
+                        type="button"
+                        className={styles.toggle}
+                        data-on={rsvpSide === "bride" ? "true" : undefined}
+                        onClick={() => setRsvpSide((s) => (s === "bride" ? null : "bride"))}
+                      >
+                        {copy.friendOfBride}
+                      </button>
+                    </div>
                     <button type="submit" className={styles.submitBtn}>
                       {copy.submit}
                     </button>
                   </form>
                 </div>
 
-                <div className={styles.panel} id="gift">
-                  <h3 className={styles.panelTitle}>{copy.giftTitle}</h3>
-                  <p className={`${styles.lead} ${styles.panelLead}`}>{copy.giftLead}</p>
-                  <p className={styles.bankLine}>
-                    <strong className={styles.bankStrong}>{preview.bankName}</strong>
-                  </p>
-                  <p className={styles.bankLine}>
-                    {preview.accountName} · {preview.accountNumber}
-                  </p>
-                  <button type="button" className={styles.copyBtn} onClick={copyAccount}>
-                    {giftCopied ? copy.copied : copy.copyNumber}
-                  </button>
+                <div className={styles.giftBand} id="gift">
+                  <div className={styles.giftBandInner} aria-labelledby="gd-gift-title">
+                    <div className={styles.giftBandHeader}>
+                      <h3 id="gd-gift-title" className={styles.giftBandTitle}>
+                        {copy.giftTitle}
+                      </h3>
+                      <p className={styles.giftBandLead}>{copy.giftLead}</p>
+                    </div>
+                    <div className={styles.giftVault}>
+                      <div className={styles.giftEnvelope}>
+                        <div className={styles.giftEnvelopeRim} aria-hidden />
+                        <p className={styles.giftColHonor}>{copy.giftGroomColumn}</p>
+                        <p className={styles.giftBankName}>{preview.bankName}</p>
+                        <p className={styles.giftAccountHolder}>{preview.accountName}</p>
+                        <p className={styles.giftAccountDigits}>{preview.accountNumber}</p>
+                        <button type="button" className={styles.giftCopyBtn} onClick={copyGroomAccount}>
+                          {giftCopied === "groom" ? copy.copied : copy.copyNumber}
+                        </button>
+                      </div>
+                      <div className={`${styles.giftEnvelope} ${styles.giftEnvelopeRose}`}>
+                        <div className={styles.giftEnvelopeRim} aria-hidden />
+                        <p className={styles.giftColHonor}>{copy.giftBrideColumn}</p>
+                        <p className={styles.giftBankName}>{brideGift.bankName}</p>
+                        <p className={styles.giftAccountHolder}>{brideGift.accountName}</p>
+                        <p className={styles.giftAccountDigits}>{brideGift.accountNumber}</p>
+                        <button type="button" className={styles.giftCopyBtn} onClick={copyBrideAccount}>
+                          {giftCopied === "bride" ? copy.copied : copy.copyNumber}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 </div>
               </GdReveal>

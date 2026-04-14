@@ -6,6 +6,7 @@ import type {
   PublicInvitePersonalization,
 } from "@/lib/public-invite-types";
 import {
+  emptyGentleDriftPreviewExtra,
   emptySlideFlexPreviewExtra,
   type PreviewData,
   type PreviewImages,
@@ -121,8 +122,22 @@ function portraitHttpsFromCandidates(candidates: Record<string, unknown>[]): {
   return { groomPortraitImage: g, bridePortraitImage: b };
 }
 
+function introBannerHttpsFromCandidates(candidates: Record<string, unknown>[]): string {
+  for (const o of candidates) {
+    const u = pickTrimmedString(o, [
+      "introBannerImage",
+      "intro_banner_image",
+      "introCoverImage",
+      "intro_cover_image",
+    ]);
+    if (u && /^https?:\/\//i.test(u)) return u;
+  }
+  return "";
+}
+
 function collectImageUrls(candidates: Record<string, unknown>[]): PreviewImages {
   const portraits = portraitHttpsFromCandidates(candidates);
+  const introBannerImage = introBannerHttpsFromCandidates(candidates);
   for (const o of candidates) {
     const coverDirect = pickTrimmedString(o, [
       "coverImage",
@@ -147,6 +162,7 @@ function collectImageUrls(candidates: Record<string, unknown>[]): PreviewImages 
       return {
         coverImage: coverDirect,
         galleryImages: gallery,
+        introBannerImage,
         groomPortraitImage: portraits.groomPortraitImage,
         bridePortraitImage: portraits.bridePortraitImage,
       };
@@ -167,6 +183,7 @@ function collectImageUrls(candidates: Record<string, unknown>[]): PreviewImages 
         return {
           coverImage: urls[0] ?? "",
           galleryImages: urls.slice(1),
+          introBannerImage,
           groomPortraitImage: portraits.groomPortraitImage,
           bridePortraitImage: portraits.bridePortraitImage,
         };
@@ -176,6 +193,7 @@ function collectImageUrls(candidates: Record<string, unknown>[]): PreviewImages 
   return {
     coverImage: "",
     galleryImages: [],
+    introBannerImage,
     groomPortraitImage: portraits.groomPortraitImage,
     bridePortraitImage: portraits.bridePortraitImage,
   };
@@ -191,6 +209,16 @@ function overlaySlideFlexExtraFromCandidates(
   candidates: Record<string, unknown>[],
 ) {
   for (const key of Object.keys(emptySlideFlexPreviewExtra) as (keyof typeof emptySlideFlexPreviewExtra)[]) {
+    const v = firstPick(candidates, [key, camelToSnakeKey(key)]);
+    if (v) (preview as Record<string, string>)[key] = v;
+  }
+}
+
+function overlayGentleDriftExtraFromCandidates(
+  preview: PreviewData,
+  candidates: Record<string, unknown>[],
+) {
+  for (const key of Object.keys(emptyGentleDriftPreviewExtra) as (keyof typeof emptyGentleDriftPreviewExtra)[]) {
     const v = firstPick(candidates, [key, camelToSnakeKey(key)]);
     if (v) (preview as Record<string, string>)[key] = v;
   }
@@ -288,9 +316,11 @@ export function parsePublicInviteBody(body: unknown): ParsedPublicInvite | null 
     accountName: accountName || "—",
     accountNumber: accountNumber || "—",
     ...emptySlideFlexPreviewExtra,
+    ...emptyGentleDriftPreviewExtra,
   };
 
   overlaySlideFlexExtraFromCandidates(preview, candidates);
+  overlayGentleDriftExtraFromCandidates(preview, candidates);
 
   const images = collectImageUrls(candidates);
   const personalization = parsePersonalization(candidates);

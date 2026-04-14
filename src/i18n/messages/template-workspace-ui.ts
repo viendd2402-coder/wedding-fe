@@ -95,6 +95,86 @@ export type SlideFlexWorkspacePanel = {
   tagWishSuggestion3: string;
 };
 
+/** Nhãn nhóm panel xem thử — chỉ dùng khi slug = gentle-drift. */
+export type GentleDriftWorkspacePanel = {
+  deepSectionTitle: string;
+  deepSectionLead: string;
+  bannerHeroSectionTitle: string;
+  bannerHeroSectionInventory: string;
+  introBannerLabel: string;
+  introBannerHint: string;
+  tagIntroBanner: string;
+  heroLeadLabel: string;
+  heroLeadHint: string;
+  tagHeroLead: string;
+  namesCalendarSectionTitle: string;
+  namesCalendarSectionInventory: string;
+  copySectionTitle: string;
+  copySectionInventory: string;
+  inviteWorkspaceSectionTitle: string;
+  inviteWorkspaceSectionInventory: string;
+  inviteBodyLabel: string;
+  tagInviteBody: string;
+  coupleQuoteLabel: string;
+  tagCoupleQuote: string;
+  storyLeadLabel: string;
+  tagStoryLead: string;
+  albumLeadLabel: string;
+  tagAlbumLead: string;
+  coupleDetailsSectionTitle: string;
+  coupleDetailsSectionInventory: string;
+  timelineSectionTitle: string;
+  timelineSectionInventory: string;
+  timelineYearFieldLabel: string;
+  timelineTitleFieldLabel: string;
+  timelineBodyFieldLabel: string;
+  venueScheduleSectionTitle: string;
+  venueScheduleSectionInventory: string;
+  vuQuyEventFieldsTitle: string;
+  vuQuyEventFieldsHint: string;
+  vuQuyEventTimeLabel: string;
+  vuQuyEventVenueLabel: string;
+  vuQuyEventLocationLabel: string;
+  tagVuQuyEventTime: string;
+  tagVuQuyEventVenue: string;
+  tagVuQuyEventLocation: string;
+  groomEventFieldsTitle: string;
+  groomEventFieldsHint: string;
+  brideEventFieldsTitle: string;
+  brideEventFieldsHint: string;
+  groomEventTimeLabel: string;
+  groomEventVenueLabel: string;
+  groomEventLocationLabel: string;
+  brideEventTimeLabel: string;
+  brideEventVenueLabel: string;
+  brideEventLocationLabel: string;
+  tagGroomEventTime: string;
+  tagGroomEventVenue: string;
+  tagGroomEventLocation: string;
+  tagBrideEventTime: string;
+  tagBrideEventVenue: string;
+  tagBrideEventLocation: string;
+  groomBankFieldsTitle: string;
+  brideBankFieldsTitle: string;
+  brideBankFieldsHint: string;
+  tagBrideBankName: string;
+  tagBrideAccountName: string;
+  tagBrideAccountNumber: string;
+  giftSectionTitle: string;
+  giftSectionInventory: string;
+  albumGridSectionTitle: string;
+  albumGridSectionInventory: string;
+  /** Thẻ vị trí thay cho nhãn chung (tránh copy mô tả slide-flex). */
+  tagCoverImage: string;
+  tagGallerySection: string;
+  tagGallerySlot7: string;
+  tagGallerySlot8: string;
+  tagGallerySlot9: string;
+  tagGallerySlot10: string;
+  tagGallerySlot11: string;
+  tagGallerySlot12: string;
+};
+
 export type TemplateWorkspacePanelMessages = {
   openPreview: string;
   closePreview: string;
@@ -157,6 +237,7 @@ export type TemplateWorkspacePanelMessages = {
   paymentEmailCta: string;
   paymentMailSubject: string;
   slideFlex: SlideFlexWorkspacePanel;
+  gentleDrift: GentleDriftWorkspacePanel;
 };
 
 export type TemplateWorkspaceMessages = {
@@ -262,6 +343,98 @@ const viSlideFlexPanel: SlideFlexWorkspacePanel = {
   tagWishSuggestion3: "Mục Lưu bút · dropdown · dòng 3",
 };
 
+const viGentleDriftPanel: GentleDriftWorkspacePanel = {
+  deepSectionTitle: "Gentle Drift — nhập đúng từng khu vực trên thiệp",
+  deepSectionLead:
+    "Mẫu editorial: màn chào, vé lịch, hero, thẻ sự kiện, đếm ngược và mừng cưới dùng các ô bên dưới — mỗi khối tương ứng một phần trang, tránh nhập nhầm sang phần khác.",
+  bannerHeroSectionTitle: "Màn chào & hero — ảnh và lời dưới tên",
+  bannerHeroSectionInventory:
+    "• Ảnh màn chào (overlay đầu tiên) — có thể khác ảnh hero sau khi vào thiệp\n• Ảnh bìa / hero — nền full-bleed phía sau tên\n• Tên chú rể / cô dâu — màn chào, hero, thẻ Cặp đôi, footer\n• Ngày hiển thị — dưới tên (intro + hero) và trong thẻ sự kiện\n• Ngày giờ ISO — vé lịch, đếm ngược, Google Calendar\n• Lời dưới tên trên hero — đoạn mời gửi lời chúc",
+  introBannerLabel: "Ảnh màn chào (intro)",
+  introBannerHint: "Không chọn thì dùng chung ảnh bìa / hero.",
+  tagIntroBanner: "Màn chào · khung ảnh luxury trước khi “Vào xem thiệp”",
+  heroLeadLabel: "Lời dưới tên trên hero",
+  heroLeadHint: "Để trống thì dùng câu mặc định theo ngôn ngữ trang.",
+  tagHeroLead: "Hero · đoạn dẫn dưới ngày cưới, phía nút “Gửi lời chúc”",
+  namesCalendarSectionTitle: "Tên cặp đôi & lịch (màn chào · hero · vé lịch · đếm ngược)",
+  namesCalendarSectionInventory:
+    "• Tên chú rể / cô dâu — hiện ở màn chào, hero, thẻ Cặp đôi, footer\n• Ngày hiển thị — dòng ngày dưới tên (intro + hero) và trong thẻ sự kiện\n• Ngày giờ ISO — tháng trên “vé lịch”, ô đếm ngược, nút thêm lịch Google",
+  copySectionTitle: "Lời mời & các đoạn mở đầu mục",
+  copySectionInventory:
+    "• Đoạn lời mời trong khối Save the date\n• Trích dẫn dưới tiêu đề “Cô dâu & Chú rể”\n• Đoạn dẫn mục Chuyện tình yêu\n• Đoạn dẫn mục Album — để trống thì dùng bản mặc định",
+  inviteWorkspaceSectionTitle: "Lời mời (khối Save the date)",
+  inviteWorkspaceSectionInventory:
+    "• Đoạn văn hiển thị sau vé lịch, trong khối lời mời — để trống thì dùng bản mẫu",
+  inviteBodyLabel: "Đoạn lời mời (khối Save the date)",
+  tagInviteBody: "Mục Lời mời · đoạn văn chính",
+  coupleQuoteLabel: "Trích dẫn dưới tiêu đề cặp đôi",
+  tagCoupleQuote: "Mục Cô dâu & Chú rể · câu trích dẫn serif",
+  storyLeadLabel: "Đoạn dẫn mục Chuyện tình yêu",
+  tagStoryLead: "Mục Chuyện tình yêu · đoạn lead dưới H2",
+  albumLeadLabel: "Đoạn dẫn mục Album hình",
+  tagAlbumLead: "Mục Album · đoạn lead dưới H2",
+  coupleDetailsSectionTitle: "Cặp đôi — trích dẫn, họ nhà & giới thiệu",
+  coupleDetailsSectionInventory:
+    "• Trích dẫn dưới tiêu đề mục Cặp đôi — để trống thì dùng câu mẫu\n• Hai dòng “Con ông / Con bà” cho chú rể và cô dâu\n• Đoạn giới thiệu dưới tên — để trống thì dùng đoạn mẫu",
+  timelineSectionTitle: "Chuyện tình yêu — đoạn dẫn & 3 mốc timeline",
+  timelineSectionInventory:
+    "• Đoạn lead dưới tiêu đề mục — để trống thì dùng bản mẫu\n• Mỗi mốc: ô thứ nhất = năm (hiển thị to), ô thứ hai = tiêu đề mốc, ô thứ ba = đoạn kể\n• Để trống cả ba ô của một mốc thì mốc đó lấy nội dung mẫu",
+  timelineYearFieldLabel: "Năm (số / nhãn thời gian)",
+  timelineTitleFieldLabel: "Tiêu đề mốc",
+  timelineBodyFieldLabel: "Đoạn kể",
+  venueScheduleSectionTitle: "Địa điểm & giờ (thẻ Lễ / Tiệc · bản đồ)",
+  venueScheduleSectionInventory:
+    "• Giờ lễ / giờ tiệc & địa điểm chung — mặc định cho lễ vu quy và hai tiệc nếu bạn chưa nhập riêng\n• Ba khối: lễ vu quy, tiệc nhà cô dâu, tiệc nhà chú rể — mỗi thẻ trên thiệp có bản đồ riêng",
+  vuQuyEventFieldsTitle: "Lễ vu quy (thẻ 01)",
+  vuQuyEventFieldsHint:
+    "Để trống cả ba ô thì dùng giờ lễ, địa điểm tiệc và thành phố ở nhóm chung phía trên.",
+  vuQuyEventTimeLabel: "Giờ lễ vu quy",
+  vuQuyEventVenueLabel: "Địa điểm lễ vu quy",
+  vuQuyEventLocationLabel: "Thành phố / khu vực",
+  tagVuQuyEventTime: "Mục Sự kiện · thẻ 01 · giờ lễ vu quy",
+  tagVuQuyEventVenue: "Mục Sự kiện · thẻ 01 · địa điểm lễ vu quy",
+  tagVuQuyEventLocation: "Mục Sự kiện · thẻ 01 · thành phố",
+  groomEventFieldsTitle: "Tiệc cưới nhà chú rể (thẻ 03)",
+  groomEventFieldsHint:
+    "Để trống cả ba ô thì dùng giờ tiệc, địa điểm tiệc và thành phố chung.",
+  brideEventFieldsTitle: "Tiệc cưới nhà cô dâu (thẻ 02)",
+  brideEventFieldsHint:
+    "Để trống cả ba ô thì dùng giờ tiệc, địa điểm tiệc và thành phố chung.",
+  groomEventTimeLabel: "Giờ tiệc nhà chú rể",
+  groomEventVenueLabel: "Địa điểm tiệc nhà chú rể",
+  groomEventLocationLabel: "Thành phố / khu vực",
+  brideEventTimeLabel: "Giờ tiệc nhà cô dâu",
+  brideEventVenueLabel: "Địa điểm tiệc nhà cô dâu",
+  brideEventLocationLabel: "Thành phố / khu vực",
+  tagGroomEventTime: "Mục Sự kiện · thẻ 03 · giờ tiệc nhà trai",
+  tagGroomEventVenue: "Mục Sự kiện · thẻ 03 · địa điểm tiệc nhà trai",
+  tagGroomEventLocation: "Mục Sự kiện · thẻ 03 · thành phố",
+  tagBrideEventTime: "Mục Sự kiện · thẻ 02 · giờ tiệc nhà gái",
+  tagBrideEventVenue: "Mục Sự kiện · thẻ 02 · địa điểm tiệc nhà gái",
+  tagBrideEventLocation: "Mục Sự kiện · thẻ 02 · thành phố",
+  groomBankFieldsTitle: "Mừng cưới — nhà chú rể (cột trái)",
+  brideBankFieldsTitle: "Mừng cưới — nhà cô dâu (cột phải)",
+  brideBankFieldsHint:
+    "Để trống cả ba ô thì cột phải hiển thị cùng thông tin với cột nhà chú rể (ô ngân hàng phía trên).",
+  tagBrideBankName: "Mục Mừng cưới · cột nhà gái · tên ngân hàng",
+  tagBrideAccountName: "Mục Mừng cưới · cột nhà gái · chủ TK",
+  tagBrideAccountNumber: "Mục Mừng cưới · cột nhà gái · số TK (nút sao chép)",
+  giftSectionTitle: "Mừng cưới (hai cột — nhà trai & nhà gái)",
+  giftSectionInventory:
+    "• Ba ô đầu: STK nhà chú rể (cột trái trên thiệp)\n• Ba ô “nhà cô dâu”: STK riêng cột phải — để trống thì hiển thị giống nhà trai\n• Mỗi cột có nút sao chép số tài khoản tương ứng",
+  albumGridSectionTitle: "Album — đoạn dẫn & lưới ảnh (12 ô)",
+  albumGridSectionInventory:
+    "• Đoạn lead dưới tiêu đề mục Album — để trống thì dùng bản mẫu\n• Mỗi ô tải lên tương ứng một ô trong lưới bento (ô trống dùng ảnh mẫu)\n• Ảnh ô 2 cũng làm ảnh thẻ cô dâu nếu không upload riêng",
+  tagCoverImage: "Hero full-bleed · nền ảnh bìa (không dùng cho thẻ cặp đôi)",
+  tagGallerySection: "Mục Album · lưới bento (ảnh mẫu khi chưa upload)",
+  tagGallerySlot7: "Mục Album · ô ảnh 7",
+  tagGallerySlot8: "Mục Album · ô ảnh 8",
+  tagGallerySlot9: "Mục Album · ô ảnh 9",
+  tagGallerySlot10: "Mục Album · ô ảnh 10",
+  tagGallerySlot11: "Mục Album · ô ảnh 11",
+  tagGallerySlot12: "Mục Album · ô ảnh 12",
+};
+
 const vi: TemplateWorkspaceMessages = {
   lightbox: { close: "Đóng preview" },
   panel: {
@@ -333,6 +506,7 @@ const vi: TemplateWorkspaceMessages = {
     paymentEmailCta: "Gửi yêu cầu qua email",
     paymentMailSubject: "Yêu cầu mẫu Lumiere",
     slideFlex: viSlideFlexPanel,
+    gentleDrift: viGentleDriftPanel,
   },
 };
 
@@ -434,6 +608,98 @@ const enSlideFlexPanel: SlideFlexWorkspacePanel = {
   tagWishSuggestion3: "Guestbook · dropdown · option 3",
 };
 
+const enGentleDriftPanel: GentleDriftWorkspacePanel = {
+  deepSectionTitle: "Gentle Drift — match each area on the invite",
+  deepSectionLead:
+    "Editorial layout: intro, ticket calendar, hero, event cards, countdown, and gift box pull from the fields below — each block maps to one part of the page so inputs do not blur together.",
+  bannerHeroSectionTitle: "Intro & hero — imagery and line under names",
+  bannerHeroSectionInventory:
+    "• Intro image (first overlay) — can differ from the in-page hero\n• Cover / hero — full-bleed background behind names\n• Groom and bride — intro overlay, hero, couple cards, footer\n• Displayed date — under names (intro + hero) and inside event cards\n• ISO date/time — ticket strip month, countdown, Google Calendar link\n• Line under names on the hero — invitation to leave wishes",
+  introBannerLabel: "Intro overlay image",
+  introBannerHint: "If empty, the same cover/hero image is used.",
+  tagIntroBanner: "Intro gate · luxury frame before “Open invitation”",
+  heroLeadLabel: "Line under names on the hero",
+  heroLeadHint: "Empty falls back to the default line for the page language.",
+  tagHeroLead: "Hero · supporting line under the date, above “Send wishes”",
+  namesCalendarSectionTitle: "Couple names & calendar (intro · hero · ticket · countdown)",
+  namesCalendarSectionInventory:
+    "• Groom and bride — intro overlay, hero, couple cards, footer\n• Displayed date — under names (intro + hero) and inside event cards\n• ISO date/time — month on the ticket strip, countdown, Google Calendar link",
+  copySectionTitle: "Invitation copy & section intros",
+  copySectionInventory:
+    "• Invitation paragraph in the Save the date block\n• Quote under the “Bride & groom” heading\n• Lead under Our story\n• Lead under the album — empty uses defaults",
+  inviteWorkspaceSectionTitle: "Invitation (Save the date block)",
+  inviteWorkspaceSectionInventory:
+    "• Main paragraph after the calendar ticket — empty uses the built-in sample",
+  inviteBodyLabel: "Invitation paragraph (Save the date block)",
+  tagInviteBody: "Invitation block · main paragraph",
+  coupleQuoteLabel: "Quote under couple heading",
+  tagCoupleQuote: "Couple section · serif quote line",
+  storyLeadLabel: "Our story — section lead",
+  tagStoryLead: "Our story · lead under the H2",
+  albumLeadLabel: "Album — section lead",
+  tagAlbumLead: "Album section · lead under the H2",
+  coupleDetailsSectionTitle: "Couple — quote, parents & bios",
+  coupleDetailsSectionInventory:
+    "• Quote under the couple heading — empty uses the built-in sample\n• Two “child of” lines for groom and bride\n• Short bios under names — empty uses sample copy",
+  timelineSectionTitle: "Our story — lead & three timeline beats",
+  timelineSectionInventory:
+    "• Lead under the section title — empty uses the built-in sample\n• Each beat: field 1 = year (large), field 2 = title, field 3 = paragraph\n• If all three are empty for a beat, the built-in sample is used",
+  timelineYearFieldLabel: "Year (number / label)",
+  timelineTitleFieldLabel: "Beat title",
+  timelineBodyFieldLabel: "Story paragraph",
+  venueScheduleSectionTitle: "Venue & schedule (ceremony / reception · maps)",
+  venueScheduleSectionInventory:
+    "• Shared ceremony/reception time, venue, and city — defaults when the three detail blocks are empty\n• Three blocks: ceremony, bride’s reception, groom’s reception — each card has its own map link",
+  vuQuyEventFieldsTitle: "Ceremony / gate (card 01)",
+  vuQuyEventFieldsHint:
+    "If all three are empty, the card uses ceremony time, venue, and city from the shared fields above.",
+  vuQuyEventTimeLabel: "Ceremony time",
+  vuQuyEventVenueLabel: "Ceremony venue",
+  vuQuyEventLocationLabel: "City / area",
+  tagVuQuyEventTime: "Events · card 01 · ceremony time",
+  tagVuQuyEventVenue: "Events · card 01 · ceremony venue",
+  tagVuQuyEventLocation: "Events · card 01 · city",
+  groomEventFieldsTitle: "Groom’s family reception (card 03)",
+  groomEventFieldsHint:
+    "If all three are empty, the card uses reception time, venue, and city from the shared fields above.",
+  brideEventFieldsTitle: "Bride’s family reception (card 02)",
+  brideEventFieldsHint:
+    "If all three are empty, the card uses reception time, venue, and city from the shared fields above.",
+  groomEventTimeLabel: "Groom’s reception time",
+  groomEventVenueLabel: "Groom’s reception venue",
+  groomEventLocationLabel: "City / area",
+  brideEventTimeLabel: "Bride’s reception time",
+  brideEventVenueLabel: "Bride’s reception venue",
+  brideEventLocationLabel: "City / area",
+  tagGroomEventTime: "Events · card 03 · groom reception time",
+  tagGroomEventVenue: "Events · card 03 · groom reception venue",
+  tagGroomEventLocation: "Events · card 03 · city",
+  tagBrideEventTime: "Events · card 02 · bride reception time",
+  tagBrideEventVenue: "Events · card 02 · bride reception venue",
+  tagBrideEventLocation: "Events · card 02 · city",
+  groomBankFieldsTitle: "Gift box — groom’s family (left column)",
+  brideBankFieldsTitle: "Gift box — bride’s family (right column)",
+  brideBankFieldsHint:
+    "If all three are empty, the right column shows the same account as the groom column (fields above).",
+  tagBrideBankName: "Gift section · bride column · bank name",
+  tagBrideAccountName: "Gift section · bride column · account holder",
+  tagBrideAccountNumber: "Gift section · bride column · account number (copy button)",
+  giftSectionTitle: "Gift box (two columns — groom & bride)",
+  giftSectionInventory:
+    "• First three fields: groom’s family account (left column on the invite)\n• Bride family block: separate right-column details — empty mirrors the groom account\n• Each column has its own copy button",
+  albumGridSectionTitle: "Album — lead & photo grid (12 tiles)",
+  albumGridSectionInventory:
+    "• Lead under the album heading — empty uses the built-in sample\n• Each upload maps to one bento tile (empty slots use stock photos)\n• Slot 2 is also the bride card image unless you replace uploads",
+  tagCoverImage: "Full-bleed hero · cover background (not used on couple cards)",
+  tagGallerySection: "Album section · bento grid (stock photos when empty)",
+  tagGallerySlot7: "Album section · tile 7",
+  tagGallerySlot8: "Album section · tile 8",
+  tagGallerySlot9: "Album section · tile 9",
+  tagGallerySlot10: "Album section · tile 10",
+  tagGallerySlot11: "Album section · tile 11",
+  tagGallerySlot12: "Album section · tile 12",
+};
+
 const en: TemplateWorkspaceMessages = {
   lightbox: { close: "Close preview" },
   panel: {
@@ -505,6 +771,7 @@ const en: TemplateWorkspaceMessages = {
     paymentEmailCta: "Send request by email",
     paymentMailSubject: "Lumiere template request",
     slideFlex: enSlideFlexPanel,
+    gentleDrift: enGentleDriftPanel,
   },
 };
 

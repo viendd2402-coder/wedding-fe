@@ -1294,15 +1294,24 @@
 }
 
 .eventDeck {
-  max-width: 56rem;
+  max-width: 76rem;
   margin: 0 auto;
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
   gap: 1.25rem;
 }
 
-@media (min-width: 860px) {
-  .eventDeck {
+.eventDeckRow {
+  display: grid;
+  gap: 1.15rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 720px) {
+  .eventDeckRow {
     grid-template-columns: 1fr 1fr;
+    align-items: stretch;
   }
 }
 
@@ -1316,6 +1325,42 @@
   border-left: 4px solid var(--gd-gold);
   background: linear-gradient(100deg, color-mix(in srgb, var(--gd-gold-soft) 35%, var(--gd-surface)) 0%, var(--gd-surface) 38%);
   box-shadow: var(--gd-shadow-lux);
+}
+
+.eventCard.eventCardFeatured {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: min(100%, 38rem);
+  margin-inline: auto;
+  width: 100%;
+  text-align: center;
+  padding: 1.55rem 1.5rem 1.65rem;
+  border-left-width: 1px;
+  border-top: 3px solid var(--gd-gold);
+}
+
+.eventCard.eventCardFeatured .eventNum {
+  margin-bottom: 0.15rem;
+  font-size: 2rem;
+  opacity: 0.65;
+}
+
+.eventCard.eventCardFeatured .eventBody {
+  width: 100%;
+}
+
+.eventCard.eventCardFeatured .eventActions {
+  justify-content: center;
+}
+
+.eventCardAlt {
+  border-left-color: color-mix(in srgb, var(--gd-accent-2) 55%, var(--gd-gold));
+  background: linear-gradient(
+    100deg,
+    color-mix(in srgb, var(--gd-accent-2) 12%, var(--gd-surface)) 0%,
+    var(--gd-surface) 42%
+  );
 }
 
 .eventNum {
@@ -1349,6 +1394,12 @@
   margin: 0 0 0.35rem;
   font-size: 0.92rem;
   color: var(--gd-muted);
+}
+
+.eventPlaceMuted {
+  margin: -0.15rem 0 0.35rem;
+  font-size: 0.82rem;
+  color: color-mix(in srgb, var(--gd-muted) 92%, var(--gd-ink));
 }
 
 .eventDressHint {
@@ -1580,6 +1631,15 @@
   }
 }
 
+/* RSVP + mừng cưới: RSVP gọn, mừng cưới full-width bên dưới */
+.formsComposite {
+  max-width: 52rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.75rem, 4vw, 2.75rem);
+}
+
 .panel {
   border-radius: var(--gd-radius);
   border: 1px solid color-mix(in srgb, var(--gd-gold) 15%, var(--gd-line));
@@ -1612,6 +1672,173 @@
   margin-bottom: 1rem;
 }
 
+.giftBand {
+  width: 100%;
+  max-width: 52rem;
+  margin-inline: auto;
+  padding: clamp(1.75rem, 5vw, 2.75rem) clamp(1rem, 3vw, 1.75rem);
+  border-radius: var(--gd-radius);
+  border: 1px solid color-mix(in srgb, var(--gd-gold) 14%, var(--gd-line));
+  background:
+    radial-gradient(120% 80% at 50% 0%, color-mix(in srgb, var(--gd-gold-soft) 45%, transparent) 0%, transparent 55%),
+    linear-gradient(180deg, color-mix(in srgb, var(--gd-paper) 88%, var(--gd-surface)) 0%, var(--gd-surface) 100%);
+  box-shadow:
+    0 1px 0 color-mix(in srgb, #fff 8%, transparent) inset,
+    0 22px 48px color-mix(in srgb, var(--gd-ink) 8%, transparent);
+}
+
+.giftBandInner {
+  margin: 0 auto;
+}
+
+.giftBandHeader {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.giftBandHeader::before {
+  content: "";
+  display: block;
+  width: 3rem;
+  height: 2px;
+  margin: 0 auto 0.85rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, var(--gd-gold), transparent);
+  opacity: 0.85;
+}
+
+.giftBandTitle {
+  margin: 0 0 0.5rem;
+  font-family: var(--gd-font-display);
+  font-size: clamp(1.65rem, 4vw, 2.1rem);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.giftBandLead {
+  margin: 0 auto;
+  max-width: 28rem;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--gd-muted);
+}
+
+.giftVault {
+  display: grid;
+  gap: 1.1rem;
+}
+
+@media (min-width: 640px) {
+  .giftVault {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    align-items: stretch;
+  }
+}
+
+.giftEnvelope {
+  position: relative;
+  padding: 1.35rem 1.25rem 1.45rem;
+  border-radius: calc(var(--gd-radius) * 0.85);
+  border: 1px solid color-mix(in srgb, var(--gd-gold) 18%, var(--gd-line));
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--gd-paper) 92%, var(--gd-surface)) 0%,
+    color-mix(in srgb, var(--gd-paper-2) 35%, var(--gd-surface)) 100%
+  );
+  box-shadow: 0 10px 28px color-mix(in srgb, var(--gd-ink) 6%, transparent);
+}
+
+.giftEnvelopeRose {
+  border-color: color-mix(in srgb, var(--gd-accent-2) 22%, var(--gd-line));
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--gd-accent-2) 8%, var(--gd-paper)) 0%,
+    color-mix(in srgb, var(--gd-paper-2) 40%, var(--gd-surface)) 100%
+  );
+}
+
+.giftEnvelopeRim {
+  position: absolute;
+  top: 0;
+  left: 1rem;
+  right: 1rem;
+  height: 3px;
+  border-radius: 0 0 4px 4px;
+  background: linear-gradient(90deg, transparent, var(--gd-gold), transparent);
+  opacity: 0.9;
+}
+
+.giftEnvelopeRose .giftEnvelopeRim {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--gd-accent-2) 75%, var(--gd-gold)),
+    transparent
+  );
+}
+
+.giftColHonor {
+  margin: 0.35rem 0 0.85rem;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--gd-muted) 80%, var(--gd-gold));
+}
+
+.giftBankName {
+  margin: 0 0 0.35rem;
+  font-family: var(--gd-font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--gd-ink);
+}
+
+.giftAccountHolder {
+  margin: 0 0 0.65rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gd-muted);
+}
+
+.giftAccountDigits {
+  margin: 0 0 1rem;
+  font-family: ui-monospace, "Cascadia Code", "Segoe UI Mono", monospace;
+  font-size: clamp(0.95rem, 2.4vw, 1.08rem);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  word-break: break-word;
+  color: var(--gd-ink);
+}
+
+.giftCopyBtn {
+  width: 100%;
+  cursor: pointer;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--gd-gold) 35%, var(--gd-line));
+  padding: 0.72rem 1rem;
+  font-family: var(--gd-font-ui);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--gd-ink) 92%, var(--gd-gold));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--gd-gold-soft) 55%, var(--gd-paper)) 0%, var(--gd-paper) 100%);
+  transition:
+    border-color 0.25s var(--gd-ease-soft),
+    transform 0.25s var(--gd-ease-soft),
+    box-shadow 0.25s var(--gd-ease-soft);
+}
+
+.giftCopyBtn:hover {
+  border-color: var(--gd-accent);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--gd-gold) 18%, transparent);
+}
+
 .field {
   width: 100%;
   margin-bottom: 0.65rem;
@@ -1638,6 +1865,20 @@
   grid-template-columns: 1fr 1fr;
   gap: 0.55rem;
   margin: 0.35rem 0 1rem;
+}
+
+.rsvpSideHint {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: var(--gd-muted);
+}
+
+.rsvpSideRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem;
+  margin: 0 0 1rem;
 }
 
 .toggle {
@@ -1685,41 +1926,6 @@
 
 .submitBtn:hover {
   transform: translateY(-1px);
-}
-
-.bankLine {
-  margin: 0 0 0.5rem;
-  font-size: 0.95rem;
-  color: var(--gd-muted);
-}
-
-.bankStrong {
-  color: var(--gd-ink);
-  font-weight: 700;
-}
-
-.copyBtn {
-  margin-top: 0.35rem;
-  cursor: pointer;
-  width: 100%;
-  border-radius: 999px;
-  border: 1px solid var(--gd-line);
-  padding: 0.75rem 1rem;
-  font-family: var(--gd-font-ui);
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--gd-ink);
-  background: color-mix(in srgb, var(--gd-paper) 70%, transparent);
-  transition:
-    border-color 0.25s var(--gd-ease-soft),
-    color 0.25s var(--gd-ease-soft);
-}
-
-.copyBtn:hover {
-  border-color: var(--gd-accent);
-  color: var(--gd-accent);
 }
 
 .footer {

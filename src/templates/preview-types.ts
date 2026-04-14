@@ -61,6 +61,51 @@ export type SlideFlexPreviewExtra = {
   sectionGiftTitle: string;
 };
 
+/** Tuỳ chỉnh copy / timeline mẫu gentle-drift (để trống = fallback i18n / data mẫu). */
+export type GentleDriftPreviewExtra = {
+  gdHeroLead: string;
+  gdInviteBody: string;
+  gdCoupleQuote: string;
+  gdStoryLead: string;
+  gdAlbumLead: string;
+  /** Lễ vu quy — giờ & địa điểm (trống = giờ lễ / địa điểm tiệc chung). */
+  gdVuQuyTime: string;
+  gdVuQuyVenue: string;
+  gdVuQuyLocation: string;
+  /** Tiệc cưới nhà chú rể (trống = giờ tiệc / địa điểm chung). */
+  gdGroomEventTime: string;
+  gdGroomEventVenue: string;
+  gdGroomEventLocation: string;
+  /** Tiệc cưới nhà cô dâu (trống = giờ tiệc / địa điểm chung). */
+  gdBrideEventTime: string;
+  gdBrideEventVenue: string;
+  gdBrideEventLocation: string;
+  /** STK mừng cưới nhà cô dâu (cột phải; trống = hiển thị giống cột nhà chú rể). */
+  gdBrideBankName: string;
+  gdBrideAccountName: string;
+  gdBrideAccountNumber: string;
+};
+
+export const emptyGentleDriftPreviewExtra: GentleDriftPreviewExtra = {
+  gdHeroLead: "",
+  gdInviteBody: "",
+  gdCoupleQuote: "",
+  gdStoryLead: "",
+  gdAlbumLead: "",
+  gdVuQuyTime: "",
+  gdVuQuyVenue: "",
+  gdVuQuyLocation: "",
+  gdGroomEventTime: "",
+  gdGroomEventVenue: "",
+  gdGroomEventLocation: "",
+  gdBrideEventTime: "",
+  gdBrideEventVenue: "",
+  gdBrideEventLocation: "",
+  gdBrideBankName: "",
+  gdBrideAccountName: "",
+  gdBrideAccountNumber: "",
+};
+
 export const emptySlideFlexPreviewExtra: SlideFlexPreviewExtra = {
   groomPhotoUrl: "",
   bridePhotoUrl: "",
@@ -129,11 +174,14 @@ export type PreviewData = {
   bankName: string;
   accountName: string;
   accountNumber: string;
-} & SlideFlexPreviewExtra;
+} & SlideFlexPreviewExtra &
+  GentleDriftPreviewExtra;
 
 export type PreviewImages = {
   coverImage: string;
   galleryImages: string[];
+  /** Gentle Drift: ảnh màn chào (intro). Trống = dùng ảnh bìa / hero. */
+  introBannerImage: string;
   /** Slide-flex: ảnh upload ô chú rể (object URL hoặc https từ snapshot). Trống = preview.groomPhotoUrl hoặc ảnh mặc định thẻ (không dùng ảnh bìa). */
   groomPortraitImage: string;
   /** Slide-flex: ảnh upload ô cô dâu. Trống = preview.bridePhotoUrl hoặc ảnh mặc định thẻ (không dùng album). */
@@ -167,11 +215,13 @@ export const defaultPreviewData: PreviewData = {
   accountName: "LINH MINH STUDIO",
   accountNumber: "1234 5678 9999",
   ...emptySlideFlexPreviewExtra,
+  ...emptyGentleDriftPreviewExtra,
 };
 
 export const defaultPreviewImages: PreviewImages = {
   coverImage: "",
   galleryImages: [],
+  introBannerImage: "",
   groomPortraitImage: "",
   bridePortraitImage: "",
 };

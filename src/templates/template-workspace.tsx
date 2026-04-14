@@ -21,6 +21,7 @@ import {
   type PreviewImages,
   type TemplatePreviewProps,
 } from "@/templates/preview-types";
+import { gentleDriftWorkspaceInitialPreview } from "@/templates/paid/gentle-drift/data";
 import type { WeddingTemplate } from "@/lib/templates/types";
 import { forceDocumentScrollTop } from "@/lib/force-document-scroll-top";
 import { getStoredAuthToken } from "@/lib/auth-client";
@@ -126,6 +127,14 @@ function SlideFlexPortraitUpload({
   );
 }
 
+type TemplateWorkspaceCommonFieldGroup =
+  | "all"
+  | "gentle-drift-names"
+  | "gentle-drift-venue"
+  | "gentle-drift-bank"
+  | "gentle-drift-cover"
+  | "gentle-drift-album";
+
 function TemplateWorkspaceCommonFields({
   copy,
   inputClass,
@@ -136,6 +145,9 @@ function TemplateWorkspaceCommonFields({
   onGalleryImageChange,
   isDark,
   gallerySlotTags,
+  gallerySlotCount = 6,
+  fieldGroup = "all",
+  photoFieldTags,
 }: {
   copy: TemplateWorkspacePanelMessages;
   inputClass: string;
@@ -145,67 +157,68 @@ function TemplateWorkspaceCommonFields({
   onCoverImageChange: (file: File | null) => void;
   onGalleryImageChange: (index: number, file: File | null) => void;
   isDark: boolean;
-  gallerySlotTags: readonly [
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-  ];
+  gallerySlotTags: readonly string[];
+  /** Số ô upload album (Gentle Drift = 12, mặc định 6). */
+  gallerySlotCount?: number;
+  fieldGroup?: TemplateWorkspaceCommonFieldGroup;
+  /** Khi nhóm ảnh của gentle-drift: thẻ vị trí riêng, không dùng mô tả slide-flex. */
+  photoFieldTags?: { coverImage: string; gallerySection: string };
 }) {
+  const g = fieldGroup;
+  const show = (part: Exclude<TemplateWorkspaceCommonFieldGroup, "all">) =>
+    g === "all" || g === part;
+  const coverTag = photoFieldTags?.coverImage ?? copy.tagCoverImage;
+  const gallerySectionTag = photoFieldTags?.gallerySection ?? copy.tagGallerySection;
+
   return (
     <>
-      <PanelFieldBlock label={copy.groomName} tag={copy.tagGroom} isDark={isDark}>
-        <input
-          className={inputClass}
-          value={preview.groom}
-          onChange={(event) => onChange("groom", event.target.value)}
-          placeholder={copy.groomName}
-        />
-      </PanelFieldBlock>
-      <PanelFieldBlock label={copy.brideName} tag={copy.tagBride} isDark={isDark}>
-        <input
-          className={inputClass}
-          value={preview.bride}
-          onChange={(event) => onChange("bride", event.target.value)}
-          placeholder={copy.brideName}
-        />
-      </PanelFieldBlock>
-      <PanelFieldBlock label={copy.dateLabel} tag={copy.tagDateLabel} isDark={isDark}>
-        <input
-          className={inputClass}
-          value={preview.dateLabel}
-          onChange={(event) => onChange("dateLabel", event.target.value)}
-          placeholder={copy.dateLabel}
-        />
-      </PanelFieldBlock>
-      <PanelFieldBlock
-        label={copy.countdownTarget}
-        tag={copy.tagCountdownTarget}
-        isDark={isDark}
-      >
-        <input
-          className={inputClass}
-          value={preview.countdownTarget}
-          onChange={(event) => onChange("countdownTarget", event.target.value)}
-          placeholder="2026-10-20T09:00"
-          autoComplete="off"
-        />
-        <p
-          className={`text-xs leading-relaxed ${isDark ? "text-white/55" : "text-[var(--color-ink)]/60"}`}
-        >
-          {copy.countdownTargetHint}
-        </p>
-      </PanelFieldBlock>
-      <PanelFieldBlock label={copy.location} tag={copy.tagLocation} isDark={isDark}>
-        <input
-          className={inputClass}
-          value={preview.location}
-          onChange={(event) => onChange("location", event.target.value)}
-          placeholder={copy.location}
-        />
-      </PanelFieldBlock>
+      {show("gentle-drift-names") ? (
+        <>
+          <PanelFieldBlock label={copy.groomName} tag={copy.tagGroom} isDark={isDark}>
+            <input
+              className={inputClass}
+              value={preview.groom}
+              onChange={(event) => onChange("groom", event.target.value)}
+              placeholder={copy.groomName}
+            />
+          </PanelFieldBlock>
+          <PanelFieldBlock label={copy.brideName} tag={copy.tagBride} isDark={isDark}>
+            <input
+              className={inputClass}
+              value={preview.bride}
+              onChange={(event) => onChange("bride", event.target.value)}
+              placeholder={copy.brideName}
+            />
+          </PanelFieldBlock>
+          <PanelFieldBlock label={copy.dateLabel} tag={copy.tagDateLabel} isDark={isDark}>
+            <input
+              className={inputClass}
+              value={preview.dateLabel}
+              onChange={(event) => onChange("dateLabel", event.target.value)}
+              placeholder={copy.dateLabel}
+            />
+          </PanelFieldBlock>
+          <PanelFieldBlock
+            label={copy.countdownTarget}
+            tag={copy.tagCountdownTarget}
+            isDark={isDark}
+          >
+            <input
+              className={inputClass}
+              value={preview.countdownTarget}
+              onChange={(event) => onChange("countdownTarget", event.target.value)}
+              placeholder="2026-10-20T09:00"
+              autoComplete="off"
+            />
+            <p
+              className={`text-xs leading-relaxed ${isDark ? "text-white/55" : "text-[var(--color-ink)]/60"}`}
+            >
+              {copy.countdownTargetHint}
+            </p>
+          </PanelFieldBlock>
+        </>
+      ) : null}
+      {show("gentle-drift-venue") ? (
       <div className="grid grid-cols-1 gap-3.5">
         <PanelFieldBlock label={copy.ceremonyTime} tag={copy.tagCeremonyTime} isDark={isDark}>
           <input
@@ -224,6 +237,8 @@ function TemplateWorkspaceCommonFields({
           />
         </PanelFieldBlock>
       </div>
+      ) : null}
+      {show("gentle-drift-venue") ? (
       <PanelFieldBlock label={copy.venue} tag={copy.tagVenue} isDark={isDark}>
         <input
           className={inputClass}
@@ -232,6 +247,18 @@ function TemplateWorkspaceCommonFields({
           placeholder={copy.venue}
         />
       </PanelFieldBlock>
+      ) : null}
+      {show("gentle-drift-venue") ? (
+      <PanelFieldBlock label={copy.location} tag={copy.tagLocation} isDark={isDark}>
+        <input
+          className={inputClass}
+          value={preview.location}
+          onChange={(event) => onChange("location", event.target.value)}
+          placeholder={copy.location}
+        />
+      </PanelFieldBlock>
+      ) : null}
+      {show("gentle-drift-bank") ? (
       <PanelFieldBlock label={copy.bankName} tag={copy.tagBankName} isDark={isDark}>
         <input
           className={inputClass}
@@ -240,6 +267,8 @@ function TemplateWorkspaceCommonFields({
           placeholder={copy.bankName}
         />
       </PanelFieldBlock>
+      ) : null}
+      {show("gentle-drift-bank") ? (
       <PanelFieldBlock label={copy.accountName} tag={copy.tagAccountName} isDark={isDark}>
         <input
           className={inputClass}
@@ -248,6 +277,8 @@ function TemplateWorkspaceCommonFields({
           placeholder={copy.accountName}
         />
       </PanelFieldBlock>
+      ) : null}
+      {show("gentle-drift-bank") ? (
       <PanelFieldBlock label={copy.accountNumber} tag={copy.tagAccountNumber} isDark={isDark}>
         <input
           className={inputClass}
@@ -256,10 +287,12 @@ function TemplateWorkspaceCommonFields({
           placeholder={copy.accountNumber}
         />
       </PanelFieldBlock>
+      ) : null}
+      {show("gentle-drift-cover") ? (
       <div
         className={`rounded-2xl border border-dashed px-4 py-3 text-sm ${isDark ? "border-white/14 bg-white/4" : "border-[var(--color-ink)]/12 bg-[var(--color-cream)]"}`}
       >
-        <PanelFieldBlock label={copy.coverImage} tag={copy.tagCoverImage} isDark={isDark}>
+        <PanelFieldBlock label={copy.coverImage} tag={coverTag} isDark={isDark}>
           <span
             className={`block text-xs ${isDark ? "text-white/65" : "text-[var(--color-ink)]/65"}`}
           >
@@ -273,17 +306,19 @@ function TemplateWorkspaceCommonFields({
           />
         </PanelFieldBlock>
       </div>
+      ) : null}
+      {show("gentle-drift-album") ? (
       <div className="rounded-2xl border border-dashed px-4 py-3 text-sm">
-        <PanelFieldBlock label={copy.gallery} tag={copy.tagGallerySection} isDark={isDark}>
+        <PanelFieldBlock label={copy.gallery} tag={gallerySectionTag} isDark={isDark}>
           <div className="mt-3 grid gap-3.5">
-            {[0, 1, 2, 3, 4, 5].map((index) => (
+            {Array.from({ length: gallerySlotCount }, (_, index) => (
               <div
                 key={index}
                 className={`rounded-xl border px-3 py-2 text-xs ${isDark ? "border-white/14 bg-white/4" : "border-[var(--color-ink)]/10 bg-[var(--color-cream)]"}`}
               >
                 <PanelFieldBlock
                   label={`${copy.imageLabel} ${index + 1}`}
-                  tag={gallerySlotTags[index]}
+                  tag={gallerySlotTags[index] ?? `${copy.imageLabel} ${index + 1}`}
                   isDark={isDark}
                 >
                   <span
@@ -305,6 +340,7 @@ function TemplateWorkspaceCommonFields({
           </div>
         </PanelFieldBlock>
       </div>
+      ) : null}
     </>
   );
 }
@@ -383,6 +419,7 @@ function PreviewConfigurator({
   images,
   onCoverImageChange,
   onGalleryImageChange,
+  onIntroBannerImageChange,
   onGroomPortraitImageChange,
   onBridePortraitImageChange,
   isCollapsed,
@@ -394,6 +431,7 @@ function PreviewConfigurator({
   images: PreviewImages;
   onCoverImageChange: (file: File | null) => void;
   onGalleryImageChange: (index: number, file: File | null) => void;
+  onIntroBannerImageChange: (file: File | null) => void;
   onGroomPortraitImageChange: (file: File | null) => void;
   onBridePortraitImageChange: (file: File | null) => void;
   isCollapsed: boolean;
@@ -574,15 +612,29 @@ function PreviewConfigurator({
   const textareaClass = `${inputClass} min-h-[5.5rem] resize-y`;
 
   const isSlideFlex = template.slug === "slide-flex";
+  const isGentleDrift = template.slug === "gentle-drift";
   const sf = copy.slideFlex;
-  const gallerySlotTags = [
-    copy.tagGallerySlot1,
-    copy.tagGallerySlot2,
-    copy.tagGallerySlot3,
-    copy.tagGallerySlot4,
-    copy.tagGallerySlot5,
-    copy.tagGallerySlot6,
-  ] as const;
+  const gd = copy.gentleDrift;
+  const gallerySlotTags = useMemo((): readonly string[] => {
+    const six = [
+      copy.tagGallerySlot1,
+      copy.tagGallerySlot2,
+      copy.tagGallerySlot3,
+      copy.tagGallerySlot4,
+      copy.tagGallerySlot5,
+      copy.tagGallerySlot6,
+    ] as const;
+    if (!isGentleDrift) return six;
+    return [
+      ...six,
+      gd.tagGallerySlot7,
+      gd.tagGallerySlot8,
+      gd.tagGallerySlot9,
+      gd.tagGallerySlot10,
+      gd.tagGallerySlot11,
+      gd.tagGallerySlot12,
+    ];
+  }, [copy, gd, isGentleDrift]);
 
   return (
     <div
@@ -616,7 +668,454 @@ function PreviewConfigurator({
       </div>
       <div className="mt-4 min-h-0 min-w-0 flex-1 overflow-y-auto pr-1">
         <div className="grid min-w-0 gap-3.5">
-          {isSlideFlex ? (
+          {isGentleDrift ? (
+            <>
+              <div
+                className={`min-w-0 rounded-2xl border px-3 py-3.5 sm:px-4 ${isDark ? "border-white/12 bg-white/[0.04]" : "border-[var(--color-ink)]/10 bg-[var(--color-cream)]/85"}`}
+              >
+                <p className="text-xs font-bold tracking-tight text-[var(--color-rose)]">
+                  {gd.deepSectionTitle}
+                </p>
+                <p
+                  className={`mt-2 text-xs leading-relaxed ${isDark ? "text-white/72" : "text-[var(--color-ink)]/75"}`}
+                >
+                  {gd.deepSectionLead}
+                </p>
+              </div>
+              <SlideFlexWorkspaceSection
+                title={gd.bannerHeroSectionTitle}
+                inventory={gd.bannerHeroSectionInventory}
+                isDark={isDark}
+              >
+                <div
+                  className={`rounded-2xl border border-dashed px-4 py-3 text-sm ${isDark ? "border-white/14 bg-white/4" : "border-[var(--color-ink)]/12 bg-[var(--color-cream)]"}`}
+                >
+                  <PanelFieldBlock label={gd.introBannerLabel} tag={gd.tagIntroBanner} isDark={isDark}>
+                    <span
+                      className={`block text-xs ${isDark ? "text-white/65" : "text-[var(--color-ink)]/65"}`}
+                    >
+                      {images.introBannerImage ? copy.coverSelected : gd.introBannerHint}
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="mt-3 block w-full min-w-0 text-xs"
+                      onChange={(event) =>
+                        onIntroBannerImageChange(event.target.files?.[0] ?? null)
+                      }
+                    />
+                  </PanelFieldBlock>
+                </div>
+                <TemplateWorkspaceCommonFields
+                  copy={copy}
+                  inputClass={inputClass}
+                  preview={preview}
+                  onChange={onChange}
+                  images={images}
+                  onCoverImageChange={onCoverImageChange}
+                  onGalleryImageChange={onGalleryImageChange}
+                  isDark={isDark}
+                  gallerySlotTags={gallerySlotTags}
+                  gallerySlotCount={6}
+                  fieldGroup="gentle-drift-cover"
+                  photoFieldTags={{
+                    coverImage: gd.tagCoverImage,
+                    gallerySection: gd.tagGallerySection,
+                  }}
+                />
+                <TemplateWorkspaceCommonFields
+                  copy={copy}
+                  inputClass={inputClass}
+                  preview={preview}
+                  onChange={onChange}
+                  images={images}
+                  onCoverImageChange={onCoverImageChange}
+                  onGalleryImageChange={onGalleryImageChange}
+                  isDark={isDark}
+                  gallerySlotTags={gallerySlotTags}
+                  gallerySlotCount={6}
+                  fieldGroup="gentle-drift-names"
+                />
+                <PanelFieldBlock label={gd.heroLeadLabel} tag={gd.tagHeroLead} isDark={isDark}>
+                  <textarea
+                    className={textareaClass}
+                    value={preview.gdHeroLead}
+                    onChange={(event) => onChange("gdHeroLead", event.target.value)}
+                    rows={3}
+                    placeholder={gd.heroLeadLabel}
+                  />
+                  <p
+                    className={`mt-1.5 text-xs leading-relaxed ${isDark ? "text-white/55" : "text-[var(--color-ink)]/60"}`}
+                  >
+                    {gd.heroLeadHint}
+                  </p>
+                </PanelFieldBlock>
+              </SlideFlexWorkspaceSection>
+              <SlideFlexWorkspaceSection
+                title={gd.inviteWorkspaceSectionTitle}
+                inventory={gd.inviteWorkspaceSectionInventory}
+                isDark={isDark}
+              >
+                <PanelFieldBlock label={gd.inviteBodyLabel} tag={gd.tagInviteBody} isDark={isDark}>
+                  <textarea
+                    className={textareaClass}
+                    value={preview.gdInviteBody}
+                    onChange={(event) => onChange("gdInviteBody", event.target.value)}
+                    rows={4}
+                    placeholder={gd.inviteBodyLabel}
+                  />
+                </PanelFieldBlock>
+              </SlideFlexWorkspaceSection>
+              <SlideFlexWorkspaceSection
+                title={gd.coupleDetailsSectionTitle}
+                inventory={gd.coupleDetailsSectionInventory}
+                isDark={isDark}
+              >
+                <PanelFieldBlock label={gd.coupleQuoteLabel} tag={gd.tagCoupleQuote} isDark={isDark}>
+                  <textarea
+                    className={textareaClass}
+                    value={preview.gdCoupleQuote}
+                    onChange={(event) => onChange("gdCoupleQuote", event.target.value)}
+                    rows={3}
+                    placeholder={gd.coupleQuoteLabel}
+                  />
+                </PanelFieldBlock>
+                <p
+                  className={`text-xs font-semibold ${isDark ? "text-white/88" : "text-[var(--color-ink)]"}`}
+                >
+                  {copy.groomName}
+                </p>
+                <PanelFieldBlock label={sf.groomParentLine1} tag={sf.tagGroomParentLine1} isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.groomParentLine1}
+                    onChange={(event) => onChange("groomParentLine1", event.target.value)}
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock label={sf.groomParentLine2} tag={sf.tagGroomParentLine2} isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.groomParentLine2}
+                    onChange={(event) => onChange("groomParentLine2", event.target.value)}
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock label={sf.groomBio} tag={sf.tagGroomBio} isDark={isDark}>
+                  <textarea
+                    className={textareaClass}
+                    value={preview.groomBio}
+                    onChange={(event) => onChange("groomBio", event.target.value)}
+                    rows={3}
+                  />
+                </PanelFieldBlock>
+                <p
+                  className={`mt-2 text-xs font-semibold ${isDark ? "text-white/88" : "text-[var(--color-ink)]"}`}
+                >
+                  {copy.brideName}
+                </p>
+                <PanelFieldBlock label={sf.brideParentLine1} tag={sf.tagBrideParentLine1} isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.brideParentLine1}
+                    onChange={(event) => onChange("brideParentLine1", event.target.value)}
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock label={sf.brideParentLine2} tag={sf.tagBrideParentLine2} isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.brideParentLine2}
+                    onChange={(event) => onChange("brideParentLine2", event.target.value)}
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock label={sf.brideBio} tag={sf.tagBrideBio} isDark={isDark}>
+                  <textarea
+                    className={textareaClass}
+                    value={preview.brideBio}
+                    onChange={(event) => onChange("brideBio", event.target.value)}
+                    rows={3}
+                  />
+                </PanelFieldBlock>
+              </SlideFlexWorkspaceSection>
+              <SlideFlexWorkspaceSection
+                title={gd.timelineSectionTitle}
+                inventory={gd.timelineSectionInventory}
+                isDark={isDark}
+              >
+                <PanelFieldBlock label={gd.storyLeadLabel} tag={gd.tagStoryLead} isDark={isDark}>
+                  <textarea
+                    className={textareaClass}
+                    value={preview.gdStoryLead}
+                    onChange={(event) => onChange("gdStoryLead", event.target.value)}
+                    rows={3}
+                    placeholder={gd.storyLeadLabel}
+                  />
+                </PanelFieldBlock>
+                {[1, 2, 3].map((n) => (
+                  <div
+                    key={n}
+                    className={`grid gap-2.5 rounded-xl border px-3 py-3 text-xs ${isDark ? "border-white/12 bg-white/[0.03]" : "border-[var(--color-ink)]/10 bg-[var(--color-cream)]"}`}
+                  >
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--color-sage)]">
+                      {sf.storySlotLabel} {n}
+                    </p>
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--color-sage)]/90">
+                      {sf.tagStorySlot}
+                    </span>
+                    <PanelFieldBlock label={gd.timelineYearFieldLabel} tag="" isDark={isDark}>
+                      <input
+                        className={inputClass}
+                        value={preview[`timeline${n}Title` as keyof PreviewData] as string}
+                        onChange={(event) =>
+                          onChange(`timeline${n}Title` as keyof PreviewData, event.target.value)
+                        }
+                      />
+                    </PanelFieldBlock>
+                    <PanelFieldBlock label={gd.timelineTitleFieldLabel} tag="" isDark={isDark}>
+                      <input
+                        className={inputClass}
+                        value={preview[`timeline${n}Date` as keyof PreviewData] as string}
+                        onChange={(event) =>
+                          onChange(`timeline${n}Date` as keyof PreviewData, event.target.value)
+                        }
+                      />
+                    </PanelFieldBlock>
+                    <PanelFieldBlock label={gd.timelineBodyFieldLabel} tag="" isDark={isDark}>
+                      <textarea
+                        className={textareaClass}
+                        value={preview[`timeline${n}Body` as keyof PreviewData] as string}
+                        onChange={(event) =>
+                          onChange(`timeline${n}Body` as keyof PreviewData, event.target.value)
+                        }
+                        rows={3}
+                      />
+                    </PanelFieldBlock>
+                  </div>
+                ))}
+              </SlideFlexWorkspaceSection>
+              <SlideFlexWorkspaceSection
+                title={gd.venueScheduleSectionTitle}
+                inventory={gd.venueScheduleSectionInventory}
+                isDark={isDark}
+              >
+                <TemplateWorkspaceCommonFields
+                  copy={copy}
+                  inputClass={inputClass}
+                  preview={preview}
+                  onChange={onChange}
+                  images={images}
+                  onCoverImageChange={onCoverImageChange}
+                  onGalleryImageChange={onGalleryImageChange}
+                  isDark={isDark}
+                  gallerySlotTags={gallerySlotTags}
+                  gallerySlotCount={6}
+                  fieldGroup="gentle-drift-venue"
+                />
+                <p
+                  className={`text-xs font-semibold ${isDark ? "text-white/88" : "text-[var(--color-ink)]"}`}
+                >
+                  {gd.vuQuyEventFieldsTitle}
+                </p>
+                <p
+                  className={`text-xs leading-relaxed ${isDark ? "text-white/60" : "text-[var(--color-ink)]/65"}`}
+                >
+                  {gd.vuQuyEventFieldsHint}
+                </p>
+                <PanelFieldBlock label={gd.vuQuyEventTimeLabel} tag={gd.tagVuQuyEventTime} isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.gdVuQuyTime}
+                    onChange={(event) => onChange("gdVuQuyTime", event.target.value)}
+                    placeholder={copy.ceremonyTime}
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock label={gd.vuQuyEventVenueLabel} tag={gd.tagVuQuyEventVenue} isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.gdVuQuyVenue}
+                    onChange={(event) => onChange("gdVuQuyVenue", event.target.value)}
+                    placeholder={copy.venue}
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock
+                  label={gd.vuQuyEventLocationLabel}
+                  tag={gd.tagVuQuyEventLocation}
+                  isDark={isDark}
+                >
+                  <input
+                    className={inputClass}
+                    value={preview.gdVuQuyLocation}
+                    onChange={(event) => onChange("gdVuQuyLocation", event.target.value)}
+                    placeholder={copy.location}
+                  />
+                </PanelFieldBlock>
+                <p
+                  className={`mt-2 text-xs font-semibold ${isDark ? "text-white/88" : "text-[var(--color-ink)]"}`}
+                >
+                  {gd.brideEventFieldsTitle}
+                </p>
+                <p
+                  className={`text-xs leading-relaxed ${isDark ? "text-white/60" : "text-[var(--color-ink)]/65"}`}
+                >
+                  {gd.brideEventFieldsHint}
+                </p>
+                <PanelFieldBlock label={gd.brideEventTimeLabel} tag={gd.tagBrideEventTime} isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.gdBrideEventTime}
+                    onChange={(event) => onChange("gdBrideEventTime", event.target.value)}
+                    placeholder={copy.partyTime}
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock label={gd.brideEventVenueLabel} tag={gd.tagBrideEventVenue} isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.gdBrideEventVenue}
+                    onChange={(event) => onChange("gdBrideEventVenue", event.target.value)}
+                    placeholder={copy.venue}
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock
+                  label={gd.brideEventLocationLabel}
+                  tag={gd.tagBrideEventLocation}
+                  isDark={isDark}
+                >
+                  <input
+                    className={inputClass}
+                    value={preview.gdBrideEventLocation}
+                    onChange={(event) => onChange("gdBrideEventLocation", event.target.value)}
+                    placeholder={copy.location}
+                  />
+                </PanelFieldBlock>
+                <p
+                  className={`mt-2 text-xs font-semibold ${isDark ? "text-white/88" : "text-[var(--color-ink)]"}`}
+                >
+                  {gd.groomEventFieldsTitle}
+                </p>
+                <p
+                  className={`text-xs leading-relaxed ${isDark ? "text-white/60" : "text-[var(--color-ink)]/65"}`}
+                >
+                  {gd.groomEventFieldsHint}
+                </p>
+                <PanelFieldBlock label={gd.groomEventTimeLabel} tag={gd.tagGroomEventTime} isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.gdGroomEventTime}
+                    onChange={(event) => onChange("gdGroomEventTime", event.target.value)}
+                    placeholder={copy.partyTime}
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock label={gd.groomEventVenueLabel} tag={gd.tagGroomEventVenue} isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.gdGroomEventVenue}
+                    onChange={(event) => onChange("gdGroomEventVenue", event.target.value)}
+                    placeholder={copy.venue}
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock
+                  label={gd.groomEventLocationLabel}
+                  tag={gd.tagGroomEventLocation}
+                  isDark={isDark}
+                >
+                  <input
+                    className={inputClass}
+                    value={preview.gdGroomEventLocation}
+                    onChange={(event) => onChange("gdGroomEventLocation", event.target.value)}
+                    placeholder={copy.location}
+                  />
+                </PanelFieldBlock>
+              </SlideFlexWorkspaceSection>
+              <SlideFlexWorkspaceSection
+                title={gd.albumGridSectionTitle}
+                inventory={gd.albumGridSectionInventory}
+                isDark={isDark}
+              >
+                <PanelFieldBlock label={gd.albumLeadLabel} tag={gd.tagAlbumLead} isDark={isDark}>
+                  <textarea
+                    className={textareaClass}
+                    value={preview.gdAlbumLead}
+                    onChange={(event) => onChange("gdAlbumLead", event.target.value)}
+                    rows={2}
+                    placeholder={gd.albumLeadLabel}
+                  />
+                </PanelFieldBlock>
+                <TemplateWorkspaceCommonFields
+                  copy={copy}
+                  inputClass={inputClass}
+                  preview={preview}
+                  onChange={onChange}
+                  images={images}
+                  onCoverImageChange={onCoverImageChange}
+                  onGalleryImageChange={onGalleryImageChange}
+                  isDark={isDark}
+                  gallerySlotTags={gallerySlotTags}
+                  gallerySlotCount={12}
+                  fieldGroup="gentle-drift-album"
+                  photoFieldTags={{
+                    coverImage: gd.tagCoverImage,
+                    gallerySection: gd.tagGallerySection,
+                  }}
+                />
+              </SlideFlexWorkspaceSection>
+              <SlideFlexWorkspaceSection
+                title={gd.giftSectionTitle}
+                inventory={gd.giftSectionInventory}
+                isDark={isDark}
+              >
+                <p
+                  className={`text-xs font-semibold ${isDark ? "text-white/88" : "text-[var(--color-ink)]"}`}
+                >
+                  {gd.groomBankFieldsTitle}
+                </p>
+                <TemplateWorkspaceCommonFields
+                  copy={copy}
+                  inputClass={inputClass}
+                  preview={preview}
+                  onChange={onChange}
+                  images={images}
+                  onCoverImageChange={onCoverImageChange}
+                  onGalleryImageChange={onGalleryImageChange}
+                  isDark={isDark}
+                  gallerySlotTags={gallerySlotTags}
+                  gallerySlotCount={6}
+                  fieldGroup="gentle-drift-bank"
+                />
+                <p
+                  className={`mt-2 text-xs font-semibold ${isDark ? "text-white/88" : "text-[var(--color-ink)]"}`}
+                >
+                  {gd.brideBankFieldsTitle}
+                </p>
+                <p
+                  className={`text-xs leading-relaxed ${isDark ? "text-white/60" : "text-[var(--color-ink)]/65"}`}
+                >
+                  {gd.brideBankFieldsHint}
+                </p>
+                <PanelFieldBlock label={copy.bankName} tag={gd.tagBrideBankName} isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.gdBrideBankName}
+                    onChange={(event) => onChange("gdBrideBankName", event.target.value)}
+                    placeholder={copy.bankName}
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock label={copy.accountName} tag={gd.tagBrideAccountName} isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.gdBrideAccountName}
+                    onChange={(event) => onChange("gdBrideAccountName", event.target.value)}
+                    placeholder={copy.accountName}
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock label={copy.accountNumber} tag={gd.tagBrideAccountNumber} isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.gdBrideAccountNumber}
+                    onChange={(event) => onChange("gdBrideAccountNumber", event.target.value)}
+                    placeholder={copy.accountNumber}
+                  />
+                </PanelFieldBlock>
+              </SlideFlexWorkspaceSection>
+            </>
+          ) : isSlideFlex ? (
             <SlideFlexWorkspaceSection
               title={sf.baseWorkspaceSectionTitle}
               inventory={sf.baseWorkspaceSectionInventory}
@@ -1201,7 +1700,11 @@ export default function TemplateWorkspace({
 }) {
   const pathname = usePathname();
   const { theme } = useGlobalPreferences();
-  const [preview, setPreview] = useState<PreviewData>(defaultPreviewData);
+  const [preview, setPreview] = useState<PreviewData>(() =>
+    template.slug === "gentle-drift"
+      ? { ...defaultPreviewData, ...gentleDriftWorkspaceInitialPreview }
+      : defaultPreviewData,
+  );
   const [images, setImages] = useState<PreviewImages>(defaultPreviewImages);
   const [lightboxImage, setLightboxImage] = useState<LightboxImage | null>(null);
   const [isConfiguratorCollapsed, setIsConfiguratorCollapsed] = useState(false);
@@ -1255,6 +1758,17 @@ export default function TemplateWorkspace({
     if (url.startsWith("blob:")) URL.revokeObjectURL(url);
   }, []);
 
+  const handleIntroBannerImageChange = useCallback(
+    (file: File | null) => {
+      setImages((current) => {
+        revokeObjectUrlIfBlob(current.introBannerImage);
+        if (!file) return { ...current, introBannerImage: "" };
+        return { ...current, introBannerImage: URL.createObjectURL(file) };
+      });
+    },
+    [revokeObjectUrlIfBlob],
+  );
+
   const handleGroomPortraitImageChange = useCallback(
     (file: File | null) => {
       setImages((current) => {
@@ -1304,6 +1818,7 @@ export default function TemplateWorkspace({
         images={images}
         onCoverImageChange={handleCoverImageChange}
         onGalleryImageChange={handleGalleryImageChange}
+        onIntroBannerImageChange={handleIntroBannerImageChange}
         onGroomPortraitImageChange={handleGroomPortraitImageChange}
         onBridePortraitImageChange={handleBridePortraitImageChange}
         isCollapsed={isConfiguratorCollapsed}
