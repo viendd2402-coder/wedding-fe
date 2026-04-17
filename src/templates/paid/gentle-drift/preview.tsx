@@ -148,6 +148,12 @@ function clampGentleDriftTimelineBeatCount(raw: string | undefined): number {
   return Math.min(8, Math.max(3, n));
 }
 
+function clampGentleDriftAlbumVisibleCount(raw: string | undefined): number {
+  const n = Number.parseInt(String(raw ?? "").trim(), 10);
+  if (!Number.isFinite(n)) return 15;
+  return Math.min(GENTLE_DRIFT_ALBUM_TILES, Math.max(1, n));
+}
+
 /** `timeline{n}Title` → năm trên thẻ, `Date` → tiêu đề, `Body` → đoạn kể (mẫu Gentle Drift). */
 function gentleDriftStoryFromPreview(
   preview: PreviewData,
@@ -185,10 +191,14 @@ export default function GentleDriftPreview({
   const isDark = theme === "dark";
   const copy = gentleDriftPreviewMessages[language];
   const storyDefaults = language === "vi" ? gentleDriftStoryVi : gentleDriftStoryEn;
-  const gallery = useMemo(
-    () => gentleDriftGalleryResolved(images.galleryImages, gentleDriftGallery),
-    [images.galleryImages],
+  const albumVisibleCount = useMemo(
+    () => clampGentleDriftAlbumVisibleCount(preview.gdAlbumVisibleCount),
+    [preview.gdAlbumVisibleCount],
   );
+  const gallery = useMemo(() => {
+    const full = gentleDriftGalleryResolved(images.galleryImages, gentleDriftGallery);
+    return full.slice(0, albumVisibleCount);
+  }, [albumVisibleCount, images.galleryImages]);
   const cover = images.coverImage || template.image;
   const introBanner =
     images.introBannerImage?.trim() || gentleDriftIntroBannerDefault;

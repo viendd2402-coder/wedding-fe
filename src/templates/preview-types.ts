@@ -108,6 +108,8 @@ export type GentleDriftPreviewExtra = {
   gdBrideAccountNumber: string;
   /** Số mốc timeline hiển thị / chỉnh trên Gentle Drift (chuỗi số "3"–"8"). */
   gdTimelineBeatCount: string;
+  /** Số ô album bento hiển thị trên thiệp & trong panel (chuỗi số "1"–"30"; để trống = 15). */
+  gdAlbumVisibleCount: string;
 };
 
 /** Brightly Basic: STK nhà cô dâu (cột phải; trống = hiển thị giống cột nhà chú rể). */
@@ -162,6 +164,7 @@ export const emptyGentleDriftPreviewExtra: GentleDriftPreviewExtra = {
   gdBrideAccountName: "",
   gdBrideAccountNumber: "",
   gdTimelineBeatCount: "3",
+  gdAlbumVisibleCount: "",
 };
 
 export const emptyBrightlyBasicPreviewExtra: BrightlyBasicPreviewExtra = {

@@ -3,55 +3,57 @@ import type { PreviewData } from "@/templates/preview-types";
 /**
  * Ảnh mặc định cho album bento — tối đa 30 ô upload (khuyến nghị tối thiểu 10 ảnh).
  * Mỗi URL chỉ dùng cho một ô album, không tái dùng cho intro / hero / thẻ cặp đôi.
+ * Bộ ảnh gợi ý: cặp đôi, lễ/tiệc, váy cưới, nhẫn/hoa/chi tiết (đã kiểm tra HEAD 200).
+ * Hai ô cuối là crop khác cùng khung cảnh nến — vẫn đúng quy tắc một chuỗi URL một ô.
  */
 export const gentleDriftGallery = [
-  "https://images.unsplash.com/photo-1599462616558-2b75fd26a283?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1630526720753-aa4e71acf67d?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1561287495-a3fe1fd28504?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1460978812857-470ed1c77af0?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1591604466107-ec97de577aff?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1525258946800-98cfd641d0de?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1550784718-990c6de52adf?auto=format&fit=crop&w=900&q=80",
   "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1563808599481-34a342e44508?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1519741497674-74fc796a73e6?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1520854221050-0f4caff5442a?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1465495976277-4387d4b0b0c6?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1522673602040-1b49001f936f?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1529636799528-921f4959f0a5?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=900&q=80",
   "https://images.unsplash.com/photo-1469371670807-013ccf25f16a?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1523438885200-e635ba2c371e?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1563808599481-34a342e44508?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1532712938310-34cb3982ef74?auto=format&fit=crop&w=900&q=80",
   "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1460978815337-b1bab7f75554?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1532712938310-34cb4482f358?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1583939003579-55e2be026b56?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1591604466107-ec64de5843fc?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1494200109408-757f2b4bbd41?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1544070748-de54a68b0e97?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1530026502884-8913dade4e61?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1468811480171-015a29c34d0b?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1470229722913-6c99f74115b9?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1464366400605-3981fbcd0cf7?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1510074378860-e8e3efe48c0a?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1606800053252-fa7a77afbdcb?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1578965339229-8277a1e4ef03?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1566073771259-6a8506099663?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1596457221755-b96bc3a6df18?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1523438885200-e635ba2c371e?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1621621667797-e06afc217fb0?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1606216794079-73f85bbd57d5?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1630526720753-aa4e71acf67d?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1599462616558-2b75fd26a283?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1504198458649-3128b932f49e?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=900&h=600&q=80",
+  "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=900&h=450&q=80",
 ] as const;
 
 /** Ảnh màn chào mặc định — không trùng URL trong `gentleDriftGallery` hay ảnh bìa mẫu. */
 export const gentleDriftIntroBannerDefault =
-  "https://images.unsplash.com/photo-1556125574-ff697c72fdbb?auto=format&fit=crop&w=1400&q=82";
+  "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1400&q=82";
 
 /** Ảnh thẻ chú rể mặc định — không trùng album / intro / các ô khác. */
 export const gentleDriftGroomPortraitDefault =
-  "https://images.unsplash.com/photo-1529634551435-365992c7ab02?auto=format&fit=crop&w=900&q=82";
+  "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=900&h=1150&q=82";
 
 /** Ảnh thẻ cô dâu mặc định — không trùng album / intro / các ô khác. */
 export const gentleDriftBridePortraitDefault =
-  "https://images.unsplash.com/photo-1537907796426-43cdb426cddd?auto=format&fit=crop&w=900&q=82";
+  "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=900&h=1150&q=82";
 
 /** Ảnh footer cảm ơn mặc định (full-bleed, tông ấm — khi chưa upload). */
 export const gentleDriftFooterPhotoDefault =
-  "https://images.unsplash.com/photo-1599462616558-2b75fd26a283?auto=format&fit=crop&w=1800&q=82";
+  "https://images.unsplash.com/photo-1525258946800-98cfd641d0de?auto=format&fit=crop&w=1800&q=82";
 
 export type GentleDriftStory = { year: string; title: string; body: string };
 
@@ -86,6 +88,7 @@ export const gentleDriftWorkspaceInitialPreview: Partial<PreviewData> = {
     "Tình yêu là điều kiện trong đó hạnh phúc của người khác là điều cần thiết cho chính bạn.",
   gdStoryLead: "Vài dòng kể về hành trình của hai đứa, thật nhẹ và thật lòng.",
   gdAlbumLead: "Những khoảnh khắc chúng mình muốn lưu lại cùng bạn.",
+  gdAlbumVisibleCount: "15",
   gdVuQuyTime: "09:00",
   gdVuQuyVenue: "Tư gia nhà gái — 8 Lê Lợi, Đà Nẵng",
   gdVuQuyLocation: "Đà Nẵng",

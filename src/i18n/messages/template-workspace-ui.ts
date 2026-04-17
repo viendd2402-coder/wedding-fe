@@ -205,6 +205,12 @@ export type GentleDriftWorkspacePanel = {
   albumGridSectionInventory: string;
   /** Gợi ý tối thiểu / tối đa ảnh album Gentle Drift. */
   albumGridMinMaxHint: string;
+  /** Tóm tắt số ô đang hiển thị — có placeholder `{n}` (1–30). */
+  albumVisibleSlotsSummary: string;
+  /** Nút tăng số ô album hiển thị trên thiệp. */
+  addAlbumPhotoSlotLabel: string;
+  /** Nút giảm số ô album hiển thị trên thiệp. */
+  removeAlbumPhotoSlotLabel: string;
   /** Thẻ vị trí thay cho nhãn chung (tránh copy mô tả slide-flex). */
   tagCoverImage: string;
   tagGallerySection: string;
@@ -598,9 +604,12 @@ const viGentleDriftPanel: GentleDriftWorkspacePanel = {
     "• Ba ô đầu: STK nhà chú rể (cột trái trên thiệp)\n• Ba ô “nhà cô dâu”: STK riêng cột phải — để trống thì hiển thị giống nhà trai\n• Mỗi cột có nút sao chép số tài khoản tương ứng",
   albumGridSectionTitle: "Album — đoạn dẫn & lưới ảnh (tối đa 30 ô)",
   albumGridSectionInventory:
-    "• Đoạn lead dưới tiêu đề mục Album — để trống thì dùng bản mẫu\n• Mỗi ô upload tương ứng một ô lưới bento (ô trống dùng ảnh mẫu)\n• Ảnh album không dùng cho thẻ cô dâu/chú rể — hai ảnh đó có ô riêng ở nhóm Cặp đôi",
+    "• Đoạn lead dưới tiêu đề mục Album — để trống thì dùng bản mẫu\n• Dùng nút thêm / bớt ô để chỉnh số ảnh hiển thị trên thiệp (mặc định 15; tối đa 30)\n• Mỗi ô upload tương ứng một ô lưới bento (ô trống dùng ảnh mẫu)\n• Ảnh album không dùng cho thẻ cô dâu/chú rể — hai ảnh đó có ô riêng ở nhóm Cặp đôi",
   albumGridMinMaxHint:
-    "Khuyến nghị tối thiểu 10 ảnh, tối đa 30 ảnh trên thiệp — thêm ảnh bằng cách tải lên từng ô bên dưới.",
+    "Có thể hiển thị từ 1 đến 30 ô; mặc định 15 ô. Mỗi ô có upload riêng — ô không hiển thị trên thiệp vẫn giữ ảnh nếu bạn thu gọn lưới rồi mở lại.",
+  albumVisibleSlotsSummary: "Đang hiển thị {n} / 30 ô trên thiệp.",
+  addAlbumPhotoSlotLabel: "Thêm ô ảnh",
+  removeAlbumPhotoSlotLabel: "Bớt ô ảnh",
   tagCoverImage: "Hero full-bleed · nền ảnh bìa (không dùng cho thẻ cặp đôi)",
   tagGallerySection: "Mục Album · lưới bento (ảnh mẫu khi chưa upload)",
   tagGallerySlot7: "Mục Album · ô ảnh 7",
@@ -1007,9 +1016,12 @@ const enGentleDriftPanel: GentleDriftWorkspacePanel = {
     "• First three fields: groom’s family account (left column on the invite)\n• Bride family block: separate right-column details — empty mirrors the groom account\n• Each column has its own copy button",
   albumGridSectionTitle: "Album — lead & photo grid (up to 30 tiles)",
   albumGridSectionInventory:
-    "• Lead under the album heading — empty uses the built-in sample\n• Each upload maps to one bento tile (empty slots use stock photos)\n• Album images are not reused on the couple cards — use the couple photo uploads for those portraits",
+    "• Lead under the album heading — empty uses the built-in sample\n• Use add / remove slot buttons to change how many tiles appear on the invite (default 15; max 30)\n• Each upload maps to one bento tile (empty slots use stock photos)\n• Album images are not reused on the couple cards — use the couple photo uploads for those portraits",
   albumGridMinMaxHint:
-    "Aim for at least 10 photos and at most 30 on the invite — add more by uploading each slot below.",
+    "You can show between 1 and 30 tiles; the default is 15. Each tile has its own upload — images in hidden slots stay saved if you shrink the grid and expand it again.",
+  albumVisibleSlotsSummary: "Showing {n} / 30 tiles on the invite.",
+  addAlbumPhotoSlotLabel: "Add tile",
+  removeAlbumPhotoSlotLabel: "Remove tile",
   tagCoverImage: "Full-bleed hero · cover background (not used on couple cards)",
   tagGallerySection: "Album section · bento grid (stock photos when empty)",
   tagGallerySlot7: "Album section · tile 7",

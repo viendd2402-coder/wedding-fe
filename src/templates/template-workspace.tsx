@@ -10,7 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { useGlobalPreferences, type AppLanguage } from "@/components/global-preferences-provider";
+import { useGlobalPreferences } from "@/components/global-preferences-provider";
 import { useMessages } from "@/i18n/use-messages";
 import { siteContact } from "@/lib/site-contact";
 import {
@@ -30,41 +30,10 @@ import {
   parsePaymentInvitationSubdomain,
 } from "@/lib/create-payment-invitation";
 import type { TemplateWorkspacePanelMessages } from "@/i18n/messages/template-workspace-ui";
+import GentleDriftWorkspaceCountdown from "@/components/gentle-drift-workspace-countdown";
 
 /** Phần cố định sau subdomain (chỉ gửi label subdomain lên API). */
 const INVITE_SUBDOMAIN_PUBLIC_SUFFIX = ".lumiere-wedding.com";
-
-function countdownTargetToDatetimeLocalValue(raw: string): string {
-  const t = raw.trim();
-  if (!t) return "";
-  const d = new Date(t);
-  if (Number.isNaN(d.getTime())) return "";
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
-
-function datetimeLocalValueToCountdownTarget(v: string): string {
-  if (!v) return "";
-  const d = new Date(v);
-  if (Number.isNaN(d.getTime())) return "";
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:00`;
-}
-
-function formatCountdownReadableWorkspace(raw: string, language: AppLanguage): string {
-  const t = raw.trim();
-  if (!t) return "";
-  const d = new Date(t);
-  if (Number.isNaN(d.getTime())) return "";
-  return d.toLocaleString(language === "vi" ? "vi-VN" : "en-US", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
 
 /** Gợi ý placeholder từ tên chú rể + cô dâu (chuẩn hoá ASCII cho hostname). */
 function suggestedSubdomainPlaceholderFromNames(groom: string, bride: string): string {
@@ -266,32 +235,13 @@ function TemplateWorkspaceCommonFields({
             isDark={isDark}
           >
             {gentleDriftCountdownPicker ? (
-              <>
-                <input
-                  type="datetime-local"
-                  className={inputClass}
-                  value={countdownTargetToDatetimeLocalValue(preview.countdownTarget)}
-                  onChange={(event) => {
-                    const next = datetimeLocalValueToCountdownTarget(event.target.value);
-                    if (next) onChange("countdownTarget", next);
-                  }}
-                />
-                <p
-                  className={`mt-2 text-[11px] leading-relaxed ${isDark ? "text-white/55" : "text-[var(--color-ink)]/60"}`}
-                >
-                  {gentleDriftCountdownWorkspaceHint || copy.countdownTargetHint}
-                </p>
-                <p
-                  className={`mt-1.5 font-mono text-[11px] leading-relaxed ${isDark ? "text-white/45" : "text-[var(--color-ink)]/50"}`}
-                >
-                  ISO: {preview.countdownTarget.trim() || "—"}
-                </p>
-                <p
-                  className={`mt-1 text-xs font-medium leading-relaxed ${isDark ? "text-white/78" : "text-[var(--color-ink)]/80"}`}
-                >
-                  {formatCountdownReadableWorkspace(preview.countdownTarget, language)}
-                </p>
-              </>
+              <GentleDriftWorkspaceCountdown
+                value={preview.countdownTarget}
+                onChange={(next) => onChange("countdownTarget", next)}
+                language={language}
+                isDark={isDark}
+                hint={gentleDriftCountdownWorkspaceHint || copy.countdownTargetHint}
+              />
             ) : (
               <>
                 <input
@@ -716,6 +666,12 @@ function PreviewConfigurator({
   const sf = copy.slideFlex;
   const gd = copy.gentleDrift;
   const bb = copy.brightlyBasic;
+  const gentleDriftAlbumSlotCount = useMemo(() => {
+    if (!isGentleDrift) return 30;
+    const n = Number.parseInt(preview.gdAlbumVisibleCount?.trim() ?? "", 10);
+    if (!Number.isFinite(n)) return 15;
+    return Math.min(30, Math.max(1, n));
+  }, [isGentleDrift, preview.gdAlbumVisibleCount]);
   const gallerySlotTags = useMemo((): readonly string[] => {
     const six = [
       copy.tagGallerySlot1,
@@ -1364,6 +1320,43 @@ function PreviewConfigurator({
                 >
                   {gd.albumGridMinMaxHint}
                 </p>
+                <div
+                  className={`mt-3 flex flex-wrap items-center gap-2 rounded-xl border px-3 py-2.5 text-xs ${
+                    isDark ? "border-white/12 bg-white/5" : "border-[var(--color-ink)]/10 bg-[var(--color-cream)]"
+                  }`}
+                >
+                  <span
+                    className={`min-w-0 flex-1 font-medium ${isDark ? "text-white/85" : "text-[var(--color-ink)]/90"}`}
+                  >
+                    {gd.albumVisibleSlotsSummary.replace("{n}", String(gentleDriftAlbumSlotCount))}
+                  </span>
+                  <button
+                    type="button"
+                    disabled={gentleDriftAlbumSlotCount >= 30}
+                    onClick={() =>
+                      onChange("gdAlbumVisibleCount", String(Math.min(30, gentleDriftAlbumSlotCount + 1)))
+                    }
+                    className={`shrink-0 rounded-lg px-3 py-1.5 text-[11px] font-semibold transition disabled:cursor-not-allowed disabled:opacity-40 ${
+                      isDark
+                        ? "bg-white/12 text-white hover:bg-white/16"
+                        : "bg-[#b8956a]/18 text-[var(--color-ink)] hover:bg-[#b8956a]/28"
+                    }`}
+                  >
+                    {gd.addAlbumPhotoSlotLabel}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={gentleDriftAlbumSlotCount <= 1}
+                    onClick={() =>
+                      onChange("gdAlbumVisibleCount", String(Math.max(1, gentleDriftAlbumSlotCount - 1)))
+                    }
+                    className={`shrink-0 rounded-lg px-3 py-1.5 text-[11px] font-semibold transition disabled:cursor-not-allowed disabled:opacity-40 ${
+                      isDark ? "bg-white/8 text-white/90 hover:bg-white/12" : "bg-black/6 text-[var(--color-ink)] hover:bg-black/10"
+                    }`}
+                  >
+                    {gd.removeAlbumPhotoSlotLabel}
+                  </button>
+                </div>
                 <TemplateWorkspaceCommonFields
                   copy={copy}
                   inputClass={inputClass}
@@ -1374,7 +1367,7 @@ function PreviewConfigurator({
                   onGalleryImageChange={onGalleryImageChange}
                   isDark={isDark}
                   gallerySlotTags={gallerySlotTags}
-                  gallerySlotCount={30}
+                  gallerySlotCount={gentleDriftAlbumSlotCount}
                   fieldGroup="gentle-drift-album"
                   photoFieldTags={{
                     coverImage: gd.tagCoverImage,
