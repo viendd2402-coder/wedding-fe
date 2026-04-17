@@ -10,7 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { useGlobalPreferences } from "@/components/global-preferences-provider";
+import { useGlobalPreferences, type AppLanguage } from "@/components/global-preferences-provider";
 import { useMessages } from "@/i18n/use-messages";
 import { siteContact } from "@/lib/site-contact";
 import {
@@ -25,8 +25,64 @@ import { gentleDriftWorkspaceInitialPreview } from "@/templates/paid/gentle-drif
 import type { WeddingTemplate } from "@/lib/templates/types";
 import { forceDocumentScrollTop } from "@/lib/force-document-scroll-top";
 import { getStoredAuthToken } from "@/lib/auth-client";
-import { buildPaymentInvitationFromPreview } from "@/lib/create-payment-invitation";
+import {
+  buildPaymentInvitationFromPreview,
+  parsePaymentInvitationSubdomain,
+} from "@/lib/create-payment-invitation";
 import type { TemplateWorkspacePanelMessages } from "@/i18n/messages/template-workspace-ui";
+
+/** Phần cố định sau subdomain (chỉ gửi label subdomain lên API). */
+const INVITE_SUBDOMAIN_PUBLIC_SUFFIX = ".lumiere-wedding.com";
+
+function countdownTargetToDatetimeLocalValue(raw: string): string {
+  const t = raw.trim();
+  if (!t) return "";
+  const d = new Date(t);
+  if (Number.isNaN(d.getTime())) return "";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function datetimeLocalValueToCountdownTarget(v: string): string {
+  if (!v) return "";
+  const d = new Date(v);
+  if (Number.isNaN(d.getTime())) return "";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:00`;
+}
+
+function formatCountdownReadableWorkspace(raw: string, language: AppLanguage): string {
+  const t = raw.trim();
+  if (!t) return "";
+  const d = new Date(t);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleString(language === "vi" ? "vi-VN" : "en-US", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+/** Gợi ý placeholder từ tên chú rể + cô dâu (chuẩn hoá ASCII cho hostname). */
+function suggestedSubdomainPlaceholderFromNames(groom: string, bride: string): string {
+  const parts = [groom.trim(), bride.trim()].filter(Boolean);
+  if (!parts.length) return "";
+  let s = parts.join("-").replace(/\s+/g, "-");
+  s = s
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9-]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 63);
+  return s;
+}
 
 function PanelFieldBlock({
   label,
@@ -148,6 +204,8 @@ function TemplateWorkspaceCommonFields({
   gallerySlotCount = 6,
   fieldGroup = "all",
   photoFieldTags,
+  gentleDriftCountdownPicker = false,
+  gentleDriftCountdownWorkspaceHint = "",
 }: {
   copy: TemplateWorkspacePanelMessages;
   inputClass: string;
@@ -158,12 +216,16 @@ function TemplateWorkspaceCommonFields({
   onGalleryImageChange: (index: number, file: File | null) => void;
   isDark: boolean;
   gallerySlotTags: readonly string[];
-  /** Số ô upload album (Gentle Drift = 12, mặc định 6). */
+  /** Số ô upload album (Gentle Drift = 30, mặc định 6). */
   gallerySlotCount?: number;
   fieldGroup?: TemplateWorkspaceCommonFieldGroup;
   /** Khi nhóm ảnh của gentle-drift: thẻ vị trí riêng, không dùng mô tả slide-flex. */
   photoFieldTags?: { coverImage: string; gallerySection: string };
+  /** Gentle Drift: ô chọn ngày giờ thay vì gõ chuỗi ISO thuần. */
+  gentleDriftCountdownPicker?: boolean;
+  gentleDriftCountdownWorkspaceHint?: string;
 }) {
+  const { language } = useGlobalPreferences();
   const g = fieldGroup;
   const show = (part: Exclude<TemplateWorkspaceCommonFieldGroup, "all">) =>
     g === "all" || g === part;
@@ -203,18 +265,49 @@ function TemplateWorkspaceCommonFields({
             tag={copy.tagCountdownTarget}
             isDark={isDark}
           >
-            <input
-              className={inputClass}
-              value={preview.countdownTarget}
-              onChange={(event) => onChange("countdownTarget", event.target.value)}
-              placeholder="2026-10-20T09:00"
-              autoComplete="off"
-            />
-            <p
-              className={`text-xs leading-relaxed ${isDark ? "text-white/55" : "text-[var(--color-ink)]/60"}`}
-            >
-              {copy.countdownTargetHint}
-            </p>
+            {gentleDriftCountdownPicker ? (
+              <>
+                <input
+                  type="datetime-local"
+                  className={inputClass}
+                  value={countdownTargetToDatetimeLocalValue(preview.countdownTarget)}
+                  onChange={(event) => {
+                    const next = datetimeLocalValueToCountdownTarget(event.target.value);
+                    if (next) onChange("countdownTarget", next);
+                  }}
+                />
+                <p
+                  className={`mt-2 text-[11px] leading-relaxed ${isDark ? "text-white/55" : "text-[var(--color-ink)]/60"}`}
+                >
+                  {gentleDriftCountdownWorkspaceHint || copy.countdownTargetHint}
+                </p>
+                <p
+                  className={`mt-1.5 font-mono text-[11px] leading-relaxed ${isDark ? "text-white/45" : "text-[var(--color-ink)]/50"}`}
+                >
+                  ISO: {preview.countdownTarget.trim() || "—"}
+                </p>
+                <p
+                  className={`mt-1 text-xs font-medium leading-relaxed ${isDark ? "text-white/78" : "text-[var(--color-ink)]/80"}`}
+                >
+                  {formatCountdownReadableWorkspace(preview.countdownTarget, language)}
+                </p>
+              </>
+            ) : (
+              <>
+                <input
+                  className={inputClass}
+                  value={preview.countdownTarget}
+                  onChange={(event) => onChange("countdownTarget", event.target.value)}
+                  placeholder="2026-10-20T09:00"
+                  autoComplete="off"
+                />
+                <p
+                  className={`text-xs leading-relaxed ${isDark ? "text-white/55" : "text-[var(--color-ink)]/60"}`}
+                >
+                  {copy.countdownTargetHint}
+                </p>
+              </>
+            )}
           </PanelFieldBlock>
         </>
       ) : null}
@@ -455,8 +548,11 @@ function PreviewConfigurator({
   const [payError, setPayError] = useState<string | null>(null);
   const [freeLoading, setFreeLoading] = useState(false);
   const [freeError, setFreeError] = useState<string | null>(null);
-
   const isPremium = template.tier === "Trả phí";
+  const [subdomainManuallyEdited, setSubdomainManuallyEdited] = useState(false);
+  const [desiredSubdomain, setDesiredSubdomain] = useState(() =>
+    isPremium ? suggestedSubdomainPlaceholderFromNames(preview.groom, preview.bride) : "",
+  );
 
   const clientNote = useMemo(
     () =>
@@ -480,6 +576,17 @@ function PreviewConfigurator({
     return "";
   }, [preview.bride, preview.groom]);
 
+  const autoSubdomain = useMemo(
+    () => suggestedSubdomainPlaceholderFromNames(preview.groom, preview.bride),
+    [preview.bride, preview.groom],
+  );
+
+  useEffect(() => {
+    if (!isPremium) return;
+    if (subdomainManuallyEdited) return;
+    setDesiredSubdomain(autoSubdomain);
+  }, [autoSubdomain, isPremium, subdomainManuallyEdited]);
+
   const sendConsultEmail = useCallback(() => {
     const body = [`Template: ${template.name} (${template.slug})`, "", clientNote].join("\n");
     window.location.href = `mailto:${siteContact.email}?subject=${encodeURIComponent(copy.paymentMailSubject)}&body=${encodeURIComponent(body)}`;
@@ -487,7 +594,17 @@ function PreviewConfigurator({
 
   const startPremiumCheckout = useCallback(async () => {
     setPayError(null);
-    const invitation = buildPaymentInvitationFromPreview(template.slug, preview, images);
+    const subParsed = parsePaymentInvitationSubdomain(desiredSubdomain);
+    if (!subParsed.ok) {
+      setPayError(copy.paymentSubdomainInvalid);
+      return;
+    }
+    const invitation = buildPaymentInvitationFromPreview(
+      template.slug,
+      preview,
+      images,
+      subParsed.value ? { subdomain: subParsed.value } : undefined,
+    );
     if (!invitation) {
       setPayError(copy.paymentInviteIncomplete);
       return;
@@ -530,10 +647,11 @@ function PreviewConfigurator({
       setPayLoading(false);
     }
   }, [
-    clientNote,
     copy.paymentFailed,
     copy.paymentInviteIncomplete,
     copy.paymentNotConfigured,
+    copy.paymentSubdomainInvalid,
+    desiredSubdomain,
     images,
     preview,
     template.slug,
@@ -618,8 +736,7 @@ function PreviewConfigurator({
       ] as const;
     }
     if (!isGentleDrift) return six;
-    return [
-      ...six,
+    const extra = [
       gd.tagGallerySlot7,
       gd.tagGallerySlot8,
       gd.tagGallerySlot9,
@@ -627,6 +744,10 @@ function PreviewConfigurator({
       gd.tagGallerySlot11,
       gd.tagGallerySlot12,
     ];
+    for (let slot = 13; slot <= 30; slot++) {
+      extra.push(gd.albumSlotTagFromIndex.replace("{n}", String(slot)));
+    }
+    return [...six, ...extra];
   }, [bb, copy, gd, isBrightlyBasic, isGentleDrift]);
 
   if (isCollapsed) {
@@ -693,6 +814,55 @@ function PreviewConfigurator({
       </div>
       <div className="mt-4 min-h-0 min-w-0 flex-1 overflow-y-auto pr-1">
         <div className="grid min-w-0 gap-3.5">
+          {isPremium ? (
+            <PanelFieldBlock
+              label={copy.desiredSubdomainLabel}
+              tag={copy.tagDesiredSubdomain}
+              isDark={isDark}
+            >
+              <div
+                className={`flex min-w-0 items-stretch overflow-hidden rounded-2xl border ${
+                  isDark
+                    ? "border-white/10 bg-white/6"
+                    : "border-[var(--color-ink)]/10 bg-[var(--color-cream)]"
+                }`}
+              >
+                <input
+                  type="text"
+                  className={`min-w-0 flex-1 border-0 bg-transparent px-4 py-3.5 outline-none ${
+                    isDark
+                      ? "text-white placeholder:text-white/35"
+                      : "text-[var(--color-ink)] placeholder:text-[var(--color-ink)]/35"
+                  }`}
+                  value={desiredSubdomain}
+                  onChange={(e) => {
+                    setSubdomainManuallyEdited(true);
+                    setDesiredSubdomain(e.target.value);
+                  }}
+                  placeholder={autoSubdomain || undefined}
+                  autoComplete="off"
+                  spellCheck={false}
+                />
+                <input
+                  type="text"
+                  readOnly
+                  tabIndex={-1}
+                  value={INVITE_SUBDOMAIN_PUBLIC_SUFFIX}
+                  aria-label={copy.desiredSubdomainSuffixAria}
+                  className={`pointer-events-none shrink-0 cursor-default border-0 border-l bg-transparent py-3.5 pl-2 pr-3 font-mono text-[10px] leading-tight outline-none sm:pl-3 sm:text-xs ${
+                    isDark
+                      ? "border-white/10 text-white/55"
+                      : "border-[var(--color-ink)]/10 text-[var(--color-ink)]/60"
+                  }`}
+                />
+              </div>
+              <p
+                className={`mt-1.5 text-xs leading-relaxed ${isDark ? "text-white/55" : "text-[var(--color-ink)]/60"}`}
+              >
+                {copy.desiredSubdomainHint}
+              </p>
+            </PanelFieldBlock>
+          ) : null}
           {isGentleDrift ? (
             <>
               <div
@@ -760,6 +930,8 @@ function PreviewConfigurator({
                   gallerySlotTags={gallerySlotTags}
                   gallerySlotCount={6}
                   fieldGroup="gentle-drift-names"
+                  gentleDriftCountdownPicker
+                  gentleDriftCountdownWorkspaceHint={gd.countdownWorkspaceHint}
                 />
                 <PanelFieldBlock label={gd.heroLeadLabel} tag={gd.tagHeroLead} isDark={isDark}>
                   <textarea
@@ -805,6 +977,24 @@ function PreviewConfigurator({
                     placeholder={gd.coupleQuoteLabel}
                   />
                 </PanelFieldBlock>
+                <SlideFlexPortraitUpload
+                  label={gd.groomCouplePortraitLabel}
+                  tag={gd.tagGroomCouplePortrait}
+                  hasImage={Boolean(images.groomPortraitImage)}
+                  selectedLabel={copy.imageSelected}
+                  emptyLabel={copy.imageDefault}
+                  isDark={isDark}
+                  onPick={onGroomPortraitImageChange}
+                />
+                <SlideFlexPortraitUpload
+                  label={gd.brideCouplePortraitLabel}
+                  tag={gd.tagBrideCouplePortrait}
+                  hasImage={Boolean(images.bridePortraitImage)}
+                  selectedLabel={copy.imageSelected}
+                  emptyLabel={copy.imageDefault}
+                  isDark={isDark}
+                  onPick={onBridePortraitImageChange}
+                />
                 <p
                   className={`text-xs font-semibold ${isDark ? "text-white/88" : "text-[var(--color-ink)]"}`}
                 >
@@ -973,6 +1163,34 @@ function PreviewConfigurator({
                   gallerySlotCount={6}
                   fieldGroup="gentle-drift-venue"
                 />
+                <PanelFieldBlock label={gd.eventsQuoteLabel} tag={gd.tagEventsQuote} isDark={isDark}>
+                  <textarea
+                    className={textareaClass}
+                    value={preview.gdEventsQuote}
+                    onChange={(event) => onChange("gdEventsQuote", event.target.value)}
+                    rows={2}
+                    placeholder={gd.eventsQuoteLabel}
+                  />
+                  <p
+                    className={`mt-1.5 text-xs leading-relaxed ${isDark ? "text-white/55" : "text-[var(--color-ink)]/60"}`}
+                  >
+                    {gd.eventsQuoteHint}
+                  </p>
+                </PanelFieldBlock>
+                <PanelFieldBlock label={gd.eventsLeadLabel} tag={gd.tagEventsLead} isDark={isDark}>
+                  <textarea
+                    className={textareaClass}
+                    value={preview.gdEventsLead}
+                    onChange={(event) => onChange("gdEventsLead", event.target.value)}
+                    rows={3}
+                    placeholder={gd.eventsLeadLabel}
+                  />
+                  <p
+                    className={`mt-1.5 text-xs leading-relaxed ${isDark ? "text-white/55" : "text-[var(--color-ink)]/60"}`}
+                  >
+                    {gd.eventsLeadHint}
+                  </p>
+                </PanelFieldBlock>
                 <p
                   className={`text-xs font-semibold ${isDark ? "text-white/88" : "text-[var(--color-ink)]"}`}
                 >
@@ -1011,43 +1229,18 @@ function PreviewConfigurator({
                     placeholder={copy.location}
                   />
                 </PanelFieldBlock>
-                <p
-                  className={`mt-2 text-xs font-semibold ${isDark ? "text-white/88" : "text-[var(--color-ink)]"}`}
-                >
-                  {gd.brideEventFieldsTitle}
-                </p>
-                <p
-                  className={`text-xs leading-relaxed ${isDark ? "text-white/60" : "text-[var(--color-ink)]/65"}`}
-                >
-                  {gd.brideEventFieldsHint}
-                </p>
-                <PanelFieldBlock label={gd.brideEventTimeLabel} tag={gd.tagBrideEventTime} isDark={isDark}>
+                <PanelFieldBlock label={gd.vuQuyWhenLineLabel} tag={gd.tagVuQuyWhenLine} isDark={isDark}>
                   <input
                     className={inputClass}
-                    value={preview.gdBrideEventTime}
-                    onChange={(event) => onChange("gdBrideEventTime", event.target.value)}
-                    placeholder={copy.partyTime}
+                    value={preview.gdVuQuyWhenLine}
+                    onChange={(event) => onChange("gdVuQuyWhenLine", event.target.value)}
+                    placeholder={gd.vuQuyWhenLinePlaceholder}
                   />
-                </PanelFieldBlock>
-                <PanelFieldBlock label={gd.brideEventVenueLabel} tag={gd.tagBrideEventVenue} isDark={isDark}>
-                  <input
-                    className={inputClass}
-                    value={preview.gdBrideEventVenue}
-                    onChange={(event) => onChange("gdBrideEventVenue", event.target.value)}
-                    placeholder={copy.venue}
-                  />
-                </PanelFieldBlock>
-                <PanelFieldBlock
-                  label={gd.brideEventLocationLabel}
-                  tag={gd.tagBrideEventLocation}
-                  isDark={isDark}
-                >
-                  <input
-                    className={inputClass}
-                    value={preview.gdBrideEventLocation}
-                    onChange={(event) => onChange("gdBrideEventLocation", event.target.value)}
-                    placeholder={copy.location}
-                  />
+                  <p
+                    className={`mt-1.5 text-xs leading-relaxed ${isDark ? "text-white/55" : "text-[var(--color-ink)]/60"}`}
+                  >
+                    {gd.vuQuyWhenLineHint}
+                  </p>
                 </PanelFieldBlock>
                 <p
                   className={`mt-2 text-xs font-semibold ${isDark ? "text-white/88" : "text-[var(--color-ink)]"}`}
@@ -1087,6 +1280,70 @@ function PreviewConfigurator({
                     placeholder={copy.location}
                   />
                 </PanelFieldBlock>
+                <PanelFieldBlock label={gd.groomWhenLineLabel} tag={gd.tagGroomWhenLine} isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.gdGroomEventWhenLine}
+                    onChange={(event) => onChange("gdGroomEventWhenLine", event.target.value)}
+                    placeholder={gd.groomWhenLinePlaceholder}
+                  />
+                  <p
+                    className={`mt-1.5 text-xs leading-relaxed ${isDark ? "text-white/55" : "text-[var(--color-ink)]/60"}`}
+                  >
+                    {gd.groomWhenLineHint}
+                  </p>
+                </PanelFieldBlock>
+                <p
+                  className={`mt-2 text-xs font-semibold ${isDark ? "text-white/88" : "text-[var(--color-ink)]"}`}
+                >
+                  {gd.brideEventFieldsTitle}
+                </p>
+                <p
+                  className={`text-xs leading-relaxed ${isDark ? "text-white/60" : "text-[var(--color-ink)]/65"}`}
+                >
+                  {gd.brideEventFieldsHint}
+                </p>
+                <PanelFieldBlock label={gd.brideEventTimeLabel} tag={gd.tagBrideEventTime} isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.gdBrideEventTime}
+                    onChange={(event) => onChange("gdBrideEventTime", event.target.value)}
+                    placeholder={copy.partyTime}
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock label={gd.brideEventVenueLabel} tag={gd.tagBrideEventVenue} isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.gdBrideEventVenue}
+                    onChange={(event) => onChange("gdBrideEventVenue", event.target.value)}
+                    placeholder={copy.venue}
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock
+                  label={gd.brideEventLocationLabel}
+                  tag={gd.tagBrideEventLocation}
+                  isDark={isDark}
+                >
+                  <input
+                    className={inputClass}
+                    value={preview.gdBrideEventLocation}
+                    onChange={(event) => onChange("gdBrideEventLocation", event.target.value)}
+                    placeholder={copy.location}
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock label={gd.brideWhenLineLabel} tag={gd.tagBrideWhenLine} isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.gdBrideEventWhenLine}
+                    onChange={(event) => onChange("gdBrideEventWhenLine", event.target.value)}
+                    placeholder={gd.brideWhenLinePlaceholder}
+                  />
+                  <p
+                    className={`mt-1.5 text-xs leading-relaxed ${isDark ? "text-white/55" : "text-[var(--color-ink)]/60"}`}
+                  >
+                    {gd.brideWhenLineHint}
+                  </p>
+                </PanelFieldBlock>
               </SlideFlexWorkspaceSection>
               <SlideFlexWorkspaceSection
                 title={gd.albumGridSectionTitle}
@@ -1102,6 +1359,11 @@ function PreviewConfigurator({
                     placeholder={gd.albumLeadLabel}
                   />
                 </PanelFieldBlock>
+                <p
+                  className={`text-xs leading-relaxed ${isDark ? "text-white/60" : "text-[var(--color-ink)]/65"}`}
+                >
+                  {gd.albumGridMinMaxHint}
+                </p>
                 <TemplateWorkspaceCommonFields
                   copy={copy}
                   inputClass={inputClass}
@@ -1112,7 +1374,7 @@ function PreviewConfigurator({
                   onGalleryImageChange={onGalleryImageChange}
                   isDark={isDark}
                   gallerySlotTags={gallerySlotTags}
-                  gallerySlotCount={12}
+                  gallerySlotCount={30}
                   fieldGroup="gentle-drift-album"
                   photoFieldTags={{
                     coverImage: gd.tagCoverImage,
@@ -2400,10 +2662,12 @@ export default function TemplateWorkspace({
     if (!file) return;
     const nextImage = URL.createObjectURL(file);
     setImages((current) => {
-      const nextGalleryImages =
-        current.galleryImages.length > 0
-          ? [...current.galleryImages]
-          : [...defaultGalleryImages];
+      const base =
+        current.galleryImages.length > 0 ? [...current.galleryImages] : [...defaultGalleryImages];
+      const nextGalleryImages = [...base];
+      while (nextGalleryImages.length <= index) {
+        nextGalleryImages.push("");
+      }
       nextGalleryImages[index] = nextImage;
       return { ...current, galleryImages: nextGalleryImages };
     });

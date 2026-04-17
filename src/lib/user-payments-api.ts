@@ -8,6 +8,12 @@ export type UserPaymentListItemResponse = {
   paymentStatus: PaymentStatus;
   paymentType: UserPaymentProductType;
   thumbnailUrl: string | null;
+  /**
+   * Ảnh đại diện từ `payment-invitation-detail.thumbnailImage` (nếu BE trả tách khỏi `thumbnailUrl`).
+   */
+  thumbnailImage: string | null;
+  /** JSON từ `payment-invitation-detail.details` (object hoặc đã parse từ chuỗi). */
+  details: unknown | null;
   templateName: string;
   /** Slug mẫu thiệp (vd. gentle-drift) — dùng link `/templates/[slug]`. */
   templateSlug: string | null;
@@ -110,6 +116,34 @@ function pickTemplateSlug(o: Record<string, unknown>): string | null {
   return null;
 }
 
+/** Khối `payment-invitation-detail` phẳng hoặc lồng trong `invitation`. */
+function pickPaymentInvitationDetail(o: Record<string, unknown>): Record<string, unknown> | null {
+  const direct = o.paymentInvitationDetail ?? o.payment_invitation_detail;
+  if (isRecord(direct)) return direct;
+
+  const invitation = o.invitation;
+  if (isRecord(invitation)) {
+    const nested = invitation.paymentInvitationDetail ?? invitation.payment_invitation_detail;
+    if (isRecord(nested)) return nested;
+  }
+
+  return null;
+}
+
+function parseDetailsFromApi(raw: unknown): unknown | null {
+  if (raw === undefined || raw === null) return null;
+  if (typeof raw === "string") {
+    const t = raw.trim();
+    if (!t) return null;
+    try {
+      return JSON.parse(t) as unknown;
+    } catch {
+      return null;
+    }
+  }
+  return raw;
+}
+
 function parseItem(o: Record<string, unknown>): UserPaymentListItemResponse | null {
   const id = parseNumericId(o.id);
   if (id === null) return null;
@@ -139,6 +173,21 @@ function parseItem(o: Record<string, unknown>): UserPaymentListItemResponse | nu
     o.publicationStatus ?? o.publication_status ?? o.invitationPublicationStatus,
   );
 
+  const invitationDetail = pickPaymentInvitationDetail(o);
+  const detailsFromDetail = invitationDetail
+    ? parseDetailsFromApi(invitationDetail.details ?? invitationDetail.detail)
+    : null;
+  const detailsTop = parseDetailsFromApi(o.details ?? o.detail);
+  const details = detailsFromDetail ?? detailsTop;
+
+  const thumbnailImageFromDetail = invitationDetail
+    ? asNullableString(invitationDetail.thumbnailImage) ??
+      asNullableString(invitationDetail.thumbnail_image)
+    : null;
+  const thumbnailImageTop =
+    asNullableString(o.thumbnailImage) ?? asNullableString(o.thumbnail_image);
+  const thumbnailImage = thumbnailImageFromDetail ?? thumbnailImageTop ?? null;
+
   return {
     id,
     paymentStatus: paymentStatus || "unknown",
@@ -146,7 +195,10 @@ function parseItem(o: Record<string, unknown>): UserPaymentListItemResponse | nu
     thumbnailUrl:
       asNullableString(o.thumbnailUrl) ??
       asNullableString(o.thumbnail_url) ??
-      asNullableString(o.previewImageUrl),
+      asNullableString(o.previewImageUrl) ??
+      thumbnailImage,
+    thumbnailImage,
+    details,
     templateName,
     templateSlug: templateSlug ?? null,
     publicationStatus: publicationStatus || "unknown",

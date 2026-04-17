@@ -104,9 +104,15 @@ export type GentleDriftWorkspacePanel = {
   introBannerLabel: string;
   introBannerHint: string;
   tagIntroBanner: string;
+  /** Gentle Drift: gợi ý dưới ô chọn ngày giờ đếm ngược. */
+  countdownWorkspaceHint: string;
   heroLeadLabel: string;
   heroLeadHint: string;
   tagHeroLead: string;
+  groomCouplePortraitLabel: string;
+  brideCouplePortraitLabel: string;
+  tagGroomCouplePortrait: string;
+  tagBrideCouplePortrait: string;
   namesCalendarSectionTitle: string;
   namesCalendarSectionInventory: string;
   copySectionTitle: string;
@@ -145,6 +151,12 @@ export type GentleDriftWorkspacePanel = {
   footerThanksBodyHint: string;
   venueScheduleSectionTitle: string;
   venueScheduleSectionInventory: string;
+  eventsQuoteLabel: string;
+  eventsQuoteHint: string;
+  eventsLeadLabel: string;
+  eventsLeadHint: string;
+  tagEventsQuote: string;
+  tagEventsLead: string;
   vuQuyEventFieldsTitle: string;
   vuQuyEventFieldsHint: string;
   vuQuyEventTimeLabel: string;
@@ -153,6 +165,10 @@ export type GentleDriftWorkspacePanel = {
   tagVuQuyEventTime: string;
   tagVuQuyEventVenue: string;
   tagVuQuyEventLocation: string;
+  vuQuyWhenLineLabel: string;
+  vuQuyWhenLinePlaceholder: string;
+  vuQuyWhenLineHint: string;
+  tagVuQuyWhenLine: string;
   groomEventFieldsTitle: string;
   groomEventFieldsHint: string;
   brideEventFieldsTitle: string;
@@ -166,9 +182,17 @@ export type GentleDriftWorkspacePanel = {
   tagGroomEventTime: string;
   tagGroomEventVenue: string;
   tagGroomEventLocation: string;
+  groomWhenLineLabel: string;
+  groomWhenLinePlaceholder: string;
+  groomWhenLineHint: string;
+  tagGroomWhenLine: string;
   tagBrideEventTime: string;
   tagBrideEventVenue: string;
   tagBrideEventLocation: string;
+  brideWhenLineLabel: string;
+  brideWhenLinePlaceholder: string;
+  brideWhenLineHint: string;
+  tagBrideWhenLine: string;
   groomBankFieldsTitle: string;
   brideBankFieldsTitle: string;
   brideBankFieldsHint: string;
@@ -179,6 +203,8 @@ export type GentleDriftWorkspacePanel = {
   giftSectionInventory: string;
   albumGridSectionTitle: string;
   albumGridSectionInventory: string;
+  /** Gợi ý tối thiểu / tối đa ảnh album Gentle Drift. */
+  albumGridMinMaxHint: string;
   /** Thẻ vị trí thay cho nhãn chung (tránh copy mô tả slide-flex). */
   tagCoverImage: string;
   tagGallerySection: string;
@@ -188,6 +214,8 @@ export type GentleDriftWorkspacePanel = {
   tagGallerySlot10: string;
   tagGallerySlot11: string;
   tagGallerySlot12: string;
+  /** Thẻ album ô 13–30: thay `{n}` bằng số thứ tự ô. */
+  albumSlotTagFromIndex: string;
 };
 
 /** Nhóm panel xem thử — chỉ dùng khi slug = brightly-basic. */
@@ -326,6 +354,13 @@ export type TemplateWorkspacePanelMessages = {
   paymentNotConfigured: string;
   paymentFailed: string;
   paymentInviteIncomplete: string;
+  /** Chỉ mẫu trả phí — ô subdomain mong muốn. */
+  desiredSubdomainLabel: string;
+  tagDesiredSubdomain: string;
+  /** `aria-label` cho ô read-only hiển thị `.lumiere-wedding.com`. */
+  desiredSubdomainSuffixAria: string;
+  desiredSubdomainHint: string;
+  paymentSubdomainInvalid: string;
   paymentFreeHint: string;
   paymentFreeEyebrow: string;
   paymentFreeTitle: string;
@@ -449,13 +484,19 @@ const viGentleDriftPanel: GentleDriftWorkspacePanel = {
     "Mẫu editorial: màn chào, vé lịch, hero, thẻ sự kiện, đếm ngược và mừng cưới dùng các ô bên dưới — mỗi khối tương ứng một phần trang, tránh nhập nhầm sang phần khác.",
   bannerHeroSectionTitle: "Màn chào & hero — ảnh và lời dưới tên",
   bannerHeroSectionInventory:
-    "• Ảnh màn chào (overlay đầu tiên) — có thể khác ảnh hero sau khi vào thiệp\n• Ảnh bìa / hero — nền full-bleed phía sau tên\n• Tên chú rể / cô dâu — màn chào, hero, thẻ Cặp đôi, footer\n• Ngày hiển thị — dưới tên (intro + hero) và trong thẻ sự kiện\n• Ngày giờ ISO — vé lịch, đếm ngược, Google Calendar\n• Lời dưới tên trên hero — đoạn mời gửi lời chúc",
+    "• Ảnh màn chào — slot riêng (mặc định khác ảnh bìa / album)\n• Ảnh bìa / hero — nền full-bleed phía sau tên\n• Tên chú rể / cô dâu — màn chào, hero, thẻ Cặp đôi, footer\n• Ngày hiển thị — dưới tên màn chào và trong thẻ sự kiện (khi chưa tuỳ chỉnh dòng giờ)\n• Ngày giờ đếm ngược — chọn bằng lịch, hiển thị dễ đọc trên hero + vé lịch + ô đếm ngược + Google Calendar\n• Lời dưới tên trên hero — nằm phía trên dòng ngày giờ đếm ngược",
   introBannerLabel: "Ảnh màn chào (intro)",
-  introBannerHint: "Không chọn thì dùng chung ảnh bìa / hero.",
+  introBannerHint: "Không chọn file thì dùng ảnh mẫu màn chào (URL riêng, không lấy từ ảnh bìa).",
   tagIntroBanner: "Màn chào · khung ảnh luxury trước khi “Vào xem thiệp”",
+  countdownWorkspaceHint:
+    "Chọn ngày và giờ theo giờ máy bạn — hệ thống lưu dạng ISO cho đồng hồ đếm ngược, vé lịch và nút thêm Google Calendar.",
   heroLeadLabel: "Lời dưới tên trên hero",
-  heroLeadHint: "Để trống thì dùng câu mặc định theo ngôn ngữ trang.",
-  tagHeroLead: "Hero · đoạn dẫn dưới ngày cưới, phía nút “Gửi lời chúc”",
+  heroLeadHint: "Để trống thì dùng câu mặc định theo ngôn ngữ trang. Hiển thị ngay dưới tên, phía trên dòng ngày giờ đếm ngược.",
+  tagHeroLead: "Hero · đoạn mời gửi lời chúc (dưới tên, trên dòng ngày giờ đếm ngược)",
+  groomCouplePortraitLabel: "Ảnh thẻ chú rể (cặp đôi)",
+  brideCouplePortraitLabel: "Ảnh thẻ cô dâu (cặp đôi)",
+  tagGroomCouplePortrait: "Mục Cô dâu & Chú rể · ảnh thẻ chú rể (không dùng ảnh bìa / album)",
+  tagBrideCouplePortrait: "Mục Cô dâu & Chú rể · ảnh thẻ cô dâu (không dùng ảnh bìa / album)",
   namesCalendarSectionTitle: "Tên cặp đôi & lịch (màn chào · hero · vé lịch · đếm ngược)",
   namesCalendarSectionInventory:
     "• Tên chú rể / cô dâu — hiện ở màn chào, hero, thẻ Cặp đôi, footer\n• Ngày hiển thị — dòng ngày dưới tên (intro + hero) và trong thẻ sự kiện\n• Ngày giờ ISO — tháng trên “vé lịch”, ô đếm ngược, nút thêm lịch Google",
@@ -475,7 +516,7 @@ const viGentleDriftPanel: GentleDriftWorkspacePanel = {
   tagAlbumLead: "Mục Album · đoạn lead dưới H2",
   coupleDetailsSectionTitle: "Cặp đôi — trích dẫn, họ nhà & giới thiệu",
   coupleDetailsSectionInventory:
-    "• Trích dẫn dưới tiêu đề mục Cặp đôi — để trống thì dùng câu mẫu\n• Hai dòng “Con ông / Con bà” cho chú rể và cô dâu\n• Đoạn giới thiệu dưới tên — để trống thì dùng đoạn mẫu",
+    "• Trích dẫn dưới tiêu đề mục Cặp đôi — để trống thì dùng câu mẫu\n• Ảnh thẻ chú rể / cô dâu — slot riêng (mặc định khác album & bìa)\n• Hai dòng “Con ông / Con bà” cho chú rể và cô dâu\n• Đoạn giới thiệu dưới tên — để trống thì dùng đoạn mẫu",
   timelineSectionTitle: "Chuyện tình yêu — đoạn dẫn & các mốc timeline",
   timelineSectionInventory:
     "• Đoạn lead dưới tiêu đề mục — để trống thì dùng bản mẫu\n• Mỗi mốc: ô thứ nhất = năm (hiển thị to), ô thứ hai = tiêu đề mốc, ô thứ ba = đoạn kể\n• Để trống cả ba ô của một mốc thì mốc đó lấy nội dung mẫu (nếu có)\n• Nút + / −: thêm hoặc bớt mốc (tối thiểu 3, tối đa 8)",
@@ -496,9 +537,15 @@ const viGentleDriftPanel: GentleDriftWorkspacePanel = {
   footerThanksHeadlineHint:
     "Để trống thì hiển thị câu mẫu theo ngôn ngữ (giống bản dịch trên thiệp khi chưa tuỳ chỉnh).",
   footerThanksBodyHint: "Tuỳ chọn — chỉ hiện khi có nội dung; dùng cho lời ký tên hoặc một câu nhắn thêm.",
-  venueScheduleSectionTitle: "Địa điểm & giờ (thẻ Lễ / Tiệc · bản đồ)",
+  venueScheduleSectionTitle: "Sự kiện cưới — chữ & địa điểm / giờ",
   venueScheduleSectionInventory:
-    "• Giờ lễ / giờ tiệc & địa điểm chung — mặc định cho lễ vu quy và hai tiệc nếu bạn chưa nhập riêng\n• Ba khối: lễ vu quy, tiệc nhà cô dâu, tiệc nhà chú rể — mỗi thẻ trên thiệp có bản đồ riêng",
+    "• Hai đoạn chữ mở đầu mục Sự kiện — để trống thì dùng bản mẫu\n• Giờ lễ / giờ tiệc & địa điểm chung — mặc định khi chưa nhập riêng từng thẻ\n• Thứ tự: lễ vu quy → tiệc nhà chú rể → tiệc nhà cô dâu\n• Mỗi thẻ có ô “dòng ngày giờ hiển thị” tuỳ chọn (để trống = “giờ · ngày hiển thị”)",
+  eventsQuoteLabel: "Trích dẫn dưới tiêu đề mục Sự kiện",
+  eventsQuoteHint: "Để trống thì dùng câu trích mẫu trên thiệp.",
+  eventsLeadLabel: "Đoạn dẫn mục Sự kiện",
+  eventsLeadHint: "Để trống thì dùng đoạn mẫu (lễ vu quy, hai tiệc…).",
+  tagEventsQuote: "Mục Sự kiện · câu trích dẫn serif dưới H2",
+  tagEventsLead: "Mục Sự kiện · đoạn lead dưới trích dẫn",
   vuQuyEventFieldsTitle: "Lễ vu quy (thẻ 01)",
   vuQuyEventFieldsHint:
     "Để trống cả ba ô thì dùng giờ lễ, địa điểm tiệc và thành phố ở nhóm chung phía trên.",
@@ -508,10 +555,15 @@ const viGentleDriftPanel: GentleDriftWorkspacePanel = {
   tagVuQuyEventTime: "Mục Sự kiện · thẻ 01 · giờ lễ vu quy",
   tagVuQuyEventVenue: "Mục Sự kiện · thẻ 01 · địa điểm lễ vu quy",
   tagVuQuyEventLocation: "Mục Sự kiện · thẻ 01 · thành phố",
-  groomEventFieldsTitle: "Tiệc cưới nhà chú rể (thẻ 03)",
+  vuQuyWhenLineLabel: "Dòng ngày giờ hiển thị (lễ vu quy)",
+  vuQuyWhenLinePlaceholder: "VD: 09:00 · Chủ nhật, 20 tháng 10 năm 2026",
+  vuQuyWhenLineHint:
+    "Để trống thì thiệp dùng “giờ lễ vu quy · ngày hiển thị” từ các ô phía trên.",
+  tagVuQuyWhenLine: "Mục Sự kiện · thẻ 01 · một dòng ngày giờ trên thiệp",
+  groomEventFieldsTitle: "Tiệc cưới nhà chú rể (thẻ 02)",
   groomEventFieldsHint:
     "Để trống cả ba ô thì dùng giờ tiệc, địa điểm tiệc và thành phố chung.",
-  brideEventFieldsTitle: "Tiệc cưới nhà cô dâu (thẻ 02)",
+  brideEventFieldsTitle: "Tiệc cưới nhà cô dâu (thẻ 03)",
   brideEventFieldsHint:
     "Để trống cả ba ô thì dùng giờ tiệc, địa điểm tiệc và thành phố chung.",
   groomEventTimeLabel: "Giờ tiệc nhà chú rể",
@@ -522,10 +574,18 @@ const viGentleDriftPanel: GentleDriftWorkspacePanel = {
   brideEventLocationLabel: "Thành phố / khu vực",
   tagGroomEventTime: "Mục Sự kiện · thẻ 03 · giờ tiệc nhà trai",
   tagGroomEventVenue: "Mục Sự kiện · thẻ 03 · địa điểm tiệc nhà trai",
-  tagGroomEventLocation: "Mục Sự kiện · thẻ 03 · thành phố",
-  tagBrideEventTime: "Mục Sự kiện · thẻ 02 · giờ tiệc nhà gái",
-  tagBrideEventVenue: "Mục Sự kiện · thẻ 02 · địa điểm tiệc nhà gái",
-  tagBrideEventLocation: "Mục Sự kiện · thẻ 02 · thành phố",
+  tagGroomEventLocation: "Mục Sự kiện · thẻ 02 · thành phố",
+  groomWhenLineLabel: "Dòng ngày giờ hiển thị (tiệc nhà chú rể)",
+  groomWhenLinePlaceholder: "VD: 18:00 · Chủ nhật, 20 tháng 10 năm 2026",
+  groomWhenLineHint: "Để trống thì dùng “giờ tiệc nhà trai · ngày hiển thị”.",
+  tagGroomWhenLine: "Mục Sự kiện · thẻ 02 · một dòng ngày giờ trên thiệp",
+  tagBrideEventTime: "Mục Sự kiện · thẻ 03 · giờ tiệc nhà gái",
+  tagBrideEventVenue: "Mục Sự kiện · thẻ 03 · địa điểm tiệc nhà gái",
+  tagBrideEventLocation: "Mục Sự kiện · thẻ 03 · thành phố",
+  brideWhenLineLabel: "Dòng ngày giờ hiển thị (tiệc nhà cô dâu)",
+  brideWhenLinePlaceholder: "VD: 11:30 · Chủ nhật, 20 tháng 10 năm 2026",
+  brideWhenLineHint: "Để trống thì dùng “giờ tiệc nhà gái · ngày hiển thị”.",
+  tagBrideWhenLine: "Mục Sự kiện · thẻ 03 · một dòng ngày giờ trên thiệp",
   groomBankFieldsTitle: "Mừng cưới — nhà chú rể (cột trái)",
   brideBankFieldsTitle: "Mừng cưới — nhà cô dâu (cột phải)",
   brideBankFieldsHint:
@@ -536,9 +596,11 @@ const viGentleDriftPanel: GentleDriftWorkspacePanel = {
   giftSectionTitle: "Mừng cưới (hai cột — nhà trai & nhà gái)",
   giftSectionInventory:
     "• Ba ô đầu: STK nhà chú rể (cột trái trên thiệp)\n• Ba ô “nhà cô dâu”: STK riêng cột phải — để trống thì hiển thị giống nhà trai\n• Mỗi cột có nút sao chép số tài khoản tương ứng",
-  albumGridSectionTitle: "Album — đoạn dẫn & lưới ảnh (12 ô)",
+  albumGridSectionTitle: "Album — đoạn dẫn & lưới ảnh (tối đa 30 ô)",
   albumGridSectionInventory:
-    "• Đoạn lead dưới tiêu đề mục Album — để trống thì dùng bản mẫu\n• Mỗi ô tải lên tương ứng một ô trong lưới bento (ô trống dùng ảnh mẫu)\n• Ảnh ô 2 cũng làm ảnh thẻ cô dâu nếu không upload riêng",
+    "• Đoạn lead dưới tiêu đề mục Album — để trống thì dùng bản mẫu\n• Mỗi ô upload tương ứng một ô lưới bento (ô trống dùng ảnh mẫu)\n• Ảnh album không dùng cho thẻ cô dâu/chú rể — hai ảnh đó có ô riêng ở nhóm Cặp đôi",
+  albumGridMinMaxHint:
+    "Khuyến nghị tối thiểu 10 ảnh, tối đa 30 ảnh trên thiệp — thêm ảnh bằng cách tải lên từng ô bên dưới.",
   tagCoverImage: "Hero full-bleed · nền ảnh bìa (không dùng cho thẻ cặp đôi)",
   tagGallerySection: "Mục Album · lưới bento (ảnh mẫu khi chưa upload)",
   tagGallerySlot7: "Mục Album · ô ảnh 7",
@@ -547,6 +609,7 @@ const viGentleDriftPanel: GentleDriftWorkspacePanel = {
   tagGallerySlot10: "Mục Album · ô ảnh 10",
   tagGallerySlot11: "Mục Album · ô ảnh 11",
   tagGallerySlot12: "Mục Album · ô ảnh 12",
+  albumSlotTagFromIndex: "Mục Album · ô ảnh {n}",
 };
 
 const viBrightlyBasicPanel: BrightlyBasicWorkspacePanel = {
@@ -703,6 +766,13 @@ const vi: TemplateWorkspaceMessages = {
     paymentFailed: "Không tạo được link. Thử lại sau.",
     paymentInviteIncomplete:
       "Vui lòng nhập tên cô dâu và chú rể, địa điểm tiệc hoặc thành phố, và chỉnh ngày đếm ngược (ISO) hợp lệ trước khi thanh toán.",
+    desiredSubdomainLabel: "Subdomain mong muốn (tuỳ chọn)",
+    tagDesiredSubdomain: "Thanh toán · đường dẫn công khai sau khi kích hoạt",
+    desiredSubdomainSuffixAria: "Hậu tố miền cố định .lumiere-wedding.com",
+    desiredSubdomainHint:
+      "Chỉ nhập phần trước dấu chấm; đuôi .lumiere-wedding.com cố định. Chữ thường, số và gạch ngang; 3–63 ký tự; không gạch đầu/cuối hoặc liên tiếp. Để trống nếu muốn hệ thống tự gán.",
+    paymentSubdomainInvalid:
+      "Subdomain không hợp lệ. Chỉ dùng chữ thường a–z, số và một gạch ngang giữa các đoạn (3–63 ký tự).",
     paymentFreeHint:
       "Đây là mẫu miễn phí — không cần thanh toán. Bấm “Tạo thiệp” để lưu thiệp với cùng bộ dữ liệu như luồng trả phí (tên, ngày, địa điểm, album).",
     paymentFreeEyebrow: "Thiệp miễn phí",
@@ -823,13 +893,20 @@ const enGentleDriftPanel: GentleDriftWorkspacePanel = {
     "Editorial layout: intro, ticket calendar, hero, event cards, countdown, and gift box pull from the fields below — each block maps to one part of the page so inputs do not blur together.",
   bannerHeroSectionTitle: "Intro & hero — imagery and line under names",
   bannerHeroSectionInventory:
-    "• Intro image (first overlay) — can differ from the in-page hero\n• Cover / hero — full-bleed background behind names\n• Groom and bride — intro overlay, hero, couple cards, footer\n• Displayed date — under names (intro + hero) and inside event cards\n• ISO date/time — ticket strip month, countdown, Google Calendar link\n• Line under names on the hero — invitation to leave wishes",
+    "• Intro image — its own slot (stock default is not the cover or album)\n• Cover / hero — full-bleed background behind names\n• Groom and bride — intro overlay, hero, couple cards, footer\n• Displayed date — under names on the intro gate and for event fallbacks\n• Countdown date & time — pick with a calendar; shown in plain language on the hero plus ticket + countdown + Google Calendar\n• Hero line under names — invitation to leave wishes, above the countdown line",
   introBannerLabel: "Intro overlay image",
-  introBannerHint: "If empty, the same cover/hero image is used.",
+  introBannerHint: "Leave empty to use the built-in intro photo (separate URL — not pulled from the cover image).",
   tagIntroBanner: "Intro gate · luxury frame before “Open invitation”",
+  countdownWorkspaceHint:
+    "Pick the date and time in your local timezone — we store an ISO string for the countdown. You can still paste a custom ISO if needed.",
   heroLeadLabel: "Line under names on the hero",
-  heroLeadHint: "Empty falls back to the default line for the page language.",
-  tagHeroLead: "Hero · supporting line under the date, above “Send wishes”",
+  heroLeadHint:
+    "Empty falls back to the default line for the page language. Shown directly under names, above the readable countdown line.",
+  tagHeroLead: "Hero · wish line under names, above the countdown date/time",
+  groomCouplePortraitLabel: "Groom card photo (couple section)",
+  brideCouplePortraitLabel: "Bride card photo (couple section)",
+  tagGroomCouplePortrait: "Couple section · groom portrait (not cover or album)",
+  tagBrideCouplePortrait: "Couple section · bride portrait (not cover or album)",
   namesCalendarSectionTitle: "Couple names & calendar (intro · hero · ticket · countdown)",
   namesCalendarSectionInventory:
     "• Groom and bride — intro overlay, hero, couple cards, footer\n• Displayed date — under names (intro + hero) and inside event cards\n• ISO date/time — month on the ticket strip, countdown, Google Calendar link",
@@ -849,7 +926,7 @@ const enGentleDriftPanel: GentleDriftWorkspacePanel = {
   tagAlbumLead: "Album section · lead under the H2",
   coupleDetailsSectionTitle: "Couple — quote, parents & bios",
   coupleDetailsSectionInventory:
-    "• Quote under the couple heading — empty uses the built-in sample\n• Two “child of” lines for groom and bride\n• Short bios under names — empty uses sample copy",
+    "• Quote under the couple heading — empty uses the built-in sample\n• Groom and bride card photos — separate slots (defaults differ from the album grid)\n• Two “child of” lines for groom and bride\n• Short bios under names — empty uses sample copy",
   timelineSectionTitle: "Our story — lead & timeline beats",
   timelineSectionInventory:
     "• Lead under the section title — empty uses the built-in sample\n• Each beat: field 1 = year (large), field 2 = title, field 3 = paragraph\n• If all three are empty for a beat, the built-in sample is used when available\n• + / − buttons: add or remove a beat (minimum 3, maximum 8)",
@@ -870,9 +947,15 @@ const enGentleDriftPanel: GentleDriftWorkspacePanel = {
   footerThanksHeadlineHint:
     "Leave empty to use the built-in thank-you line for the current language.",
   footerThanksBodyHint: "Optional — only renders when filled; nice for a sign-off or extra note.",
-  venueScheduleSectionTitle: "Venue & schedule (ceremony / reception · maps)",
+  venueScheduleSectionTitle: "Wedding events — copy, venues & times",
   venueScheduleSectionInventory:
-    "• Shared ceremony/reception time, venue, and city — defaults when the three detail blocks are empty\n• Three blocks: ceremony, bride’s reception, groom’s reception — each card has its own map link",
+    "• Two intro lines for the Events section — empty keeps the template copy\n• Shared ceremony/reception time, venue, and city — defaults when per-card fields are empty\n• Order on the invite: ceremony → groom’s reception → bride’s reception\n• Optional “display date/time line” per card — empty uses “time · displayed date”",
+  eventsQuoteLabel: "Quote under the Events heading",
+  eventsQuoteHint: "Empty keeps the template quote on the invite.",
+  eventsLeadLabel: "Lead paragraph under the Events heading",
+  eventsLeadHint: "Empty keeps the template paragraph about ceremony and receptions.",
+  tagEventsQuote: "Events section · serif quote under the H2",
+  tagEventsLead: "Events section · lead under the quote",
   vuQuyEventFieldsTitle: "Ceremony / gate (card 01)",
   vuQuyEventFieldsHint:
     "If all three are empty, the card uses ceremony time, venue, and city from the shared fields above.",
@@ -882,10 +965,14 @@ const enGentleDriftPanel: GentleDriftWorkspacePanel = {
   tagVuQuyEventTime: "Events · card 01 · ceremony time",
   tagVuQuyEventVenue: "Events · card 01 · ceremony venue",
   tagVuQuyEventLocation: "Events · card 01 · city",
-  groomEventFieldsTitle: "Groom’s family reception (card 03)",
+  vuQuyWhenLineLabel: "Displayed date/time line (ceremony)",
+  vuQuyWhenLinePlaceholder: "E.g. 9:00 AM · Sunday, October 20, 2026",
+  vuQuyWhenLineHint: "Empty uses “ceremony time · displayed date” from the fields above.",
+  tagVuQuyWhenLine: "Events · card 01 · one-line schedule on the invite",
+  groomEventFieldsTitle: "Groom’s family reception (card 02)",
   groomEventFieldsHint:
     "If all three are empty, the card uses reception time, venue, and city from the shared fields above.",
-  brideEventFieldsTitle: "Bride’s family reception (card 02)",
+  brideEventFieldsTitle: "Bride’s family reception (card 03)",
   brideEventFieldsHint:
     "If all three are empty, the card uses reception time, venue, and city from the shared fields above.",
   groomEventTimeLabel: "Groom’s reception time",
@@ -894,12 +981,20 @@ const enGentleDriftPanel: GentleDriftWorkspacePanel = {
   brideEventTimeLabel: "Bride’s reception time",
   brideEventVenueLabel: "Bride’s reception venue",
   brideEventLocationLabel: "City / area",
-  tagGroomEventTime: "Events · card 03 · groom reception time",
-  tagGroomEventVenue: "Events · card 03 · groom reception venue",
-  tagGroomEventLocation: "Events · card 03 · city",
-  tagBrideEventTime: "Events · card 02 · bride reception time",
-  tagBrideEventVenue: "Events · card 02 · bride reception venue",
-  tagBrideEventLocation: "Events · card 02 · city",
+  tagGroomEventTime: "Events · card 02 · groom reception time",
+  tagGroomEventVenue: "Events · card 02 · groom reception venue",
+  tagGroomEventLocation: "Events · card 02 · city",
+  groomWhenLineLabel: "Displayed date/time line (groom’s reception)",
+  groomWhenLinePlaceholder: "E.g. 6:00 PM · Sunday, October 20, 2026",
+  groomWhenLineHint: "Empty uses “groom reception time · displayed date”.",
+  tagGroomWhenLine: "Events · card 02 · one-line schedule on the invite",
+  tagBrideEventTime: "Events · card 03 · bride reception time",
+  tagBrideEventVenue: "Events · card 03 · bride reception venue",
+  tagBrideEventLocation: "Events · card 03 · city",
+  brideWhenLineLabel: "Displayed date/time line (bride’s reception)",
+  brideWhenLinePlaceholder: "E.g. 11:30 AM · Sunday, October 20, 2026",
+  brideWhenLineHint: "Empty uses “bride reception time · displayed date”.",
+  tagBrideWhenLine: "Events · card 03 · one-line schedule on the invite",
   groomBankFieldsTitle: "Gift box — groom’s family (left column)",
   brideBankFieldsTitle: "Gift box — bride’s family (right column)",
   brideBankFieldsHint:
@@ -910,9 +1005,11 @@ const enGentleDriftPanel: GentleDriftWorkspacePanel = {
   giftSectionTitle: "Gift box (two columns — groom & bride)",
   giftSectionInventory:
     "• First three fields: groom’s family account (left column on the invite)\n• Bride family block: separate right-column details — empty mirrors the groom account\n• Each column has its own copy button",
-  albumGridSectionTitle: "Album — lead & photo grid (12 tiles)",
+  albumGridSectionTitle: "Album — lead & photo grid (up to 30 tiles)",
   albumGridSectionInventory:
-    "• Lead under the album heading — empty uses the built-in sample\n• Each upload maps to one bento tile (empty slots use stock photos)\n• Slot 2 is also the bride card image unless you replace uploads",
+    "• Lead under the album heading — empty uses the built-in sample\n• Each upload maps to one bento tile (empty slots use stock photos)\n• Album images are not reused on the couple cards — use the couple photo uploads for those portraits",
+  albumGridMinMaxHint:
+    "Aim for at least 10 photos and at most 30 on the invite — add more by uploading each slot below.",
   tagCoverImage: "Full-bleed hero · cover background (not used on couple cards)",
   tagGallerySection: "Album section · bento grid (stock photos when empty)",
   tagGallerySlot7: "Album section · tile 7",
@@ -921,6 +1018,7 @@ const enGentleDriftPanel: GentleDriftWorkspacePanel = {
   tagGallerySlot10: "Album section · tile 10",
   tagGallerySlot11: "Album section · tile 11",
   tagGallerySlot12: "Album section · tile 12",
+  albumSlotTagFromIndex: "Album section · tile {n}",
 };
 
 const enBrightlyBasicPanel: BrightlyBasicWorkspacePanel = {
@@ -1077,6 +1175,13 @@ const en: TemplateWorkspaceMessages = {
     paymentFailed: "Could not create the payment link.",
     paymentInviteIncomplete:
       "Please enter bride and groom names, a reception venue or city, and a valid countdown date before paying.",
+    desiredSubdomainLabel: "Desired subdomain (optional)",
+    tagDesiredSubdomain: "Checkout · public link after activation",
+    desiredSubdomainSuffixAria: "Fixed domain suffix .lumiere-wedding.com",
+    desiredSubdomainHint:
+      "Type only the part before the dot; the .lumiere-wedding.com suffix is fixed. Lowercase letters, digits, and hyphens; 3–63 characters; no leading, trailing, or doubled hyphens. Leave blank to let the system assign one.",
+    paymentSubdomainInvalid:
+      "That subdomain is not valid. Use lowercase a–z, digits, and single hyphens between segments (3–63 characters).",
     paymentFreeHint:
       "This is a free template — no payment. Use “Create invitation” to save with the same invitation fields as checkout (names, date, venue, album). Or email us for help.",
     paymentFreeEyebrow: "Free invitation",

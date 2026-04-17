@@ -1,6 +1,9 @@
 import type { PreviewData } from "@/templates/preview-types";
 
-/** Ảnh mặc định cho album bento (tông ấm / pastel, gần vibe Gentle) — tối đa 12 ô upload. */
+/**
+ * Ảnh mặc định cho album bento — tối đa 30 ô upload (khuyến nghị tối thiểu 10 ảnh).
+ * Mỗi URL chỉ dùng cho một ô album, không tái dùng cho intro / hero / thẻ cặp đôi.
+ */
 export const gentleDriftGallery = [
   "https://images.unsplash.com/photo-1599462616558-2b75fd26a283?auto=format&fit=crop&w=900&q=80",
   "https://images.unsplash.com/photo-1630526720753-aa4e71acf67d?auto=format&fit=crop&w=900&q=80",
@@ -14,7 +17,37 @@ export const gentleDriftGallery = [
   "https://images.unsplash.com/photo-1522673602040-1b49001f936f?auto=format&fit=crop&w=900&q=80",
   "https://images.unsplash.com/photo-1529636799528-921f4959f0a5?auto=format&fit=crop&w=900&q=80",
   "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1469371670807-013ccf25f16a?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1523438885200-e635ba2c371e?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1460978815337-b1bab7f75554?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1532712938310-34cb4482f358?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1583939003579-55e2be026b56?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1591604466107-ec64de5843fc?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1494200109408-757f2b4bbd41?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1544070748-de54a68b0e97?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1530026502884-8913dade4e61?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1468811480171-015a29c34d0b?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1470229722913-6c99f74115b9?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1464366400605-3981fbcd0cf7?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1510074378860-e8e3efe48c0a?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1606800053252-fa7a77afbdcb?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1578965339229-8277a1e4ef03?auto=format&fit=crop&w=900&q=80",
+  "https://images.unsplash.com/photo-1566073771259-6a8506099663?auto=format&fit=crop&w=900&q=80",
 ] as const;
+
+/** Ảnh màn chào mặc định — không trùng URL trong `gentleDriftGallery` hay ảnh bìa mẫu. */
+export const gentleDriftIntroBannerDefault =
+  "https://images.unsplash.com/photo-1556125574-ff697c72fdbb?auto=format&fit=crop&w=1400&q=82";
+
+/** Ảnh thẻ chú rể mặc định — không trùng album / intro / các ô khác. */
+export const gentleDriftGroomPortraitDefault =
+  "https://images.unsplash.com/photo-1529634551435-365992c7ab02?auto=format&fit=crop&w=900&q=82";
+
+/** Ảnh thẻ cô dâu mặc định — không trùng album / intro / các ô khác. */
+export const gentleDriftBridePortraitDefault =
+  "https://images.unsplash.com/photo-1537907796426-43cdb426cddd?auto=format&fit=crop&w=900&q=82";
 
 /** Ảnh footer cảm ơn mặc định (full-bleed, tông ấm — khi chưa upload). */
 export const gentleDriftFooterPhotoDefault =

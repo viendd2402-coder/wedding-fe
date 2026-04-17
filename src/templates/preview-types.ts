@@ -80,6 +80,10 @@ export type GentleDriftPreviewExtra = {
   gdCoupleQuote: string;
   gdStoryLead: string;
   gdAlbumLead: string;
+  /** Trích dẫn dưới tiêu đề mục Sự kiện (trống = bản mẫu i18n). */
+  gdEventsQuote: string;
+  /** Đoạn dẫn mục Sự kiện (trống = bản mẫu i18n). */
+  gdEventsLead: string;
   /** Lễ vu quy — giờ & địa điểm (trống = giờ lễ / địa điểm tiệc chung). */
   gdVuQuyTime: string;
   gdVuQuyVenue: string;
@@ -92,6 +96,12 @@ export type GentleDriftPreviewExtra = {
   gdBrideEventTime: string;
   gdBrideEventVenue: string;
   gdBrideEventLocation: string;
+  /** Dòng ngày giờ hiển thị trên thẻ lễ vu quy (trống = “giờ lễ · ngày hiển thị”). */
+  gdVuQuyWhenLine: string;
+  /** Dòng ngày giờ hiển thị tiệc nhà chú rể (trống = “giờ tiệc · ngày hiển thị”). */
+  gdGroomEventWhenLine: string;
+  /** Dòng ngày giờ hiển thị tiệc nhà cô dâu (trống = “giờ tiệc · ngày hiển thị”). */
+  gdBrideEventWhenLine: string;
   /** STK mừng cưới nhà cô dâu (cột phải; trống = hiển thị giống cột nhà chú rể). */
   gdBrideBankName: string;
   gdBrideAccountName: string;
@@ -134,6 +144,8 @@ export const emptyGentleDriftPreviewExtra: GentleDriftPreviewExtra = {
   gdCoupleQuote: "",
   gdStoryLead: "",
   gdAlbumLead: "",
+  gdEventsQuote: "",
+  gdEventsLead: "",
   gdVuQuyTime: "",
   gdVuQuyVenue: "",
   gdVuQuyLocation: "",
@@ -143,6 +155,9 @@ export const emptyGentleDriftPreviewExtra: GentleDriftPreviewExtra = {
   gdBrideEventTime: "",
   gdBrideEventVenue: "",
   gdBrideEventLocation: "",
+  gdVuQuyWhenLine: "",
+  gdGroomEventWhenLine: "",
+  gdBrideEventWhenLine: "",
   gdBrideBankName: "",
   gdBrideAccountName: "",
   gdBrideAccountNumber: "",
