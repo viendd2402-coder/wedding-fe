@@ -140,6 +140,35 @@ export type BrightlyBasicPreviewExtra = {
   bbBrideReceptionLocation: string;
 };
 
+/** Tuỳ chỉnh copy / timeline mẫu timeless-love (để trống = fallback i18n / data mẫu). */
+export type TimelessLovePreviewExtra = {
+  tlHeroSubtitle: string;
+  tlWelcomeTitle: string;
+  tlWelcomeText: string;
+  tlCoupleTitle: string;
+  tlEventsTitle: string;
+  tlEventsLead: string;
+  tlGalleryTitle: string;
+  tlGalleryLead: string;
+  tlRsvpTitle: string;
+  tlRsvpLead: string;
+  tlGiftTitle: string;
+  tlGiftLead: string;
+  tlFooterThanks: string;
+  /** STK mừng cưới nhà cô dâu (cột phải; trống = hiển thị giống cột nhà chú rể). */
+  tlBrideBankName: string;
+  tlBrideAccountName: string;
+  tlBrideAccountNumber: string;
+  /** Lễ vu quy — giờ & địa điểm (trống = giờ lễ / địa điểm tiệc chung). */
+  tlCeremonyTime: string;
+  tlCeremonyVenue: string;
+  tlCeremonyLocation: string;
+  /** Tiệc cưới — giờ & địa điểm (trống = giờ tiệc / địa điểm chung). */
+  tlReceptionTime: string;
+  tlReceptionVenue: string;
+  tlReceptionLocation: string;
+};
+
 export const emptyGentleDriftPreviewExtra: GentleDriftPreviewExtra = {
   gdHeroLead: "",
   gdInviteBody: "",
@@ -189,6 +218,31 @@ export const emptyBrightlyBasicPreviewExtra: BrightlyBasicPreviewExtra = {
   bbBrideReceptionTime: "",
   bbBrideReceptionVenue: "",
   bbBrideReceptionLocation: "",
+};
+
+export const emptyTimelessLovePreviewExtra: TimelessLovePreviewExtra = {
+  tlHeroSubtitle: "",
+  tlWelcomeTitle: "",
+  tlWelcomeText: "",
+  tlCoupleTitle: "",
+  tlEventsTitle: "",
+  tlEventsLead: "",
+  tlGalleryTitle: "",
+  tlGalleryLead: "",
+  tlRsvpTitle: "",
+  tlRsvpLead: "",
+  tlGiftTitle: "",
+  tlGiftLead: "",
+  tlFooterThanks: "",
+  tlBrideBankName: "",
+  tlBrideAccountName: "",
+  tlBrideAccountNumber: "",
+  tlCeremonyTime: "",
+  tlCeremonyVenue: "",
+  tlCeremonyLocation: "",
+  tlReceptionTime: "",
+  tlReceptionVenue: "",
+  tlReceptionLocation: "",
 };
 
 export const emptySlideFlexPreviewExtra: SlideFlexPreviewExtra = {
@@ -273,7 +327,8 @@ export type PreviewData = {
   accountNumber: string;
 } & SlideFlexPreviewExtra &
   GentleDriftPreviewExtra &
-  BrightlyBasicPreviewExtra;
+  BrightlyBasicPreviewExtra &
+  TimelessLovePreviewExtra;
 
 export type PreviewImages = {
   coverImage: string;
@@ -323,6 +378,7 @@ export const defaultPreviewData: PreviewData = {
   ...emptySlideFlexPreviewExtra,
   ...emptyGentleDriftPreviewExtra,
   ...emptyBrightlyBasicPreviewExtra,
+  ...emptyTimelessLovePreviewExtra,
 };
 
 export const defaultPreviewImages: PreviewImages = {

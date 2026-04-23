@@ -663,9 +663,12 @@ function PreviewConfigurator({
   const isSlideFlex = template.slug === "slide-flex";
   const isGentleDrift = template.slug === "gentle-drift";
   const isBrightlyBasic = template.slug === "brightly-basic";
+  const isTimelessLove = template.slug === "timeless-love";
   const sf = copy.slideFlex;
   const gd = copy.gentleDrift;
   const bb = copy.brightlyBasic;
+  // Fallback to brightlyBasic copy for timelessLove since there's no dedicated workspace copy, or use common ones
+  const tl = copy.brightlyBasic;
   const gentleDriftAlbumSlotCount = useMemo(() => {
     if (!isGentleDrift) return 30;
     const n = Number.parseInt(preview.gdAlbumVisibleCount?.trim() ?? "", 10);
@@ -1515,6 +1518,355 @@ function PreviewConfigurator({
                 gallerySlotTags={gallerySlotTags}
               />
             </SlideFlexWorkspaceSection>
+          ) : isTimelessLove ? (
+            <>
+              <div
+                className={`min-w-0 rounded-2xl border px-3 py-3.5 sm:px-4 ${isDark ? "border-white/12 bg-white/[0.04]" : "border-[var(--color-ink)]/10 bg-[var(--color-cream)]/85"}`}
+              >
+                <p className="text-xs font-bold tracking-tight text-[#b8956e]">
+                  Timeless Love
+                </p>
+                <p
+                  className={`mt-2 text-xs leading-relaxed ${isDark ? "text-white/72" : "text-[var(--color-ink)]/75"}`}
+                >
+                  Tuỳ chỉnh thông tin chi tiết cho mẫu Timeless Love.
+                </p>
+              </div>
+              <SlideFlexWorkspaceSection
+                title="Ảnh & Tên"
+                inventory="Ảnh bìa, Ảnh cặp đôi, Tên cô dâu chú rể"
+                isDark={isDark}
+              >
+                <TemplateWorkspaceCommonFields
+                  copy={copy}
+                  inputClass={inputClass}
+                  preview={preview}
+                  onChange={onChange}
+                  images={images}
+                  onCoverImageChange={onCoverImageChange}
+                  onGalleryImageChange={onGalleryImageChange}
+                  isDark={isDark}
+                  gallerySlotTags={gallerySlotTags}
+                  gallerySlotCount={6}
+                  fieldGroup="gentle-drift-cover"
+                />
+                <TemplateWorkspaceCommonFields
+                  copy={copy}
+                  inputClass={inputClass}
+                  preview={preview}
+                  onChange={onChange}
+                  images={images}
+                  onCoverImageChange={onCoverImageChange}
+                  onGalleryImageChange={onGalleryImageChange}
+                  isDark={isDark}
+                  gallerySlotTags={gallerySlotTags}
+                  gallerySlotCount={6}
+                  fieldGroup="gentle-drift-names"
+                />
+                <PanelFieldBlock label="Phụ đề bìa" tag="COVER_SUBTITLE" isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.tlHeroSubtitle}
+                    onChange={(event) => onChange("tlHeroSubtitle", event.target.value)}
+                  />
+                </PanelFieldBlock>
+              </SlideFlexWorkspaceSection>
+              
+              <SlideFlexWorkspaceSection
+                title="Lời chào"
+                inventory="Tiêu đề và nội dung chào mừng"
+                isDark={isDark}
+              >
+                <PanelFieldBlock label="Tiêu đề lời chào" tag="WELCOME_TITLE" isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.tlWelcomeTitle}
+                    onChange={(event) => onChange("tlWelcomeTitle", event.target.value)}
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock label="Nội dung lời chào" tag="WELCOME_TEXT" isDark={isDark}>
+                  <textarea
+                    className={textareaClass}
+                    value={preview.tlWelcomeText}
+                    onChange={(event) => onChange("tlWelcomeText", event.target.value)}
+                    rows={4}
+                  />
+                </PanelFieldBlock>
+              </SlideFlexWorkspaceSection>
+
+              <SlideFlexWorkspaceSection
+                title="Cặp đôi"
+                inventory="Tiêu đề phần giới thiệu cặp đôi"
+                isDark={isDark}
+              >
+                <PanelFieldBlock label="Tiêu đề cặp đôi" tag="COUPLE_TITLE" isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.tlCoupleTitle}
+                    onChange={(event) => onChange("tlCoupleTitle", event.target.value)}
+                  />
+                </PanelFieldBlock>
+                <SlideFlexPortraitUpload
+                  label={sf.groomPortraitUpload}
+                  tag={sf.tagGroomPortraitUpload}
+                  hasImage={Boolean(images.groomPortraitImage)}
+                  selectedLabel={copy.imageSelected}
+                  emptyLabel={copy.imageDefault}
+                  isDark={isDark}
+                  onPick={onGroomPortraitImageChange}
+                />
+                <PanelFieldBlock label={sf.groomBio} tag={sf.tagGroomBio} isDark={isDark}>
+                  <textarea
+                    className={textareaClass}
+                    value={preview.groomBio}
+                    onChange={(event) => onChange("groomBio", event.target.value)}
+                    rows={3}
+                  />
+                </PanelFieldBlock>
+                <SlideFlexPortraitUpload
+                  label={sf.bridePortraitUpload}
+                  tag={sf.tagBridePortraitUpload}
+                  hasImage={Boolean(images.bridePortraitImage)}
+                  selectedLabel={copy.imageSelected}
+                  emptyLabel={copy.imageDefault}
+                  isDark={isDark}
+                  onPick={onBridePortraitImageChange}
+                />
+                <PanelFieldBlock label={sf.brideBio} tag={sf.tagBrideBio} isDark={isDark}>
+                  <textarea
+                    className={textareaClass}
+                    value={preview.brideBio}
+                    onChange={(event) => onChange("brideBio", event.target.value)}
+                    rows={3}
+                  />
+                </PanelFieldBlock>
+              </SlideFlexWorkspaceSection>
+
+              <SlideFlexWorkspaceSection
+                title="Sự kiện"
+                inventory="Tiêu đề, mô tả và thông tin thời gian địa điểm"
+                isDark={isDark}
+              >
+                <PanelFieldBlock label="Tiêu đề sự kiện" tag="EVENTS_TITLE" isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.tlEventsTitle}
+                    onChange={(event) => onChange("tlEventsTitle", event.target.value)}
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock label="Mô tả sự kiện" tag="EVENTS_LEAD" isDark={isDark}>
+                  <textarea
+                    className={textareaClass}
+                    value={preview.tlEventsLead}
+                    onChange={(event) => onChange("tlEventsLead", event.target.value)}
+                    rows={3}
+                  />
+                </PanelFieldBlock>
+                
+                <p className={`mt-2 text-xs font-semibold ${isDark ? "text-white/88" : "text-[var(--color-ink)]"}`}>
+                  Lễ cưới (Ceremony)
+                </p>
+                <PanelFieldBlock label={copy.ceremonyTime} tag="CEREMONY_TIME" isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.tlCeremonyTime}
+                    onChange={(event) => onChange("tlCeremonyTime", event.target.value)}
+                    placeholder={preview.ceremonyTime}
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock label={copy.venue} tag="CEREMONY_VENUE" isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.tlCeremonyVenue}
+                    onChange={(event) => onChange("tlCeremonyVenue", event.target.value)}
+                    placeholder={preview.venue}
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock label={copy.location} tag="CEREMONY_LOCATION" isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.tlCeremonyLocation}
+                    onChange={(event) => onChange("tlCeremonyLocation", event.target.value)}
+                    placeholder={preview.location}
+                  />
+                </PanelFieldBlock>
+
+                <p className={`mt-2 text-xs font-semibold ${isDark ? "text-white/88" : "text-[var(--color-ink)]"}`}>
+                  Tiệc cưới (Reception)
+                </p>
+                <PanelFieldBlock label={copy.partyTime} tag="RECEPTION_TIME" isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.tlReceptionTime}
+                    onChange={(event) => onChange("tlReceptionTime", event.target.value)}
+                    placeholder={preview.partyTime}
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock label={copy.venue} tag="RECEPTION_VENUE" isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.tlReceptionVenue}
+                    onChange={(event) => onChange("tlReceptionVenue", event.target.value)}
+                    placeholder={preview.venue}
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock label={copy.location} tag="RECEPTION_LOCATION" isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.tlReceptionLocation}
+                    onChange={(event) => onChange("tlReceptionLocation", event.target.value)}
+                    placeholder={preview.location}
+                  />
+                </PanelFieldBlock>
+              </SlideFlexWorkspaceSection>
+
+              <SlideFlexWorkspaceSection
+                title="Thư viện ảnh"
+                inventory="Tiêu đề, mô tả và album 6 ảnh"
+                isDark={isDark}
+              >
+                <PanelFieldBlock label="Tiêu đề Gallery" tag="GALLERY_TITLE" isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.tlGalleryTitle}
+                    onChange={(event) => onChange("tlGalleryTitle", event.target.value)}
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock label="Mô tả Gallery" tag="GALLERY_LEAD" isDark={isDark}>
+                  <textarea
+                    className={textareaClass}
+                    value={preview.tlGalleryLead}
+                    onChange={(event) => onChange("tlGalleryLead", event.target.value)}
+                    rows={3}
+                  />
+                </PanelFieldBlock>
+                <TemplateWorkspaceCommonFields
+                  copy={copy}
+                  inputClass={inputClass}
+                  preview={preview}
+                  onChange={onChange}
+                  images={images}
+                  onCoverImageChange={onCoverImageChange}
+                  onGalleryImageChange={onGalleryImageChange}
+                  isDark={isDark}
+                  gallerySlotTags={gallerySlotTags}
+                  gallerySlotCount={6}
+                  fieldGroup="gentle-drift-album"
+                />
+              </SlideFlexWorkspaceSection>
+
+              <SlideFlexWorkspaceSection
+                title="Xác nhận tham dự"
+                inventory="Tiêu đề và mô tả phần RSVP"
+                isDark={isDark}
+              >
+                <PanelFieldBlock label="Tiêu đề RSVP" tag="RSVP_TITLE" isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.tlRsvpTitle}
+                    onChange={(event) => onChange("tlRsvpTitle", event.target.value)}
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock label="Mô tả RSVP" tag="RSVP_LEAD" isDark={isDark}>
+                  <textarea
+                    className={textareaClass}
+                    value={preview.tlRsvpLead}
+                    onChange={(event) => onChange("tlRsvpLead", event.target.value)}
+                    rows={3}
+                  />
+                </PanelFieldBlock>
+              </SlideFlexWorkspaceSection>
+
+              <SlideFlexWorkspaceSection
+                title="Quà tặng"
+                inventory="Thông tin tài khoản ngân hàng"
+                isDark={isDark}
+              >
+                <PanelFieldBlock label="Tiêu đề Quà tặng" tag="GIFT_TITLE" isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.tlGiftTitle}
+                    onChange={(event) => onChange("tlGiftTitle", event.target.value)}
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock label="Mô tả Quà tặng" tag="GIFT_LEAD" isDark={isDark}>
+                  <textarea
+                    className={textareaClass}
+                    value={preview.tlGiftLead}
+                    onChange={(event) => onChange("tlGiftLead", event.target.value)}
+                    rows={3}
+                  />
+                </PanelFieldBlock>
+
+                <p className={`mt-2 text-xs font-semibold ${isDark ? "text-white/88" : "text-[var(--color-ink)]"}`}>
+                  Nhà trai
+                </p>
+                <PanelFieldBlock label={copy.bankName} tag={tl.tagGroomBankName} isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.bankName}
+                    onChange={(event) => onChange("bankName", event.target.value)}
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock label={copy.accountName} tag={tl.tagGroomAccountName} isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.accountName}
+                    onChange={(event) => onChange("accountName", event.target.value)}
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock label={copy.accountNumber} tag={tl.tagGroomAccountNumber} isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.accountNumber}
+                    onChange={(event) => onChange("accountNumber", event.target.value)}
+                  />
+                </PanelFieldBlock>
+
+                <p className={`mt-2 text-xs font-semibold ${isDark ? "text-white/88" : "text-[var(--color-ink)]"}`}>
+                  Nhà gái
+                </p>
+                <PanelFieldBlock label={copy.bankName} tag={tl.tagBrideBankName} isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.tlBrideBankName}
+                    onChange={(event) => onChange("tlBrideBankName", event.target.value)}
+                    placeholder={preview.bankName}
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock label={copy.accountName} tag={tl.tagBrideAccountName} isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.tlBrideAccountName}
+                    onChange={(event) => onChange("tlBrideAccountName", event.target.value)}
+                    placeholder={preview.accountName}
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock label={copy.accountNumber} tag={tl.tagBrideAccountNumber} isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.tlBrideAccountNumber}
+                    onChange={(event) => onChange("tlBrideAccountNumber", event.target.value)}
+                    placeholder={preview.accountNumber}
+                  />
+                </PanelFieldBlock>
+              </SlideFlexWorkspaceSection>
+
+              <SlideFlexWorkspaceSection
+                title="Lời cảm ơn"
+                inventory="Lời cảm ơn cuối trang"
+                isDark={isDark}
+              >
+                <PanelFieldBlock label="Nội dung lời cảm ơn" tag="FOOTER_THANKS" isDark={isDark}>
+                  <textarea
+                    className={textareaClass}
+                    value={preview.tlFooterThanks}
+                    onChange={(event) => onChange("tlFooterThanks", event.target.value)}
+                    rows={3}
+                  />
+                </PanelFieldBlock>
+              </SlideFlexWorkspaceSection>
+            </>
           ) : isBrightlyBasic ? (
             <>
               <div

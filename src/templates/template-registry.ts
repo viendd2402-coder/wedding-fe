@@ -4,6 +4,7 @@ import type { TemplatePreviewProps } from "@/templates/preview-types";
 import { brightlyBasicModule } from "@/templates/paid/brightly-basic";
 import { slideFlexModule } from "@/templates/paid/slide-flex";
 import { gentleDriftModule } from "@/templates/paid/gentle-drift";
+import { timelessLoveModule } from "@/templates/paid/timeless-love";
 
 export type TemplateModule = {
   meta: WeddingTemplate;
@@ -15,6 +16,7 @@ export const templateModules: TemplateModule[] = [
   gentleDriftModule,
   brightlyBasicModule,
   slideFlexModule,
+  timelessLoveModule,
 ];
 
 export const weddingTemplates = templateModules.map((module) => module.meta);
