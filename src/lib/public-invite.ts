@@ -9,6 +9,8 @@ import {
   emptyBrightlyBasicPreviewExtra,
   emptyGentleDriftPreviewExtra,
   emptySlideFlexPreviewExtra,
+  emptyTimelessLovePreviewExtra,
+  emptyRadiantBloomPreviewExtra,
   type PreviewData,
   type PreviewImages,
 } from "@/templates/preview-types";
@@ -284,6 +286,26 @@ function overlayBrightlyBasicExtraFromCandidates(
   }
 }
 
+function overlayTimelessLoveExtraFromCandidates(
+  preview: PreviewData,
+  candidates: Record<string, unknown>[],
+) {
+  for (const key of Object.keys(emptyTimelessLovePreviewExtra) as (keyof typeof emptyTimelessLovePreviewExtra)[]) {
+    const v = firstPick(candidates, [key, camelToSnakeKey(key)]);
+    if (v) (preview as Record<string, string>)[key] = v;
+  }
+}
+
+function overlayRadiantBloomExtraFromCandidates(
+  preview: PreviewData,
+  candidates: Record<string, unknown>[],
+) {
+  for (const key of Object.keys(emptyRadiantBloomPreviewExtra) as (keyof typeof emptyRadiantBloomPreviewExtra)[]) {
+    const v = firstPick(candidates, [key, camelToSnakeKey(key)]);
+    if (v) (preview as Record<string, string>)[key] = v;
+  }
+}
+
 function parsePersonalization(candidates: Record<string, unknown>[]): PublicInvitePersonalization | undefined {
   const greetingLine = firstPick(candidates, [
     "greetingLine",
@@ -378,11 +400,15 @@ export function parsePublicInviteBody(body: unknown): ParsedPublicInvite | null 
     ...emptySlideFlexPreviewExtra,
     ...emptyGentleDriftPreviewExtra,
     ...emptyBrightlyBasicPreviewExtra,
+    ...emptyTimelessLovePreviewExtra,
+    ...emptyRadiantBloomPreviewExtra,
   };
 
   overlaySlideFlexExtraFromCandidates(preview, candidates);
   overlayGentleDriftExtraFromCandidates(preview, candidates);
   overlayBrightlyBasicExtraFromCandidates(preview, candidates);
+  overlayTimelessLoveExtraFromCandidates(preview, candidates);
+  overlayRadiantBloomExtraFromCandidates(preview, candidates);
 
   const images = collectImageUrls(candidates);
   const personalization = parsePersonalization(candidates);

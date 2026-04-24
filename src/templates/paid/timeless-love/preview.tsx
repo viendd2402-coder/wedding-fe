@@ -31,7 +31,7 @@ const scriptFont = Great_Vibes({
 // Animations
 const fadeUp = {
   hidden: { opacity: 0, y: 60 },
-  visible: { opacity: 1, y: 0, transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] } },
+  visible: { opacity: 1, y: 0, transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } },
 };
 
 const staggerContainer = {
@@ -70,7 +70,7 @@ export function TimelessLovePreview({
   const copy = timelessLovePreviewMessages[language];
 
   const defaultCover = "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=2000&q=80";
-  const cover = images.coverImage || template.thumbnailUrl || defaultCover;
+  const cover = images.coverImage || defaultCover;
   
   const gallery = useMemo(() => {
     const list = [...images.galleryImages];
@@ -305,7 +305,7 @@ export function TimelessLovePreview({
                 </div>
                 <h3 className="text-4xl font-serif text-[#3D3935] mb-4" style={{ fontFamily: "var(--font-tl-serif)" }}>{preview.groom}</h3>
                 <p className="text-[#7A756D] text-sm font-light leading-loose text-center max-w-sm">
-                  {preview.groomBio || "Một nửa tuyệt vời, người mang đến sự bình yên và yêu thương mỗi ngày."}
+                  {preview.tlGroomBio || "Một nửa tuyệt vời, người mang đến sự bình yên và yêu thương mỗi ngày."}
                 </p>
               </motion.div>
 
@@ -326,7 +326,7 @@ export function TimelessLovePreview({
                 </div>
                 <h3 className="text-4xl font-serif text-[#3D3935] mb-4" style={{ fontFamily: "var(--font-tl-serif)" }}>{preview.bride}</h3>
                 <p className="text-[#7A756D] text-sm font-light leading-loose text-center max-w-sm">
-                  {preview.brideBio || "Cô gái hay cười, luôn tìm thấy niềm vui trong những điều giản dị."}
+                  {preview.tlBrideBio || "Cô gái hay cười, luôn tìm thấy niềm vui trong những điều giản dị."}
                 </p>
               </motion.div>
             </div>

@@ -167,6 +167,8 @@ export type TimelessLovePreviewExtra = {
   tlReceptionTime: string;
   tlReceptionVenue: string;
   tlReceptionLocation: string;
+  tlGroomBio: string;
+  tlBrideBio: string;
 };
 
 /** Tuỳ chỉnh copy mẫu radiant-bloom (để trống = fallback i18n / data mẫu). */
@@ -272,6 +274,8 @@ export const emptyTimelessLovePreviewExtra: TimelessLovePreviewExtra = {
   tlReceptionTime: "",
   tlReceptionVenue: "",
   tlReceptionLocation: "",
+  tlGroomBio: "",
+  tlBrideBio: "",
 };
 
 export const emptyRadiantBloomPreviewExtra: RadiantBloomPreviewExtra = {

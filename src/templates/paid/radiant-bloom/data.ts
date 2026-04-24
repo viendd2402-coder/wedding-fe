@@ -15,9 +15,19 @@ export const defaultGalleryImages = [
 export const meta: WeddingTemplate = {
   slug: "radiant-bloom",
   name: "Radiant Bloom",
+  style: "Vibrant & Modern",
+  tier: "Trả phí",
+  family: "editorial",
+  mood: "fashion",
+  badge: "Mới",
   description:
     "Giao diện hiện đại, nổi bật với màu sắc rực rỡ, hiệu ứng gradient ấm áp và typography sang trọng, mang lại cảm giác sống động và lãng mạn.",
-  tier: "Trả phí",
-  thumbnailUrl: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-  categories: ["Hiện đại", "Nổi bật", "Rực rỡ"],
+  image: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  accent: "#FF4D4D",
+  heroTitle: "Mời bạn đến chung vui",
+  heroSubtitle: "Ngày hạnh phúc",
+  previewLabel: "Xem trước",
+  sections: ["Sự kiện", "Thư viện", "Lời chúc"],
+  sectionProfile: "Thông tin",
+  countdownVariant: "editorial",
 };
