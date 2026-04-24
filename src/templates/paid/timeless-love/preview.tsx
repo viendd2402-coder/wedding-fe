@@ -57,7 +57,7 @@ const calculateTimeLeft = (target: string) => {
 };
 
 // Utilities
-const goldGradientText = "bg-gradient-to-r from-[#B99A5B] via-[#E8D196] to-[#B99A5B] bg-clip-text text-transparent";
+const goldGradientText = "bg-gradient-to-r from-[#B99A5B] via-[#DBC286] to-[#B99A5B] bg-clip-text text-transparent";
 
 export function TimelessLovePreview({
   template,
@@ -133,7 +133,7 @@ export function TimelessLovePreview({
 
   return (
     <div
-      className={`${serifFont.variable} ${sansFont.variable} ${scriptFont.variable} bg-[#F4F1E9] text-[#141A17] scroll-smooth min-h-screen relative selection:bg-[#B99A5B] selection:text-white overflow-x-hidden`}
+      className={`${serifFont.variable} ${sansFont.variable} ${scriptFont.variable} bg-[#FAF9F6] text-[#3D3935] scroll-smooth min-h-screen relative selection:bg-[#B99A5B] selection:text-white overflow-x-hidden`}
       style={{ fontFamily: "var(--font-tl-sans)" }}
     >
       <AnimatePresence>
@@ -142,7 +142,7 @@ export function TimelessLovePreview({
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1.5, ease: "easeInOut" }}
-            className="fixed inset-0 z-[100] bg-[#141A17] flex items-center justify-center"
+            className="fixed inset-0 z-[100] bg-[#FAF9F6] flex items-center justify-center"
           >
             <motion.div 
               initial={{ opacity: 0, scale: 0.9 }}
@@ -153,7 +153,7 @@ export function TimelessLovePreview({
               <div className="font-script text-6xl text-[#B99A5B] mb-4" style={{ fontFamily: "var(--font-tl-script)" }}>
                 {preview.groom.charAt(0)} & {preview.bride.charAt(0)}
               </div>
-              <div className="text-[#E8D196] text-[10px] uppercase tracking-[0.4em]">Forever & Always</div>
+              <div className="text-[#7A756D] text-[10px] uppercase tracking-[0.4em]">Forever & Always</div>
             </motion.div>
           </motion.div>
         )}
@@ -164,16 +164,16 @@ export function TimelessLovePreview({
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 1, delay: 2, ease: "easeOut" }}
-        className="fixed top-6 left-1/2 -translate-x-1/2 z-50 bg-[#141A17]/80 backdrop-blur-xl border border-white/10 rounded-full px-8 py-4 shadow-2xl"
+        className="fixed top-6 left-1/2 -translate-x-1/2 z-50 bg-white/90 backdrop-blur-xl border border-[#E8E4DA] rounded-full px-8 py-4 shadow-[0_10px_30px_rgba(0,0,0,0.03)]"
       >
-        <div className="flex items-center space-x-8 text-[10px] uppercase tracking-[0.2em] text-[#E8D196]">
-          <a href="#couple" className="hover:text-white transition-colors duration-300 hidden md:block">{copy.navCouple}</a>
-          <a href="#events" className="hover:text-white transition-colors duration-300">{copy.navEvents}</a>
-          <a href="#gallery" className="hover:text-white transition-colors duration-300">{copy.navGallery}</a>
-          <a href="#rsvp" className="hover:text-white transition-colors duration-300">{copy.navRsvp}</a>
-          <a href="#registry" className="hover:text-white transition-colors duration-300 hidden md:block">{copy.navGift}</a>
+        <div className="flex items-center space-x-8 text-[10px] uppercase tracking-[0.2em] text-[#7A756D]">
+          <a href="#couple" className="hover:text-[#B99A5B] transition-colors duration-300 hidden md:block">{copy.navCouple}</a>
+          <a href="#events" className="hover:text-[#B99A5B] transition-colors duration-300">{copy.navEvents}</a>
+          <a href="#gallery" className="hover:text-[#B99A5B] transition-colors duration-300">{copy.navGallery}</a>
+          <a href="#rsvp" className="hover:text-[#B99A5B] transition-colors duration-300">{copy.navRsvp}</a>
+          <a href="#registry" className="hover:text-[#B99A5B] transition-colors duration-300 hidden md:block">{copy.navGift}</a>
           {!isPublicInviteSnapshot && (
-            <Link href="/" className="ml-4 px-4 py-2 bg-[#B99A5B] text-[#141A17] hover:bg-white transition-colors duration-300 rounded-full font-medium">
+            <Link href="/" className="ml-4 px-5 py-2 border border-[#B99A5B] text-[#B99A5B] hover:bg-[#B99A5B] hover:text-white transition-colors duration-300 rounded-full font-medium">
               Trang chủ
             </Link>
           )}
@@ -182,11 +182,11 @@ export function TimelessLovePreview({
 
       <main>
         {/* Cinematic Hero Section */}
-        <section className="relative w-full h-screen overflow-hidden bg-[#141A17]">
+        <section className="relative w-full h-screen overflow-hidden bg-[#FAF9F6]">
           <motion.div style={{ scale: heroScale }} className="absolute inset-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={cover} alt="Cover" className="w-full h-full object-cover opacity-60" />
-            <div className="absolute inset-0 bg-gradient-to-b from-[#141A17]/40 via-transparent to-[#141A17]" />
+            <img src={cover} alt="Cover" className="w-full h-full object-cover opacity-80" />
+            <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-[#FAF9F6]" />
           </motion.div>
           
           <motion.div style={{ opacity: heroOpacity }} className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 z-10 pt-20">
@@ -194,7 +194,7 @@ export function TimelessLovePreview({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 2.2, duration: 1 }}
-              className="text-[#E8D196] text-[11px] uppercase tracking-[0.5em] font-light mb-12"
+              className="text-[#7A756D] text-[11px] uppercase tracking-[0.5em] font-light mb-12"
             >
               {preview.tlHeroSubtitle?.trim() || copy.tlHeroSubtitle}
             </motion.p>
@@ -205,13 +205,13 @@ export function TimelessLovePreview({
               variants={staggerContainer}
               className="relative"
             >
-              <motion.h1 variants={fadeUp} className="font-serif text-6xl md:text-8xl lg:text-[10rem] leading-none text-white font-light drop-shadow-2xl" style={{ fontFamily: "var(--font-tl-serif)" }}>
+              <motion.h1 variants={fadeUp} className="font-serif text-6xl md:text-8xl lg:text-[10rem] leading-none text-[#3D3935] font-light" style={{ fontFamily: "var(--font-tl-serif)" }}>
                 {preview.groom}
               </motion.h1>
               <motion.div variants={fadeUp} className={`text-6xl md:text-8xl -my-4 md:-my-8 z-10 relative ${goldGradientText}`} style={{ fontFamily: "var(--font-tl-script)" }}>
                 &
               </motion.div>
-              <motion.h1 variants={fadeUp} className="font-serif text-6xl md:text-8xl lg:text-[10rem] leading-none text-white font-light drop-shadow-2xl" style={{ fontFamily: "var(--font-tl-serif)" }}>
+              <motion.h1 variants={fadeUp} className="font-serif text-6xl md:text-8xl lg:text-[10rem] leading-none text-[#3D3935] font-light" style={{ fontFamily: "var(--font-tl-serif)" }}>
                 {preview.bride}
               </motion.h1>
             </motion.div>
@@ -222,20 +222,20 @@ export function TimelessLovePreview({
               transition={{ delay: 3, duration: 1 }}
               className="mt-16 flex items-center space-x-6"
             >
-              <div className="h-px w-16 bg-[#B99A5B]/50"></div>
-              <p className="text-[10px] uppercase tracking-[0.3em] text-[#E8D196]">
-                {preview.dateLabel} <span className="mx-2 opacity-50">|</span> {preview.location}
+              <div className="h-px w-16 bg-[#D8D4CC]"></div>
+              <p className="text-[10px] uppercase tracking-[0.3em] text-[#7A756D]">
+                {preview.dateLabel} <span className="mx-2 opacity-30">|</span> {preview.location}
               </p>
-              <div className="h-px w-16 bg-[#B99A5B]/50"></div>
+              <div className="h-px w-16 bg-[#D8D4CC]"></div>
             </motion.div>
           </motion.div>
           
           {/* Decorative bottom mask */}
-          <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-[#F4F1E9] to-transparent z-20"></div>
+          <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-[#FAF9F6] to-transparent z-20"></div>
         </section>
 
         {/* Welcome & Premium Countdown */}
-        <section className="py-24 md:py-40 px-6 max-w-5xl mx-auto text-center relative z-30 -mt-10 bg-[#F4F1E9] rounded-t-[50px] md:rounded-t-[100px] shadow-[0_-20px_50px_rgba(0,0,0,0.05)]">
+        <section className="py-24 md:py-40 px-6 max-w-5xl mx-auto text-center relative z-30 -mt-10 bg-[#FAF9F6] rounded-t-[50px] md:rounded-t-[100px]">
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -245,10 +245,10 @@ export function TimelessLovePreview({
             <motion.p variants={fadeUp} className={`text-5xl md:text-6xl mb-8 ${goldGradientText}`} style={{ fontFamily: "var(--font-tl-script)" }}>
               Celebrate with us
             </motion.p>
-            <motion.h2 variants={fadeUp} className="text-3xl md:text-5xl font-serif text-[#141A17] mb-12 leading-[1.3] max-w-3xl mx-auto" style={{ fontFamily: "var(--font-tl-serif)" }}>
+            <motion.h2 variants={fadeUp} className="text-3xl md:text-5xl font-serif text-[#3D3935] mb-12 leading-[1.3] max-w-3xl mx-auto" style={{ fontFamily: "var(--font-tl-serif)" }}>
               "{preview.tlWelcomeTitle?.trim() || copy.tlWelcomeTitle}"
             </motion.h2>
-            <motion.p variants={fadeUp} className="text-sm md:text-base text-[#5A5C55] leading-loose font-light max-w-2xl mx-auto mb-24">
+            <motion.p variants={fadeUp} className="text-sm md:text-base text-[#7A756D] leading-loose font-light max-w-2xl mx-auto mb-24">
               {preview.tlWelcomeText?.trim() || copy.tlWelcomeText}
             </motion.p>
 
@@ -261,9 +261,9 @@ export function TimelessLovePreview({
                   { label: "Mins", value: timeLeft.minutes },
                   { label: "Secs", value: timeLeft.seconds }
                 ].map((item, idx) => (
-                  <div key={idx} className="relative group w-24 h-32 md:w-32 md:h-40 flex flex-col items-center justify-center bg-white rounded-t-full shadow-[0_20px_40px_rgba(0,0,0,0.04)] border border-[#E8E4DA] overflow-hidden">
+                  <div key={idx} className="relative group w-24 h-32 md:w-32 md:h-40 flex flex-col items-center justify-center bg-white rounded-t-full shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-[#E8E4DA] overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#B99A5B]/5 group-hover:to-[#B99A5B]/10 transition-colors duration-500"></div>
-                    <span className="text-4xl md:text-5xl font-serif text-[#141A17] mb-2 z-10" style={{ fontFamily: "var(--font-tl-serif)" }}>{item.value}</span>
+                    <span className="text-4xl md:text-5xl font-serif text-[#3D3935] mb-2 z-10" style={{ fontFamily: "var(--font-tl-serif)" }}>{item.value}</span>
                     <span className="text-[9px] uppercase tracking-[0.3em] text-[#B99A5B] font-medium z-10">{item.label}</span>
                   </div>
                 ))}
@@ -273,8 +273,7 @@ export function TimelessLovePreview({
         </section>
 
         {/* The Couple - Elegant Cards */}
-        <section id="couple" className="py-24 md:py-32 bg-[#141A17] text-[#F4F1E9] relative">
-          <div className="absolute inset-0 bg-[#141A17]/80 backdrop-blur-sm"></div>
+        <section id="couple" className="py-24 md:py-32 bg-white relative">
           <div className="max-w-6xl mx-auto px-6 relative z-10">
             <motion.div
               initial="hidden"
@@ -297,15 +296,15 @@ export function TimelessLovePreview({
                 transition={{ duration: 1 }}
                 className="flex flex-col items-center"
               >
-                <div className="w-full max-w-md aspect-[3/4] relative p-3 border border-[#B99A5B]/30 rounded-sm mb-10">
+                <div className="w-full max-w-md aspect-[3/4] relative p-3 border border-[#E8E4DA] bg-[#FAF9F6] rounded-sm mb-10 shadow-[0_10px_30px_rgba(0,0,0,0.02)]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={images.groomPortraitImage || gallery[0]} alt="Groom" className="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-700" />
-                  <div className="absolute -bottom-6 bg-[#141A17] px-6 py-2 border border-[#B99A5B]/50 left-1/2 -translate-x-1/2 whitespace-nowrap">
-                    <span className="text-[10px] uppercase tracking-[0.3em] text-[#E8D196]">{copy.groom}</span>
+                  <div className="absolute -bottom-6 bg-white px-6 py-2 border border-[#E8E4DA] left-1/2 -translate-x-1/2 whitespace-nowrap shadow-sm">
+                    <span className="text-[10px] uppercase tracking-[0.3em] text-[#B99A5B]">{copy.groom}</span>
                   </div>
                 </div>
-                <h3 className="text-4xl font-serif text-white mb-4" style={{ fontFamily: "var(--font-tl-serif)" }}>{preview.groom}</h3>
-                <p className="text-[#A4A7A5] text-sm font-light leading-loose text-center max-w-sm">
+                <h3 className="text-4xl font-serif text-[#3D3935] mb-4" style={{ fontFamily: "var(--font-tl-serif)" }}>{preview.groom}</h3>
+                <p className="text-[#7A756D] text-sm font-light leading-loose text-center max-w-sm">
                   {preview.groomBio || "Một nửa tuyệt vời, người mang đến sự bình yên và yêu thương mỗi ngày."}
                 </p>
               </motion.div>
@@ -318,15 +317,15 @@ export function TimelessLovePreview({
                 transition={{ duration: 1, delay: 0.2 }}
                 className="flex flex-col items-center md:mt-32"
               >
-                <div className="w-full max-w-md aspect-[3/4] relative p-3 border border-[#B99A5B]/30 rounded-sm mb-10">
+                <div className="w-full max-w-md aspect-[3/4] relative p-3 border border-[#E8E4DA] bg-[#FAF9F6] rounded-sm mb-10 shadow-[0_10px_30px_rgba(0,0,0,0.02)]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={images.bridePortraitImage || gallery[1]} alt="Bride" className="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-700" />
-                  <div className="absolute -bottom-6 bg-[#141A17] px-6 py-2 border border-[#B99A5B]/50 left-1/2 -translate-x-1/2 whitespace-nowrap">
-                    <span className="text-[10px] uppercase tracking-[0.3em] text-[#E8D196]">{copy.bride}</span>
+                  <div className="absolute -bottom-6 bg-white px-6 py-2 border border-[#E8E4DA] left-1/2 -translate-x-1/2 whitespace-nowrap shadow-sm">
+                    <span className="text-[10px] uppercase tracking-[0.3em] text-[#B99A5B]">{copy.bride}</span>
                   </div>
                 </div>
-                <h3 className="text-4xl font-serif text-white mb-4" style={{ fontFamily: "var(--font-tl-serif)" }}>{preview.bride}</h3>
-                <p className="text-[#A4A7A5] text-sm font-light leading-loose text-center max-w-sm">
+                <h3 className="text-4xl font-serif text-[#3D3935] mb-4" style={{ fontFamily: "var(--font-tl-serif)" }}>{preview.bride}</h3>
+                <p className="text-[#7A756D] text-sm font-light leading-loose text-center max-w-sm">
                   {preview.brideBio || "Cô gái hay cười, luôn tìm thấy niềm vui trong những điều giản dị."}
                 </p>
               </motion.div>
@@ -335,7 +334,7 @@ export function TimelessLovePreview({
         </section>
 
         {/* Wedding Events - Split Minimal */}
-        <section id="events" className="py-24 md:py-40 bg-[#F4F1E9] relative border-b border-[#E8E4DA]">
+        <section id="events" className="py-24 md:py-40 bg-[#FAF9F6] relative border-y border-[#E8E4DA]">
           <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
             <motion.div
               initial="hidden"
@@ -344,10 +343,10 @@ export function TimelessLovePreview({
               variants={fadeUp}
             >
               <p className="text-[10px] uppercase tracking-[0.4em] text-[#B99A5B] mb-6">Details</p>
-              <h3 className="text-5xl md:text-7xl font-serif text-[#141A17] mb-8 leading-[1.1]" style={{ fontFamily: "var(--font-tl-serif)" }}>
+              <h3 className="text-5xl md:text-7xl font-serif text-[#3D3935] mb-8 leading-[1.1]" style={{ fontFamily: "var(--font-tl-serif)" }}>
                 {preview.tlEventsTitle?.trim() || copy.tlEventsTitle}
               </h3>
-              <p className="text-[#5A5C55] font-light text-lg max-w-md leading-loose">{preview.tlEventsLead?.trim() || copy.tlEventsLead}</p>
+              <p className="text-[#7A756D] font-light text-lg max-w-md leading-loose">{preview.tlEventsLead?.trim() || copy.tlEventsLead}</p>
             </motion.div>
 
             <div className="space-y-8">
@@ -359,16 +358,16 @@ export function TimelessLovePreview({
                 transition={{ duration: 1 }}
                 className="bg-white p-10 md:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.03)] border-l-4 border-[#B99A5B] relative overflow-hidden group"
               >
-                <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
                   <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#B99A5B" strokeWidth="1"><path d="M12 2L15 8L22 9L17 14L18 21L12 18L6 21L7 14L2 9L9 8L12 2Z"/></svg>
                 </div>
                 <p className={`text-4xl mb-4 ${goldGradientText}`} style={{ fontFamily: "var(--font-tl-script)" }}>{copy.ceremony}</p>
-                <p className="text-2xl text-[#141A17] mb-4 font-serif" style={{ fontFamily: "var(--font-tl-serif)" }}>{ceremTime}</p>
-                <div className="text-[#5A5C55] text-sm leading-relaxed mb-8">
-                  <p className="font-medium text-[#141A17] mb-1 text-lg">{ceremVenue}</p>
+                <p className="text-2xl text-[#3D3935] mb-4 font-serif" style={{ fontFamily: "var(--font-tl-serif)" }}>{ceremTime}</p>
+                <div className="text-[#7A756D] text-sm leading-relaxed mb-8">
+                  <p className="font-medium text-[#3D3935] mb-1 text-lg">{ceremVenue}</p>
                   <p>{ceremLocation}</p>
                 </div>
-                <button className="bg-[#141A17] text-white px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.2em] hover:bg-[#B99A5B] transition-colors">
+                <button className="bg-[#3D3935] text-white px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.2em] hover:bg-[#B99A5B] transition-colors">
                   {copy.addCalendar}
                 </button>
               </motion.div>
@@ -381,16 +380,16 @@ export function TimelessLovePreview({
                 transition={{ duration: 1, delay: 0.2 }}
                 className="bg-white p-10 md:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.03)] border-l-4 border-[#B99A5B] relative overflow-hidden group"
               >
-                 <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                 <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
                   <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#B99A5B" strokeWidth="1"><path d="M12 2L15 8L22 9L17 14L18 21L12 18L6 21L7 14L2 9L9 8L12 2Z"/></svg>
                 </div>
                 <p className={`text-4xl mb-4 ${goldGradientText}`} style={{ fontFamily: "var(--font-tl-script)" }}>{copy.reception}</p>
-                <p className="text-2xl text-[#141A17] mb-4 font-serif" style={{ fontFamily: "var(--font-tl-serif)" }}>{recTime}</p>
-                <div className="text-[#5A5C55] text-sm leading-relaxed mb-8">
-                  <p className="font-medium text-[#141A17] mb-1 text-lg">{recVenue}</p>
+                <p className="text-2xl text-[#3D3935] mb-4 font-serif" style={{ fontFamily: "var(--font-tl-serif)" }}>{recTime}</p>
+                <div className="text-[#7A756D] text-sm leading-relaxed mb-8">
+                  <p className="font-medium text-[#3D3935] mb-1 text-lg">{recVenue}</p>
                   <p>{recLocation}</p>
                 </div>
-                <button className="bg-[#141A17] text-white px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.2em] hover:bg-[#B99A5B] transition-colors">
+                <button className="bg-[#3D3935] text-white px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.2em] hover:bg-[#B99A5B] transition-colors">
                   {copy.mapCta}
                 </button>
               </motion.div>
@@ -399,7 +398,7 @@ export function TimelessLovePreview({
         </section>
 
         {/* Gallery - Editorial Collage */}
-        <section id="gallery" className="py-24 md:py-40 bg-[#141A17] relative">
+        <section id="gallery" className="py-24 md:py-40 bg-white relative">
           <div className="max-w-7xl mx-auto px-6">
             <motion.div
               initial="hidden"
@@ -436,7 +435,7 @@ export function TimelessLovePreview({
                     className={`relative cursor-pointer overflow-hidden group ${spanClass}`}
                     onClick={() => onPreviewImage({ src, alt: `Gallery image ${idx + 1}` })}
                   >
-                    <div className={`${aspectClass} w-full bg-[#141A17] p-2 border border-[#B99A5B]/20`}>
+                    <div className={`${aspectClass} w-full bg-[#FAF9F6] p-2 border border-[#E8E4DA]`}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img 
                         src={src} 
@@ -453,45 +452,45 @@ export function TimelessLovePreview({
         </section>
 
         {/* RSVP Form - Luxury Glass Card */}
-        <section id="rsvp" className="py-32 md:py-48 bg-[#F4F1E9] relative">
+        <section id="rsvp" className="py-32 md:py-48 bg-[#FAF9F6] relative border-y border-[#E8E4DA]">
           <div className="max-w-3xl mx-auto px-6 relative z-10">
             <motion.div 
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-100px" }}
               variants={fadeUp}
-              className="bg-white/60 backdrop-blur-2xl p-10 md:p-20 shadow-[0_30px_60px_rgba(0,0,0,0.05)] border border-white rounded-[40px] text-center" 
+              className="bg-white p-10 md:p-20 shadow-[0_30px_60px_rgba(0,0,0,0.03)] border border-[#E8E4DA] rounded-[40px] text-center" 
             >
-              <h4 className="text-4xl md:text-6xl font-serif text-[#141A17] mb-4" style={{ fontFamily: "var(--font-tl-serif)" }}>
+              <h4 className="text-4xl md:text-6xl font-serif text-[#3D3935] mb-4" style={{ fontFamily: "var(--font-tl-serif)" }}>
                 {preview.tlRsvpTitle?.trim() || copy.tlRsvpTitle}
               </h4>
-              <p className="text-[#5A5C55] font-light text-sm mb-16">{preview.tlRsvpLead?.trim() || copy.tlRsvpLead}</p>
+              <p className="text-[#7A756D] font-light text-sm mb-16">{preview.tlRsvpLead?.trim() || copy.tlRsvpLead}</p>
 
               <form className="space-y-8 text-left" onSubmit={(e) => e.preventDefault()}>
                 <div className="relative">
-                  <input type="text" id="name" placeholder=" " className="peer w-full bg-transparent border-b border-[#D8D4CC] py-4 text-[#141A17] focus:outline-none focus:border-[#B99A5B] transition-all text-lg placeholder-transparent" />
+                  <input type="text" id="name" placeholder=" " className="peer w-full bg-transparent border-b border-[#D8D4CC] py-4 text-[#3D3935] focus:outline-none focus:border-[#B99A5B] transition-all text-lg placeholder-transparent" />
                   <label htmlFor="name" className="absolute left-0 top-4 text-[#A4A7A5] text-lg transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-[#B99A5B] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-xs">{copy.namePh}</label>
                 </div>
                 <div className="relative">
-                  <input type="text" id="contact" placeholder=" " className="peer w-full bg-transparent border-b border-[#D8D4CC] py-4 text-[#141A17] focus:outline-none focus:border-[#B99A5B] transition-all text-lg placeholder-transparent" />
+                  <input type="text" id="contact" placeholder=" " className="peer w-full bg-transparent border-b border-[#D8D4CC] py-4 text-[#3D3935] focus:outline-none focus:border-[#B99A5B] transition-all text-lg placeholder-transparent" />
                   <label htmlFor="contact" className="absolute left-0 top-4 text-[#A4A7A5] text-lg transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-[#B99A5B] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-xs">{copy.contactPh}</label>
                 </div>
                 
                 <div className="flex flex-col sm:flex-row gap-4 pt-6">
-                  <button type="button" onClick={() => setAttending("yes")} className={`flex-1 py-5 rounded-full text-[10px] uppercase tracking-[0.2em] transition-all duration-500 border ${attending === "yes" ? "bg-[#141A17] text-[#E8D196] border-[#141A17]" : "bg-transparent border-[#D8D4CC] text-[#141A17] hover:border-[#141A17]"}`}>
+                  <button type="button" onClick={() => setAttending("yes")} className={`flex-1 py-5 rounded-full text-[10px] uppercase tracking-[0.2em] transition-all duration-500 border ${attending === "yes" ? "bg-[#3D3935] text-white border-[#3D3935]" : "bg-transparent border-[#D8D4CC] text-[#3D3935] hover:border-[#3D3935]"}`}>
                     {copy.attending}
                   </button>
-                  <button type="button" onClick={() => setAttending("no")} className={`flex-1 py-5 rounded-full text-[10px] uppercase tracking-[0.2em] transition-all duration-500 border ${attending === "no" ? "bg-[#B99A5B] text-white border-[#B99A5B]" : "bg-transparent border-[#D8D4CC] text-[#141A17] hover:border-[#141A17]"}`}>
+                  <button type="button" onClick={() => setAttending("no")} className={`flex-1 py-5 rounded-full text-[10px] uppercase tracking-[0.2em] transition-all duration-500 border ${attending === "no" ? "bg-[#B99A5B] text-white border-[#B99A5B]" : "bg-transparent border-[#D8D4CC] text-[#3D3935] hover:border-[#3D3935]"}`}>
                     {copy.decline}
                   </button>
                 </div>
 
                 <div className="pt-6">
-                  <textarea placeholder={copy.wishPh} rows={3} className="w-full bg-[#F9F8F6] border border-[#D8D4CC] rounded-2xl py-4 px-6 text-[#141A17] focus:outline-none focus:border-[#B99A5B] transition-all resize-none mt-2 text-sm"></textarea>
+                  <textarea placeholder={copy.wishPh} rows={3} className="w-full bg-[#FAF9F6] border border-[#D8D4CC] rounded-2xl py-4 px-6 text-[#3D3935] focus:outline-none focus:border-[#B99A5B] transition-all resize-none mt-2 text-sm"></textarea>
                 </div>
                 
                 <div className="pt-8 text-center">
-                  <button type="submit" className="bg-[#B99A5B] text-white px-16 py-5 rounded-full text-[10px] uppercase tracking-[0.3em] hover:bg-[#141A17] hover:text-[#E8D196] transition-colors duration-500 w-full md:w-auto shadow-[0_10px_30px_rgba(185,154,91,0.3)]">
+                  <button type="submit" className="bg-[#B99A5B] text-white px-16 py-5 rounded-full text-[10px] uppercase tracking-[0.3em] hover:bg-[#3D3935] transition-colors duration-500 w-full md:w-auto shadow-[0_10px_30px_rgba(185,154,91,0.3)]">
                     {copy.submit}
                   </button>
                 </div>
@@ -512,28 +511,28 @@ export function TimelessLovePreview({
               <h3 className={`text-5xl md:text-6xl mb-4 ${goldGradientText}`} style={{ fontFamily: "var(--font-tl-script)" }}>
                 {preview.tlGiftTitle?.trim() || copy.tlGiftTitle}
               </h3>
-              <p className="text-[#5A5C55] mb-20 font-light text-sm max-w-xl mx-auto">{preview.tlGiftLead?.trim() || copy.tlGiftLead}</p>
+              <p className="text-[#7A756D] mb-20 font-light text-sm max-w-xl mx-auto">{preview.tlGiftLead?.trim() || copy.tlGiftLead}</p>
             </motion.div>
             
             <div className="grid md:grid-cols-2 gap-8 md:gap-12">
-              <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="bg-[#F4F1E9] p-12 md:p-16 border border-[#E8E4DA] flex flex-col items-center relative overflow-hidden group">
+              <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="bg-[#FAF9F6] p-12 md:p-16 border border-[#E8E4DA] flex flex-col items-center relative overflow-hidden group">
                 <div className="absolute inset-0 border-4 border-white m-2 pointer-events-none"></div>
                 <span className="text-[10px] uppercase tracking-[0.3em] text-[#B99A5B] mb-8 relative z-10">{copy.giftGroom}</span>
-                <p className="text-2xl font-serif text-[#141A17] mb-2 relative z-10" style={{ fontFamily: "var(--font-tl-serif)" }}>{preview.bankName}</p>
-                <p className="text-[#5A5C55] font-light mb-8 text-sm relative z-10">{preview.accountName}</p>
-                <p className="text-xl md:text-2xl font-light text-[#141A17] mb-12 tracking-[0.2em] relative z-10">{preview.accountNumber}</p>
-                <button onClick={() => handleCopy("groom", preview.accountNumber)} className="mt-auto bg-[#141A17] text-[#E8D196] px-10 py-3 rounded-full text-[9px] uppercase tracking-[0.2em] hover:bg-[#B99A5B] hover:text-white transition-colors duration-300 relative z-10">
+                <p className="text-2xl font-serif text-[#3D3935] mb-2 relative z-10" style={{ fontFamily: "var(--font-tl-serif)" }}>{preview.bankName}</p>
+                <p className="text-[#7A756D] font-light mb-8 text-sm relative z-10">{preview.accountName}</p>
+                <p className="text-xl md:text-2xl font-light text-[#3D3935] mb-12 tracking-[0.2em] relative z-10">{preview.accountNumber}</p>
+                <button onClick={() => handleCopy("groom", preview.accountNumber)} className="mt-auto bg-white border border-[#E8E4DA] text-[#3D3935] px-10 py-3 rounded-full text-[9px] uppercase tracking-[0.2em] hover:bg-[#B99A5B] hover:border-[#B99A5B] hover:text-white transition-colors duration-300 relative z-10">
                   {copied === "groom" ? copy.copied : copy.copyNumber}
                 </button>
               </motion.div>
 
-              <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} className="bg-[#F4F1E9] p-12 md:p-16 border border-[#E8E4DA] flex flex-col items-center relative overflow-hidden group">
+              <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} className="bg-[#FAF9F6] p-12 md:p-16 border border-[#E8E4DA] flex flex-col items-center relative overflow-hidden group">
                 <div className="absolute inset-0 border-4 border-white m-2 pointer-events-none"></div>
                 <span className="text-[10px] uppercase tracking-[0.3em] text-[#B99A5B] mb-8 relative z-10">{copy.giftBride}</span>
-                <p className="text-2xl font-serif text-[#141A17] mb-2 relative z-10" style={{ fontFamily: "var(--font-tl-serif)" }}>{brideGift.bankName}</p>
-                <p className="text-[#5A5C55] font-light mb-8 text-sm relative z-10">{brideGift.accountName}</p>
-                <p className="text-xl md:text-2xl font-light text-[#141A17] mb-12 tracking-[0.2em] relative z-10">{brideGift.accountNumber}</p>
-                <button onClick={() => handleCopy("bride", brideGift.accountNumber)} className="mt-auto bg-[#141A17] text-[#E8D196] px-10 py-3 rounded-full text-[9px] uppercase tracking-[0.2em] hover:bg-[#B99A5B] hover:text-white transition-colors duration-300 relative z-10">
+                <p className="text-2xl font-serif text-[#3D3935] mb-2 relative z-10" style={{ fontFamily: "var(--font-tl-serif)" }}>{brideGift.bankName}</p>
+                <p className="text-[#7A756D] font-light mb-8 text-sm relative z-10">{brideGift.accountName}</p>
+                <p className="text-xl md:text-2xl font-light text-[#3D3935] mb-12 tracking-[0.2em] relative z-10">{brideGift.accountNumber}</p>
+                <button onClick={() => handleCopy("bride", brideGift.accountNumber)} className="mt-auto bg-white border border-[#E8E4DA] text-[#3D3935] px-10 py-3 rounded-full text-[9px] uppercase tracking-[0.2em] hover:bg-[#B99A5B] hover:border-[#B99A5B] hover:text-white transition-colors duration-300 relative z-10">
                   {copied === "bride" ? copy.copied : copy.copyNumber}
                 </button>
               </motion.div>
@@ -543,16 +542,20 @@ export function TimelessLovePreview({
       </main>
 
       {/* Footer */}
-        <footer className="py-32 bg-[#141A17] text-center px-6 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[#141A17]/90 backdrop-blur-sm"></div>
+      <footer className="py-32 text-center px-6 relative overflow-hidden bg-[#FAF9F6]">
+        <div className="absolute inset-0 z-0">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={cover} alt="Footer Background" className="w-full h-full object-cover opacity-30 filter grayscale" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#FAF9F6] via-[#FAF9F6]/80 to-[#FAF9F6]/90"></div>
+        </div>
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="relative z-10">
           <div className="w-12 h-12 border border-[#B99A5B] rotate-45 mx-auto mb-16 flex items-center justify-center">
             <div className="w-8 h-8 border border-[#B99A5B]"></div>
           </div>
-          <h2 className="text-5xl md:text-7xl font-serif text-white mb-10 font-light" style={{ fontFamily: "var(--font-tl-serif)" }}>
+          <h2 className="text-5xl md:text-7xl font-serif text-[#3D3935] mb-10 font-light" style={{ fontFamily: "var(--font-tl-serif)" }}>
             {preview.groom} <span className={`text-6xl ${goldGradientText}`} style={{ fontFamily: "var(--font-tl-script)" }}>&</span> {preview.bride}
           </h2>
-          <p className="text-[#A4A7A5] font-light tracking-[0.1em] text-sm max-w-lg mx-auto leading-loose uppercase">
+          <p className="text-[#7A756D] font-light tracking-[0.1em] text-sm max-w-lg mx-auto leading-loose uppercase">
             {preview.tlFooterThanks?.trim() || copy.tlFooterThanks}
           </p>
         </motion.div>

@@ -169,6 +169,35 @@ export type TimelessLovePreviewExtra = {
   tlReceptionLocation: string;
 };
 
+/** Tuỳ chỉnh copy mẫu radiant-bloom (để trống = fallback i18n / data mẫu). */
+export type RadiantBloomPreviewExtra = {
+  rbHeroSubtitle: string;
+  rbWelcomeTitle: string;
+  rbWelcomeText: string;
+  rbCoupleTitle: string;
+  rbEventsTitle: string;
+  rbEventsLead: string;
+  rbGalleryTitle: string;
+  rbGalleryLead: string;
+  rbRsvpTitle: string;
+  rbRsvpLead: string;
+  rbGiftTitle: string;
+  rbGiftLead: string;
+  rbFooterThanks: string;
+  /** Lễ vu quy — giờ & địa điểm (trống = giờ lễ / địa điểm tiệc chung). */
+  rbCeremonyTime: string;
+  rbCeremonyVenue: string;
+  rbCeremonyLocation: string;
+  /** Tiệc cưới — giờ & địa điểm (trống = giờ tiệc / địa điểm chung). */
+  rbReceptionTime: string;
+  rbReceptionVenue: string;
+  rbReceptionLocation: string;
+  /** STK nhà cô dâu (trống = hiển thị giống nhà chú rể). */
+  rbBrideBankName: string;
+  rbBrideAccountName: string;
+  rbBrideAccountNumber: string;
+};
+
 export const emptyGentleDriftPreviewExtra: GentleDriftPreviewExtra = {
   gdHeroLead: "",
   gdInviteBody: "",
@@ -243,6 +272,31 @@ export const emptyTimelessLovePreviewExtra: TimelessLovePreviewExtra = {
   tlReceptionTime: "",
   tlReceptionVenue: "",
   tlReceptionLocation: "",
+};
+
+export const emptyRadiantBloomPreviewExtra: RadiantBloomPreviewExtra = {
+  rbHeroSubtitle: "",
+  rbWelcomeTitle: "",
+  rbWelcomeText: "",
+  rbCoupleTitle: "",
+  rbEventsTitle: "",
+  rbEventsLead: "",
+  rbGalleryTitle: "",
+  rbGalleryLead: "",
+  rbRsvpTitle: "",
+  rbRsvpLead: "",
+  rbGiftTitle: "",
+  rbGiftLead: "",
+  rbFooterThanks: "",
+  rbCeremonyTime: "",
+  rbCeremonyVenue: "",
+  rbCeremonyLocation: "",
+  rbReceptionTime: "",
+  rbReceptionVenue: "",
+  rbReceptionLocation: "",
+  rbBrideBankName: "",
+  rbBrideAccountName: "",
+  rbBrideAccountNumber: "",
 };
 
 export const emptySlideFlexPreviewExtra: SlideFlexPreviewExtra = {
@@ -328,7 +382,8 @@ export type PreviewData = {
 } & SlideFlexPreviewExtra &
   GentleDriftPreviewExtra &
   BrightlyBasicPreviewExtra &
-  TimelessLovePreviewExtra;
+  TimelessLovePreviewExtra &
+  RadiantBloomPreviewExtra;
 
 export type PreviewImages = {
   coverImage: string;
@@ -379,6 +434,7 @@ export const defaultPreviewData: PreviewData = {
   ...emptyGentleDriftPreviewExtra,
   ...emptyBrightlyBasicPreviewExtra,
   ...emptyTimelessLovePreviewExtra,
+  ...emptyRadiantBloomPreviewExtra,
 };
 
 export const defaultPreviewImages: PreviewImages = {
