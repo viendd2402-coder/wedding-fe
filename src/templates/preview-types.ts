@@ -200,6 +200,37 @@ export type RadiantBloomPreviewExtra = {
   rbBrideAccountNumber: string;
 };
 
+/** Tuỳ chỉnh copy mẫu ethereal-whisper (để trống = fallback i18n / data mẫu). */
+export type EtherealWhisperPreviewExtra = {
+  ewHeroSubtitle: string;
+  ewWelcomeTitle: string;
+  ewWelcomeText: string;
+  ewCoupleTitle: string;
+  ewEventsTitle: string;
+  ewEventsLead: string;
+  ewGalleryTitle: string;
+  ewGalleryLead: string;
+  ewRsvpTitle: string;
+  ewRsvpLead: string;
+  ewGiftTitle: string;
+  ewGiftLead: string;
+  ewFooterThanks: string;
+  /** Lễ vu quy — giờ & địa điểm (trống = giờ lễ / địa điểm tiệc chung). */
+  ewCeremonyTime: string;
+  ewCeremonyVenue: string;
+  ewCeremonyLocation: string;
+  /** Tiệc cưới — giờ & địa điểm (trống = giờ tiệc / địa điểm chung). */
+  ewReceptionTime: string;
+  ewReceptionVenue: string;
+  ewReceptionLocation: string;
+  /** STK nhà cô dâu (trống = hiển thị giống nhà chú rể). */
+  ewBrideBankName: string;
+  ewBrideAccountName: string;
+  ewBrideAccountNumber: string;
+  ewGroomBio: string;
+  ewBrideBio: string;
+};
+
 export const emptyGentleDriftPreviewExtra: GentleDriftPreviewExtra = {
   gdHeroLead: "",
   gdInviteBody: "",
@@ -303,6 +334,33 @@ export const emptyRadiantBloomPreviewExtra: RadiantBloomPreviewExtra = {
   rbBrideAccountNumber: "",
 };
 
+export const emptyEtherealWhisperPreviewExtra: EtherealWhisperPreviewExtra = {
+  ewHeroSubtitle: "",
+  ewWelcomeTitle: "",
+  ewWelcomeText: "",
+  ewCoupleTitle: "",
+  ewEventsTitle: "",
+  ewEventsLead: "",
+  ewGalleryTitle: "",
+  ewGalleryLead: "",
+  ewRsvpTitle: "",
+  ewRsvpLead: "",
+  ewGiftTitle: "",
+  ewGiftLead: "",
+  ewFooterThanks: "",
+  ewCeremonyTime: "",
+  ewCeremonyVenue: "",
+  ewCeremonyLocation: "",
+  ewReceptionTime: "",
+  ewReceptionVenue: "",
+  ewReceptionLocation: "",
+  ewBrideBankName: "",
+  ewBrideAccountName: "",
+  ewBrideAccountNumber: "",
+  ewGroomBio: "",
+  ewBrideBio: "",
+};
+
 export const emptySlideFlexPreviewExtra: SlideFlexPreviewExtra = {
   groomPhotoUrl: "",
   bridePhotoUrl: "",
@@ -387,7 +445,9 @@ export type PreviewData = {
   GentleDriftPreviewExtra &
   BrightlyBasicPreviewExtra &
   TimelessLovePreviewExtra &
-  RadiantBloomPreviewExtra;
+  RadiantBloomPreviewExtra &
+  EtherealWhisperPreviewExtra;
+
 
 export type PreviewImages = {
   coverImage: string;
@@ -439,6 +499,7 @@ export const defaultPreviewData: PreviewData = {
   ...emptyBrightlyBasicPreviewExtra,
   ...emptyTimelessLovePreviewExtra,
   ...emptyRadiantBloomPreviewExtra,
+  ...emptyEtherealWhisperPreviewExtra,
 };
 
 export const defaultPreviewImages: PreviewImages = {

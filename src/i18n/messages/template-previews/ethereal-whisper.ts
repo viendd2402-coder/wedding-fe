@@ -1,0 +1,15 @@
+export const etherealWhisperMessages = {
+  heroSubtitle: "Save the Date",
+  welcomeTitle: "Câu Chuyện Tình Yêu",
+  welcomeText: "Từ những người lạ lướt qua nhau giữa phố đông, chúng tôi đã tìm thấy nhau và quyết định gắn kết cuộc đời này. Cảm ơn bạn đã là một phần trong hành trình tuyệt vời ấy.",
+  coupleTitle: "Cô Dâu & Chú Rể",
+  eventsTitle: "Sự Kiện",
+  eventsLead: "Trân trọng kính mời quý khách đến chung vui cùng gia đình chúng tôi tại các sự kiện sau:",
+  galleryTitle: "Kỉ Niệm",
+  galleryLead: "Những khoảnh khắc đáng nhớ nhất của chúng tôi",
+  rsvpTitle: "Lời Hồi Đáp",
+  rsvpLead: "Sự hiện diện của bạn là niềm vinh hạnh cho gia đình chúng tôi.",
+  giftTitle: "Hộp Quà Cưới",
+  giftLead: "Nếu bạn muốn gửi tặng món quà nhỏ đến cô dâu chú rể",
+  footerThanks: "Chân thành cảm ơn!",
+};

@@ -5,6 +5,8 @@ import { brightlyBasicModule } from "@/templates/paid/brightly-basic";
 import { slideFlexModule } from "@/templates/paid/slide-flex";
 import { gentleDriftModule } from "@/templates/paid/gentle-drift";
 import { timelessLoveModule } from "@/templates/paid/timeless-love";
+import { radiantBloomModule } from "@/templates/paid/radiant-bloom";
+import { etherealWhisperModule } from "@/templates/paid/ethereal-whisper";
 
 export type TemplateModule = {
   meta: WeddingTemplate;
@@ -17,6 +19,8 @@ export const templateModules: TemplateModule[] = [
   brightlyBasicModule,
   slideFlexModule,
   timelessLoveModule,
+  radiantBloomModule,
+  etherealWhisperModule,
 ];
 
 export const weddingTemplates = templateModules.map((module) => module.meta);
