@@ -1,0 +1,220 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Montserrat:wght@100..900&display=swap');
+
+.container {
+  --bordeaux: #6D0E0E;
+  --champagne: #FDF5E6;
+  --gold: #B8860B;
+  --text-rich: #2C1810;
+  --text-muted: #8B735B;
+  
+  background-color: var(--champagne);
+  color: var(--text-rich);
+  font-family: 'Montserrat', sans-serif;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+.serif {
+  font-family: 'Cormorant Garamond', serif;
+}
+
+/* Interactive Envelope Overlay */
+.envelopeOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: var(--bordeaux);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 1.2s cubic-bezier(0.8, 0, 0.2, 1);
+}
+
+.envelopeOpened {
+  transform: translateY(-100%);
+}
+
+.envelope {
+  position: relative;
+  width: 400px;
+  height: 280px;
+  background: var(--champagne);
+  box-shadow: 0 50px 100px rgba(109, 14, 14, 0.3);
+  cursor: pointer;
+  perspective: 1000px;
+  border: 2px solid var(--gold);
+}
+
+.envelope::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 140px 200px 0 200px;
+  border-color: #f3e9d2 transparent transparent transparent;
+  z-index: 2;
+  transition: transform 0.6s ease;
+  transform-origin: top;
+}
+
+.envelope.open::before {
+  transform: rotateX(180deg);
+}
+
+.waxSeal {
+  position: absolute;
+  top: 125px;
+  left: 175px;
+  width: 60px;
+  height: 60px;
+  background: var(--bordeaux);
+  border-radius: 50%;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+  border: 3px solid var(--gold);
+}
+
+/* Menu */
+.menuRoot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  background: rgba(253, 245, 230, 0.95);
+  backdrop-filter: blur(15px);
+  padding: 25px 0;
+  border-bottom: 1px solid rgba(184, 134, 11, 0.2);
+}
+
+.menuLinks {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.4em;
+  font-weight: 800;
+  color: var(--bordeaux);
+}
+
+/* Hero */
+.heroSection {
+  height: 100vh;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.heroBg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, var(--champagne) 0%, #f3e9d2 100%);
+}
+
+.heroContent h1 {
+  font-size: clamp(4rem, 15vw, 10rem);
+  color: var(--bordeaux);
+  line-height: 1;
+  margin: 40px 0;
+  font-weight: 700;
+  font-style: italic;
+}
+
+/* Sections */
+.sectionPadding {
+  padding: 140px 20px;
+}
+
+.sectionTitle {
+  font-size: clamp(3rem, 8vw, 5.5rem);
+  color: var(--bordeaux);
+  margin-bottom: 2rem;
+  font-style: italic;
+}
+
+.card {
+  background: #ffffff;
+  padding: 60px;
+  border: 1px solid rgba(184, 134, 11, 0.2);
+  box-shadow: 0 30px 70px rgba(109, 14, 14, 0.05);
+  position: relative;
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  border: 1px solid rgba(184, 134, 11, 0.1);
+  pointer-events: none;
+}
+
+/* Buttons */
+.goldButton {
+  padding: 20px 60px;
+  background: var(--bordeaux);
+  color: white;
+  text-transform: uppercase;
+  font-weight: 800;
+  letter-spacing: 0.3em;
+  font-size: 11px;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  border: none;
+}
+
+.goldButton:hover {
+  background: #4A0404;
+  letter-spacing: 0.4em;
+  box-shadow: 0 15px 35px rgba(109, 14, 14, 0.2);
+  transform: translateY(-3px);
+}
+
+/* Timeline */
+.timelineItem {
+  border-left: 2px solid var(--gold);
+  padding-left: 45px;
+  padding-bottom: 90px;
+  position: relative;
+}
+
+.timelineItem::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 0;
+  width: 14px;
+  height: 14px;
+  background: var(--bordeaux);
+  border: 2px solid var(--gold);
+  border-radius: 50%;
+}
+
+/* Gallery Luxury Frame */
+.galleryFrame {
+  position: relative;
+  padding: 15px;
+  background: white;
+  border: 1px solid rgba(184, 134, 11, 0.2);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+}
+
+.galleryFrame img {
+  width: 100%;
+  filter: contrast(1.05) brightness(1.02);
+}
+
+@media (max-width: 768px) {
+  .menuLinks {
+    gap: 15px;
+    font-size: 8px;
+    flex-wrap: wrap;
+  }
+}

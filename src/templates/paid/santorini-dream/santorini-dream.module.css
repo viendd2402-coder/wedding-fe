@@ -1,0 +1,203 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Montserrat:wght@100..900&display=swap');
+
+.container {
+  --cobalt: #0047AB;
+  --white: #FFFFFF;
+  --sand: #FAF9F6;
+  --accent: #FFD700;
+  --text-main: #1a365d;
+  
+  background-color: var(--white);
+  color: var(--text-main);
+  font-family: 'Montserrat', sans-serif;
+  overflow-x: hidden;
+}
+
+.garamond {
+  font-family: 'Cormorant Garamond', serif;
+}
+
+/* Greek Envelope Overlay */
+.envelopeOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: var(--cobalt);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 1.2s cubic-bezier(0.8, 0, 0.2, 1);
+}
+
+.envelopeOpened {
+  transform: scale(3) rotate(15deg);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.greekTile {
+  width: 380px;
+  height: 380px;
+  background: var(--white);
+  position: relative;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.2);
+  cursor: pointer;
+  border: 15px solid var(--cobalt);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.greekTile::after {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  border: 2px solid var(--cobalt);
+  opacity: 0.2;
+}
+
+/* Menu */
+.menuRoot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid var(--cobalt);
+  padding: 20px 0;
+}
+
+.menuLinks {
+  display: flex;
+  justify-content: center;
+  gap: 35px;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  font-weight: 700;
+  color: var(--cobalt);
+}
+
+/* Hero */
+.heroSection {
+  height: 100vh;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: radial-gradient(circle at center, var(--white) 0%, var(--sand) 100%);
+}
+
+.heroContent h1 {
+  font-size: clamp(3rem, 12vw, 8rem);
+  color: var(--cobalt);
+  line-height: 1.1;
+  margin: 20px 0;
+}
+
+.archFrame {
+  border-radius: 500px 500px 0 0;
+  overflow: hidden;
+  border: 8px solid var(--white);
+  box-shadow: 0 30px 60px rgba(0,71,171,0.1);
+}
+
+/* Sections */
+.sectionPadding {
+  padding: 120px 20px;
+}
+
+.sectionTitle {
+  font-size: clamp(2.5rem, 7vw, 4.5rem);
+  color: var(--cobalt);
+  margin-bottom: 1.5rem;
+}
+
+.card {
+  background: var(--white);
+  padding: 50px;
+  border: 2px solid var(--cobalt);
+  position: relative;
+  transition: all 0.4s ease;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  width: 100%;
+  height: 100%;
+  border: 2px solid var(--cobalt);
+  opacity: 0.1;
+  z-index: -1;
+}
+
+/* Buttons */
+.cobaltButton {
+  padding: 18px 45px;
+  background: var(--cobalt);
+  color: white;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  font-size: 12px;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.cobaltButton:hover {
+  background: #003380;
+  box-shadow: 0 15px 30px rgba(0,71,171,0.3);
+  transform: translateY(-2px);
+}
+
+/* Timeline */
+.timelineItem {
+  border-left: 3px solid var(--cobalt);
+  padding-left: 40px;
+  padding-bottom: 70px;
+  position: relative;
+}
+
+.timelineItem::before {
+  content: '';
+  position: absolute;
+  left: -11px;
+  top: 0;
+  width: 20px;
+  height: 20px;
+  background: var(--white);
+  border: 4px solid var(--cobalt);
+  border-radius: 50%;
+}
+
+/* Gallery Blue Frame */
+.blueFrame {
+  position: relative;
+  padding: 10px;
+  border: 1px solid var(--cobalt);
+}
+
+.galleryImg {
+  width: 100%;
+  filter: saturate(1.2);
+  transition: transform 0.8s ease;
+}
+
+.galleryImg:hover {
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .menuLinks {
+    gap: 15px;
+    font-size: 8px;
+    flex-wrap: wrap;
+    padding: 0 10px;
+  }
+}

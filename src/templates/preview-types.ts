@@ -231,6 +231,101 @@ export type EtherealWhisperPreviewExtra = {
   ewBrideBio: string;
 };
 
+export type SoftSerenityPreviewExtra = {
+  ssHeroLead: string;
+  ssInviteBody: string;
+  ssCoupleQuote: string;
+  ssStoryLead: string;
+  ssAlbumLead: string;
+  ssVuQuyTime: string;
+  ssVuQuyVenue: string;
+  ssVuQuyLocation: string;
+  ssGroomEventTime: string;
+  ssGroomEventVenue: string;
+  ssGroomEventLocation: string;
+  ssBrideEventTime: string;
+  ssBrideEventVenue: string;
+  ssBrideEventLocation: string;
+  ssGroomBankName: string;
+  ssGroomAccountName: string;
+  ssGroomAccountNumber: string;
+  ssBrideBankName: string;
+  ssBrideAccountName: string;
+  ssBrideAccountNumber: string;
+  ssGroomBio: string;
+  ssBrideBio: string;
+  ssGroomParentLine1: string;
+  ssGroomParentLine2: string;
+  ssBrideParentLine1: string;
+  ssBrideParentLine2: string;
+};
+
+export type MidnightBloomPreviewExtra = {
+  mbHeroSubtitle: string;
+  mbWelcomeTitle: string;
+  mbWelcomeText: string;
+  mbCoupleTitle: string;
+  mbEventsTitle: string;
+  mbEventsLead: string;
+  mbGalleryTitle: string;
+  mbGalleryLead: string;
+  mbRsvpTitle: string;
+  mbRsvpLead: string;
+  mbGiftTitle: string;
+  mbGiftLead: string;
+  mbFooterThanks: string;
+  mbCeremonyTime: string;
+  mbCeremonyVenue: string;
+  mbCeremonyLocation: string;
+  mbReceptionTime: string;
+  mbReceptionVenue: string;
+  mbReceptionLocation: string;
+  mbGroomBio: string;
+  mbBrideBio: string;
+  mbGroomParent1: string;
+  mbGroomParent2: string;
+  mbBrideParent1: string;
+  mbBrideParent2: string;
+};
+
+/** Tuỳ chỉnh copy mẫu retro-soul (để trống = fallback i18n / data mẫu). */
+export type RetroSoulPreviewExtra = {
+  rsHeroSubtitle: string;
+  rsWelcomeTitle: string;
+  rsWelcomeText: string;
+  rsCoupleTitle: string;
+  rsEventsTitle: string;
+  rsEventsLead: string;
+  rsGalleryTitle: string;
+  rsGalleryLead: string;
+  rsRsvpTitle: string;
+  rsRsvpLead: string;
+  rsGiftTitle: string;
+  rsGiftLead: string;
+  rsFooterThanks: string;
+  rsGroomBio: string;
+  rsBrideBio: string;
+};
+
+/** Tuỳ chỉnh copy mẫu santorini-dream (để trống = fallback i18n / data mẫu). */
+export type SantoriniDreamPreviewExtra = {
+  sdHeroSubtitle: string;
+  sdWelcomeTitle: string;
+  sdWelcomeText: string;
+  sdCoupleTitle: string;
+  sdEventsTitle: string;
+  sdEventsLead: string;
+  sdGalleryTitle: string;
+  sdGalleryLead: string;
+  sdRsvpTitle: string;
+  sdRsvpLead: string;
+  sdGiftTitle: string;
+  sdGiftLead: string;
+  sdFooterThanks: string;
+  sdGroomBio: string;
+  sdBrideBio: string;
+};
+
 export const emptyGentleDriftPreviewExtra: GentleDriftPreviewExtra = {
   gdHeroLead: "",
   gdInviteBody: "",
@@ -361,6 +456,99 @@ export const emptyEtherealWhisperPreviewExtra: EtherealWhisperPreviewExtra = {
   ewBrideBio: "",
 };
 
+export const emptySoftSerenityPreviewExtra: SoftSerenityPreviewExtra = {
+  ssHeroLead: "",
+  ssInviteBody: "",
+  ssCoupleQuote: "",
+  ssStoryLead: "",
+  ssAlbumLead: "",
+  ssVuQuyTime: "",
+  ssVuQuyVenue: "",
+  ssVuQuyLocation: "",
+  ssGroomEventTime: "",
+  ssGroomEventVenue: "",
+  ssGroomEventLocation: "",
+  ssBrideEventTime: "",
+  ssBrideEventVenue: "",
+  ssBrideEventLocation: "",
+  ssGroomBankName: "",
+  ssGroomAccountName: "",
+  ssGroomAccountNumber: "",
+  ssBrideBankName: "",
+  ssBrideAccountName: "",
+  ssBrideAccountNumber: "",
+  ssGroomBio: "",
+  ssBrideBio: "",
+  ssGroomParentLine1: "",
+  ssGroomParentLine2: "",
+  ssBrideParentLine1: "",
+  ssBrideParentLine2: "",
+};
+
+export const emptyMidnightBloomPreviewExtra: MidnightBloomPreviewExtra = {
+  mbHeroSubtitle: "",
+  mbWelcomeTitle: "",
+  mbWelcomeText: "",
+  mbCoupleTitle: "",
+  mbEventsTitle: "",
+  mbEventsLead: "",
+  mbGalleryTitle: "",
+  mbGalleryLead: "",
+  mbRsvpTitle: "",
+  mbRsvpLead: "",
+  mbGiftTitle: "",
+  mbGiftLead: "",
+  mbFooterThanks: "",
+  mbCeremonyTime: "",
+  mbCeremonyVenue: "",
+  mbCeremonyLocation: "",
+  mbReceptionTime: "",
+  mbReceptionVenue: "",
+  mbReceptionLocation: "",
+  mbGroomBio: "",
+  mbBrideBio: "",
+  mbGroomParent1: "",
+  mbGroomParent2: "",
+  mbBrideParent1: "",
+  mbBrideParent2: "",
+};
+
+export const emptyRetroSoulPreviewExtra: RetroSoulPreviewExtra = {
+  rsHeroSubtitle: "",
+  rsWelcomeTitle: "",
+  rsWelcomeText: "",
+  rsCoupleTitle: "",
+  rsEventsTitle: "",
+  rsEventsLead: "",
+  rsGalleryTitle: "",
+  rsGalleryLead: "",
+  rsRsvpTitle: "",
+  rsRsvpLead: "",
+  rsGiftTitle: "",
+  rsGiftLead: "",
+  rsFooterThanks: "",
+  rsGroomBio: "",
+  rsBrideBio: "",
+};
+
+export const emptySantoriniDreamPreviewExtra: SantoriniDreamPreviewExtra = {
+  sdHeroSubtitle: "",
+  sdWelcomeTitle: "",
+  sdWelcomeText: "",
+  sdCoupleTitle: "",
+  sdEventsTitle: "",
+  sdEventsLead: "",
+  sdGalleryTitle: "",
+  sdGalleryLead: "",
+  sdRsvpTitle: "",
+  sdRsvpLead: "",
+  sdGiftTitle: "",
+  sdGiftLead: "",
+  sdFooterThanks: "",
+  sdGroomBio: "",
+  sdBrideBio: "",
+};
+
 export const emptySlideFlexPreviewExtra: SlideFlexPreviewExtra = {
   groomPhotoUrl: "",
   bridePhotoUrl: "",
@@ -446,7 +634,11 @@ export type PreviewData = {
   BrightlyBasicPreviewExtra &
   TimelessLovePreviewExtra &
   RadiantBloomPreviewExtra &
-  EtherealWhisperPreviewExtra;
+  EtherealWhisperPreviewExtra &
+  SoftSerenityPreviewExtra &
+  MidnightBloomPreviewExtra &
+  RetroSoulPreviewExtra &
+  SantoriniDreamPreviewExtra;
 
 
 export type PreviewImages = {
@@ -500,6 +692,10 @@ export const defaultPreviewData: PreviewData = {
   ...emptyTimelessLovePreviewExtra,
   ...emptyRadiantBloomPreviewExtra,
   ...emptyEtherealWhisperPreviewExtra,
+  ...emptySoftSerenityPreviewExtra,
+  ...emptyMidnightBloomPreviewExtra,
+  ...emptyRetroSoulPreviewExtra,
+  ...emptySantoriniDreamPreviewExtra,
 };
 
 export const defaultPreviewImages: PreviewImages = {

@@ -7,6 +7,10 @@ import { gentleDriftModule } from "@/templates/paid/gentle-drift";
 import { timelessLoveModule } from "@/templates/paid/timeless-love";
 import { radiantBloomModule } from "@/templates/paid/radiant-bloom";
 import { etherealWhisperModule } from "@/templates/paid/ethereal-whisper";
+import { softSerenityModule } from "@/templates/paid/soft-serenity";
+import midnightBloomModule from "@/templates/paid/midnight-bloom";
+import retroSoulModule from "@/templates/paid/retro-soul";
+import santoriniDreamModule from "@/templates/paid/santorini-dream";
 
 export type TemplateModule = {
   meta: WeddingTemplate;
@@ -15,12 +19,16 @@ export type TemplateModule = {
 };
 
 export const templateModules: TemplateModule[] = [
+  softSerenityModule,
   gentleDriftModule,
   brightlyBasicModule,
   slideFlexModule,
   timelessLoveModule,
   radiantBloomModule,
   etherealWhisperModule,
+  midnightBloomModule,
+  retroSoulModule,
+  santoriniDreamModule,
 ];
 
 export const weddingTemplates = templateModules.map((module) => module.meta);

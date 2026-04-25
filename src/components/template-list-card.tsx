@@ -128,7 +128,7 @@ export function TemplateListCard({
       <div className="relative z-[1] flex min-h-0 flex-1 flex-col pointer-events-none">
         <div className="relative h-80 fshrink-0 overflow-hidden sm:h-96">
           <Image
-            src={item.image}
+            src={item.image || "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop"}
             alt=""
             fill
             sizes="(max-width: 640px) 100vw, min(440px, 100vw)"
