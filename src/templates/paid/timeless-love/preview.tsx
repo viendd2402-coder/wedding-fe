@@ -86,6 +86,19 @@ export function TimelessLovePreview({
   const [copied, setCopied] = useState<"groom" | "bride" | null>(null);
   const [showLoading, setShowLoading] = useState(true);
 
+  // RSVP Form State
+  const [rsvpName, setRsvpName] = useState("");
+  const [rsvpContact, setRsvpContact] = useState("");
+  const [rsvpWish, setRsvpWish] = useState("");
+  const [rsvpErrors, setRsvpErrors] = useState<Record<string, string>>({});
+  const [rsvpStatus, setRsvpStatus] = useState<"idle" | "submitting" | "success">("idle");
+
+  // Wishes Form State
+  const [guestName, setGuestName] = useState("");
+  const [guestWish, setGuestWish] = useState("");
+  const [wishErrors, setWishErrors] = useState<Record<string, string>>({});
+  const [wishStatus, setWishStatus] = useState<"idle" | "submitting" | "success">("idle");
+
   // Scroll Parallax for Hero
   const { scrollY } = useScroll();
   const heroScale = useTransform(scrollY, [0, 800], [1, 1.1]);
@@ -123,13 +136,67 @@ export function TimelessLovePreview({
     } catch {}
   };
 
-  const ceremTime = preview.tlCeremonyTime?.trim() || preview.ceremonyTime;
-  const ceremVenue = preview.tlCeremonyVenue?.trim() || preview.venue;
-  const ceremLocation = preview.tlCeremonyLocation?.trim() || preview.location;
+  const handleRsvpSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const errors: Record<string, string> = {};
+    if (!rsvpName.trim()) errors.name = copy.nameError;
+    if (!rsvpContact.trim()) errors.contact = copy.contactError;
+    
+    if (Object.keys(errors).length > 0) {
+      setRsvpErrors(errors);
+      return;
+    }
 
-  const recTime = preview.tlReceptionTime?.trim() || preview.partyTime;
-  const recVenue = preview.tlReceptionVenue?.trim() || preview.venue;
-  const recLocation = preview.tlReceptionLocation?.trim() || preview.location;
+    setRsvpErrors({});
+    setRsvpStatus("submitting");
+    setTimeout(() => {
+      setRsvpStatus("success");
+      setRsvpName("");
+      setRsvpContact("");
+      setRsvpWish("");
+      setAttending(null);
+      setTimeout(() => setRsvpStatus("idle"), 5000);
+    }, 1000);
+  };
+
+  const handleWishSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const errors: Record<string, string> = {};
+    if (!guestName.trim()) errors.name = copy.nameError;
+    if (!guestWish.trim()) errors.wish = copy.wishError;
+
+    if (Object.keys(errors).length > 0) {
+      setWishErrors(errors);
+      return;
+    }
+
+    setWishErrors({});
+    setWishStatus("submitting");
+    setTimeout(() => {
+      setWishStatus("success");
+      setGuestName("");
+      setGuestWish("");
+      setTimeout(() => setWishStatus("idle"), 5000);
+    }, 1000);
+  };
+
+  const vuQuyEvent = {
+    time: preview.tlVuQuyTime?.trim() || preview.ceremonyTime,
+    venue: preview.tlVuQuyVenue?.trim() || preview.venue,
+    location: preview.tlVuQuyLocation?.trim() || preview.location,
+  };
+
+  const groomEvent = {
+    time: preview.tlGroomEventTime?.trim() || preview.partyTime,
+    venue: preview.tlGroomEventVenue?.trim() || preview.venue,
+    location: preview.tlGroomEventLocation?.trim() || preview.location,
+  };
+
+  const brideEvent = {
+    time: preview.tlBrideEventTime?.trim() || preview.partyTime,
+    venue: preview.tlBrideEventVenue?.trim() || preview.venue,
+    location: preview.tlBrideEventLocation?.trim() || preview.location,
+  };
 
   return (
     <div
@@ -170,6 +237,7 @@ export function TimelessLovePreview({
           <a href="#couple" className="hover:text-[#B99A5B] transition-colors duration-300 hidden md:block">{copy.navCouple}</a>
           <a href="#events" className="hover:text-[#B99A5B] transition-colors duration-300">{copy.navEvents}</a>
           <a href="#gallery" className="hover:text-[#B99A5B] transition-colors duration-300">{copy.navGallery}</a>
+          <a href="#wishes" className="hover:text-[#B99A5B] transition-colors duration-300">{copy.wishesTitle}</a>
           <a href="#rsvp" className="hover:text-[#B99A5B] transition-colors duration-300">{copy.navRsvp}</a>
           <a href="#registry" className="hover:text-[#B99A5B] transition-colors duration-300 hidden md:block">{copy.navGift}</a>
           {!isPublicInviteSnapshot && (
@@ -298,7 +366,7 @@ export function TimelessLovePreview({
               >
                 <div className="w-full max-w-md aspect-[3/4] relative p-3 border border-[#E8E4DA] bg-[#FAF9F6] rounded-sm mb-10 shadow-[0_10px_30px_rgba(0,0,0,0.02)]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={images.groomPortraitImage || gallery[0]} alt="Groom" className="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-700" />
+                  <img src={images.groomPortraitImage || gallery[0]} alt="Groom" className="w-full h-full object-cover hover:scale-105 transition-all duration-700" />
                   <div className="absolute -bottom-6 bg-white px-6 py-2 border border-[#E8E4DA] left-1/2 -translate-x-1/2 whitespace-nowrap shadow-sm">
                     <span className="text-[10px] uppercase tracking-[0.3em] text-[#B99A5B]">{copy.groom}</span>
                   </div>
@@ -319,7 +387,7 @@ export function TimelessLovePreview({
               >
                 <div className="w-full max-w-md aspect-[3/4] relative p-3 border border-[#E8E4DA] bg-[#FAF9F6] rounded-sm mb-10 shadow-[0_10px_30px_rgba(0,0,0,0.02)]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={images.bridePortraitImage || gallery[1]} alt="Bride" className="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-700" />
+                  <img src={images.bridePortraitImage || gallery[1]} alt="Bride" className="w-full h-full object-cover hover:scale-105 transition-all duration-700" />
                   <div className="absolute -bottom-6 bg-white px-6 py-2 border border-[#E8E4DA] left-1/2 -translate-x-1/2 whitespace-nowrap shadow-sm">
                     <span className="text-[10px] uppercase tracking-[0.3em] text-[#B99A5B]">{copy.bride}</span>
                   </div>
@@ -335,12 +403,13 @@ export function TimelessLovePreview({
 
         {/* Wedding Events - Split Minimal */}
         <section id="events" className="py-24 md:py-40 bg-[#FAF9F6] relative border-y border-[#E8E4DA]">
-          <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+          <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 lg:gap-24 items-start">
             <motion.div
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-100px" }}
               variants={fadeUp}
+              className="sticky top-40"
             >
               <p className="text-[10px] uppercase tracking-[0.4em] text-[#B99A5B] mb-6">Details</p>
               <h3 className="text-5xl md:text-7xl font-serif text-[#3D3935] mb-8 leading-[1.1]" style={{ fontFamily: "var(--font-tl-serif)" }}>
@@ -350,7 +419,7 @@ export function TimelessLovePreview({
             </motion.div>
 
             <div className="space-y-8">
-              {/* Ceremony Card */}
+              {/* Vu Quy Event Card */}
               <motion.div 
                 initial={{ opacity: 0, x: 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -361,18 +430,40 @@ export function TimelessLovePreview({
                 <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
                   <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#B99A5B" strokeWidth="1"><path d="M12 2L15 8L22 9L17 14L18 21L12 18L6 21L7 14L2 9L9 8L12 2Z"/></svg>
                 </div>
-                <p className={`text-4xl mb-4 ${goldGradientText}`} style={{ fontFamily: "var(--font-tl-script)" }}>{copy.ceremony}</p>
-                <p className="text-2xl text-[#3D3935] mb-4 font-serif" style={{ fontFamily: "var(--font-tl-serif)" }}>{ceremTime}</p>
+                <p className={`text-4xl mb-4 ${goldGradientText}`} style={{ fontFamily: "var(--font-tl-script)" }}>{copy.vuQuy}</p>
+                <p className="text-2xl text-[#3D3935] mb-4 font-serif" style={{ fontFamily: "var(--font-tl-serif)" }}>{vuQuyEvent.time}</p>
                 <div className="text-[#7A756D] text-sm leading-relaxed mb-8">
-                  <p className="font-medium text-[#3D3935] mb-1 text-lg">{ceremVenue}</p>
-                  <p>{ceremLocation}</p>
+                  <p className="font-medium text-[#3D3935] mb-1 text-lg">{vuQuyEvent.venue}</p>
+                  <p>{vuQuyEvent.location}</p>
                 </div>
                 <button className="bg-[#3D3935] text-white px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.2em] hover:bg-[#B99A5B] transition-colors">
                   {copy.addCalendar}
                 </button>
               </motion.div>
 
-              {/* Reception Card */}
+              {/* Groom Event Card */}
+              <motion.div 
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 1, delay: 0.1 }}
+                className="bg-white p-10 md:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.03)] border-l-4 border-[#B99A5B] relative overflow-hidden group"
+              >
+                <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
+                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#B99A5B" strokeWidth="1"><path d="M12 2L15 8L22 9L17 14L18 21L12 18L6 21L7 14L2 9L9 8L12 2Z"/></svg>
+                </div>
+                <p className={`text-4xl mb-4 ${goldGradientText}`} style={{ fontFamily: "var(--font-tl-script)" }}>{copy.groomSide}</p>
+                <p className="text-2xl text-[#3D3935] mb-4 font-serif" style={{ fontFamily: "var(--font-tl-serif)" }}>{groomEvent.time}</p>
+                <div className="text-[#7A756D] text-sm leading-relaxed mb-8">
+                  <p className="font-medium text-[#3D3935] mb-1 text-lg">{groomEvent.venue}</p>
+                  <p>{groomEvent.location}</p>
+                </div>
+                <button className="bg-[#3D3935] text-white px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.2em] hover:bg-[#B99A5B] transition-colors">
+                  {copy.addCalendar}
+                </button>
+              </motion.div>
+
+              {/* Bride Event Card */}
               <motion.div 
                 initial={{ opacity: 0, x: 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -383,11 +474,11 @@ export function TimelessLovePreview({
                  <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
                   <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#B99A5B" strokeWidth="1"><path d="M12 2L15 8L22 9L17 14L18 21L12 18L6 21L7 14L2 9L9 8L12 2Z"/></svg>
                 </div>
-                <p className={`text-4xl mb-4 ${goldGradientText}`} style={{ fontFamily: "var(--font-tl-script)" }}>{copy.reception}</p>
-                <p className="text-2xl text-[#3D3935] mb-4 font-serif" style={{ fontFamily: "var(--font-tl-serif)" }}>{recTime}</p>
+                <p className={`text-4xl mb-4 ${goldGradientText}`} style={{ fontFamily: "var(--font-tl-script)" }}>{copy.brideSide}</p>
+                <p className="text-2xl text-[#3D3935] mb-4 font-serif" style={{ fontFamily: "var(--font-tl-serif)" }}>{brideEvent.time}</p>
                 <div className="text-[#7A756D] text-sm leading-relaxed mb-8">
-                  <p className="font-medium text-[#3D3935] mb-1 text-lg">{recVenue}</p>
-                  <p>{recLocation}</p>
+                  <p className="font-medium text-[#3D3935] mb-1 text-lg">{brideEvent.venue}</p>
+                  <p>{brideEvent.location}</p>
                 </div>
                 <button className="bg-[#3D3935] text-white px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.2em] hover:bg-[#B99A5B] transition-colors">
                   {copy.mapCta}
@@ -436,11 +527,10 @@ export function TimelessLovePreview({
                     onClick={() => onPreviewImage({ src, alt: `Gallery image ${idx + 1}` })}
                   >
                     <div className={`${aspectClass} w-full bg-[#FAF9F6] p-2 border border-[#E8E4DA]`}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img 
                         src={src} 
                         alt="" 
-                        className="w-full h-full object-cover transition-all duration-[2s] group-hover:scale-105 filter grayscale hover:grayscale-0"
+                        className="w-full h-full object-cover transition-all duration-[2s] group-hover:scale-105"
                       />
                       <div className="absolute inset-0 border border-[#B99A5B]/40 z-20 m-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                     </div>
@@ -466,32 +556,120 @@ export function TimelessLovePreview({
               </h4>
               <p className="text-[#7A756D] font-light text-sm mb-16">{preview.tlRsvpLead?.trim() || copy.tlRsvpLead}</p>
 
-              <form className="space-y-8 text-left" onSubmit={(e) => e.preventDefault()}>
+              <form className="space-y-8 text-left" onSubmit={handleRsvpSubmit}>
                 <div className="relative">
-                  <input type="text" id="name" placeholder=" " className="peer w-full bg-transparent border-b border-[#D8D4CC] py-4 text-[#3D3935] focus:outline-none focus:border-[#B99A5B] transition-all text-lg placeholder-transparent" />
-                  <label htmlFor="name" className="absolute left-0 top-4 text-[#A4A7A5] text-lg transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-[#B99A5B] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-xs">{copy.namePh}</label>
+                  <input 
+                    type="text" 
+                    id="name" 
+                    placeholder=" " 
+                    value={rsvpName}
+                    onChange={(e) => setRsvpName(e.target.value)}
+                    className={`peer w-full bg-transparent border-b ${rsvpErrors.name ? "border-red-400" : "border-[#D8D4CC]"} py-4 text-[#3D3935] focus:outline-none focus:border-[#B99A5B] transition-all text-lg placeholder-transparent`} 
+                  />
+                  <label htmlFor="name" className="absolute left-0 top-4 text-[#A4A7A5] text-lg transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-[#B99A5B] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-xs">{preview.tlRsvpNameLabel?.trim() || copy.namePh}</label>
+                  {rsvpErrors.name && <p className="text-red-400 text-[10px] mt-1 uppercase tracking-wider">{rsvpErrors.name}</p>}
                 </div>
                 <div className="relative">
-                  <input type="text" id="contact" placeholder=" " className="peer w-full bg-transparent border-b border-[#D8D4CC] py-4 text-[#3D3935] focus:outline-none focus:border-[#B99A5B] transition-all text-lg placeholder-transparent" />
-                  <label htmlFor="contact" className="absolute left-0 top-4 text-[#A4A7A5] text-lg transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-[#B99A5B] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-xs">{copy.contactPh}</label>
+                  <input 
+                    type="text" 
+                    id="contact" 
+                    placeholder=" " 
+                    value={rsvpContact}
+                    onChange={(e) => setRsvpContact(e.target.value)}
+                    className={`peer w-full bg-transparent border-b ${rsvpErrors.contact ? "border-red-400" : "border-[#D8D4CC]"} py-4 text-[#3D3935] focus:outline-none focus:border-[#B99A5B] transition-all text-lg placeholder-transparent`} 
+                  />
+                  <label htmlFor="contact" className="absolute left-0 top-4 text-[#A4A7A5] text-lg transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-[#B99A5B] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-xs">{preview.tlRsvpContactLabel?.trim() || copy.contactPh}</label>
+                  {rsvpErrors.contact && <p className="text-red-400 text-[10px] mt-1 uppercase tracking-wider">{rsvpErrors.contact}</p>}
                 </div>
                 
                 <div className="flex flex-col sm:flex-row gap-4 pt-6">
                   <button type="button" onClick={() => setAttending("yes")} className={`flex-1 py-5 rounded-full text-[10px] uppercase tracking-[0.2em] transition-all duration-500 border ${attending === "yes" ? "bg-[#3D3935] text-white border-[#3D3935]" : "bg-transparent border-[#D8D4CC] text-[#3D3935] hover:border-[#3D3935]"}`}>
-                    {copy.attending}
+                    {preview.tlRsvpAttendingLabel?.trim() || copy.attending}
                   </button>
                   <button type="button" onClick={() => setAttending("no")} className={`flex-1 py-5 rounded-full text-[10px] uppercase tracking-[0.2em] transition-all duration-500 border ${attending === "no" ? "bg-[#B99A5B] text-white border-[#B99A5B]" : "bg-transparent border-[#D8D4CC] text-[#3D3935] hover:border-[#3D3935]"}`}>
-                    {copy.decline}
+                    {preview.tlRsvpDeclineLabel?.trim() || copy.decline}
                   </button>
                 </div>
 
                 <div className="pt-6">
-                  <textarea placeholder={copy.wishPh} rows={3} className="w-full bg-[#FAF9F6] border border-[#D8D4CC] rounded-2xl py-4 px-6 text-[#3D3935] focus:outline-none focus:border-[#B99A5B] transition-all resize-none mt-2 text-sm"></textarea>
+                  <textarea 
+                    placeholder={preview.tlRsvpWishLabel?.trim() || copy.wishPh} 
+                    rows={3} 
+                    value={rsvpWish}
+                    onChange={(e) => setRsvpWish(e.target.value)}
+                    className="w-full bg-[#FAF9F6] border border-[#D8D4CC] rounded-2xl py-4 px-6 text-[#3D3935] focus:outline-none focus:border-[#B99A5B] transition-all resize-none mt-2 text-sm"
+                  ></textarea>
                 </div>
                 
                 <div className="pt-8 text-center">
-                  <button type="submit" className="bg-[#B99A5B] text-white px-16 py-5 rounded-full text-[10px] uppercase tracking-[0.3em] hover:bg-[#3D3935] transition-colors duration-500 w-full md:w-auto shadow-[0_10px_30px_rgba(185,154,91,0.3)]">
-                    {copy.submit}
+                  <button 
+                    type="submit" 
+                    disabled={rsvpStatus === "submitting" || rsvpStatus === "success"}
+                    className="bg-[#B99A5B] text-white px-16 py-5 rounded-full text-[10px] uppercase tracking-[0.3em] hover:bg-[#3D3935] transition-colors duration-500 w-full md:w-auto shadow-[0_10px_30px_rgba(185,154,91,0.3)] disabled:opacity-50"
+                  >
+                    {rsvpStatus === "submitting" ? "..." : rsvpStatus === "success" ? copy.rsvpSuccess : (preview.tlRsvpSubmitLabel?.trim() || copy.submit)}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Wishes Form Section - Added */}
+        <section id="wishes" className="py-24 md:py-32 bg-white relative">
+          <div className="max-w-4xl mx-auto px-6">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              variants={fadeUp}
+              className="text-center mb-16"
+            >
+              <h3 className={`text-5xl md:text-6xl mb-4 ${goldGradientText}`} style={{ fontFamily: "var(--font-tl-script)" }}>
+                {preview.tlWishesTitle?.trim() || copy.wishesTitle}
+              </h3>
+              <p className="text-[#7A756D] font-light text-sm max-w-lg mx-auto">
+                {preview.tlWishesLead?.trim() || copy.wishesLead}
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              variants={fadeUp}
+              className="bg-[#FAF9F6] p-8 md:p-12 border border-[#E8E4DA] rounded-[30px]"
+            >
+              <form className="space-y-6" onSubmit={handleWishSubmit}>
+                <div className="grid md:grid-cols-1 gap-6">
+                  <div className="relative">
+                    <input 
+                      type="text" 
+                      placeholder={preview.tlWishesNameLabel?.trim() || copy.namePh}
+                      value={guestName}
+                      onChange={(e) => setGuestName(e.target.value)}
+                      className={`w-full bg-white border ${wishErrors.name ? "border-red-400" : "border-[#D8D4CC]"} rounded-full py-4 px-8 text-[#3D3935] focus:outline-none focus:border-[#B99A5B] transition-all`}
+                    />
+                    {wishErrors.name && <p className="text-red-400 text-[9px] mt-1 ml-6 uppercase tracking-wider">{wishErrors.name}</p>}
+                  </div>
+                </div>
+                <div className="relative">
+                  <textarea 
+                    placeholder={preview.tlWishesTextLabel?.trim() || copy.wishPh}
+                    rows={4}
+                    value={guestWish}
+                    onChange={(e) => setGuestWish(e.target.value)}
+                    className={`w-full bg-white border ${wishErrors.wish ? "border-red-400" : "border-[#D8D4CC]"} rounded-[20px] py-4 px-8 text-[#3D3935] focus:outline-none focus:border-[#B99A5B] transition-all resize-none`}
+                  ></textarea>
+                  {wishErrors.wish && <p className="text-red-400 text-[9px] mt-1 ml-6 uppercase tracking-wider">{wishErrors.wish}</p>}
+                </div>
+                <div className="text-center">
+                  <button 
+                    type="submit"
+                    disabled={wishStatus === "submitting" || wishStatus === "success"}
+                    className="bg-[#3D3935] text-white px-12 py-4 rounded-full text-[10px] uppercase tracking-[0.3em] hover:bg-[#B99A5B] transition-colors duration-500 w-full md:w-auto disabled:opacity-50"
+                  >
+                    {wishStatus === "submitting" ? "..." : wishStatus === "success" ? copy.wishSuccess : (preview.tlWishesSubmitLabel?.trim() || copy.wishesSubmit)}
                   </button>
                 </div>
               </form>
@@ -545,7 +723,7 @@ export function TimelessLovePreview({
       <footer className="py-32 text-center px-6 relative overflow-hidden bg-[#FAF9F6]">
         <div className="absolute inset-0 z-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={cover} alt="Footer Background" className="w-full h-full object-cover opacity-30 filter grayscale" />
+          <img src={cover} alt="Footer Background" className="w-full h-full object-cover opacity-30" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#FAF9F6] via-[#FAF9F6]/80 to-[#FAF9F6]/90"></div>
         </div>
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="relative z-10">

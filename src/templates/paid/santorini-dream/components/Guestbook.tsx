@@ -1,9 +1,7 @@
 "use client";
 
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useState } from "react";
 import styles from "../santorini-dream.module.css";
-import { MessageCircle } from "./Icons";
 
 const mockWishes = [
   { name: "Thu Hà", message: "Đám cưới rực rỡ quá! Chúc hai bạn hạnh phúc như nắng vàng Santorini." },
@@ -11,52 +9,83 @@ const mockWishes = [
 ];
 
 export function Guestbook({ preview }: { preview: any }) {
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [formData, setFormData] = useState({ name: "", message: "" });
+  const [errors, setErrors] = useState({ name: "", message: "" });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newErrors = { name: "", message: "" };
+    let hasError = false;
+
+    if (!formData.name.trim()) {
+      newErrors.name = "Vui lòng nhập tên";
+      hasError = true;
+    }
+    if (!formData.message.trim()) {
+      newErrors.message = "Vui lòng nhập lời chúc";
+      hasError = true;
+    }
+
+    if (hasError) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setErrors({ name: "", message: "" });
+    setIsSubmitted(true);
+    setTimeout(() => setIsSubmitted(false), 3000);
+    setFormData({ name: "", message: "" });
+  };
+
   return (
-    <section className={`${styles.sectionPadding} bg-[#f0f4f8]`}>
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-20">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <MessageCircle className="mx-auto text-cobalt mb-8 w-14 h-14 opacity-40" />
-            <h2 className={`${styles.garamond} ${styles.sectionTitle} italic`}>Lời Chúc Phúc</h2>
-          </motion.div>
+    <div className="w-full max-w-sm mx-auto">
+      {isSubmitted ? (
+        <div className="text-center py-10">
+          <p className="text-cobalt font-bold">Cảm ơn lời chúc của bạn!</p>
         </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-          <div className={styles.card}>
-            <form className="space-y-8">
-              <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-[0.2em] font-bold text-cobalt">Tên của bạn</label>
-                <input 
-                  type="text" 
-                  className="w-full bg-white border-b-2 border-cobalt/20 py-3 text-lg outline-none focus:border-cobalt transition-colors font-light"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-[0.2em] font-bold text-cobalt">Lời chúc</label>
-                <textarea 
-                  rows={4}
-                  className="w-full bg-white border-b-2 border-cobalt/20 py-3 text-lg outline-none focus:border-cobalt transition-colors font-light resize-none"
-                />
-              </div>
-              <button type="button" className={`${styles.cobaltButton} w-full`}>Gửi Lời Chúc</button>
-            </form>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-6 text-left mb-12">
+          <div className="space-y-2">
+            <label className="text-[10px] uppercase tracking-[0.2em] font-bold text-cobalt">Tên của bạn</label>
+            <input 
+              type="text" 
+              value={formData.name}
+              onChange={(e) => {
+                setFormData({ ...formData, name: e.target.value });
+                if (e.target.value) setErrors({ ...errors, name: "" });
+              }}
+              className={`${styles.inputField} ${errors.name ? 'border-red-400' : ''}`}
+              placeholder="Họ và tên"
+            />
+            {errors.name && <p className="text-[10px] text-red-500 font-medium">{errors.name}</p>}
           </div>
-
-          <div className="space-y-8">
-            {mockWishes.map((wish, idx) => (
-              <div key={idx} className="p-8 bg-white border-2 border-cobalt shadow-lg relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-12 h-12 bg-cobalt/5 rotate-45 translate-x-6 -translate-y-6" />
-                <p className="text-cobalt font-bold mb-3 italic">{wish.name}</p>
-                <p className="text-gray-500 font-light text-sm">"{wish.message}"</p>
-              </div>
-            ))}
+          <div className="space-y-2">
+            <label className="text-[10px] uppercase tracking-[0.2em] font-bold text-cobalt">Lời chúc</label>
+            <textarea 
+              rows={3}
+              value={formData.message}
+              onChange={(e) => {
+                setFormData({ ...formData, message: e.target.value });
+                if (e.target.value) setErrors({ ...errors, message: "" });
+              }}
+              className={`${styles.inputField} ${errors.message ? 'border-red-400' : ''}`}
+              placeholder="Nhập lời chúc phúc của bạn"
+            />
+            {errors.message && <p className="text-[10px] text-red-500 font-medium">{errors.message}</p>}
           </div>
-        </div>
+          <button type="submit" className={`${styles.cobaltButton} w-full`}>Gửi Lời Chúc</button>
+        </form>
+      )}
+
+      <div className={styles.guestbookGrid}>
+        {mockWishes.map((wish, idx) => (
+          <div key={idx} className={styles.wishCard}>
+            <p className={styles.wishName}>{wish.name}</p>
+            <p className={styles.wishMessage}>"{wish.message}"</p>
+          </div>
+        ))}
       </div>
-    </section>
+    </div>
   );
 }

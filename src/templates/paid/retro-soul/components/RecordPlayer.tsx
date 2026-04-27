@@ -23,23 +23,23 @@ export function RecordPlayer({ onOpen, bride, groom }: { onOpen: () => void, bri
         transition={{ duration: 1 }}
         className="text-center"
       >
-        <p className={`${styles.groovy} text-black mb-12 text-2xl`}>Spin the record of love!</p>
+        <p className={`${styles.groovy} text-dark mb-12 text-4xl -rotate-2`}>Spin the record of love!</p>
         
         <div 
           className={styles.recordSleeve}
           onClick={handleOpen}
         >
           <div className={styles.vinyl} />
-          <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center bg-[#2d2d2d] border-4 border-black">
-            <div className="w-20 h-20 rounded-full border-4 border-mustard mb-6 flex items-center justify-center">
-              <Heart className="text-mustard" size={40} />
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center bg-white border-4 border-dark">
+            <div className="w-24 h-24 rounded-full border-4 border-primary mb-8 flex items-center justify-center bg-accent/20">
+              <Heart className="text-primary" size={48} />
             </div>
-            <h3 className={`${styles.groovy} text-2xl text-mustard mb-2`}>{groom} & {bride}</h3>
-            <p className="text-[10px] text-white/50 uppercase tracking-[0.2em]">Collector's Edition</p>
+            <h3 className={`${styles.groovy} text-4xl text-dark mb-4`}>{groom} & {bride}</h3>
+            <p className="text-[12px] text-dark/60 uppercase tracking-[0.4em] font-black">70s Soul — Limited Edition</p>
           </div>
         </div>
 
-        <p className="mt-12 font-bold uppercase tracking-[0.2em] text-black">Click to start the melody</p>
+        <p className="mt-16 font-black uppercase tracking-[0.4em] text-sm text-dark bg-accent inline-block px-6 py-2 border-2 border-dark animate-bounce">Click to Play</p>
       </motion.div>
     </div>
   );

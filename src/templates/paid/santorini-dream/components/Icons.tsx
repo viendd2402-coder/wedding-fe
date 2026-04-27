@@ -48,3 +48,17 @@ export const Clock = ({ className, size = 24 }: IconProps) => (
     <polyline points="12 6 12 12 16 14" />
   </svg>
 );
+
+export const ChevronLeft = ({ className, size = 24 }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="m15 18-6-6 6-6" />
+  </svg>
+);
+
+export const ChevronRight = ({ className, size = 24 }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="m9 18 6-6-6-6" />
+  </svg>
+);
+
+

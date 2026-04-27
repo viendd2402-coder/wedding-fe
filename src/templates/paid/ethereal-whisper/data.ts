@@ -26,6 +26,9 @@ export const etherealWhisperPreviewData: PreviewData = {
   ewBrideBankName: "Vietcombank",
   ewBrideAccountName: "NGUYEN THI B",
   ewBrideAccountNumber: "0987654321",
+  ewEngagementTime: "09:00 - 20/12/2024",
+  ewEngagementVenue: "Tư gia nhà gái",
+  ewEngagementLocation: "Số 123, Đường Hoa Hồng, TP. HCM",
 };
 
 export const etherealWhisperPreviewImages: PreviewImages = {

@@ -1,74 +1,83 @@
 "use client";
 
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useState } from "react";
 import styles from "../santorini-dream.module.css";
-import { Heart } from "./Icons";
 
 export function RsvpForm({ preview }: { preview: any }) {
-  return (
-    <section id="rsvp" className={`${styles.sectionPadding} bg-white relative overflow-hidden`}>
-      {/* Decorative background element */}
-      <div className="absolute -right-20 -top-20 w-64 h-64 border-[40px] border-cobalt/5 rounded-full" />
-      
-      <div className="max-w-4xl mx-auto relative z-10">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          className={styles.card}
-        >
-          <div className="text-center mb-16">
-            <Heart className="mx-auto text-cobalt mb-6 w-14 h-14" />
-            <h2 className={`${styles.garamond} text-5xl mb-6 text-cobalt italic`}>Xác Nhận Tham Dự</h2>
-            <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-cobalt/60">Góp mặt cùng chúng mình tại hòn đảo tình yêu</p>
-          </div>
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [name, setName] = useState("");
+  const [error, setError] = useState("");
 
-          <form className="space-y-12">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-              <div className="space-y-4 text-left">
-                <label className="text-[10px] uppercase tracking-[0.2em] font-bold text-cobalt">Tên của quý khách</label>
-                <input 
-                  type="text" 
-                  placeholder="Ví dụ: Nguyễn Văn A"
-                  className="w-full bg-transparent border-b-2 border-cobalt/20 py-3 text-lg outline-none focus:border-cobalt transition-colors font-light"
-                />
-              </div>
-              <div className="space-y-4 text-left">
-                <label className="text-[10px] uppercase tracking-[0.2em] font-bold text-cobalt">Khách của gia đình</label>
-                <select className="w-full bg-transparent border-b-2 border-cobalt/20 py-3 text-lg outline-none focus:border-cobalt transition-colors font-light cursor-pointer appearance-none">
-                  <option value="groom">Nhà Trai</option>
-                  <option value="bride">Nhà Gái</option>
-                </select>
-              </div>
-            </div>
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim()) {
+      setError("Vui lòng nhập tên của bạn");
+      return;
+    }
+    setError("");
+    setIsSubmitted(true);
+    setTimeout(() => setIsSubmitted(false), 3000);
+  };
 
-            <div className="space-y-8 text-left">
-              <label className="text-[10px] uppercase tracking-[0.2em] font-bold text-cobalt block mb-4">Sự hiện diện của bạn</label>
-              <div className="flex flex-wrap gap-12">
-                <label className="flex items-center gap-4 cursor-pointer group">
-                  <div className="w-6 h-6 rounded-full border-2 border-cobalt flex items-center justify-center">
-                    <div className="w-3 h-3 rounded-full bg-cobalt" />
-                  </div>
-                  <span className="text-cobalt font-bold text-sm tracking-widest uppercase">Sẽ tham dự</span>
-                  <input type="radio" name="attending" className="hidden" defaultChecked />
-                </label>
-                <label className="flex items-center gap-4 cursor-pointer group">
-                  <div className="w-6 h-6 rounded-full border-2 border-cobalt/30 flex items-center justify-center group-hover:border-cobalt transition-colors">
-                    <div className="w-3 h-3 rounded-full bg-cobalt opacity-0" />
-                  </div>
-                  <span className="text-gray-400 font-bold text-sm tracking-widest uppercase group-hover:text-cobalt transition-colors">Rất tiếc</span>
-                  <input type="radio" name="attending" className="hidden" />
-                </label>
-              </div>
-            </div>
-
-            <div className="pt-10 flex justify-center">
-              <button type="button" className={styles.cobaltButton}>Xác Nhận Ngay</button>
-            </div>
-          </form>
-        </motion.div>
+  if (isSubmitted) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <div className="w-16 h-16 rounded-full bg-green-50 text-green-500 flex items-center justify-center mb-6">
+          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <p className="text-cobalt font-bold">Cảm ơn bạn đã xác nhận!</p>
+        <p className="text-xs text-gray-400 mt-2">Chúng mình đã nhận được thông tin.</p>
       </div>
-    </section>
+    );
+  }
+
+  return (
+    <div className="w-full max-w-sm mx-auto">
+      <form onSubmit={handleSubmit} className="space-y-8 text-left">
+        <div className="space-y-2">
+          <label className="text-[10px] uppercase tracking-[0.2em] font-bold text-gold">Tên của bạn</label>
+          <input 
+            type="text" 
+            value={name}
+            onChange={(e) => {
+              setName(e.target.value);
+              if (e.target.value) setError("");
+            }}
+            placeholder="Nhập họ và tên"
+            className={`${styles.inputField} ${error ? 'border-red-400' : ''}`}
+          />
+          {error && <p className="text-[10px] text-red-500 font-medium">{error}</p>}
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-[10px] uppercase tracking-[0.2em] font-bold text-gold">Bạn là khách của</label>
+          <select className={styles.inputField}>
+            <option value="groom">Nhà Trai</option>
+            <option value="bride">Nhà Gái</option>
+          </select>
+        </div>
+
+        <div className="space-y-4">
+          <label className="text-[10px] uppercase tracking-[0.2em] font-bold text-gold">Tham dự</label>
+          <div className="flex gap-6">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="attending" defaultChecked className="accent-gold" />
+              <span className="text-xs text-cobalt">Sẽ tham dự</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="attending" className="accent-gold" />
+              <span className="text-xs text-cobalt">Rất tiếc</span>
+            </label>
+          </div>
+        </div>
+
+        <div className="pt-4">
+          <button type="submit" className={`${styles.goldButton} w-full`}>Gửi Xác Nhận</button>
+        </div>
+      </form>
+    </div>
   );
 }
+

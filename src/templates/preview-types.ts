@@ -169,6 +169,31 @@ export type TimelessLovePreviewExtra = {
   tlReceptionLocation: string;
   tlGroomBio: string;
   tlBrideBio: string;
+  /** Tiệc nhà chú rể — từng ô trống = dùng giờ tiệc / địa điểm / thành phố chung. */
+  tlGroomEventTime: string;
+  tlGroomEventVenue: string;
+  tlGroomEventLocation: string;
+  /** Tiệc nhà cô dâu — từng ô trống = dùng giờ tiệc / địa điểm / thành phố chung. */
+  tlBrideEventTime: string;
+  tlBrideEventVenue: string;
+  tlBrideEventLocation: string;
+  tlWishesTitle: string;
+  tlWishesLead: string;
+  /** Lễ Vu Quy — giờ & địa điểm. */
+  tlVuQuyTime: string;
+  tlVuQuyVenue: string;
+  tlVuQuyLocation: string;
+  /** RSVP Form Labels */
+  tlRsvpNameLabel: string;
+  tlRsvpContactLabel: string;
+  tlRsvpWishLabel: string;
+  tlRsvpAttendingLabel: string;
+  tlRsvpDeclineLabel: string;
+  tlRsvpSubmitLabel: string;
+  /** Wishes Form Labels */
+  tlWishesNameLabel: string;
+  tlWishesTextLabel: string;
+  tlWishesSubmitLabel: string;
 };
 
 /** Tuỳ chỉnh copy mẫu radiant-bloom (để trống = fallback i18n / data mẫu). */
@@ -402,6 +427,26 @@ export const emptyTimelessLovePreviewExtra: TimelessLovePreviewExtra = {
   tlReceptionLocation: "",
   tlGroomBio: "",
   tlBrideBio: "",
+  tlGroomEventTime: "",
+  tlGroomEventVenue: "",
+  tlGroomEventLocation: "",
+  tlBrideEventTime: "",
+  tlBrideEventVenue: "",
+  tlBrideEventLocation: "",
+  tlWishesTitle: "",
+  tlWishesLead: "",
+  tlVuQuyTime: "",
+  tlVuQuyVenue: "",
+  tlVuQuyLocation: "",
+  tlRsvpNameLabel: "",
+  tlRsvpContactLabel: "",
+  tlRsvpWishLabel: "",
+  tlRsvpAttendingLabel: "",
+  tlRsvpDeclineLabel: "",
+  tlRsvpSubmitLabel: "",
+  tlWishesNameLabel: "",
+  tlWishesTextLabel: "",
+  tlWishesSubmitLabel: "",
 };
 
 export const emptyRadiantBloomPreviewExtra: RadiantBloomPreviewExtra = {

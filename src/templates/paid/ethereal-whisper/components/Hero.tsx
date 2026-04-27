@@ -6,73 +6,85 @@ export function Hero({ preview, cover }: { preview: any, cover: string }) {
   const { scrollYProgress, scrollY } = useScroll();
   const heroOpacity = useTransform(scrollY, [0, 600], [1, 0]);
   const yContent = useTransform(scrollYProgress, [0, 1], [0, 100]);
+  const imageScale = useTransform(scrollYProgress, [0, 0.5], [1, 1.05]);
 
   return (
-    <section className="relative w-full min-h-[100svh] flex flex-col items-center justify-center p-6 md:p-12 overflow-hidden pt-24">
+    <section className="relative w-full min-h-[100svh] flex flex-col items-center justify-center p-6 md:p-12 overflow-hidden bg-[#FDFCFD]">
+      {/* Subtle Background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#FFF5F7]/30 to-transparent" />
       
       <motion.div 
         style={{ opacity: heroOpacity, y: yContent }}
-        className="relative z-20 flex flex-col items-center justify-center w-full max-w-7xl"
+        className="relative z-20 flex flex-col items-center justify-center w-full max-w-6xl"
       >
-        {/* Save the date label */}
+        {/* Intro */}
         <motion.div 
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: 0.2 }}
-          className={`text-[10px] md:text-xs uppercase tracking-[0.4em] text-[#8C7A7A] mb-8 md:mb-12 font-medium ${sans.className}`}
+          initial={{ opacity: 0, y: 10 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ duration: 1, delay: 0.2 }}
+          className={`text-[10px] md:text-xs uppercase tracking-[0.4em] text-[#8C7A7A] mb-8 font-medium ${sans.className}`}
         >
           {preview.ewHeroSubtitle || "Save the Date"}
         </motion.div>
 
-        {/* Center Wide Rectangular Image */}
+        {/* Main Image Frame */}
         <motion.div 
-          initial={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }} 
-          animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }} 
-          transition={{ duration: 1.5, delay: 0.4, ease: "easeOut" }}
-          className="relative w-[90vw] max-w-6xl aspect-[4/3] md:aspect-[16/9] p-3 md:p-4 bg-white/30 backdrop-blur-md shadow-[0_20px_50px_rgba(0,0,0,0.1)] mb-12 rounded-2xl md:rounded-[2rem]"
+          initial={{ opacity: 0, scale: 0.98 }} 
+          animate={{ opacity: 1, scale: 1 }} 
+          transition={{ duration: 1.5, delay: 0.4 }}
+          className="relative w-full aspect-[4/5] md:aspect-[16/9] overflow-hidden rounded-2xl md:rounded-[2.5rem] shadow-xl border border-white/60 mb-12 md:mb-16"
         >
-          <div className="w-full h-full overflow-hidden border border-white/60 relative group rounded-xl md:rounded-3xl">
-            <img 
-              src={cover} 
-              alt="Cover" 
-              className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-[4s] ease-out"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none" />
-          </div>
-          
-          {/* Floating Names overlapping the image */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[180%] flex flex-col items-center pointer-events-none text-center">
-            <motion.h1
-              initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 1.5, delay: 0.8 }}
-              className={`text-6xl md:text-[7rem] leading-none text-[#5A5050] drop-shadow-[0_0_15px_rgba(255,255,255,0.9)] ${serif.className}`}
-            >
-              {preview.groom}
-            </motion.h1>
-            
-            <motion.div 
-               initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 1.2 }}
-               className={`text-5xl md:text-7xl text-[#C9A9A9] my-2 md:-my-4 z-10 ${script.className} drop-shadow-[0_0_10px_rgba(255,255,255,0.9)]`}
-            >
-               &
-            </motion.div>
-
-            <motion.h1
-              initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 1.5, delay: 1 }}
-              className={`text-6xl md:text-[7rem] leading-none text-[#5A5050] drop-shadow-[0_0_15px_rgba(255,255,255,0.9)] ${serif.className}`}
-            >
-              {preview.bride}
-            </motion.h1>
-          </div>
+          <motion.img 
+            style={{ scale: imageScale }}
+            src={cover} 
+            alt="Wedding Cover" 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/5" />
         </motion.div>
 
-        {/* Date */}
+        {/* Names & Date */}
+        <div className="flex flex-col items-center text-center space-y-6 md:space-y-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ duration: 1.2, delay: 0.8 }}
+            className="flex flex-col md:flex-row items-center gap-2 md:gap-8"
+          >
+            <h1 className={`text-5xl md:text-8xl text-[#5A5050] ${serif.className}`}>
+              {preview.groom}
+            </h1>
+            <div className={`text-4xl md:text-6xl text-[#C9A9A9] ${script.className}`}>
+              &
+            </div>
+            <h1 className={`text-5xl md:text-8xl text-[#5A5050] ${serif.className}`}>
+              {preview.bride}
+            </h1>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            transition={{ duration: 1, delay: 1.2 }}
+            className="flex flex-col items-center space-y-4"
+          >
+            <div className="w-12 h-px bg-[#C9A9A9]/50" />
+            <div className={`text-xl md:text-3xl text-[#8C7A7A] font-light tracking-[0.2em] ${serif.className}`}>
+               {preview.dateLabel?.split(' - ')[0] || "20.12.2024"}
+            </div>
+            <div className={`text-[9px] md:text-[10px] uppercase tracking-[0.3em] text-[#C9A9A9] font-medium ${sans.className}`}>
+              Tại {preview.ewCeremonyVenue || preview.venue || "Trung tâm tiệc cưới"}
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Scroll Hint */}
         <motion.div 
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: 1.4 }}
-          className="flex items-center gap-6 mt-6"
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          className="mt-16 md:mt-24 opacity-30"
         >
-          <div className="w-16 h-px bg-[#8C7A7A]/30" />
-          <span className={`text-[9px] md:text-xs uppercase tracking-[0.3em] text-[#5A5050] font-medium bg-white/40 backdrop-blur-sm py-3 px-8 rounded-full border border-white/60 shadow-sm ${sans.className}`}>
-            {preview.dateLabel}
-          </span>
-          <div className="w-16 h-px bg-[#8C7A7A]/30" />
+          <div className="w-[1px] h-12 bg-gradient-to-b from-[#8C7A7A] to-transparent mx-auto" />
         </motion.div>
       </motion.div>
     </section>

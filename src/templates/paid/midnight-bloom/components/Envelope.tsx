@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import styles from "../midnight-bloom.module.css";
 import { Heart } from "./Icons";
 
@@ -12,43 +12,44 @@ export function Envelope({ onOpen, bride, groom }: { onOpen: () => void, bride: 
     setIsOpen(true);
     setTimeout(() => {
       onOpen();
-    }, 1200);
+    }, 2000);
   };
 
   return (
     <div className={`${styles.envelopeOverlay} ${isOpen ? styles.envelopeOpened : ""}`}>
-      <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-        className="text-center"
-      >
-        <p className={`${styles.serif} text-white mb-12 tracking-[0.5em] text-sm uppercase italic`}>Lễ Thành Hôn Hoàng Gia</p>
-        
-        <div 
+      <div className={styles.envelopeWrapper}>
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
           className={`${styles.envelope} ${isOpen ? styles.open : ""}`}
           onClick={handleOpen}
         >
-          <div className={styles.waxSeal}>
-            <Heart className="text-white" size={28} />
-          </div>
+          <div className={styles.flap} />
           
-          <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center bg-[#FDF5E6]">
-            <p className={`${styles.serif} text-xs text-[#B8860B] mb-5 uppercase tracking-[0.3em] font-bold`}>The Wedding of</p>
-            <h3 className={`${styles.serif} text-3xl text-[#6D0E0E] italic font-bold`}>{groom} & {bride}</h3>
-            <div className="w-16 h-px bg-[#B8860B]/30 my-5 mx-auto" />
-            <p className="text-[10px] text-gray-500 uppercase tracking-[0.4em] font-bold">Bấm để mở lời mời</p>
+          <div className={styles.pocket} />
+          
+          <div className={styles.letter}>
+            <p className={`${styles.serif} text-[10px] text-[#B8860B] mb-4 uppercase tracking-[0.3em] font-bold`}>The Wedding of</p>
+            <h3 className={`${styles.serif} text-2xl text-[#6D0E0E] italic font-bold leading-tight`}>{groom} <br/> & <br/> {bride}</h3>
+            <div className="w-12 h-px bg-[#B8860B]/30 my-4 mx-auto" />
+            <p className="text-[9px] text-gray-500 uppercase tracking-[0.3em] font-bold">Bấm để mở lời mời</p>
           </div>
-        </div>
+
+          <div className={styles.waxSeal}>
+            <Heart className="text-white" size={32} />
+          </div>
+        </motion.div>
 
         <motion.p 
-          animate={{ opacity: [0.3, 1, 0.3] }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: isOpen ? 0 : [0.3, 1, 0.3] }}
           transition={{ duration: 2, repeat: Infinity }}
-          className="mt-16 text-[10px] uppercase tracking-[0.6em] text-white/60 font-bold"
+          className="mt-16 text-center text-[10px] uppercase tracking-[0.6em] text-white/60 font-bold"
         >
           Khám phá câu chuyện tình yêu
         </motion.p>
-      </motion.div>
+      </div>
     </div>
   );
 }

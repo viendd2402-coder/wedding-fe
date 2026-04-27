@@ -1,18 +1,41 @@
 "use client";
 
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import styles from "../retro-soul.module.css";
 import { MessageCircle } from "./Icons";
 
-const mockWishes = [
+const initialWishes = [
   { name: "Hùng Dũng", message: "Gout thẩm mỹ đỉnh quá! Chúc hai bạn mãi chất như thế này nhé." },
   { name: "Minh Anh", message: "Quá ấn tượng, chúc mừng ngày vui của hai bạn." },
 ];
 
 export function Guestbook({ preview }: { preview: any }) {
+  const [wishes, setWishes] = useState(initialWishes);
+  const [formData, setFormData] = useState({ name: "", message: "" });
+  const [errors, setErrors] = useState({ name: false, message: false });
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newErrors = {
+      name: !formData.name.trim(),
+      message: !formData.message.trim()
+    };
+    setErrors(newErrors);
+
+    if (newErrors.name || newErrors.message) return;
+
+    // Simulate submission
+    const newWish = { ...formData };
+    setWishes([newWish, ...wishes]);
+    setFormData({ name: "", message: "" });
+    setIsSuccess(true);
+    setTimeout(() => setIsSuccess(false), 3000);
+  };
+
   return (
-    <section className={`${styles.sectionPadding} bg-[#f4f1ea]`}>
+    <section className={`${styles.sectionPadding} bg-[#F7FFF7]`}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <motion.div
@@ -20,38 +43,65 @@ export function Guestbook({ preview }: { preview: any }) {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
           >
-            <MessageCircle className="mx-auto text-orange mb-6 w-16 h-16" />
+            <MessageCircle className="mx-auto text-[#FF6B6B] mb-6 w-16 h-16" />
             <h2 className={`${styles.groovy} ${styles.sectionTitle}`}>Lưu Bút</h2>
           </motion.div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
           <div className={styles.card}>
-            <form className="space-y-8">
+            <form onSubmit={handleSubmit} className="space-y-8">
               <div className="space-y-2">
                 <label className="font-black uppercase text-xs">Biệt danh</label>
                 <input 
                   type="text" 
-                  className="w-full bg-white border-4 border-black p-4 outline-none focus:bg-mustard/10"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="Tên của bạn..."
+                  className={`w-full bg-white border-4 p-4 outline-none transition-colors ${errors.name ? 'border-red-500' : 'border-black focus:bg-[#FFE66D]/20'}`}
                 />
+                {errors.name && <p className="text-red-500 text-[10px] font-black uppercase italic">Vui lòng nhập tên bạn nhé!</p>}
               </div>
               <div className="space-y-2">
                 <label className="font-black uppercase text-xs">Lời nhắn nhủ</label>
                 <textarea 
                   rows={4}
-                  className="w-full bg-white border-4 border-black p-4 outline-none focus:bg-mustard/10 resize-none"
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  placeholder="Gửi lời chúc đến chúng mình..."
+                  className={`w-full bg-white border-4 p-4 outline-none transition-colors resize-none ${errors.message ? 'border-red-500' : 'border-black focus:bg-[#FFE66D]/20'}`}
                 />
+                {errors.message && <p className="text-red-500 text-[10px] font-black uppercase italic">Đừng quên để lại lời chúc nhé!</p>}
               </div>
-              <button type="button" className={styles.retroButton}>Gửi Ngay!</button>
+              <div className="flex flex-col items-center gap-4">
+                <button type="submit" className={styles.retroButton + " w-full"}>Gửi Ngay!</button>
+                <AnimatePresence>
+                  {isSuccess && (
+                    <motion.p
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="text-green-600 font-black uppercase text-xs"
+                    >
+                      ✦ Lời chúc đã được gửi đi!
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+              </div>
             </form>
           </div>
 
-          <div className="space-y-6">
-            {mockWishes.map((wish, idx) => (
-              <div key={idx} className="p-8 bg-white border-4 border-black shadow-[8px_8px_0_var(--green)]">
-                <p className="font-black text-orange uppercase mb-2">{wish.name}</p>
-                <p className="font-medium italic">"{wish.message}"</p>
-              </div>
+          <div className="space-y-6 max-h-[500px] overflow-y-auto pr-4 custom-scrollbar">
+            {wishes.map((wish, idx) => (
+              <motion.div 
+                key={idx} 
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="p-8 bg-white border-4 border-dark shadow-[8px_8px_0_var(--secondary)]"
+              >
+                <p className="font-black text-[#FF6B6B] uppercase mb-2 text-sm">{wish.name}</p>
+                <p className="font-bold italic text-dark">"{wish.message}"</p>
+              </motion.div>
             ))}
           </div>
         </div>

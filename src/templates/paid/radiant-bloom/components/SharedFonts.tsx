@@ -1,12 +1,14 @@
-import { Playfair_Display, Montserrat } from "next/font/google";
+import { Cormorant_Garamond, Inter } from "next/font/google";
 
-export const serif = Playfair_Display({ 
+export const serif = Cormorant_Garamond({ 
   subsets: ["latin", "vietnamese"], 
-  weight: ["400", "500", "600", "700", "800", "900"],
-  style: ["normal", "italic"]
+  weight: ["300", "400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-rb-serif",
 });
 
-export const sans = Montserrat({ 
+export const sans = Inter({ 
   subsets: ["latin", "vietnamese"], 
-  weight: ["200", "300", "400", "500", "600", "700"] 
+  weight: ["200", "300", "400", "500", "600", "700"],
+  variable: "--font-rb-sans",
 });

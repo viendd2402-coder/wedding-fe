@@ -7,12 +7,12 @@ import { sans } from "./components/SharedFonts";
 
 // Sub-components
 import { Hero } from "./components/Hero";
-import { Story } from "./components/Story";
 import { Couple } from "./components/Couple";
 import { Countdown } from "./components/Countdown";
 import { Events } from "./components/Events";
 import { Gallery } from "./components/Gallery";
 import { Rsvp } from "./components/Rsvp";
+import { Wishes } from "./components/Wishes";
 import { Gift } from "./components/Gift";
 import { Footer } from "./components/Footer";
 import { Menu } from "./components/Menu";
@@ -39,21 +39,28 @@ export default function EtherealWhisperPreview({
         <img
           src={cover}
           alt="Background"
-          className="w-full h-full object-cover object-center filter blur-[100px] scale-125 opacity-60 mix-blend-multiply"
+          className="w-full h-full object-cover object-center filter blur-[80px] scale-110 opacity-40 mix-blend-multiply"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-[#FFF5F7]/80 via-[#F3F6FA]/90 to-[#FAF0F5]/80" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#FFFDFE] via-[#F8FBFF]/80 to-[#FFFDFE]" />
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')] opacity-20" />
       </div>
 
       <Menu isPublicInviteSnapshot={isPublicInviteSnapshot} />
 
       <Hero preview={preview} cover={cover} />
-      <Story preview={preview} />
+      
       {preview.countdownTarget && <Countdown targetDate={preview.countdownTarget} />}
+      
       <Couple preview={preview} images={images} />
+      
       <Events preview={preview} />
+      
       <Gallery preview={preview} gallery={gallery} onPreviewImage={onPreviewImage} />
+      
       <Rsvp preview={preview} />
+      <Wishes preview={preview} />
       <Gift preview={preview} />
+      
       <Footer preview={preview} />
     </div>
   );

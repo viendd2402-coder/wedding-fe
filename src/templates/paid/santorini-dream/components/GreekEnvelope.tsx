@@ -21,30 +21,45 @@ export function GreekEnvelope({ onOpen, bride, groom }: { onOpen: () => void, br
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 1 }}
-        className="text-center"
+        className="flex flex-col items-center"
       >
-        <p className={`${styles.garamond} text-white mb-12 text-3xl italic`}>Welcome to our Greek Wedding</p>
+        <span className="text-white/60 uppercase tracking-[0.6em] text-[10px] font-bold mb-8">Exclusive Invitation</span>
         
         <div 
           className={styles.greekTile}
           onClick={handleOpen}
         >
-          <div className="text-center p-8 border-4 border-cobalt">
-            <Heart className="mx-auto text-cobalt mb-6" size={40} />
-            <h3 className={`${styles.garamond} text-3xl text-cobalt mb-2 font-bold italic`}>{groom} & {bride}</h3>
-            <div className="w-16 h-px bg-cobalt my-6 mx-auto" />
-            <p className="text-[10px] text-cobalt uppercase tracking-[0.4em] font-bold">Open our story</p>
-          </div>
+          <motion.div
+            animate={{ rotate: [0, 5, -5, 0] }}
+            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+            className="relative z-10"
+          >
+            <Heart className="mx-auto text-cobalt/20 mb-8" size={32} />
+          </motion.div>
           
-          {/* Decorative Greek pattern in corners */}
-          <div className="absolute top-4 left-4 w-10 h-10 border-t-2 border-l-2 border-cobalt opacity-30" />
-          <div className="absolute top-4 right-4 w-10 h-10 border-t-2 border-r-2 border-cobalt opacity-30" />
-          <div className="absolute bottom-4 left-4 w-10 h-10 border-b-2 border-l-2 border-cobalt opacity-30" />
-          <div className="absolute bottom-4 right-4 w-10 h-10 border-b-2 border-r-2 border-cobalt opacity-30" />
+          <h3 className={`${styles.playfair} text-3xl md:text-4xl text-cobalt mb-6 italic`}>
+            {groom} <br/> <span className="text-gold serif">&</span> <br/> {bride}
+          </h3>
+          
+          <div className="w-12 h-[1px] bg-gold/30 mb-8" />
+          
+          <p className="text-[9px] text-cobalt/60 uppercase tracking-[0.5em] font-bold mb-2">Our Wedding Story</p>
+          <p className="text-[10px] text-gold uppercase tracking-[0.2em] font-light">Open Invitation</p>
+          
+          {/* Subtle patterns */}
+          <div className="absolute inset-4 border border-gold/10 pointer-events-none" />
         </div>
 
-        <p className="mt-12 uppercase tracking-[0.4em] text-white/60 text-xs">Tap the tile to enter</p>
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1, duration: 1 }}
+          className="mt-12 uppercase tracking-[0.5em] text-white/40 text-[9px] font-bold"
+        >
+          Click to explore
+        </motion.p>
       </motion.div>
     </div>
   );
 }
+

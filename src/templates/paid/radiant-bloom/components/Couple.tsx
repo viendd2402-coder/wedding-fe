@@ -4,81 +4,66 @@ import { serif, sans } from "./SharedFonts";
 
 export function Couple({ preview, images }: { preview: any, images: any }) {
   return (
-    <section className="relative w-full py-24 md:py-32 px-6 overflow-hidden">
-      <div className="w-full max-w-7xl mx-auto flex flex-col gap-32">
-        
-        {/* Groom */}
-        <div className="flex flex-col md:flex-row items-center gap-12 lg:gap-24">
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 1.2, ease: "easeOut" }}
-            className="w-full md:w-1/2 aspect-[3/4] relative"
-          >
-            <img 
-              src={images.groomPortraitImage || "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"} 
-              alt="Groom" 
-              className="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-1000"
-            />
-            <div className="absolute -inset-4 border border-[#1a1a1a]/20 pointer-events-none translate-x-4 -translate-y-4" />
-          </motion.div>
+    <section className="relative w-full py-24 md:py-48 px-6 bg-[#F9F9F9] overflow-hidden">
+      <div className="w-full max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row gap-24 lg:gap-40 items-start">
           
+          {/* Groom Portrait */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 1, delay: 0.2 }}
-            className="w-full md:w-1/2 flex flex-col items-start"
+            viewport={{ once: true }}
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+            className="w-full md:w-1/2 flex flex-col gap-12"
           >
-            <p className={`text-[#FF4D4D] text-xs uppercase tracking-[0.4em] font-medium mb-4 ${sans.className}`}>
-              The Groom
-            </p>
-            <h3 className={`text-5xl md:text-7xl mb-8 ${serif.className}`}>
-              {preview.groom}
-            </h3>
-            <p className={`text-[#1a1a1a]/70 font-light leading-relaxed max-w-md ${sans.className}`}>
-              {preview.groomBio || "His heart is wild and his soul is free. He brings the calm to her storm."}
-            </p>
+            <div className="relative aspect-[3/4] bg-white p-6 shadow-[0_40px_80px_rgba(0,0,0,0.04)] border border-[#E8E8E8]">
+              <img 
+                src={images.groomPortraitImage || "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"} 
+                alt="Chú Rể" 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute top-10 right-[-20px] bg-black text-white px-6 py-2">
+                <span className={`text-[10px] uppercase tracking-[0.4em] font-bold ${sans.className}`}>Chú Rể</span>
+              </div>
+            </div>
+            <div className="max-w-sm pl-6">
+              <h3 className={`text-4xl md:text-5xl lg:text-6xl mb-6 font-light ${serif.className}`}>
+                {preview.groom}
+              </h3>
+              <p className={`text-[#7A756D] text-sm md:text-base font-light leading-relaxed ${sans.className}`}>
+                {preview.groomBio || "Người đàn ông mang trong mình trái tim nồng cháy và tâm hồn tự do."}
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Bride Portrait */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="w-full md:w-1/2 flex flex-col gap-12 md:mt-32"
+          >
+            <div className="relative aspect-[3/4] bg-white p-6 shadow-[0_40px_80px_rgba(0,0,0,0.04)] border border-[#E8E8E8]">
+              <img 
+                src={images.bridePortraitImage || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"} 
+                alt="Cô Dâu" 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute top-10 left-[-20px] bg-black text-white px-6 py-2">
+                <span className={`text-[10px] uppercase tracking-[0.4em] font-bold ${sans.className}`}>Cô Dâu</span>
+              </div>
+            </div>
+            <div className="max-w-sm pl-6 md:pl-0 md:pr-6">
+              <h3 className={`text-4xl md:text-5xl lg:text-6xl mb-6 font-light ${serif.className}`}>
+                {preview.bride}
+              </h3>
+              <p className={`text-[#7A756D] text-sm md:text-base font-light leading-relaxed ${sans.className}`}>
+                {preview.brideBio || "Vẻ đẹp của sự tinh tế và sức mạnh. Cô ấy là ngọn lửa sưởi ấm tâm hồn anh."}
+              </p>
+            </div>
           </motion.div>
         </div>
-
-        {/* Bride */}
-        <div className="flex flex-col-reverse md:flex-row items-center gap-12 lg:gap-24">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 1, delay: 0.2 }}
-            className="w-full md:w-1/2 flex flex-col items-start md:items-end text-left md:text-right"
-          >
-            <p className={`text-[#FF4D4D] text-xs uppercase tracking-[0.4em] font-medium mb-4 ${sans.className}`}>
-              The Bride
-            </p>
-            <h3 className={`text-5xl md:text-7xl mb-8 ${serif.className}`}>
-              {preview.bride}
-            </h3>
-            <p className={`text-[#1a1a1a]/70 font-light leading-relaxed max-w-md ${sans.className}`}>
-              {preview.brideBio || "A vision of elegance and strength. She is the fire that keeps him warm."}
-            </p>
-          </motion.div>
-          
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 1.2, ease: "easeOut" }}
-            className="w-full md:w-1/2 aspect-[3/4] relative"
-          >
-            <img 
-              src={images.bridePortraitImage || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"} 
-              alt="Bride" 
-              className="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-1000"
-            />
-            <div className="absolute -inset-4 border border-[#1a1a1a]/20 pointer-events-none -translate-x-4 translate-y-4" />
-          </motion.div>
-        </div>
-
       </div>
     </section>
   );

@@ -4,31 +4,34 @@ import { serif, sans } from "./SharedFonts";
 
 export function Story({ preview }: { preview: any }) {
   return (
-    <section className="relative w-full py-24 md:py-40 px-6 md:px-12 flex flex-col items-center">
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 1 }}
-        className="w-full max-w-5xl flex flex-col md:flex-row gap-12 md:gap-24 items-start"
-      >
-        <div className="w-full md:w-1/3">
-          <span className={`text-[#FF4D4D] text-xs uppercase tracking-[0.3em] font-semibold mb-6 block ${sans.className}`}>
-            Our Story
+    <section className="relative w-full py-24 md:py-48 px-6 md:px-12 bg-white flex flex-col items-center overflow-hidden">
+      <div className="w-full max-w-4xl border-l border-[#1a1a1a]/10 pl-8 md:pl-16">
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1 }}
+        >
+          <span className={`text-[#A4A7A5] text-[10px] md:text-xs uppercase tracking-[0.4em] font-bold mb-12 block ${sans.className}`}>
+            Ghi Chú Triển Lãm / 01
           </span>
-          <p className={`text-sm md:text-base text-[#1a1a1a]/70 leading-relaxed font-light text-justify md:text-left ${sans.className}`}>
-            {preview.rbWelcomeText || "We started our journey with a simple hello, which turned into a million moments we never want to forget. This is the story of us, unscripted and beautifully imperfect."}
-          </p>
-        </div>
 
-        <div className="w-full md:w-2/3 relative">
-          <h2 className={`text-3xl md:text-5xl lg:text-7xl text-[#1a1a1a] leading-[1.1] ${serif.className}`}>
-            <span className="text-[#FF4D4D] italic pr-4 font-light">"</span>
-            {preview.rbWelcomeTitle || "To love and be loved is to feel the sun from both sides."}
+          <h2 className={`text-4xl md:text-6xl lg:text-7xl text-[#1a1a1a] leading-tight mb-16 font-light ${serif.className}`}>
+            {preview.rbWelcomeTitle || "Yêu và được yêu là cảm nhận ánh mặt trời từ cả hai phía."}
           </h2>
-          <div className="w-1/3 h-[1px] bg-[#1a1a1a] mt-12" />
-        </div>
-      </motion.div>
+
+          <div className="max-w-2xl">
+            <p className={`text-base md:text-lg text-[#7A756D] leading-relaxed font-light ${sans.className}`}>
+              {preview.rbWelcomeText || "Chúng tôi bắt đầu hành trình bằng một lời chào đơn giản, và giờ đây là hàng triệu khoảnh khắc không thể quên. Đây là câu chuyện của chúng tôi, tự nhiên và chân thật."}
+            </p>
+          </div>
+          
+          <div className="mt-16 flex items-center gap-4">
+            <div className="w-12 h-[1px] bg-[#1a1a1a]" />
+            <span className={`text-[10px] uppercase tracking-[0.4em] text-[#1a1a1a] font-bold ${sans.className}`}>Giới thiệu bởi {preview.groom} & {preview.bride}</span>
+          </div>
+        </motion.div>
+      </div>
     </section>
   );
 }

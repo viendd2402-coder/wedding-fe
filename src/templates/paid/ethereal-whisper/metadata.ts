@@ -14,7 +14,7 @@ export const etherealWhisperMetadata: WeddingTemplate = {
   heroTitle: "Lễ Thành Hôn",
   heroSubtitle: "Save the Date",
   previewLabel: "Xem trước",
-  sections: ["Câu chuyện", "Sự kiện", "Thư viện", "Lời chúc"],
+  sections: ["Sự kiện", "Thư viện", "Lời chúc"],
   sectionProfile: "Thông tin",
   countdownVariant: "romance",
 };

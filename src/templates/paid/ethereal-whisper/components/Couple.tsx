@@ -12,66 +12,71 @@ export function Couple({ preview, images }: { preview: any, images: any }) {
   const brideImg = images.bridePortraitImage || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop";
 
   return (
-    <section id="couple" className="relative py-12 md:py-20 px-6">
-      <div className="max-w-[90rem] mx-auto">
+    <section id="couple" className="relative py-20 md:py-32 px-6">
+      <div className="max-w-[85rem] mx-auto">
         <motion.div 
           initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-          className="text-center mb-16 md:mb-24"
+          className="text-center mb-24 md:mb-32"
         >
-          <p className={`text-xs uppercase tracking-[0.4em] text-[#8C7A7A] mb-4 ${sans.className}`}>The Couple</p>
-          <h2 className={`text-5xl md:text-6xl text-[#5A5050] italic ${serif.className}`}>
-            {preview.ewCoupleTitle || "Hai Mảnh Ghép"}
+          <p className={`text-xs uppercase tracking-[0.5em] text-[#8C7A7A] mb-4 ${sans.className}`}>The Couple</p>
+          <h2 className={`text-5xl md:text-7xl text-[#5A5050] italic ${serif.className}`}>
+            {preview.ewCoupleTitle || "Groom & Bride"}
           </h2>
+          <div className="w-16 h-[1px] bg-[#C9A9A9]/40 mx-auto mt-8" />
         </motion.div>
 
-        <div className="flex flex-col md:flex-row items-center justify-center gap-12 md:gap-8">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-16 md:gap-24">
           {/* Groom */}
           <motion.div 
             initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-            className="flex flex-col items-center flex-1 max-w-sm"
+            className="flex flex-col items-center flex-1 w-full"
           >
-            <div className="relative w-64 h-80 md:w-72 md:h-96 mb-8 rounded-[100px] overflow-hidden border-4 border-white/50 shadow-xl group">
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10" />
-              <img 
-                src={groomImg} 
-                alt="Groom" 
-                className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-[2s]" 
-              />
-            </div>
-            <div className="bg-white/40 backdrop-blur-md border border-white/60 p-8 rounded-3xl text-center shadow-lg w-full relative -mt-20 z-20">
-              <h3 className={`text-3xl text-[#5A5050] mb-4 ${serif.className}`}>{preview.groom}</h3>
-              <p className={`text-sm text-[#6B6161] font-light leading-relaxed tracking-wide ${sans.className}`}>
-                {preview.ewGroomBio}
-              </p>
-            </div>
-          </motion.div>
+            <div className="relative w-full max-w-sm aspect-[3/4] mb-12 group">
+              {/* Decorative Frame */}
+              <div className="absolute -inset-4 border border-[#C9A9A9]/20 rounded-[3rem] translate-x-2 translate-y-2 -z-10 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-700" />
+              
+              <div className="w-full h-full rounded-[2.5rem] overflow-hidden border border-white/60 shadow-2xl">
+                <img 
+                  src={groomImg} 
+                  alt="Groom" 
+                  className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-[3s] ease-out" 
+                />
+              </div>
 
-          {/* & */}
-          <motion.div 
-            initial={{ scale: 0 }} whileInView={{ scale: 1 }} viewport={{ once: true }} transition={{ duration: 1 }}
-            className={`text-6xl text-[#C9A9A9] my-8 md:my-0 ${script.className}`}
-          >
-            &
+              {/* Bio Card Overlap */}
+              <div className="absolute -bottom-10 -right-4 md:-right-10 bg-white/60 backdrop-blur-xl border border-white/80 p-8 md:p-10 rounded-[2rem] shadow-xl max-w-[280px] group-hover:-translate-y-2 transition-transform duration-500">
+                <h3 className={`text-2xl md:text-3xl text-[#5A5050] mb-3 ${serif.className}`}>{preview.groom}</h3>
+                <p className={`text-[11px] md:text-xs text-[#6B6161] font-light leading-relaxed tracking-wider ${sans.className}`}>
+                  {preview.ewGroomBio}
+                </p>
+              </div>
+            </div>
           </motion.div>
 
           {/* Bride */}
           <motion.div 
-            initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ delay: 0.2 }}
-            className="flex flex-col items-center flex-1 max-w-sm"
+            initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ delay: 0.3 }}
+            className="flex flex-col items-center flex-1 w-full"
           >
-            <div className="relative w-64 h-80 md:w-72 md:h-96 mb-8 rounded-[100px] overflow-hidden border-4 border-white/50 shadow-xl group">
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10" />
-              <img 
-                src={brideImg} 
-                alt="Bride" 
-                className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-[2s]" 
-              />
-            </div>
-            <div className="bg-white/40 backdrop-blur-md border border-white/60 p-8 rounded-3xl text-center shadow-lg w-full relative -mt-20 z-20">
-              <h3 className={`text-3xl text-[#5A5050] mb-4 ${serif.className}`}>{preview.bride}</h3>
-              <p className={`text-sm text-[#6B6161] font-light leading-relaxed tracking-wide ${sans.className}`}>
-                {preview.ewBrideBio}
-              </p>
+            <div className="relative w-full max-w-sm aspect-[3/4] mb-12 group">
+              {/* Decorative Frame */}
+              <div className="absolute -inset-4 border border-[#C9A9A9]/20 rounded-[3rem] -translate-x-2 translate-y-2 -z-10 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-700" />
+              
+              <div className="w-full h-full rounded-[2.5rem] overflow-hidden border border-white/60 shadow-2xl">
+                <img 
+                  src={brideImg} 
+                  alt="Bride" 
+                  className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-[3s] ease-out" 
+                />
+              </div>
+
+              {/* Bio Card Overlap */}
+              <div className="absolute -bottom-10 -left-4 md:-left-10 bg-white/60 backdrop-blur-xl border border-white/80 p-8 md:p-10 rounded-[2rem] shadow-xl max-w-[280px] group-hover:-translate-y-2 transition-transform duration-500 text-right md:text-left">
+                <h3 className={`text-2xl md:text-3xl text-[#5A5050] mb-3 ${serif.className}`}>{preview.bride}</h3>
+                <p className={`text-[11px] md:text-xs text-[#6B6161] font-light leading-relaxed tracking-wider ${sans.className}`}>
+                  {preview.ewBrideBio}
+                </p>
+              </div>
             </div>
           </motion.div>
         </div>

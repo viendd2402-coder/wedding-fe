@@ -53,23 +53,33 @@ export function MidnightBloomPreview({
 
             {/* Hero Section */}
             <section className={styles.heroSection}>
-              <div className={styles.heroBg} />
+              <div 
+                className={styles.heroBg} 
+                style={{ 
+                  backgroundImage: `url(${images.heroImage || "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1920&q=80"})` 
+                }} 
+              />
+              <div className={styles.heroOverlay} />
               <div className={styles.heroContent}>
                 <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5, duration: 1.5 }}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.5, duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
                 >
-                  <p className={`${styles.serif} text-[#B8860B] tracking-[0.6em] text-xs mb-14 uppercase font-bold`}>The Union of Royal Hearts</p>
-                  <h1 className={`${styles.serif} italic`}>
-                    {groom} <br />
-                    <span className="text-3xl md:text-5xl text-[#B8860B]/30 font-light my-10 block">to</span>
+                  <p className={`${styles.serif} text-[#D4AF37] tracking-[0.8em] text-[10px] mb-10 uppercase font-bold`}>
+                    The Union of Royal Hearts
+                  </p>
+                  <h1 className={`${styles.serif}`}>
+                    {groom}
+                    <span className={styles.to}>&</span>
                     {bride}
                   </h1>
-                  <div className="flex items-center justify-center gap-8 mt-16">
-                    <div className="w-16 h-px bg-[#B8860B]/30" />
-                    <p className={`${styles.serif} text-xl tracking-[0.5em] text-[#6D0E0E] font-bold italic`}>{dateLabel}</p>
-                    <div className="w-16 h-px bg-[#B8860B]/30" />
+                  <div className="flex items-center justify-center gap-6 mt-12">
+                    <div className="w-12 h-px bg-[#D4AF37]/40" />
+                    <p className={`${styles.serif} text-lg tracking-[0.4em] text-white font-light italic`}>
+                      {dateLabel}
+                    </p>
+                    <div className="w-12 h-px bg-[#D4AF37]/40" />
                   </div>
                 </motion.div>
               </div>
@@ -170,38 +180,73 @@ export function MidnightBloomPreview({
 
             {/* Events */}
             <section id="events" className={`${styles.sectionPadding} bg-[#FDF5E6]`}>
-              <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-24">
-                <motion.div {...fadeIn} className={styles.card}>
-                  <Calendar className="text-[#B8860B] mb-12 w-14 h-14 opacity-20" />
-                  <h3 className={`${styles.serif} text-5xl mb-12 tracking-wide text-[#6D0E0E] italic font-bold`}>Lễ Thành Hôn</h3>
-                  <div className="space-y-10 text-[10px] uppercase tracking-[0.5em] font-bold text-[#8B735B]">
-                    <div className="flex items-center gap-8">
-                      <Clock className="w-6 h-6 text-[#B8860B]" />
-                      <span className="text-base font-bold italic text-[#2C1810] tracking-normal">{preview.mbCeremonyTime || "09:00"} — {dateLabel}</span>
+              <div className="max-w-7xl mx-auto">
+                <div className="text-center mb-24">
+                  <motion.h2 {...fadeIn} className={`${styles.serif} ${styles.sectionTitle} italic`}>Sự Kiện Trọng Đại</motion.h2>
+                  <div className="w-24 h-px bg-[#B8860B]/30 mx-auto" />
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+                  <motion.div {...fadeIn} className={styles.card}>
+                    <div className="mb-8 p-6 rounded-full border border-[#B8860B]/10 bg-white shadow-sm">
+                      <Heart className="text-[#B8860B] w-8 h-8" />
                     </div>
-                    <div className="flex items-center gap-8">
-                      <MapPin className="w-6 h-6 text-[#B8860B]" />
-                      <span className="leading-relaxed text-base font-bold italic text-[#2C1810] tracking-normal text-left">{preview.mbCeremonyVenue || "Khách sạn Continental Saigon"}</span>
+                    <h3 className={`${styles.serif} text-3xl mb-8 tracking-wide text-[#6D0E0E] italic font-bold`}>Lễ Nhóm Họ</h3>
+                    <div className="space-y-6 text-center">
+                      <div className="flex flex-col items-center gap-2">
+                        <Clock className="w-5 h-5 text-[#B8860B] opacity-60" />
+                        <span className="text-sm font-bold italic text-[#2C1810]">{preview.mbEngagementTime || "10:00"} — 17.12.2026</span>
+                      </div>
+                      <div className="flex flex-col items-center gap-2">
+                        <MapPin className="w-5 h-5 text-[#B8860B] opacity-60" />
+                        <span className="text-sm font-bold italic text-[#2C1810] leading-relaxed max-w-[200px]">
+                          {preview.mbEngagementVenue || "Tư gia họ nhà gái"}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  <button className={`${styles.goldButton} mt-20 w-full`}>Chỉ Đường Hoàng Gia</button>
-                </motion.div>
+                    <button className={`${styles.goldButton} mt-12 w-full`}>Xem Bản Đồ</button>
+                  </motion.div>
 
-                <motion.div {...fadeIn} transition={{ delay: 0.2 }} className={styles.card}>
-                  <Calendar className="text-[#B8860B] mb-12 w-14 h-14 opacity-20" />
-                  <h3 className={`${styles.serif} text-5xl mb-12 tracking-wide text-[#6D0E0E] italic font-bold`}>Tiệc Cưới</h3>
-                  <div className="space-y-10 text-[10px] uppercase tracking-[0.5em] font-bold text-[#8B735B]">
-                    <div className="flex items-center gap-8">
-                      <Clock className="w-6 h-6 text-[#B8860B]" />
-                      <span className="text-base font-bold italic text-[#2C1810] tracking-normal">{preview.mbReceptionTime || "18:30"} — {dateLabel}</span>
+                  <motion.div {...fadeIn} transition={{ delay: 0.1 }} className={styles.card}>
+                    <div className="mb-8 p-6 rounded-full border border-[#B8860B]/10 bg-white shadow-sm">
+                      <Calendar className="text-[#B8860B] w-8 h-8" />
                     </div>
-                    <div className="flex items-center gap-8">
-                      <MapPin className="w-6 h-6 text-[#B8860B]" />
-                      <span className="leading-relaxed text-base font-bold italic text-[#2C1810] tracking-normal text-left">{preview.mbReceptionVenue || "Park Hyatt Saigon Hotel"}</span>
+                    <h3 className={`${styles.serif} text-3xl mb-8 tracking-wide text-[#6D0E0E] italic font-bold`}>Lễ Thành Hôn</h3>
+                    <div className="space-y-6 text-center">
+                      <div className="flex flex-col items-center gap-2">
+                        <Clock className="w-5 h-5 text-[#B8860B] opacity-60" />
+                        <span className="text-sm font-bold italic text-[#2C1810]">{preview.mbCeremonyTime || "09:00"} — {dateLabel}</span>
+                      </div>
+                      <div className="flex flex-col items-center gap-2">
+                        <MapPin className="w-5 h-5 text-[#B8860B] opacity-60" />
+                        <span className="text-sm font-bold italic text-[#2C1810] leading-relaxed max-w-[200px]">
+                          {preview.mbCeremonyVenue || "Khách sạn Continental Saigon"}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  <button className={`${styles.goldButton} mt-20 w-full`}>Chỉ Đường Hoàng Gia</button>
-                </motion.div>
+                    <button className={`${styles.goldButton} mt-12 w-full`}>Xem Bản Đồ</button>
+                  </motion.div>
+
+                  <motion.div {...fadeIn} transition={{ delay: 0.2 }} className={styles.card}>
+                    <div className="mb-8 p-6 rounded-full border border-[#B8860B]/10 bg-white shadow-sm">
+                      <Calendar className="text-[#B8860B] w-8 h-8" />
+                    </div>
+                    <h3 className={`${styles.serif} text-3xl mb-8 tracking-wide text-[#6D0E0E] italic font-bold`}>Tiệc Cưới</h3>
+                    <div className="space-y-6 text-center">
+                      <div className="flex flex-col items-center gap-2">
+                        <Clock className="w-5 h-5 text-[#B8860B] opacity-60" />
+                        <span className="text-sm font-bold italic text-[#2C1810]">{preview.mbReceptionTime || "18:30"} — {dateLabel}</span>
+                      </div>
+                      <div className="flex flex-col items-center gap-2">
+                        <MapPin className="w-5 h-5 text-[#B8860B] opacity-60" />
+                        <span className="text-sm font-bold italic text-[#2C1810] leading-relaxed max-w-[200px]">
+                          {preview.mbReceptionVenue || "Park Hyatt Saigon Hotel"}
+                        </span>
+                      </div>
+                    </div>
+                    <button className={`${styles.goldButton} mt-12 w-full`}>Xem Bản Đồ</button>
+                  </motion.div>
+                </div>
               </div>
             </section>
 

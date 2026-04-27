@@ -1,20 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Shrikhand&family=Outfit:wght@100..900&display=swap');
 
 .container {
-  --mustard: #e9b824;
-  --orange: #d85a2b;
-  --green: #5a6b3d;
-  --cream: #f4f1ea;
-  --text-dark: #2d2d2d;
+  --primary: #FF6B6B;
+  --secondary: #4ECDC4;
+  --accent: #FFE66D;
+  --dark: #2F2F2F;
+  --light: #F7FFF7;
+  --pink: #FF8E9E;
   
-  background-color: var(--cream);
-  color: var(--text-dark);
+  background-color: var(--light);
+  color: var(--dark);
   font-family: 'Outfit', sans-serif;
   overflow-x: hidden;
+  position: relative;
 }
 
 .groovy {
   font-family: 'Shrikhand', cursive;
+  letter-spacing: 0.02em;
 }
 
 /* Interactive Record Player */
@@ -22,12 +25,12 @@
   position: fixed;
   inset: 0;
   z-index: 1000;
-  background: var(--mustard);
+  background: var(--primary);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  transition: transform 1s cubic-bezier(0.85, 0, 0.15, 1);
+  transition: transform 1s cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 .recordOpened {
@@ -37,33 +40,42 @@
 .recordSleeve {
   width: 320px;
   height: 320px;
-  background: #2d2d2d;
+  background: white;
   position: relative;
-  box-shadow: 0 40px 80px rgba(0,0,0,0.3);
+  box-shadow: 20px 20px 0 var(--dark);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
+  border: 4px solid var(--dark);
 }
 
 .vinyl {
   position: absolute;
   width: 300px;
   height: 300px;
-  background: #111;
+  background: #1a1a1a;
   border-radius: 50%;
-  border: 1px solid #333;
-  transition: transform 1s ease;
+  border: 8px solid #222;
+  transition: transform 0.8s ease;
   z-index: -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+.vinyl::after {
+  content: '';
+  width: 100px;
+  height: 100px;
+  background: var(--accent);
+  border-radius: 50%;
+  border: 4px solid #111;
 }
 
 .recordSleeve:hover .vinyl {
-  transform: translateX(150px) rotate(180deg);
-}
-
-.recordOpened .vinyl {
-  transform: translateX(100vw) rotate(360deg);
+  transform: translateX(140px) rotate(180deg);
 }
 
 /* Menu */
@@ -73,8 +85,8 @@
   left: 0;
   width: 100%;
   z-index: 100;
-  background: var(--cream);
-  border-bottom: 4px solid var(--text-dark);
+  background: white;
+  border-bottom: 6px solid var(--dark);
   padding: 15px 0;
 }
 
@@ -89,7 +101,7 @@
 }
 
 .menuLinks a:hover {
-  color: var(--orange);
+  color: var(--primary);
 }
 
 /* Hero */
@@ -102,62 +114,74 @@
   justify-content: center;
   text-align: center;
   position: relative;
-  background: repeating-linear-gradient(
-    45deg,
-    rgba(233, 184, 36, 0.05),
-    rgba(233, 184, 36, 0.05) 10px,
-    transparent 10px,
-    transparent 20px
-  );
+  background-image: 
+    radial-gradient(var(--accent) 2px, transparent 2px),
+    radial-gradient(var(--accent) 2px, transparent 2px);
+  background-size: 40px 40px;
+  background-position: 0 0, 20px 20px;
 }
 
 .heroContent h1 {
-  font-size: clamp(4rem, 18vw, 12rem);
-  color: var(--orange);
-  line-height: 0.8;
-  margin: 40px 0;
-  transform: rotate(-3deg);
+  font-size: clamp(4rem, 15vw, 10rem);
+  color: var(--primary);
+  line-height: 0.9;
+  margin: 30px 0;
+  -webkit-text-stroke: 3px var(--dark);
+  filter: drop-shadow(8px 8px 0 var(--dark));
 }
 
 /* Sections */
 .sectionPadding {
-  padding: 100px 20px;
+  padding: 100px 24px;
 }
 
 .sectionTitle {
   font-size: clamp(3rem, 10vw, 6rem);
-  color: var(--green);
-  margin-bottom: 2rem;
+  color: var(--dark);
+  margin-bottom: 3rem;
+  position: relative;
+  display: inline-block;
+}
+
+.sectionTitle::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 15px;
+  background: var(--accent);
+  z-index: -1;
 }
 
 .card {
   background: white;
   padding: 40px;
-  border: 4px solid var(--text-dark);
-  box-shadow: 12px 12px 0 var(--mustard);
-  border-radius: 20px;
+  border: 4px solid var(--dark);
+  box-shadow: 12px 12px 0 var(--secondary);
+  border-radius: 0;
 }
 
 /* Buttons */
 .retroButton {
   padding: 15px 40px;
-  background: var(--text-dark);
+  background: var(--dark);
   color: white;
   font-weight: 900;
   text-transform: uppercase;
   border: none;
-  box-shadow: 6px 6px 0 var(--orange);
+  box-shadow: 6px 6px 0 var(--primary);
   transition: all 0.2s ease;
 }
 
 .retroButton:hover {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0 var(--orange);
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 var(--primary);
 }
 
 /* Timeline */
 .timelineItem {
-  border-left: 6px solid var(--mustard);
+  border-left: 8px solid var(--dark);
   padding-left: 30px;
   padding-bottom: 60px;
   position: relative;
@@ -166,35 +190,36 @@
 .timelineItem::before {
   content: '';
   position: absolute;
-  left: -18px;
+  left: -22px;
   top: 0;
-  width: 30px;
-  height: 30px;
-  background: var(--orange);
+  width: 36px;
+  height: 36px;
+  background: var(--primary);
   border-radius: 50%;
-  border: 6px solid var(--text-dark);
+  border: 4px solid var(--dark);
 }
 
 /* Gallery */
 .retroFrame {
-  padding: 10px;
+  padding: 12px;
   background: white;
-  border: 4px solid var(--text-dark);
-  box-shadow: 8px 8px 0 rgba(0,0,0,0.1);
+  border: 4px solid var(--dark);
+  box-shadow: 8px 8px 0 var(--dark);
+  transition: transform 0.2s ease;
+}
+
+.retroFrame:hover {
+  transform: scale(1.02);
 }
 
 .galleryImg {
   width: 100%;
-  filter: sepia(0.3) contrast(1.1);
-  transition: filter 0.4s ease;
-}
-
-.galleryImg:hover {
-  filter: sepia(0) contrast(1.2);
+  filter: saturate(1.2);
 }
 
 @media (max-width: 768px) {
   .heroContent h1 {
     font-size: 5rem;
+    -webkit-text-stroke: 2px var(--dark);
   }
 }
