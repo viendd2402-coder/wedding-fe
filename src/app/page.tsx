@@ -875,16 +875,16 @@ export default function Home() {
                   &ldquo;
                 </span>
                 <blockquote
-                  className={`mt-2 flex-1 text-sm leading-6 [overflow-wrap:normal] [word-break:normal] sm:text-base sm:leading-7 ${isDark ? "text-white/88" : "text-[var(--color-ink)]"}`}
+                  className={`mt-2 flex-1 text-sm leading-6 break-words sm:text-base sm:leading-7 ${isDark ? "text-white/88" : "text-[var(--color-ink)]"}`}
                 >
                   {item.quote}
                 </blockquote>
                 <figcaption className={`mt-4 min-w-0 border-t pt-4 sm:mt-6 sm:pt-5 ${isDark ? "border-white/10" : "border-[var(--color-ink)]/10"}`}>
                   <p className="font-display text-lg break-words sm:text-xl">{item.name}</p>
                   <div
-                    className={`mt-2 max-w-full overflow-x-auto overflow-y-hidden pb-0.5 [-webkit-overflow-scrolling:touch] ${isDark ? "text-white/50" : "text-[var(--color-ink)]/72"}`}
+                    className={`mt-2 max-w-full ${isDark ? "text-white/50" : "text-[var(--color-ink)]/72"}`}
                   >
-                    <p className="w-max min-w-full whitespace-nowrap text-xs uppercase tracking-[0.2em]">
+                    <p className="text-xs uppercase tracking-[0.2em]">
                       {item.detail}
                     </p>
                   </div>

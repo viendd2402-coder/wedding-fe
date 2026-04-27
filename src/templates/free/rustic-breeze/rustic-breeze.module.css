@@ -14,9 +14,15 @@
 }
 
 .container {
-  max-width: 800px;
+  max-width: 1080px;
   margin: 0 auto;
-  padding: 0 4rem;
+  padding: 0 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 0 4rem;
+  }
 }
 
 /* Nav */
