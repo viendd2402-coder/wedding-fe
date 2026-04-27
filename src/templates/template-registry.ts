@@ -11,6 +11,9 @@ import { softSerenityModule } from "@/templates/paid/soft-serenity";
 import midnightBloomModule from "@/templates/paid/midnight-bloom";
 import retroSoulModule from "@/templates/paid/retro-soul";
 import santoriniDreamModule from "@/templates/paid/santorini-dream";
+import { gentleHarmonyModule } from "./free/gentle-harmony";
+import { rusticBreezeModule } from "./free/rustic-breeze";
+import { modernPulseModule } from "./free/modern-pulse";
 
 export type TemplateModule = {
   meta: WeddingTemplate;
@@ -29,6 +32,9 @@ export const templateModules: TemplateModule[] = [
   midnightBloomModule,
   retroSoulModule,
   santoriniDreamModule,
+  gentleHarmonyModule,
+  rusticBreezeModule,
+  modernPulseModule,
 ];
 
 export const weddingTemplates = templateModules.map((module) => module.meta);

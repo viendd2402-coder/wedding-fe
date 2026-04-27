@@ -351,6 +351,17 @@ export type SantoriniDreamPreviewExtra = {
   sdBrideBio: string;
 };
 
+export type GentleHarmonyPreviewExtra = {
+  ghIntroText: string;
+  ghThirdEventTitle: string;
+  ghThirdEventTime: string;
+  ghThirdEventVenue: string;
+  ghThirdEventLocation: string;
+};
+
+export type RusticBreezePreviewExtra = GentleHarmonyPreviewExtra;
+export type ModernPulsePreviewExtra = GentleHarmonyPreviewExtra;
+
 export const emptyGentleDriftPreviewExtra: GentleDriftPreviewExtra = {
   gdHeroLead: "",
   gdInviteBody: "",
@@ -594,6 +605,17 @@ export const emptySantoriniDreamPreviewExtra: SantoriniDreamPreviewExtra = {
   sdBrideBio: "",
 };
 
+export const emptyGentleHarmonyPreviewExtra: GentleHarmonyPreviewExtra = {
+  ghIntroText: "",
+  ghThirdEventTitle: "",
+  ghThirdEventTime: "",
+  ghThirdEventVenue: "",
+  ghThirdEventLocation: "",
+};
+
+export const emptyRusticBreezePreviewExtra: RusticBreezePreviewExtra = emptyGentleHarmonyPreviewExtra;
+export const emptyModernPulsePreviewExtra: ModernPulsePreviewExtra = emptyGentleHarmonyPreviewExtra;
+
 export const emptySlideFlexPreviewExtra: SlideFlexPreviewExtra = {
   groomPhotoUrl: "",
   bridePhotoUrl: "",
@@ -683,7 +705,10 @@ export type PreviewData = {
   SoftSerenityPreviewExtra &
   MidnightBloomPreviewExtra &
   RetroSoulPreviewExtra &
-  SantoriniDreamPreviewExtra;
+  SantoriniDreamPreviewExtra &
+  GentleHarmonyPreviewExtra &
+  RusticBreezePreviewExtra &
+  ModernPulsePreviewExtra;
 
 
 export type PreviewImages = {
@@ -741,6 +766,9 @@ export const defaultPreviewData: PreviewData = {
   ...emptyMidnightBloomPreviewExtra,
   ...emptyRetroSoulPreviewExtra,
   ...emptySantoriniDreamPreviewExtra,
+  ...emptyGentleHarmonyPreviewExtra,
+  ...emptyRusticBreezePreviewExtra,
+  ...emptyModernPulsePreviewExtra,
 };
 
 export const defaultPreviewImages: PreviewImages = {

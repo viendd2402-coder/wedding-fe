@@ -664,6 +664,9 @@ function PreviewConfigurator({
   const isGentleDrift = template.slug === "gentle-drift";
   const isBrightlyBasic = template.slug === "brightly-basic";
   const isTimelessLove = template.slug === "timeless-love";
+  const isGentleHarmony = template.slug === "gentle-harmony";
+  const isRusticBreeze = template.slug === "rustic-breeze";
+  const isModernPulse = template.slug === "modern-pulse";
   const sf = copy.slideFlex;
   const gd = copy.gentleDrift;
   const bb = copy.brightlyBasic;
@@ -2407,6 +2410,67 @@ function PreviewConfigurator({
               isDark={isDark}
               gallerySlotTags={gallerySlotTags}
             />
+          )}
+
+          {(isGentleHarmony || isRusticBreeze || isModernPulse) && (
+            <SlideFlexWorkspaceSection
+              title={isGentleHarmony ? "Tuỳ chỉnh Gentle Harmony" : isRusticBreeze ? "Tuỳ chỉnh Rustic Breeze" : "Tuỳ chỉnh Modern Pulse"}
+              inventory="Nội dung lời mời và tiểu sử"
+              isDark={isDark}
+            >
+              <PanelFieldBlock label="Lời mời chân thành" tag="GH-INVITE" isDark={isDark}>
+                <textarea
+                  className={textareaClass}
+                  value={preview.ghIntroText}
+                  onChange={(e) => onChange("ghIntroText", e.target.value)}
+                  rows={3}
+                  placeholder="Nhập lời mời của bạn..."
+                />
+              </PanelFieldBlock>
+              <PanelFieldBlock label="Tiểu sử Chú rể" tag="GH-GROOM" isDark={isDark}>
+                <textarea
+                  className={textareaClass}
+                  value={preview.groomBio}
+                  onChange={(e) => onChange("groomBio", e.target.value)}
+                  rows={2}
+                />
+              </PanelFieldBlock>
+              <PanelFieldBlock label="Tiểu sử Cô dâu" tag="GH-BRIDE" isDark={isDark}>
+                <textarea
+                  className={textareaClass}
+                  value={preview.brideBio}
+                  onChange={(e) => onChange("brideBio", e.target.value)}
+                  rows={2}
+                />
+              </PanelFieldBlock>
+              <div className="mt-4 border-t pt-4 border-white/10">
+                <p className="text-[10px] uppercase tracking-widest text-white/40 mb-3">Sự kiện bổ sung (Phần 03)</p>
+                <PanelFieldBlock label="Tên sự kiện" tag="GH-EVENT3-TITLE" isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.ghThirdEventTitle}
+                    onChange={(e) => onChange("ghThirdEventTitle", e.target.value)}
+                    placeholder="Tiệc Nhà Gái"
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock label="Thời gian" tag="GH-EVENT3-TIME" isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.ghThirdEventTime}
+                    onChange={(e) => onChange("ghThirdEventTime", e.target.value)}
+                    placeholder={preview.partyTime}
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock label="Địa điểm" tag="GH-EVENT3-VENUE" isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.ghThirdEventVenue}
+                    onChange={(e) => onChange("ghThirdEventVenue", e.target.value)}
+                    placeholder={preview.venue}
+                  />
+                </PanelFieldBlock>
+              </div>
+            </SlideFlexWorkspaceSection>
           )}
 
           {isSlideFlex ? (
