@@ -14,6 +14,9 @@ import santoriniDreamModule from "@/templates/paid/santorini-dream";
 import { gentleHarmonyModule } from "./free/gentle-harmony";
 import { rusticBreezeModule } from "./free/rustic-breeze";
 import { modernPulseModule } from "./free/modern-pulse";
+import { noirEditorialModule } from "./free/noir-editorial";
+import { sereneCanvasModule } from "./free/serene-canvas";
+
 
 export type TemplateModule = {
   meta: WeddingTemplate;
@@ -35,7 +38,10 @@ export const templateModules: TemplateModule[] = [
   gentleHarmonyModule,
   rusticBreezeModule,
   modernPulseModule,
+  noirEditorialModule,
+  sereneCanvasModule,
 ];
+
 
 export const weddingTemplates = templateModules.map((module) => module.meta);
 export const freeTemplates = weddingTemplates.filter(

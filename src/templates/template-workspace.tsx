@@ -667,6 +667,9 @@ function PreviewConfigurator({
   const isGentleHarmony = template.slug === "gentle-harmony";
   const isRusticBreeze = template.slug === "rustic-breeze";
   const isModernPulse = template.slug === "modern-pulse";
+  const isNoirEditorial = template.slug === "noir-editorial";
+  const isSereneCanvas = template.slug === "serene-canvas";
+
   const sf = copy.slideFlex;
   const gd = copy.gentleDrift;
   const bb = copy.brightlyBasic;
@@ -2412,9 +2415,15 @@ function PreviewConfigurator({
             />
           )}
 
-          {(isGentleHarmony || isRusticBreeze || isModernPulse) && (
+          {(isGentleHarmony || isRusticBreeze || isModernPulse || isNoirEditorial || isSereneCanvas) && (
             <SlideFlexWorkspaceSection
-              title={isGentleHarmony ? "Tuỳ chỉnh Gentle Harmony" : isRusticBreeze ? "Tuỳ chỉnh Rustic Breeze" : "Tuỳ chỉnh Modern Pulse"}
+              title={
+                isGentleHarmony ? "Tuỳ chỉnh Gentle Harmony" : 
+                isRusticBreeze ? "Tuỳ chỉnh Rustic Breeze" : 
+                isModernPulse ? "Tuỳ chỉnh Modern Pulse" : 
+                isNoirEditorial ? "Tuỳ chỉnh Noir Editorial" : 
+                "Tuỳ chỉnh Serene Canvas"
+              }
               inventory="Nội dung lời mời và tiểu sử"
               isDark={isDark}
             >
@@ -2443,7 +2452,59 @@ function PreviewConfigurator({
                   rows={2}
                 />
               </PanelFieldBlock>
+
+              {isNoirEditorial && (
+                <>
+                  <PanelFieldBlock label="Phụ đề Hero (Noir)" tag="NE-HERO-EYEBROW" isDark={isDark}>
+                    <input
+                      className={inputClass}
+                      value={preview.neHeroEyebrow}
+                      onChange={(e) => onChange("neHeroEyebrow", e.target.value)}
+                      placeholder="Editorial Issue Vol. 01"
+                    />
+                  </PanelFieldBlock>
+                  <PanelFieldBlock label="Tiêu đề Cặp đôi (Noir)" tag="NE-PROTAGONISTS" isDark={isDark}>
+                    <input
+                      className={inputClass}
+                      value={preview.neProtagonistsTitle}
+                      onChange={(e) => onChange("neProtagonistsTitle", e.target.value)}
+                      placeholder="The Protagonists"
+                    />
+                  </PanelFieldBlock>
+                </>
+              )}
+
+              {isSereneCanvas && (
+                <>
+                  <PanelFieldBlock label="Phụ đề Hero (Serene)" tag="SC-HERO-EYEBROW" isDark={isDark}>
+                    <input
+                      className={inputClass}
+                      value={preview.scHeroEyebrow}
+                      onChange={(e) => onChange("scHeroEyebrow", e.target.value)}
+                      placeholder="Save the Date"
+                    />
+                  </PanelFieldBlock>
+                  <PanelFieldBlock label="Tiêu đề Sự kiện (Serene)" tag="SC-BIG-DAY" isDark={isDark}>
+                    <input
+                      className={inputClass}
+                      value={preview.scBigDayTitle}
+                      onChange={(e) => onChange("scBigDayTitle", e.target.value)}
+                      placeholder="The Big Day"
+                    />
+                  </PanelFieldBlock>
+                  <PanelFieldBlock label="Tiêu đề Album (Serene)" tag="SC-MOMENTS" isDark={isDark}>
+                    <input
+                      className={inputClass}
+                      value={preview.scMomentsTitle}
+                      onChange={(e) => onChange("scMomentsTitle", e.target.value)}
+                      placeholder="Moments Captured"
+                    />
+                  </PanelFieldBlock>
+                </>
+              )}
+
               <div className="mt-4 border-t pt-4 border-white/10">
+
                 <p className="text-[10px] uppercase tracking-widest text-white/40 mb-3">Sự kiện bổ sung (Phần 03)</p>
                 <PanelFieldBlock label="Tên sự kiện" tag="GH-EVENT3-TITLE" isDark={isDark}>
                   <input
