@@ -319,6 +319,56 @@
   grid-row: span 2;
 }
 
+/* Gift Section */
+.giftSection {
+  padding: 8rem 0;
+  background: var(--ne-bg);
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.bankGrid {
+  display: grid;
+  grid-template-cols: 1fr 1fr;
+  gap: 1px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+@media (max-width: 767px) {
+  .bankGrid {
+    grid-template-cols: 1fr;
+  }
+}
+
+.bankCard {
+  background: var(--ne-bg);
+  padding: 5rem 2rem;
+  text-align: center;
+}
+
+.bankTitle {
+  font-family: var(--font-ne-display);
+  font-size: 1.75rem;
+  text-transform: uppercase;
+  color: var(--ne-accent);
+  margin-bottom: 2rem;
+  letter-spacing: 0.1em;
+}
+
+.bankDetails p {
+  margin: 0.5rem 0;
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+.accNumber {
+  font-family: var(--font-ne-display);
+  font-size: 2rem !important;
+  color: var(--ne-text);
+  margin-top: 1.5rem !important;
+  letter-spacing: 0.05em;
+}
+
 /* Footer */
 .footer {
   position: relative;

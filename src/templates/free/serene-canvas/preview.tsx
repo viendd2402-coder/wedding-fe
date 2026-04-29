@@ -50,7 +50,9 @@ export default function SereneCanvasPreview({
   }, []);
 
   const cover = images.coverImage || template.image;
+  const galleryCount = parseInt(preview.ghAlbumVisibleCount || "6");
   const gallery = images.galleryImages.length > 0 ? images.galleryImages : sereneCanvasDefaultGallery;
+  const limitedGallery = gallery.slice(0, galleryCount);
   
   const fontVars = `${ebGaramond.variable} ${outfit.variable}`;
 
@@ -123,7 +125,7 @@ export default function SereneCanvasPreview({
                   <img src={images.groomPortraitImage || "https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=800"} alt={preview.groom} />
                 </div>
                 <h3>{preview.groom}</h3>
-                <p>{preview.groomBio || "Groom"}</p>
+                <p>{preview.ghGroomBio || preview.groomBio || "Chúng tôi tin rằng mỗi người sinh ra đều dành cho một ai đó. Cảm ơn định mệnh đã mang chúng mình đến với nhau."}</p>
               </motion.div>
 
               <div className={styles.ampersand}>&</div>
@@ -133,7 +135,7 @@ export default function SereneCanvasPreview({
                   <img src={images.bridePortraitImage || "https://images.pexels.com/photos/1444442/pexels-photo-1444442.jpeg?auto=compress&cs=tinysrgb&w=800"} alt={preview.bride} />
                 </div>
                 <h3>{preview.bride}</h3>
-                <p>{preview.brideBio || "Bride"}</p>
+                <p>{preview.ghBrideBio || preview.brideBio || "Tình yêu không phải là tìm thấy một ai đó hoàn hảo, mà là học cách để nhìn thấy những điều tuyệt vời từ một người không hoàn hảo."}</p>
               </motion.div>
             </div>
           </div>
@@ -148,9 +150,9 @@ export default function SereneCanvasPreview({
             </div>
             <div className={styles.eventList}>
               {[
-                { title: copy.ceremony, time: preview.ceremonyTime, venue: preview.venue },
-                { title: "Groom's Celebration", time: preview.partyTime, venue: preview.venue },
-                { title: "Bride's Celebration", time: preview.ghThirdEventTime || preview.partyTime, venue: preview.ghThirdEventVenue || preview.venue },
+                { title: copy.ceremony, time: preview.ghCeremonyTime || preview.ceremonyTime, venue: preview.ghCeremonyVenue || preview.venue, location: preview.ghCeremonyLocation || preview.location },
+                { title: "Groom's Celebration", time: preview.ghGroomPartyTime || preview.partyTime, venue: preview.ghGroomPartyVenue || preview.venue, location: preview.ghGroomPartyLocation || preview.location },
+                { title: "Bride's Celebration", time: preview.ghBridePartyTime || (preview.ghThirdEventTime || preview.partyTime), venue: preview.ghBridePartyVenue || preview.venue, location: preview.ghBridePartyLocation || preview.location },
               ].map((event, i) => (
                 <motion.div 
                    key={i} 
@@ -165,7 +167,14 @@ export default function SereneCanvasPreview({
                   <div className={styles.eventInfo}>
                     <h4>{event.title}</h4>
                     <p className={styles.eventVenue}>{event.venue}</p>
-                    <a href="#" className={styles.mapLink}>{copy.viewMap}</a>
+                    <a 
+                      href={event.location?.startsWith("http") ? event.location : "#"} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className={styles.mapLink}
+                    >
+                      {copy.viewMap}
+                    </a>
                   </div>
                 </motion.div>
               ))}
@@ -181,7 +190,7 @@ export default function SereneCanvasPreview({
               <h2 className={styles.sectionTitle}>{preview.scMomentsTitle || "Moments Captured"}</h2>
             </div>
             <div className={styles.albumGrid}>
-              {gallery.slice(0, 9).map((src, i) => (
+              {limitedGallery.map((src, i) => (
                 <motion.div 
                   key={i} 
                   className={styles.albumImage}
@@ -194,6 +203,35 @@ export default function SereneCanvasPreview({
                   <img src={src} alt="" loading="lazy" />
                 </motion.div>
               ))}
+            </div>
+          </div>
+        </section>
+        {/* Gift Section */}
+        <section className={styles.section}>
+          <div className={styles.container}>
+            <div className={styles.sectionHeader}>
+              <span className={styles.sectionEyebrow}>{copy.giftTitle || "Mừng Cưới"}</span>
+              <h2 className={styles.sectionTitle}>{copy.giftLead || "Sự hiện diện của bạn là món quà lớn nhất."}</h2>
+            </div>
+            
+            <div className={styles.bankGrid}>
+              <motion.div className={styles.bankCard} {...fadeInUp}>
+                <h3 className={styles.bankTitle}>Nhà Chú Rể</h3>
+                <div className={styles.bankDetails}>
+                  <p><strong>Ngân hàng:</strong> {preview.ghGroomBankName || preview.bankName}</p>
+                  <p><strong>Chủ TK:</strong> {preview.ghGroomAccountName || preview.accountName}</p>
+                  <p className={styles.accNumber}>{preview.ghGroomAccountNumber || preview.accountNumber}</p>
+                </div>
+              </motion.div>
+
+              <motion.div className={styles.bankCard} {...fadeInUp} transition={{ delay: 0.1 }}>
+                <h3 className={styles.bankTitle}>Nhà Cô Dâu</h3>
+                <div className={styles.bankDetails}>
+                  <p><strong>Ngân hàng:</strong> {preview.ghBrideBankName || preview.bankName}</p>
+                  <p><strong>Chủ TK:</strong> {preview.ghBrideAccountName || preview.accountName}</p>
+                  <p className={styles.accNumber}>{preview.ghBrideAccountNumber || preview.accountNumber}</p>
+                </div>
+              </motion.div>
             </div>
           </div>
         </section>

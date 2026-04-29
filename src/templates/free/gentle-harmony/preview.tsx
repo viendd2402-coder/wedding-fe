@@ -40,11 +40,16 @@ export default function GentleHarmonyPreview({
   const copy = gentleHarmonyPreviewMessages[language];
   
   const cover = images.coverImage || template.image;
+  const cover2 = images.coverImage2 || "https://images.pexels.com/photos/1783478/pexels-photo-1783478.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1";
+  const cover3 = images.coverImage3 || "https://images.pexels.com/photos/169198/pexels-photo-169198.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1";
+  const cover4 = images.coverImage4 || "https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1";
+
+  const galleryCount = parseInt(preview.ghAlbumVisibleCount || "6");
   const gallery = images.galleryImages.length > 0 ? images.galleryImages : gentleHarmonyDefaultGallery;
-  const limitedGallery = gallery.slice(0, 9);
+  const limitedGallery = gallery.slice(0, galleryCount);
   
-  // Carousel Images: Cover + first few gallery images
-  const carouselImages = [cover, ...gallery.slice(0, 3)];
+  // Carousel Images: Use 4 dedicated cover slots
+  const carouselImages = [cover, cover2, cover3, cover4];
   const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
@@ -150,7 +155,7 @@ export default function GentleHarmonyPreview({
                   <img src={images.groomPortraitImage || "https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=800"} alt={preview.groom} />
                 </div>
                 <h3>{preview.groom}</h3>
-                <p>{preview.groomBio || "Chú rể"}</p>
+                <p>{preview.ghGroomBio || "Là một người yêu thích nghệ thuật và sự sáng tạo. Anh luôn tin rằng tình yêu là nguồn cảm hứng lớn nhất trong cuộc đời."}</p>
               </motion.div>
               
               <div className={styles.coupleDivider}>
@@ -162,7 +167,7 @@ export default function GentleHarmonyPreview({
                   <img src={images.bridePortraitImage || "https://images.pexels.com/photos/1444442/pexels-photo-1444442.jpeg?auto=compress&cs=tinysrgb&w=800"} alt={preview.bride} />
                 </div>
                 <h3>{preview.bride}</h3>
-                <p>{preview.brideBio || "Cô dâu"}</p>
+                <p>{preview.ghBrideBio || "Một tâm hồn lãng mạn, yêu thiên nhiên và những điều giản dị. Cô luôn mang đến sự ấm áp và lạc quan cho mọi người xung quanh."}</p>
               </motion.div>
             </div>
           </div>
@@ -179,30 +184,51 @@ export default function GentleHarmonyPreview({
                 <span className={styles.eventLabel}>01</span>
                 <h4>{copy.ceremony}</h4>
                 <div className={styles.eventData}>
-                  <p className={styles.time}>{preview.ceremonyTime}</p>
-                  <p className={styles.venue}>{preview.venue}</p>
+                  <p className={styles.time}>{preview.ghCeremonyTime || preview.ceremonyTime}</p>
+                  <p className={styles.venue}>{preview.ghCeremonyVenue || preview.venue}</p>
                 </div>
-                <a href="#" className={styles.mapLinkSmall}>{copy.viewMap}</a>
+                <a 
+                  href={preview.ghCeremonyLocation?.startsWith("http") ? preview.ghCeremonyLocation : "#"} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className={styles.mapLinkSmall}
+                >
+                  {copy.viewMap}
+                </a>
               </motion.div>
 
               <motion.div className={styles.eventBoxCompact} {...fadeInUp} transition={{ delay: 0.1 }}>
                 <span className={styles.eventLabel}>02</span>
                 <h4>Tiệc Nhà Trai</h4>
                 <div className={styles.eventData}>
-                  <p className={styles.time}>{preview.partyTime}</p>
-                  <p className={styles.venue}>{preview.venue}</p>
+                  <p className={styles.time}>{preview.ghGroomPartyTime || preview.partyTime}</p>
+                  <p className={styles.venue}>{preview.ghGroomPartyVenue || preview.venue}</p>
                 </div>
-                <a href="#" className={styles.mapLinkSmall}>{copy.viewMap}</a>
+                <a 
+                  href={preview.ghGroomPartyLocation?.startsWith("http") ? preview.ghGroomPartyLocation : "#"} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className={styles.mapLinkSmall}
+                >
+                  {copy.viewMap}
+                </a>
               </motion.div>
 
               <motion.div className={styles.eventBoxCompact} {...fadeInUp} transition={{ delay: 0.2 }}>
                 <span className={styles.eventLabel}>03</span>
-                <h4>{preview.ghThirdEventTitle || "Tiệc Nhà Gái"}</h4>
+                <h4>{preview.ghBridePartyTitle || "Tiệc Nhà Gái"}</h4>
                 <div className={styles.eventData}>
-                  <p className={styles.time}>{preview.ghThirdEventTime || preview.partyTime}</p>
-                  <p className={styles.venue}>{preview.ghThirdEventVenue || preview.venue}</p>
+                  <p className={styles.time}>{preview.ghBridePartyTime || preview.partyTime}</p>
+                  <p className={styles.venue}>{preview.ghBridePartyVenue || preview.venue}</p>
                 </div>
-                <a href="#" className={styles.mapLinkSmall}>{copy.viewMap}</a>
+                <a 
+                  href={preview.ghBridePartyLocation?.startsWith("http") ? preview.ghBridePartyLocation : "#"} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className={styles.mapLinkSmall}
+                >
+                  {copy.viewMap}
+                </a>
               </motion.div>
             </div>
           </div>
@@ -229,6 +255,38 @@ export default function GentleHarmonyPreview({
             </div>
           </div>
         </section>
+
+        {/* Gift / Bank Info */}
+        <section className={`${styles.compactSection} ${styles.bgLight}`}>
+          <div className={styles.container}>
+            <motion.div className={styles.sectionHeaderCompact} {...fadeInUp}>
+              <h2 className={styles.sectionTitleSmall}>{copy.giftTitle || "Mừng Cưới"}</h2>
+              <p className={styles.introText}>{copy.giftLead || "Sự hiện diện của bạn là món quà lớn nhất, nhưng nếu bạn muốn gửi lời chúc bằng hình thức khác..."}</p>
+            </motion.div>
+            
+            <div className={styles.bankGrid}>
+              <motion.div className={styles.bankCard} {...fadeInUp}>
+                <div className={styles.bankIcon}>🤵‍♂️</div>
+                <h4>Nhà Chú Rể</h4>
+                <div className={styles.bankDetails}>
+                  <p><strong>Ngân hàng:</strong> {preview.ghGroomBankName || preview.bankName}</p>
+                  <p><strong>Chủ TK:</strong> {preview.ghGroomAccountName || preview.accountName}</p>
+                  <p className={styles.accountNumber}>{preview.ghGroomAccountNumber || preview.accountNumber}</p>
+                </div>
+              </motion.div>
+
+              <motion.div className={styles.bankCard} {...fadeInUp} transition={{ delay: 0.1 }}>
+                <div className={styles.bankIcon}>👰‍♀️</div>
+                <h4>Nhà Cô Dâu</h4>
+                <div className={styles.bankDetails}>
+                  <p><strong>Ngân hàng:</strong> {preview.ghBrideBankName || preview.bankName}</p>
+                  <p><strong>Chủ TK:</strong> {preview.ghBrideAccountName || preview.accountName}</p>
+                  <p className={styles.accountNumber}>{preview.ghBrideAccountNumber || preview.accountNumber}</p>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
       </main>
 
       {/* Footer */}
@@ -242,9 +300,9 @@ export default function GentleHarmonyPreview({
             </div>
           </div>
           <div className={styles.footerInfo}>
-            <p className={styles.footerThank}>{copy.thanks}</p>
+            <p className={styles.footerThank}>{preview.ghFooterThanks || copy.thanks}</p>
             <div className={styles.footerDate}>{preview.dateLabel}</div>
-            <div className={styles.footerTagline}>Building our future together</div>
+            <div className={styles.footerTagline}>{preview.ghFooterTagline || "Building our future together"}</div>
           </div>
           <div className={styles.footerCredit}>
             © 2026 Lumiere Wedding Invitations

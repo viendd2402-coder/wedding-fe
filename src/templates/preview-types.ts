@@ -353,10 +353,25 @@ export type SantoriniDreamPreviewExtra = {
 
 export type GentleHarmonyPreviewExtra = {
   ghIntroText: string;
-  ghThirdEventTitle: string;
-  ghThirdEventTime: string;
-  ghThirdEventVenue: string;
-  ghThirdEventLocation: string;
+  // Lễ thành hôn
+  ghCeremonyTime: string;
+  ghCeremonyVenue: string;
+  ghCeremonyLocation: string;
+  // Tiệc nhà trai
+  ghGroomPartyTime: string;
+  ghGroomPartyVenue: string;
+  ghGroomPartyLocation: string;
+  // Tiệc nhà gái
+  ghBridePartyTitle: string;
+  ghBridePartyTime: string;
+  ghBridePartyVenue: string;
+  ghBridePartyLocation: string;
+  /** Số lượng ảnh thư viện hiển thị (mặc định "9"). */
+  ghGalleryCount: string;
+  /** Dòng chữ nhỏ dưới cùng footer. */
+  ghFooterTagline: string;
+  ghGroomBio: string;
+  ghBrideBio: string;
 };
 
 export type RusticBreezePreviewExtra = GentleHarmonyPreviewExtra;
@@ -618,12 +633,42 @@ export const emptySantoriniDreamPreviewExtra: SantoriniDreamPreviewExtra = {
   sdBrideBio: "",
 };
 
+export const defaultGentleHarmonyPreviewExtra: GentleHarmonyPreviewExtra = {
+  ghIntroText: "Chúng mình rất hạnh phúc khi được chia sẻ khoảnh khắc trọng đại này cùng bạn. Sự hiện diện của bạn là món quà vô giá nhất đối với chúng mình.",
+  ghCeremonyTime: "09:00",
+  ghCeremonyVenue: "Riverside Palace",
+  ghCeremonyLocation: "https://www.google.com/maps/place/Hồ+Chí+Minh",
+  ghGroomPartyTime: "18:00",
+  ghGroomPartyVenue: "Riverside Palace",
+  ghGroomPartyLocation: "https://www.google.com/maps/place/Riverside+Palace",
+  ghBridePartyTitle: "Tiệc Nhà Gái",
+  ghBridePartyTime: "11:30",
+  ghBridePartyVenue: "White Palace",
+  ghBridePartyLocation: "https://www.google.com/maps/place/White+Palace",
+  ghGalleryCount: "9",
+  ghFooterThanks: "Cảm ơn bạn đã luôn đồng hành và chia sẻ niềm vui cùng chúng mình trong suốt thời gian qua!",
+  ghFooterTagline: "Building our future together",
+  ghGroomBio: "Là một người yêu thích nghệ thuật và sự sáng tạo. Anh luôn tin rằng tình yêu là nguồn cảm hứng lớn nhất trong cuộc đời.",
+  ghBrideBio: "Một tâm hồn lãng mạn, yêu thiên nhiên và những điều giản dị. Cô luôn mang đến sự ấm áp và lạc quan cho mọi người xung quanh.",
+};
+
 export const emptyGentleHarmonyPreviewExtra: GentleHarmonyPreviewExtra = {
   ghIntroText: "",
-  ghThirdEventTitle: "",
-  ghThirdEventTime: "",
-  ghThirdEventVenue: "",
-  ghThirdEventLocation: "",
+  ghCeremonyTime: "",
+  ghCeremonyVenue: "",
+  ghCeremonyLocation: "",
+  ghGroomPartyTime: "",
+  ghGroomPartyVenue: "",
+  ghGroomPartyLocation: "",
+  ghBridePartyTitle: "",
+  ghBridePartyTime: "",
+  ghBridePartyVenue: "",
+  ghBridePartyLocation: "",
+  ghGalleryCount: "9",
+  ghFooterThanks: "",
+  ghFooterTagline: "",
+  ghGroomBio: "",
+  ghBrideBio: "",
 };
 
 export const emptyRusticBreezePreviewExtra: RusticBreezePreviewExtra = emptyGentleHarmonyPreviewExtra;
@@ -744,6 +789,9 @@ export type PreviewData = {
 
 export type PreviewImages = {
   coverImage: string;
+  coverImage2: string;
+  coverImage3: string;
+  coverImage4: string;
   galleryImages: string[];
   /** Gentle Drift: ảnh màn chào (intro). Trống = dùng ảnh bìa / hero. */
   introBannerImage: string;
@@ -776,17 +824,6 @@ export type TemplatePreviewProps = {
 };
 
 export const defaultPreviewData: PreviewData = {
-  bride: "Linh",
-  groom: "Minh",
-  dateLabel: "Chủ nhật, 20 tháng 10 năm 2026",
-  location: "Đà Nẵng",
-  countdownTarget: "2026-10-20T09:00",
-  ceremonyTime: "09:00",
-  partyTime: "18:00",
-  venue: "Riverside Garden, Đà Nẵng",
-  bankName: "ACB - Ngân hàng Á Châu",
-  accountName: "LINH MINH STUDIO",
-  accountNumber: "1234 5678 9999",
   ...emptySlideFlexPreviewExtra,
   ...emptyGentleDriftPreviewExtra,
   ...emptyBrightlyBasicPreviewExtra,
@@ -797,16 +834,32 @@ export const defaultPreviewData: PreviewData = {
   ...emptyMidnightBloomPreviewExtra,
   ...emptyRetroSoulPreviewExtra,
   ...emptySantoriniDreamPreviewExtra,
-  ...emptyGentleHarmonyPreviewExtra,
   ...emptyRusticBreezePreviewExtra,
   ...emptyModernPulsePreviewExtra,
   ...emptyNoirEditorialPreviewExtra,
   ...emptySereneCanvasPreviewExtra,
+  ...defaultGentleHarmonyPreviewExtra,
+  bride: "Linh",
+  groom: "Minh",
+  dateLabel: "Chủ nhật, 20 tháng 10 năm 2026",
+  location: "https://www.google.com/maps/place/Đà+Nẵng",
+  countdownTarget: "2026-10-20T09:00",
+  ceremonyTime: "09:00",
+  partyTime: "18:00",
+  venue: "Riverside Garden, Đà Nẵng",
+  bankName: "ACB - Ngân hàng Á Châu",
+  accountName: "LINH MINH STUDIO",
+  accountNumber: "1234 5678 9999",
+  groomBio: "Là một người yêu thích nghệ thuật và sự sáng tạo. Anh luôn tin rằng tình yêu là nguồn cảm hứng lớn nhất trong cuộc đời.",
+  brideBio: "Một tâm hồn lãng mạn, yêu thiên nhiên và những điều giản dị. Cô luôn mang đến sự ấm áp và lạc quan cho mọi người xung quanh.",
 };
 
 
 export const defaultPreviewImages: PreviewImages = {
   coverImage: "",
+  coverImage2: "",
+  coverImage3: "",
+  coverImage4: "",
   galleryImages: [],
   introBannerImage: "",
   groomPortraitImage: "",

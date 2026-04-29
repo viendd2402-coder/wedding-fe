@@ -51,7 +51,9 @@ export default function NoirEditorialPreview({
   }, []);
 
   const cover = images.coverImage || template.image;
+  const galleryCount = parseInt(preview.ghAlbumVisibleCount || "6");
   const gallery = images.galleryImages.length > 0 ? images.galleryImages : noirEditorialDefaultGallery;
+  const limitedGallery = gallery.slice(0, galleryCount);
   
   const fontVars = `${cormorant.variable} ${montserrat.variable}`;
 
@@ -122,7 +124,7 @@ export default function NoirEditorialPreview({
                 </div>
                 <div className={styles.coupleInfo}>
                   <h3>{preview.groom}</h3>
-                  <p>{preview.groomBio || "The Groom"}</p>
+                  <p>{preview.ghGroomBio || preview.groomBio || "Chúng tôi tin rằng mỗi người sinh ra đều dành cho một ai đó. Cảm ơn định mệnh đã mang chúng mình đến với nhau."}</p>
                 </div>
               </motion.div>
 
@@ -132,7 +134,7 @@ export default function NoirEditorialPreview({
                 </div>
                 <div className={styles.coupleInfo}>
                   <h3>{preview.bride}</h3>
-                  <p>{preview.brideBio || "The Bride"}</p>
+                  <p>{preview.ghBrideBio || preview.brideBio || "Tình yêu không phải là tìm thấy một ai đó hoàn hảo, mà là học cách để nhìn thấy những điều tuyệt vời từ một người không hoàn hảo."}</p>
                 </div>
               </motion.div>
             </div>
@@ -147,9 +149,9 @@ export default function NoirEditorialPreview({
             </motion.div>
             <div className={styles.eventsGrid}>
               {[
-                { title: copy.ceremony, time: preview.ceremonyTime, venue: preview.venue },
-                { title: "Groom's Reception", time: preview.partyTime, venue: preview.venue },
-                { title: "Bride's Reception", time: preview.ghThirdEventTime || preview.partyTime, venue: preview.ghThirdEventVenue || preview.venue },
+                { title: copy.ceremony, time: preview.ghCeremonyTime || preview.ceremonyTime, venue: preview.ghCeremonyVenue || preview.venue, location: preview.ghCeremonyLocation || preview.location },
+                { title: "Groom's Reception", time: preview.ghGroomPartyTime || preview.partyTime, venue: preview.ghGroomPartyVenue || preview.venue, location: preview.ghGroomPartyLocation || preview.location },
+                { title: "Bride's Reception", time: preview.ghBridePartyTime || (preview.ghThirdEventTime || preview.partyTime), venue: preview.ghBridePartyVenue || preview.venue, location: preview.ghBridePartyLocation || preview.location },
               ].map((event, i) => (
                 <motion.div 
                    key={i} 
@@ -161,7 +163,14 @@ export default function NoirEditorialPreview({
                   <h4>{event.title}</h4>
                   <span className={styles.eventTime}>{event.time}</span>
                   <p className={styles.eventVenue}>{event.venue}</p>
-                  <a href="#" className={styles.mapBtn}>{copy.viewMap}</a>
+                  <a 
+                    href={event.location?.startsWith("http") ? event.location : "#"} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className={styles.mapBtn}
+                  >
+                    {copy.viewMap}
+                  </a>
                 </motion.div>
               ))}
             </div>
@@ -175,7 +184,7 @@ export default function NoirEditorialPreview({
               <h2 className={styles.sectionTitle}>{copy.albumTitle}</h2>
             </motion.div>
             <div className={styles.albumGrid}>
-              {gallery.slice(0, 7).map((src, i) => (
+              {limitedGallery.map((src, i) => (
                 <motion.div 
                   key={i} 
                   className={`${styles.albumItem} ${i === 0 ? styles.itemLarge : i === 3 ? styles.itemTall : ""}`}
@@ -186,6 +195,34 @@ export default function NoirEditorialPreview({
                   <img src={src} alt="" loading="lazy" />
                 </motion.div>
               ))}
+            </div>
+          </div>
+        </section>
+        {/* Gift Section */}
+        <section className={styles.giftSection}>
+          <div className={styles.container}>
+            <motion.div style={{ textAlign: 'center', marginBottom: '5rem' }} {...fadeInUp}>
+              <h2 className={styles.sectionTitle}>{copy.giftTitle || "Mừng Cưới"}</h2>
+            </motion.div>
+            
+            <div className={styles.bankGrid}>
+              <motion.div className={styles.bankCard} {...fadeInUp}>
+                <h3 className={styles.bankTitle}>Nhà Chú Rể</h3>
+                <div className={styles.bankDetails}>
+                  <p><strong>Ngân hàng:</strong> {preview.ghGroomBankName || preview.bankName}</p>
+                  <p><strong>Chủ TK:</strong> {preview.ghGroomAccountName || preview.accountName}</p>
+                  <p className={styles.accNumber}>{preview.ghGroomAccountNumber || preview.accountNumber}</p>
+                </div>
+              </motion.div>
+
+              <motion.div className={styles.bankCard} {...fadeInUp} transition={{ delay: 0.1 }}>
+                <h3 className={styles.bankTitle}>Nhà Cô Dâu</h3>
+                <div className={styles.bankDetails}>
+                  <p><strong>Ngân hàng:</strong> {preview.ghBrideBankName || preview.bankName}</p>
+                  <p><strong>Chủ TK:</strong> {preview.ghBrideAccountName || preview.accountName}</p>
+                  <p className={styles.accNumber}>{preview.ghBrideAccountNumber || preview.accountNumber}</p>
+                </div>
+              </motion.div>
             </div>
           </div>
         </section>
