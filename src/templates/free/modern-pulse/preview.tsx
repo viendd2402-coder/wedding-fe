@@ -51,7 +51,9 @@ export default function ModernPulsePreview({
   }, []);
 
   const cover = images.coverImage || template.image;
+  const galleryCount = parseInt(preview.ghAlbumVisibleCount || "6");
   const gallery = images.galleryImages.length > 0 ? images.galleryImages : modernPulseDefaultGallery;
+  const limitedGallery = gallery.slice(0, galleryCount);
   
   const fontVars = `${oswald.variable} ${inter.variable}`;
 
@@ -118,7 +120,7 @@ export default function ModernPulsePreview({
                 </div>
                 <div className={styles.coupleMeta}>
                   <h3>{preview.groom}</h3>
-                  <p>{preview.groomBio || "Chú rể"}</p>
+                  <p>{preview.ghGroomBio || preview.groomBio || "Chúng tôi tin rằng mỗi người sinh ra đều dành cho một ai đó. Cảm ơn định mệnh đã mang chúng mình đến với nhau."}</p>
                 </div>
               </motion.div>
 
@@ -130,7 +132,7 @@ export default function ModernPulsePreview({
                 </div>
                 <div className={styles.coupleMeta}>
                   <h3>{preview.bride}</h3>
-                  <p>{preview.brideBio || "Cô dâu"}</p>
+                  <p>{preview.ghBrideBio || preview.brideBio || "Tình yêu không phải là tìm thấy một ai đó hoàn hảo, mà là học cách để nhìn thấy những điều tuyệt vời từ một người không hoàn hảo."}</p>
                 </div>
               </motion.div>
             </div>
@@ -145,9 +147,9 @@ export default function ModernPulsePreview({
             </motion.div>
             <div className={styles.eventsGrid}>
               {[
-                { title: copy.ceremony, time: preview.ceremonyTime, icon: "⚡" },
-                { title: "Tiệc Nhà Trai", time: preview.partyTime, icon: "⦿" },
-                { title: "Tiệc Nhà Gái", time: preview.ghThirdEventTime || preview.partyTime, icon: "◈" },
+                { title: copy.ceremony, time: preview.ghCeremonyTime || preview.ceremonyTime, venue: preview.ghCeremonyVenue || preview.venue, location: preview.ghCeremonyLocation || preview.location, icon: "⚡" },
+                { title: "Tiệc Nhà Trai", time: preview.ghGroomPartyTime || preview.partyTime, venue: preview.ghGroomPartyVenue || preview.venue, location: preview.ghGroomPartyLocation || preview.location, icon: "⦿" },
+                { title: "Tiệc Nhà Gái", time: preview.ghBridePartyTime || (preview.ghThirdEventTime || preview.partyTime), venue: preview.ghBridePartyVenue || preview.venue, location: preview.ghBridePartyLocation || preview.location, icon: "◈" },
               ].map((event, i) => (
                 <motion.div 
                    key={i} 
@@ -158,8 +160,15 @@ export default function ModernPulsePreview({
                   <div className={styles.eventIcon}>{event.icon}</div>
                   <h4>{event.title}</h4>
                   <span className={styles.time}>{event.time}</span>
-                  <p className={styles.venue}>{preview.venue}</p>
-                  <a href="#" className={styles.actionBtn}>{copy.viewMap}</a>
+                  <p className={styles.venue}>{event.venue}</p>
+                  <a 
+                    href={event.location?.startsWith("http") ? event.location : "#"} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className={styles.actionBtn}
+                  >
+                    {copy.viewMap}
+                  </a>
                 </motion.div>
               ))}
             </div>
@@ -173,7 +182,7 @@ export default function ModernPulsePreview({
               <h2 className={styles.boldTitle}>{copy.albumTitle}</h2>
             </motion.div>
             <div className={styles.albumGrid}>
-              {gallery.map((src, i) => (
+              {limitedGallery.map((src, i) => (
                 <motion.div 
                   key={i} 
                   className={styles.albumItem}
@@ -191,6 +200,38 @@ export default function ModernPulsePreview({
                   </div>
                 </motion.div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Gift Section */}
+        <section className={styles.giftSection}>
+          <div className={styles.container}>
+            <motion.div style={{ textAlign: 'center', marginBottom: '4rem' }} {...fadeInUp}>
+              <h2 className={styles.boldTitle}>{copy.giftTitle || "Mừng Cưới"}</h2>
+              <p style={{ opacity: 0.7, maxWidth: '600px', margin: '0 auto' }}>
+                {copy.giftLead || "Sự hiện diện của bạn là món quà lớn nhất đối với chúng tôi."}
+              </p>
+            </motion.div>
+            
+            <div className={styles.bankGrid}>
+              <motion.div className={styles.bankCard} {...fadeInUp}>
+                <div className={styles.bankLabel}>🤵 Chú Rể</div>
+                <div className={styles.bankInfo}>
+                  <p><strong>{preview.ghGroomBankName || preview.bankName}</strong></p>
+                  <p>{preview.ghGroomAccountName || preview.accountName}</p>
+                  <p className={styles.accNum}>{preview.ghGroomAccountNumber || preview.accountNumber}</p>
+                </div>
+              </motion.div>
+
+              <motion.div className={styles.bankCard} {...fadeInUp} transition={{ delay: 0.1 }}>
+                <div className={styles.bankLabel}>👰 Cô Dâu</div>
+                <div className={styles.bankInfo}>
+                  <p><strong>{preview.ghBrideBankName || preview.bankName}</strong></p>
+                  <p>{preview.ghBrideAccountName || preview.accountName}</p>
+                  <p className={styles.accNum}>{preview.ghBrideAccountNumber || preview.accountNumber}</p>
+                </div>
+              </motion.div>
             </div>
           </div>
         </section>

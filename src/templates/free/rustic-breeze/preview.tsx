@@ -47,8 +47,9 @@ export default function RusticBreezePreview({
   const cover = (images.coverImage && images.coverImage !== "") 
     ? images.coverImage 
     : (template.image || "https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?auto=compress&cs=tinysrgb&w=1200");
+  const galleryCount = parseInt(preview.ghAlbumVisibleCount || "6");
   const gallery = images.galleryImages.length > 0 ? images.galleryImages : rusticBreezeDefaultGallery;
-  const limitedGallery = gallery.slice(0, 8);
+  const limitedGallery = gallery.slice(0, galleryCount);
 
   const fontVars = `${sacramento.variable} ${cormorant.variable} ${inter.variable}`;
 
@@ -111,7 +112,7 @@ export default function RusticBreezePreview({
                   <img src={images.groomPortraitImage || "https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=800"} alt={preview.groom} />
                 </div>
                 <h3 className={styles.coupleName}>{preview.groom}</h3>
-                <p className={styles.coupleBio}>{preview.groomBio || "Chú rể"}</p>
+                <p className={styles.coupleBio}>{preview.ghGroomBio || preview.groomBio || "Chúng tôi tin rằng mỗi người sinh ra đều dành cho một ai đó. Cảm ơn định mệnh đã mang chúng mình đến với nhau."}</p>
               </motion.div>
 
               <div className={styles.coupleSeparator}>
@@ -123,7 +124,7 @@ export default function RusticBreezePreview({
                   <img src={images.bridePortraitImage || "https://images.pexels.com/photos/1488315/pexels-photo-1488315.jpeg?auto=compress&cs=tinysrgb&w=800"} alt={preview.bride} />
                 </div>
                 <h3 className={styles.coupleName}>{preview.bride}</h3>
-                <p className={styles.coupleBio}>{preview.brideBio || "Cô dâu"}</p>
+                <p className={styles.coupleBio}>{preview.ghBrideBio || preview.brideBio || "Tình yêu không phải là tìm thấy một ai đó hoàn hảo, mà là học cách để nhìn thấy những điều tuyệt vời từ một người không hoàn hảo."}</p>
               </motion.div>
             </div>
           </div>
@@ -135,19 +136,26 @@ export default function RusticBreezePreview({
             <motion.h2 className={styles.sectionTitle} {...fadeInUp}>{copy.eventsTitle}</motion.h2>
             <div className={styles.eventsStack}>
               {[
-                { title: copy.ceremony, time: preview.ceremonyTime, label: "01" },
-                { title: "Tiệc Nhà Trai", time: preview.partyTime, label: "02" },
-                { title: "Tiệc Nhà Gái", time: preview.ghThirdEventTime || preview.partyTime, label: "03" },
+                { title: copy.ceremony, time: preview.ghCeremonyTime || preview.ceremonyTime, venue: preview.ghCeremonyVenue || preview.venue, location: preview.ghCeremonyLocation || preview.location, label: "01" },
+                { title: "Tiệc Nhà Trai", time: preview.ghGroomPartyTime || preview.partyTime, venue: preview.ghGroomPartyVenue || preview.venue, location: preview.ghGroomPartyLocation || preview.location, label: "02" },
+                { title: "Tiệc Nhà Gái", time: preview.ghBridePartyTime || (preview.ghThirdEventTime || preview.partyTime), venue: preview.ghBridePartyVenue || preview.venue, location: preview.ghBridePartyLocation || preview.location, label: "03" },
               ].map((event, i) => (
                 <motion.div key={i} className={styles.eventItem} {...fadeInUp} transition={{ delay: i * 0.1 }}>
                   <div className={styles.eventLabel}>{event.label}</div>
                   <div className={styles.eventInfo}>
                     <h4>{event.title}</h4>
                     <p className={styles.eventTime}>{event.time}</p>
-                    <p className={styles.eventVenue}>{preview.venue}</p>
-                    <p className={styles.eventLoc}>{preview.location}</p>
+                    <p className={styles.eventVenue}>{event.venue}</p>
+                    <p className={styles.eventLoc}>{event.location}</p>
                   </div>
-                  <a href="#" className={styles.mapBtn}>{copy.viewMap}</a>
+                  <a 
+                    href={event.location?.startsWith("http") ? event.location : "#"} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className={styles.mapBtn}
+                  >
+                    {copy.viewMap}
+                  </a>
                 </motion.div>
               ))}
             </div>
@@ -170,6 +178,34 @@ export default function RusticBreezePreview({
                   <img src={src} alt="" />
                 </motion.div>
               ))}
+            </div>
+          </div>
+        </section>
+        {/* Gift Section */}
+        <section className={`${styles.section} ${styles.bgCream}`}>
+          <div className={styles.container}>
+            <motion.div className={styles.sectionTitle} {...fadeInUp}>
+              {copy.giftTitle || "Mừng Cưới"}
+            </motion.div>
+            
+            <div className={styles.bankGrid}>
+              <motion.div className={styles.bankCard} {...fadeInUp}>
+                <h3 className={styles.bankTitle}>Nhà Chú Rể</h3>
+                <div className={styles.bankDetails}>
+                  <p><strong>Ngân hàng:</strong> {preview.ghGroomBankName || preview.bankName}</p>
+                  <p><strong>Chủ TK:</strong> {preview.ghGroomAccountName || preview.accountName}</p>
+                  <p className={styles.accNumber}>{preview.ghGroomAccountNumber || preview.accountNumber}</p>
+                </div>
+              </motion.div>
+
+              <motion.div className={styles.bankCard} {...fadeInUp} transition={{ delay: 0.1 }}>
+                <h3 className={styles.bankTitle}>Nhà Cô Dâu</h3>
+                <div className={styles.bankDetails}>
+                  <p><strong>Ngân hàng:</strong> {preview.ghBrideBankName || preview.bankName}</p>
+                  <p><strong>Chủ TK:</strong> {preview.ghBrideAccountName || preview.accountName}</p>
+                  <p className={styles.accNumber}>{preview.ghBrideAccountNumber || preview.accountNumber}</p>
+                </div>
+              </motion.div>
             </div>
           </div>
         </section>

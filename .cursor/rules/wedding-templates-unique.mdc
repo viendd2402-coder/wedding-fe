@@ -38,6 +38,18 @@ Panel nhập là nơi khách hình dung “mình sẽ chỉnh được gì”. Q
 
 ---
 
+## 3a. Minimalist Workspace UX (Gentle Harmony Standards)
+
+Với các mẫu hướng tới sự tinh tế và chuyên nghiệp tối đa (như **Gentle Harmony**), bảng điều khiển (`template-workspace`) phải tuân thủ triết lý tinh giản:
+
+- **Loại bỏ mô tả hành chính (Inventory):** Không hiển thị các đoạn văn hướng dẫn dài dòng trong `SlideFlexWorkspaceSection` (không dùng prop `inventory`). Giao diện chỉ giữ lại tiêu đề mục để đảm bảo sự gọn gàng.
+- **Ẩn thẻ định danh kỹ thuật (Tags):** Các thẻ metadata nhỏ (ví dụ: `COVER-1`, `GH-INVITE`, `GH-E1-LOC`) phải được ẩn đi (truyền `tag=""` hoặc `hideTags={true}`) để không làm rối mắt người dùng.
+- **Thứ tự ưu tiên nhập liệu:** Mục **Lời mời (Invitation)** phải được đặt lên đầu tiên (ngay sau Carousel ảnh bìa), đứng trước phần **Thông tin chung** và **Cặp đôi**, giúp khách tập trung vào thông điệp cốt lõi của thiệp trước.
+- **Cô lập dữ liệu tiểu sử:** Luôn sử dụng các trường tiểu sử riêng biệt theo slug (ví dụ: `ghGroomBio`, `ghBrideBio`) thay vì dùng chung trường global, để đảm bảo nội dung mẫu (default values) luôn được hiển thị chính xác và không bị ghi đè bởi các mẫu khác.
+- **Dán link bản đồ:** Các trường địa điểm phải được thiết kế và ghi chú rõ ràng là để **dán link Google Maps**, không phải địa chỉ văn bản thuần.
+
+---
+
 ## 4. Dữ liệu preview & type
 
 - Trường preview dùng chung nhiều mẫu nằm ở `preview-types.ts`; phần **riêng từng mẫu** dùng type/extra có tiền tố hoặc namespace rõ (ví dụ `GentleDriftPreviewExtra`, `gd*`, ảnh `gdFooterImage`). Khi thêm field mới: cập nhật type, `defaultPreviewData` / empty objects, snapshot hoặc API public-invite nếu có map field đó.

@@ -121,6 +121,7 @@ function SlideFlexPortraitUpload({
   selectedLabel,
   emptyLabel,
   isDark,
+  hideTags,
   onPick,
 }: {
   label: string;
@@ -129,13 +130,14 @@ function SlideFlexPortraitUpload({
   selectedLabel: string;
   emptyLabel: string;
   isDark: boolean;
+  hideTags?: boolean;
   onPick: (file: File | null) => void;
 }) {
   return (
-    <div
-      className={`rounded-2xl border border-dashed px-4 py-3 text-sm ${isDark ? "border-white/14 bg-white/4" : "border-[var(--color-ink)]/12 bg-[var(--color-cream)]"}`}
+    <label
+      className={`block rounded-2xl border border-dashed px-4 py-3 text-sm cursor-pointer transition-colors hover:border-[var(--color-sage)]/40 ${isDark ? "border-white/14 bg-white/4 hover:bg-white/6" : "border-[var(--color-ink)]/12 bg-[var(--color-cream)] hover:bg-[var(--color-cream)]/80"}`}
     >
-      <PanelFieldBlock label={label} tag={tag} isDark={isDark}>
+      <PanelFieldBlock label={label} tag={hideTags ? "" : tag} isDark={isDark}>
         <span
           className={`block text-xs ${isDark ? "text-white/65" : "text-[var(--color-ink)]/65"}`}
         >
@@ -148,7 +150,7 @@ function SlideFlexPortraitUpload({
           onChange={(event) => onPick(event.target.files?.[0] ?? null)}
         />
       </PanelFieldBlock>
-    </div>
+    </label>
   );
 }
 
@@ -175,6 +177,8 @@ function TemplateWorkspaceCommonFields({
   photoFieldTags,
   gentleDriftCountdownPicker = false,
   gentleDriftCountdownWorkspaceHint = "",
+  hideCountdown = false,
+  hideTags = false,
 }: {
   copy: TemplateWorkspacePanelMessages;
   inputClass: string;
@@ -193,6 +197,8 @@ function TemplateWorkspaceCommonFields({
   /** Gentle Drift: ô chọn ngày giờ thay vì gõ chuỗi ISO thuần. */
   gentleDriftCountdownPicker?: boolean;
   gentleDriftCountdownWorkspaceHint?: string;
+  hideCountdown?: boolean;
+  hideTags?: boolean;
 }) {
   const { language } = useGlobalPreferences();
   const g = fieldGroup;
@@ -205,7 +211,7 @@ function TemplateWorkspaceCommonFields({
     <>
       {show("gentle-drift-names") ? (
         <>
-          <PanelFieldBlock label={copy.groomName} tag={copy.tagGroom} isDark={isDark}>
+          <PanelFieldBlock label={copy.groomName} tag={hideTags ? "" : copy.tagGroom} isDark={isDark}>
             <input
               className={inputClass}
               value={preview.groom}
@@ -213,7 +219,7 @@ function TemplateWorkspaceCommonFields({
               placeholder={copy.groomName}
             />
           </PanelFieldBlock>
-          <PanelFieldBlock label={copy.brideName} tag={copy.tagBride} isDark={isDark}>
+          <PanelFieldBlock label={copy.brideName} tag={hideTags ? "" : copy.tagBride} isDark={isDark}>
             <input
               className={inputClass}
               value={preview.bride}
@@ -221,7 +227,7 @@ function TemplateWorkspaceCommonFields({
               placeholder={copy.brideName}
             />
           </PanelFieldBlock>
-          <PanelFieldBlock label={copy.dateLabel} tag={copy.tagDateLabel} isDark={isDark}>
+          <PanelFieldBlock label={copy.dateLabel} tag={hideTags ? "" : copy.tagDateLabel} isDark={isDark}>
             <input
               className={inputClass}
               value={preview.dateLabel}
@@ -229,41 +235,43 @@ function TemplateWorkspaceCommonFields({
               placeholder={copy.dateLabel}
             />
           </PanelFieldBlock>
-          <PanelFieldBlock
-            label={copy.countdownTarget}
-            tag={copy.tagCountdownTarget}
-            isDark={isDark}
-          >
-            {gentleDriftCountdownPicker ? (
-              <GentleDriftWorkspaceCountdown
+      {show("gentle-drift-names") && !hideCountdown ? (
+        <PanelFieldBlock
+          label={copy.countdownTarget}
+          tag={hideTags ? "" : copy.tagCountdownTarget}
+          isDark={isDark}
+        >
+          {gentleDriftCountdownPicker ? (
+            <GentleDriftWorkspaceCountdown
+              value={preview.countdownTarget}
+              onChange={(next) => onChange("countdownTarget", next)}
+              language={language}
+              isDark={isDark}
+              hint={gentleDriftCountdownWorkspaceHint || copy.countdownTargetHint}
+            />
+          ) : (
+            <>
+              <input
+                className={inputClass}
                 value={preview.countdownTarget}
-                onChange={(next) => onChange("countdownTarget", next)}
-                language={language}
-                isDark={isDark}
-                hint={gentleDriftCountdownWorkspaceHint || copy.countdownTargetHint}
+                onChange={(event) => onChange("countdownTarget", event.target.value)}
+                placeholder="2026-10-20T09:00"
+                autoComplete="off"
               />
-            ) : (
-              <>
-                <input
-                  className={inputClass}
-                  value={preview.countdownTarget}
-                  onChange={(event) => onChange("countdownTarget", event.target.value)}
-                  placeholder="2026-10-20T09:00"
-                  autoComplete="off"
-                />
-                <p
-                  className={`text-xs leading-relaxed ${isDark ? "text-white/55" : "text-[var(--color-ink)]/60"}`}
-                >
-                  {copy.countdownTargetHint}
-                </p>
-              </>
-            )}
-          </PanelFieldBlock>
+              <p
+                className={`text-xs leading-relaxed ${isDark ? "text-white/55" : "text-[var(--color-ink)]/60"}`}
+              >
+                {copy.countdownTargetHint}
+              </p>
+            </>
+          )}
+        </PanelFieldBlock>
+      ) : null}
         </>
       ) : null}
       {show("gentle-drift-venue") ? (
       <div className="grid grid-cols-1 gap-3.5">
-        <PanelFieldBlock label={copy.ceremonyTime} tag={copy.tagCeremonyTime} isDark={isDark}>
+        <PanelFieldBlock label={copy.ceremonyTime} tag={hideTags ? "" : copy.tagCeremonyTime} isDark={isDark}>
           <input
             className={inputClass}
             value={preview.ceremonyTime}
@@ -271,7 +279,7 @@ function TemplateWorkspaceCommonFields({
             placeholder={copy.ceremonyTime}
           />
         </PanelFieldBlock>
-        <PanelFieldBlock label={copy.partyTime} tag={copy.tagPartyTime} isDark={isDark}>
+        <PanelFieldBlock label={copy.partyTime} tag={hideTags ? "" : copy.tagPartyTime} isDark={isDark}>
           <input
             className={inputClass}
             value={preview.partyTime}
@@ -282,7 +290,7 @@ function TemplateWorkspaceCommonFields({
       </div>
       ) : null}
       {show("gentle-drift-venue") ? (
-      <PanelFieldBlock label={copy.venue} tag={copy.tagVenue} isDark={isDark}>
+      <PanelFieldBlock label={copy.venue} tag={hideTags ? "" : copy.tagVenue} isDark={isDark}>
         <input
           className={inputClass}
           value={preview.venue}
@@ -292,7 +300,7 @@ function TemplateWorkspaceCommonFields({
       </PanelFieldBlock>
       ) : null}
       {show("gentle-drift-venue") ? (
-      <PanelFieldBlock label={copy.location} tag={copy.tagLocation} isDark={isDark}>
+      <PanelFieldBlock label={copy.location} tag={hideTags ? "" : copy.tagLocation} isDark={isDark}>
         <input
           className={inputClass}
           value={preview.location}
@@ -302,7 +310,7 @@ function TemplateWorkspaceCommonFields({
       </PanelFieldBlock>
       ) : null}
       {show("gentle-drift-bank") ? (
-      <PanelFieldBlock label={copy.bankName} tag={copy.tagBankName} isDark={isDark}>
+      <PanelFieldBlock label={copy.bankName} tag={hideTags ? "" : copy.tagBankName} isDark={isDark}>
         <input
           className={inputClass}
           value={preview.bankName}
@@ -312,7 +320,7 @@ function TemplateWorkspaceCommonFields({
       </PanelFieldBlock>
       ) : null}
       {show("gentle-drift-bank") ? (
-      <PanelFieldBlock label={copy.accountName} tag={copy.tagAccountName} isDark={isDark}>
+      <PanelFieldBlock label={copy.accountName} tag={hideTags ? "" : copy.tagAccountName} isDark={isDark}>
         <input
           className={inputClass}
           value={preview.accountName}
@@ -322,7 +330,7 @@ function TemplateWorkspaceCommonFields({
       </PanelFieldBlock>
       ) : null}
       {show("gentle-drift-bank") ? (
-      <PanelFieldBlock label={copy.accountNumber} tag={copy.tagAccountNumber} isDark={isDark}>
+      <PanelFieldBlock label={copy.accountNumber} tag={hideTags ? "" : copy.tagAccountNumber} isDark={isDark}>
         <input
           className={inputClass}
           value={preview.accountNumber}
@@ -332,10 +340,10 @@ function TemplateWorkspaceCommonFields({
       </PanelFieldBlock>
       ) : null}
       {show("gentle-drift-cover") ? (
-      <div
-        className={`rounded-2xl border border-dashed px-4 py-3 text-sm ${isDark ? "border-white/14 bg-white/4" : "border-[var(--color-ink)]/12 bg-[var(--color-cream)]"}`}
+      <label
+        className={`block rounded-2xl border border-dashed px-4 py-3 text-sm cursor-pointer transition-colors hover:border-[var(--color-sage)]/40 ${isDark ? "border-white/14 bg-white/4 hover:bg-white/6" : "border-[var(--color-ink)]/12 bg-[var(--color-cream)] hover:bg-[var(--color-cream)]/80"}`}
       >
-        <PanelFieldBlock label={copy.coverImage} tag={coverTag} isDark={isDark}>
+        <PanelFieldBlock label={copy.coverImage} tag={hideTags ? "" : coverTag} isDark={isDark}>
           <span
             className={`block text-xs ${isDark ? "text-white/65" : "text-[var(--color-ink)]/65"}`}
           >
@@ -344,24 +352,26 @@ function TemplateWorkspaceCommonFields({
           <input
             type="file"
             accept="image/*"
-            className="mt-3 block w-full min-w-0 text-xs"
+            className="mt-3 block w-full min-w-0 cursor-pointer text-xs"
             onChange={(event) => onCoverImageChange(event.target.files?.[0] ?? null)}
           />
         </PanelFieldBlock>
-      </div>
+      </label>
       ) : null}
       {show("gentle-drift-album") ? (
       <div className="rounded-2xl border border-dashed px-4 py-3 text-sm">
-        <PanelFieldBlock label={copy.gallery} tag={gallerySectionTag} isDark={isDark}>
+        <PanelFieldBlock label={copy.gallery} tag={hideTags ? "" : gallerySectionTag} isDark={isDark}>
           <div className="mt-3 grid gap-3.5">
             {Array.from({ length: gallerySlotCount }, (_, index) => (
-              <div
+              <label
                 key={index}
-                className={`rounded-xl border px-3 py-2 text-xs ${isDark ? "border-white/14 bg-white/4" : "border-[var(--color-ink)]/10 bg-[var(--color-cream)]"}`}
+                className={`rounded-xl border border-dashed px-3 py-2 text-sm cursor-pointer transition-colors hover:border-[var(--color-sage)]/40 ${
+                  isDark ? "border-white/14 bg-white/4 hover:bg-white/6" : "border-[var(--color-ink)]/12 bg-[var(--color-cream)] hover:bg-[var(--color-cream)]/80"
+                }`}
               >
                 <PanelFieldBlock
                   label={`${copy.imageLabel} ${index + 1}`}
-                  tag={gallerySlotTags[index] ?? `${copy.imageLabel} ${index + 1}`}
+                  tag={hideTags ? "" : (gallerySlotTags[index] ?? `${copy.imageLabel} ${index + 1}`)}
                   isDark={isDark}
                 >
                   <span
@@ -372,13 +382,13 @@ function TemplateWorkspaceCommonFields({
                   <input
                     type="file"
                     accept="image/*"
-                    className="mt-2 block w-full min-w-0"
+                    className="mt-2 block w-full min-w-0 cursor-pointer"
                     onChange={(event) =>
                       onGalleryImageChange(index, event.target.files?.[0] ?? null)
                     }
                   />
                 </PanelFieldBlock>
-              </div>
+              </label>
             ))}
           </div>
         </PanelFieldBlock>
@@ -469,6 +479,9 @@ function PreviewConfigurator({
   onBbInvitationBgChange,
   onBbEventsBgChange,
   onBbFooterBgChange,
+  onCoverImage2Change,
+  onCoverImage3Change,
+  onCoverImage4Change,
   isCollapsed,
   onToggleCollapsed,
 }: {
@@ -485,6 +498,9 @@ function PreviewConfigurator({
   onBbInvitationBgChange: (file: File | null) => void;
   onBbEventsBgChange: (file: File | null) => void;
   onBbFooterBgChange: (file: File | null) => void;
+  onCoverImage2Change: (file: File | null) => void;
+  onCoverImage3Change: (file: File | null) => void;
+  onCoverImage4Change: (file: File | null) => void;
   isCollapsed: boolean;
   onToggleCollapsed: () => void;
 }) {
@@ -669,6 +685,7 @@ function PreviewConfigurator({
   const isModernPulse = template.slug === "modern-pulse";
   const isNoirEditorial = template.slug === "noir-editorial";
   const isSereneCanvas = template.slug === "serene-canvas";
+  const isFreeMinimalist = isGentleHarmony || isRusticBreeze || isModernPulse || isNoirEditorial || isSereneCanvas;
 
   const sf = copy.slideFlex;
   const gd = copy.gentleDrift;
@@ -681,6 +698,13 @@ function PreviewConfigurator({
     if (!Number.isFinite(n)) return 15;
     return Math.min(30, Math.max(1, n));
   }, [isGentleDrift, preview.gdAlbumVisibleCount]);
+
+  const freeAlbumSlotCount = useMemo(() => {
+    if (!isFreeMinimalist) return 15;
+    const n = Number.parseInt(preview.ghAlbumVisibleCount?.trim() ?? "", 10);
+    if (!Number.isFinite(n)) return 6; 
+    return Math.min(30, Math.max(1, n));
+  }, [isFreeMinimalist, preview.ghAlbumVisibleCount]);
   const gallerySlotTags = useMemo((): readonly string[] => {
     const six = [
       copy.tagGallerySlot1,
@@ -1925,7 +1949,7 @@ function PreviewConfigurator({
               </SlideFlexWorkspaceSection>
               <SlideFlexWorkspaceSection
                 title={bb.coupleSectionTitle}
-                inventory={bb.coupleSectionInventory}
+                inventory={isFreeMinimalist ? undefined : bb.coupleSectionInventory}
                 isDark={isDark}
               >
                 <p
@@ -2150,7 +2174,7 @@ function PreviewConfigurator({
               </SlideFlexWorkspaceSection>
               <SlideFlexWorkspaceSection
                 title={bb.gallerySectionTitle}
-                inventory={bb.gallerySectionInventory}
+                inventory={isFreeMinimalist ? undefined : bb.gallerySectionInventory}
                 isDark={isDark}
               >
                 <TemplateWorkspaceCommonFields
@@ -2173,7 +2197,7 @@ function PreviewConfigurator({
               </SlideFlexWorkspaceSection>
               <SlideFlexWorkspaceSection
                 title={bb.eventsSectionTitle}
-                inventory={bb.eventsSectionInventory}
+                inventory={isFreeMinimalist ? undefined : bb.eventsSectionInventory}
                 isDark={isDark}
               >
                 <TemplateWorkspaceCommonFields
@@ -2387,7 +2411,7 @@ function PreviewConfigurator({
                     <span
                       className={`block text-xs ${isDark ? "text-white/65" : "text-[var(--color-ink)]/65"}`}
                     >
-                      {images.bbFooterBgImage ? copy.coverSelected : copy.imageDefault}
+                  {images.bbFooterBgImage ? copy.coverSelected : copy.imageDefault}
                     </span>
                     <input
                       type="file"
@@ -2399,6 +2423,379 @@ function PreviewConfigurator({
                     />
                   </PanelFieldBlock>
                 </div>
+              </SlideFlexWorkspaceSection>
+            </>
+          ) : isFreeMinimalist ? (
+            <>
+              {isGentleHarmony ? (
+                <div className="mb-6 px-1">
+                  <p
+                    className={`text-xs font-semibold ${isDark ? "text-white/88" : "text-[var(--color-ink)]"}`}
+                  >
+                    Ảnh bìa Carousel (4 ảnh)
+                  </p>
+                  <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <label className={`block rounded-xl border border-dashed px-3 py-2 cursor-pointer transition-colors hover:border-[var(--color-sage)]/40 ${isDark ? "border-white/14 bg-white/4 hover:bg-white/6" : "border-[var(--color-ink)]/12 bg-[var(--color-cream)] hover:bg-[var(--color-cream)]/80"}`}>
+                      <PanelFieldBlock label="Ảnh bìa 1" tag="" isDark={isDark}>
+                        <span className="text-[10px] text-white/50">{images.coverImage ? copy.coverSelected : copy.coverEmpty}</span>
+                        <input type="file" accept="image/*" className="mt-2 block w-full text-[10px] cursor-pointer" onChange={(e) => onCoverImageChange(e.target.files?.[0] ?? null)} />
+                      </PanelFieldBlock>
+                    </label>
+                    <label className={`block rounded-xl border border-dashed px-3 py-2 cursor-pointer transition-colors hover:border-[var(--color-sage)]/40 ${isDark ? "border-white/14 bg-white/4 hover:bg-white/6" : "border-[var(--color-ink)]/12 bg-[var(--color-cream)] hover:bg-[var(--color-cream)]/80"}`}>
+                      <PanelFieldBlock label="Ảnh bìa 2" tag="" isDark={isDark}>
+                        <span className="text-[10px] text-white/50">{images.coverImage2 ? copy.coverSelected : copy.coverEmpty}</span>
+                        <input type="file" accept="image/*" className="mt-2 block w-full text-[10px] cursor-pointer" onChange={(e) => onCoverImage2Change(e.target.files?.[0] ?? null)} />
+                      </PanelFieldBlock>
+                    </label>
+                    <label className={`block rounded-xl border border-dashed px-3 py-2 cursor-pointer transition-colors hover:border-[var(--color-sage)]/40 ${isDark ? "border-white/14 bg-white/4 hover:bg-white/6" : "border-[var(--color-ink)]/12 bg-[var(--color-cream)] hover:bg-[var(--color-cream)]/80"}`}>
+                      <PanelFieldBlock label="Ảnh bìa 3" tag="" isDark={isDark}>
+                        <span className="text-[10px] text-white/50">{images.coverImage3 ? copy.coverSelected : copy.coverEmpty}</span>
+                        <input type="file" accept="image/*" className="mt-2 block w-full text-[10px] cursor-pointer" onChange={(e) => onCoverImage3Change(e.target.files?.[0] ?? null)} />
+                      </PanelFieldBlock>
+                    </label>
+                    <label className={`block rounded-xl border border-dashed px-3 py-2 cursor-pointer transition-colors hover:border-[var(--color-sage)]/40 ${isDark ? "border-white/14 bg-white/4 hover:bg-white/6" : "border-[var(--color-ink)]/12 bg-[var(--color-cream)] hover:bg-[var(--color-cream)]/80"}`}>
+                      <PanelFieldBlock label="Ảnh bìa 4" tag="" isDark={isDark}>
+                        <span className="text-[10px] text-white/50">{images.coverImage4 ? copy.coverSelected : copy.coverEmpty}</span>
+                        <input type="file" accept="image/*" className="mt-2 block w-full text-[10px] cursor-pointer" onChange={(e) => onCoverImage4Change(e.target.files?.[0] ?? null)} />
+                      </PanelFieldBlock>
+                    </label>
+                  </div>
+                </div>
+              ) : (
+                <SlideFlexWorkspaceSection
+                  title="Ảnh bìa"
+                  isDark={isDark}
+                >
+                  <TemplateWorkspaceCommonFields
+                    copy={copy}
+                    inputClass={inputClass}
+                    preview={preview}
+                    onChange={onChange}
+                    images={images}
+                    onCoverImageChange={onCoverImageChange}
+                    onGalleryImageChange={onGalleryImageChange}
+                    isDark={isDark}
+                    gallerySlotTags={gallerySlotTags}
+                    fieldGroup="gentle-drift-cover"
+                    hideTags={isFreeMinimalist}
+                  />
+                </SlideFlexWorkspaceSection>
+              )}
+
+              <SlideFlexWorkspaceSection
+                title="Thông tin chung"
+                isDark={isDark}
+              >
+                <TemplateWorkspaceCommonFields
+                  copy={copy}
+                  inputClass={inputClass}
+                  preview={preview}
+                  onChange={onChange}
+                  images={images}
+                  onCoverImageChange={onCoverImageChange}
+                  onGalleryImageChange={onGalleryImageChange}
+                  isDark={isDark}
+                  gallerySlotTags={gallerySlotTags}
+                  fieldGroup="gentle-drift-names"
+                  hideTags={isFreeMinimalist}
+                  hideCountdown={isFreeMinimalist}
+                />
+                {isNoirEditorial && (
+                  <PanelFieldBlock label="Phụ đề Hero (Noir)" tag="" isDark={isDark}>
+                    <input
+                      className={inputClass}
+                      value={preview.neHeroEyebrow}
+                      onChange={(e) => onChange("neHeroEyebrow", e.target.value)}
+                      placeholder="Editorial Issue Vol. 01"
+                    />
+                  </PanelFieldBlock>
+                )}
+                {isSereneCanvas && (
+                  <PanelFieldBlock label="Phụ đề Hero (Serene)" tag="" isDark={isDark}>
+                    <input
+                      className={inputClass}
+                      value={preview.scHeroEyebrow}
+                      onChange={(e) => onChange("scHeroEyebrow", e.target.value)}
+                      placeholder="Save the Date"
+                    />
+                  </PanelFieldBlock>
+                )}
+              </SlideFlexWorkspaceSection>
+
+              <SlideFlexWorkspaceSection
+                title="Lời mời"
+                isDark={isDark}
+              >
+                <PanelFieldBlock label="Lời mời chân thành" tag="" isDark={isDark}>
+                  <textarea
+                    className={textareaClass}
+                    value={preview.ghIntroText}
+                    onChange={(e) => onChange("ghIntroText", e.target.value)}
+                    rows={3}
+                    placeholder="Nhập lời mời của bạn..."
+                  />
+                </PanelFieldBlock>
+              </SlideFlexWorkspaceSection>
+
+              <SlideFlexWorkspaceSection
+                title="Cặp đôi"
+                isDark={isDark}
+              >
+                {isNoirEditorial && (
+                  <PanelFieldBlock label="Tiêu đề Cặp đôi (Noir)" tag="" isDark={isDark}>
+                    <input
+                      className={inputClass}
+                      value={preview.neProtagonistsTitle}
+                      onChange={(e) => onChange("neProtagonistsTitle", e.target.value)}
+                      placeholder="The Protagonists"
+                    />
+                  </PanelFieldBlock>
+                )}
+                <div className="grid grid-cols-1 gap-8">
+                  <div>
+                    <p
+                      className={`text-xs font-semibold ${isDark ? "text-white/88" : "text-[var(--color-ink)]"}`}
+                    >
+                      {copy.groomName}
+                    </p>
+                    <SlideFlexPortraitUpload
+                      label={sf.groomPortraitUpload}
+                      tag=""
+                      hasImage={Boolean(images.groomPortraitImage)}
+                      selectedLabel={copy.imageSelected}
+                      emptyLabel={copy.imageDefault}
+                      isDark={isDark}
+                      onPick={onGroomPortraitImageChange}
+                      hideTags={isFreeMinimalist}
+                    />
+                    <PanelFieldBlock label="Tiểu sử Chú rể" tag="" isDark={isDark}>
+                      <textarea
+                        className={textareaClass}
+                        value={preview.ghGroomBio}
+                        onChange={(e) => onChange("ghGroomBio", e.target.value)}
+                        rows={2}
+                      />
+                    </PanelFieldBlock>
+                  </div>
+
+                  <div>
+                    <p
+                      className={`text-xs font-semibold ${isDark ? "text-white/88" : "text-[var(--color-ink)]"}`}
+                    >
+                      {copy.brideName}
+                    </p>
+                    <SlideFlexPortraitUpload
+                      label={sf.bridePortraitUpload}
+                      tag=""
+                      hasImage={Boolean(images.bridePortraitImage)}
+                      selectedLabel={copy.imageSelected}
+                      emptyLabel={copy.imageDefault}
+                      isDark={isDark}
+                      onPick={onBridePortraitImageChange}
+                      hideTags={isFreeMinimalist}
+                    />
+                    <PanelFieldBlock label="Tiểu sử Cô dâu" tag="" isDark={isDark}>
+                      <textarea
+                        className={textareaClass}
+                        value={preview.ghBrideBio}
+                        onChange={(e) => onChange("ghBrideBio", e.target.value)}
+                        rows={2}
+                      />
+                    </PanelFieldBlock>
+                  </div>
+                </div>
+              </SlideFlexWorkspaceSection>
+
+              <SlideFlexWorkspaceSection
+                title="Sự kiện"
+                isDark={isDark}
+              >
+                {isSereneCanvas && (
+                  <PanelFieldBlock label="Tiêu đề Sự kiện (Serene)" tag="" isDark={isDark}>
+                    <input
+                      className={inputClass}
+                      value={preview.scBigDayTitle}
+                      onChange={(e) => onChange("scBigDayTitle", e.target.value)}
+                      placeholder="The Big Day"
+                    />
+                  </PanelFieldBlock>
+                )}
+                <div className="flex flex-col gap-5">
+                  {/* Lễ cưới */}
+                  <div className={`rounded-2xl border p-4 ${isDark ? "border-white/10 bg-white/5" : "border-[var(--color-ink)]/10 bg-[var(--color-cream)]/50"}`}>
+                    <p className={`mb-3 text-xs font-bold uppercase tracking-wider ${isDark ? "text-white/88" : "text-[var(--color-ink)]/80"}`}>01. Lễ cưới (Ceremony)</p>
+                    <div className="grid gap-3">
+                      <PanelFieldBlock label="Thời gian" tag="" isDark={isDark}>
+                        <input className={inputClass} value={preview.ghCeremonyTime || preview.ceremonyTime} onChange={(e) => onChange("ghCeremonyTime", e.target.value)} placeholder="10:00 - 20/10/2026" />
+                      </PanelFieldBlock>
+                      <PanelFieldBlock label="Tên địa điểm" tag="" isDark={isDark}>
+                        <input className={inputClass} value={preview.ghCeremonyVenue || preview.venue} onChange={(e) => onChange("ghCeremonyVenue", e.target.value)} placeholder="Tư gia nhà gái" />
+                      </PanelFieldBlock>
+                      <PanelFieldBlock label="Link bản đồ (Google Maps)" tag="" isDark={isDark}>
+                        <input className={inputClass} value={preview.ghCeremonyLocation || preview.location} onChange={(e) => onChange("ghCeremonyLocation", e.target.value)} placeholder="https://maps.app.goo.gl/..." />
+                      </PanelFieldBlock>
+                    </div>
+                  </div>
+
+                  {/* Tiệc Nhà Trai */}
+                  <div className={`rounded-2xl border p-4 ${isDark ? "border-white/10 bg-white/5" : "border-[var(--color-ink)]/10 bg-[var(--color-cream)]/50"}`}>
+                    <p className={`mb-3 text-xs font-bold uppercase tracking-wider ${isDark ? "text-white/88" : "text-[var(--color-ink)]/80"}`}>02. Tiệc Nhà Trai (Groom's Party)</p>
+                    <div className="grid gap-3">
+                      <PanelFieldBlock label="Thời gian" tag="" isDark={isDark}>
+                        <input className={inputClass} value={preview.ghGroomPartyTime || preview.partyTime} onChange={(e) => onChange("ghGroomPartyTime", e.target.value)} placeholder="18:00 - 20/10/2026" />
+                      </PanelFieldBlock>
+                      <PanelFieldBlock label="Tên địa điểm" tag="" isDark={isDark}>
+                        <input className={inputClass} value={preview.ghGroomPartyVenue || preview.venue} onChange={(e) => onChange("ghGroomPartyVenue", e.target.value)} placeholder="Trung tâm tiệc cưới" />
+                      </PanelFieldBlock>
+                      <PanelFieldBlock label="Link bản đồ (Google Maps)" tag="" isDark={isDark}>
+                        <input className={inputClass} value={preview.ghGroomPartyLocation || preview.location} onChange={(e) => onChange("ghGroomPartyLocation", e.target.value)} placeholder="https://maps.app.goo.gl/..." />
+                      </PanelFieldBlock>
+                    </div>
+                  </div>
+
+                  {/* Tiệc Nhà Gái */}
+                  <div className={`rounded-2xl border p-4 ${isDark ? "border-white/10 bg-white/5" : "border-[var(--color-ink)]/10 bg-[var(--color-cream)]/50"}`}>
+                    <p className={`mb-3 text-xs font-bold uppercase tracking-wider ${isDark ? "text-white/88" : "text-[var(--color-ink)]/80"}`}>03. Tiệc Nhà Gái (Bride's Party)</p>
+                    <div className="grid gap-3">
+                      <PanelFieldBlock label="Thời gian" tag="" isDark={isDark}>
+                        <input className={inputClass} value={preview.ghBridePartyTime || (preview.ghThirdEventTime || preview.partyTime)} onChange={(e) => onChange("ghBridePartyTime", e.target.value)} placeholder="18:00 - 21/10/2026" />
+                      </PanelFieldBlock>
+                      <PanelFieldBlock label="Tên địa điểm" tag="" isDark={isDark}>
+                        <input className={inputClass} value={preview.ghBridePartyVenue || preview.venue} onChange={(e) => onChange("ghBridePartyVenue", e.target.value)} placeholder="Tư gia nhà gái" />
+                      </PanelFieldBlock>
+                      <PanelFieldBlock label="Link bản đồ (Google Maps)" tag="" isDark={isDark}>
+                        <input className={inputClass} value={preview.ghBridePartyLocation || preview.location} onChange={(e) => onChange("ghBridePartyLocation", e.target.value)} placeholder="https://maps.app.goo.gl/..." />
+                      </PanelFieldBlock>
+                    </div>
+                  </div>
+                </div>
+              </SlideFlexWorkspaceSection>
+
+              <SlideFlexWorkspaceSection
+                title="Thư viện ảnh"
+                isDark={isDark}
+              >
+                {isSereneCanvas && (
+                  <PanelFieldBlock label="Tiêu đề Album (Serene)" tag="" isDark={isDark}>
+                    <input
+                      className={inputClass}
+                      value={preview.scMomentsTitle}
+                      onChange={(e) => onChange("scMomentsTitle", e.target.value)}
+                      placeholder="Moments Captured"
+                    />
+                  </PanelFieldBlock>
+                )}
+                <div
+                  className={`mb-4 flex flex-wrap items-center gap-2 rounded-xl border px-3 py-2.5 text-xs ${
+                    isDark ? "border-white/12 bg-white/5" : "border-[var(--color-ink)]/10 bg-[var(--color-cream)]"
+                  }`}
+                >
+                  <span
+                    className={`min-w-0 flex-1 font-medium ${isDark ? "text-white/85" : "text-[var(--color-ink)]/90"}`}
+                  >
+                    Số lượng ảnh hiển thị: {freeAlbumSlotCount}
+                  </span>
+                  <button
+                    type="button"
+                    disabled={freeAlbumSlotCount >= 30}
+                    onClick={() =>
+                      onChange("ghAlbumVisibleCount", String(Math.min(30, freeAlbumSlotCount + 1)))
+                    }
+                    className={`shrink-0 rounded-lg px-3 py-1.5 text-[11px] font-semibold transition disabled:cursor-not-allowed disabled:opacity-40 ${
+                      isDark
+                        ? "bg-white/12 text-white hover:bg-white/16"
+                        : "bg-[#b8956a]/18 text-[var(--color-ink)] hover:bg-[#b8956a]/28"
+                    }`}
+                  >
+                    + Thêm ảnh
+                  </button>
+                  <button
+                    type="button"
+                    disabled={freeAlbumSlotCount <= 1}
+                    onClick={() =>
+                      onChange("ghAlbumVisibleCount", String(Math.max(1, freeAlbumSlotCount - 1)))
+                    }
+                    className={`shrink-0 rounded-lg px-3 py-1.5 text-[11px] font-semibold transition disabled:cursor-not-allowed disabled:opacity-40 ${
+                      isDark ? "bg-white/8 text-white/90 hover:bg-white/12" : "bg-black/6 text-[var(--color-ink)] hover:bg-black/10"
+                    }`}
+                  >
+                    − Bớt ảnh
+                  </button>
+                </div>
+                <TemplateWorkspaceCommonFields
+                  copy={copy}
+                  inputClass={inputClass}
+                  preview={preview}
+                  onChange={onChange}
+                  images={images}
+                  onCoverImageChange={onCoverImageChange}
+                  onGalleryImageChange={onGalleryImageChange}
+                  isDark={isDark}
+                  gallerySlotTags={gallerySlotTags}
+                  gallerySlotCount={freeAlbumSlotCount}
+                  fieldGroup="gentle-drift-album"
+                  hideTags={isFreeMinimalist}
+                />
+              </SlideFlexWorkspaceSection>
+
+              <SlideFlexWorkspaceSection
+                title="Mừng cưới"
+                isDark={isDark}
+              >
+                <div className="flex flex-col gap-5">
+                  {/* Bank Chú rể */}
+                  <div className={`rounded-2xl border p-4 ${isDark ? "border-white/10 bg-white/5" : "border-[var(--color-ink)]/10 bg-[var(--color-cream)]/50"}`}>
+                    <p className={`mb-3 text-xs font-bold uppercase tracking-wider ${isDark ? "text-white/88" : "text-[var(--color-ink)]/80"}`}>Tài khoản Chú rể</p>
+                    <div className="grid gap-3">
+                      <PanelFieldBlock label="Ngân hàng" tag="" isDark={isDark}>
+                        <input className={inputClass} value={preview.ghGroomBankName || preview.bankName} onChange={(e) => onChange("ghGroomBankName", e.target.value)} placeholder="VD: Vietcombank" />
+                      </PanelFieldBlock>
+                      <PanelFieldBlock label="Tên chủ tài khoản" tag="" isDark={isDark}>
+                        <input className={inputClass} value={preview.ghGroomAccountName || preview.accountName} onChange={(e) => onChange("ghGroomAccountName", e.target.value)} placeholder="VD: NGUYEN VAN A" />
+                      </PanelFieldBlock>
+                      <PanelFieldBlock label="Số tài khoản" tag="" isDark={isDark}>
+                        <input className={inputClass} value={preview.ghGroomAccountNumber || preview.accountNumber} onChange={(e) => onChange("ghGroomAccountNumber", e.target.value)} placeholder="VD: 123456789" />
+                      </PanelFieldBlock>
+                    </div>
+                  </div>
+
+                  {/* Bank Cô dâu */}
+                  <div className={`rounded-2xl border p-4 ${isDark ? "border-white/10 bg-white/5" : "border-[var(--color-ink)]/10 bg-[var(--color-cream)]/50"}`}>
+                    <p className={`mb-3 text-xs font-bold uppercase tracking-wider ${isDark ? "text-white/88" : "text-[var(--color-ink)]/80"}`}>Tài khoản Cô dâu</p>
+                    <div className="grid gap-3">
+                      <PanelFieldBlock label="Ngân hàng" tag="" isDark={isDark}>
+                        <input className={inputClass} value={preview.ghBrideBankName || preview.bankName} onChange={(e) => onChange("ghBrideBankName", e.target.value)} placeholder="VD: Techcombank" />
+                      </PanelFieldBlock>
+                      <PanelFieldBlock label="Tên chủ tài khoản" tag="" isDark={isDark}>
+                        <input className={inputClass} value={preview.ghBrideAccountName || preview.accountName} onChange={(e) => onChange("ghBrideAccountName", e.target.value)} placeholder="VD: TRAN THI B" />
+                      </PanelFieldBlock>
+                      <PanelFieldBlock label="Số tài khoản" tag="" isDark={isDark}>
+                        <input className={inputClass} value={preview.ghBrideAccountNumber || preview.accountNumber} onChange={(e) => onChange("ghBrideAccountNumber", e.target.value)} placeholder="VD: 987654321" />
+                      </PanelFieldBlock>
+                    </div>
+                  </div>
+                </div>
+              </SlideFlexWorkspaceSection>
+
+              <SlideFlexWorkspaceSection
+                title="Chân trang"
+                isDark={isDark}
+              >
+                <PanelFieldBlock label="Lời cảm ơn footer" tag="" isDark={isDark}>
+                  <textarea
+                    className={textareaClass}
+                    value={preview.ghFooterThanks}
+                    onChange={(e) => onChange("ghFooterThanks", e.target.value)}
+                    rows={2}
+                  />
+                </PanelFieldBlock>
+                <PanelFieldBlock label="Tagline footer" tag="" isDark={isDark}>
+                  <input
+                    className={inputClass}
+                    value={preview.ghFooterTagline}
+                    onChange={(e) => onChange("ghFooterTagline", e.target.value)}
+                  />
+                </PanelFieldBlock>
               </SlideFlexWorkspaceSection>
             </>
           ) : (
@@ -2413,128 +2810,7 @@ function PreviewConfigurator({
               isDark={isDark}
               gallerySlotTags={gallerySlotTags}
             />
-          )}
-
-          {(isGentleHarmony || isRusticBreeze || isModernPulse || isNoirEditorial || isSereneCanvas) && (
-            <SlideFlexWorkspaceSection
-              title={
-                isGentleHarmony ? "Tuỳ chỉnh Gentle Harmony" : 
-                isRusticBreeze ? "Tuỳ chỉnh Rustic Breeze" : 
-                isModernPulse ? "Tuỳ chỉnh Modern Pulse" : 
-                isNoirEditorial ? "Tuỳ chỉnh Noir Editorial" : 
-                "Tuỳ chỉnh Serene Canvas"
-              }
-              inventory="Nội dung lời mời và tiểu sử"
-              isDark={isDark}
-            >
-              <PanelFieldBlock label="Lời mời chân thành" tag="GH-INVITE" isDark={isDark}>
-                <textarea
-                  className={textareaClass}
-                  value={preview.ghIntroText}
-                  onChange={(e) => onChange("ghIntroText", e.target.value)}
-                  rows={3}
-                  placeholder="Nhập lời mời của bạn..."
-                />
-              </PanelFieldBlock>
-              <PanelFieldBlock label="Tiểu sử Chú rể" tag="GH-GROOM" isDark={isDark}>
-                <textarea
-                  className={textareaClass}
-                  value={preview.groomBio}
-                  onChange={(e) => onChange("groomBio", e.target.value)}
-                  rows={2}
-                />
-              </PanelFieldBlock>
-              <PanelFieldBlock label="Tiểu sử Cô dâu" tag="GH-BRIDE" isDark={isDark}>
-                <textarea
-                  className={textareaClass}
-                  value={preview.brideBio}
-                  onChange={(e) => onChange("brideBio", e.target.value)}
-                  rows={2}
-                />
-              </PanelFieldBlock>
-
-              {isNoirEditorial && (
-                <>
-                  <PanelFieldBlock label="Phụ đề Hero (Noir)" tag="NE-HERO-EYEBROW" isDark={isDark}>
-                    <input
-                      className={inputClass}
-                      value={preview.neHeroEyebrow}
-                      onChange={(e) => onChange("neHeroEyebrow", e.target.value)}
-                      placeholder="Editorial Issue Vol. 01"
-                    />
-                  </PanelFieldBlock>
-                  <PanelFieldBlock label="Tiêu đề Cặp đôi (Noir)" tag="NE-PROTAGONISTS" isDark={isDark}>
-                    <input
-                      className={inputClass}
-                      value={preview.neProtagonistsTitle}
-                      onChange={(e) => onChange("neProtagonistsTitle", e.target.value)}
-                      placeholder="The Protagonists"
-                    />
-                  </PanelFieldBlock>
-                </>
-              )}
-
-              {isSereneCanvas && (
-                <>
-                  <PanelFieldBlock label="Phụ đề Hero (Serene)" tag="SC-HERO-EYEBROW" isDark={isDark}>
-                    <input
-                      className={inputClass}
-                      value={preview.scHeroEyebrow}
-                      onChange={(e) => onChange("scHeroEyebrow", e.target.value)}
-                      placeholder="Save the Date"
-                    />
-                  </PanelFieldBlock>
-                  <PanelFieldBlock label="Tiêu đề Sự kiện (Serene)" tag="SC-BIG-DAY" isDark={isDark}>
-                    <input
-                      className={inputClass}
-                      value={preview.scBigDayTitle}
-                      onChange={(e) => onChange("scBigDayTitle", e.target.value)}
-                      placeholder="The Big Day"
-                    />
-                  </PanelFieldBlock>
-                  <PanelFieldBlock label="Tiêu đề Album (Serene)" tag="SC-MOMENTS" isDark={isDark}>
-                    <input
-                      className={inputClass}
-                      value={preview.scMomentsTitle}
-                      onChange={(e) => onChange("scMomentsTitle", e.target.value)}
-                      placeholder="Moments Captured"
-                    />
-                  </PanelFieldBlock>
-                </>
-              )}
-
-              <div className="mt-4 border-t pt-4 border-white/10">
-
-                <p className="text-[10px] uppercase tracking-widest text-white/40 mb-3">Sự kiện bổ sung (Phần 03)</p>
-                <PanelFieldBlock label="Tên sự kiện" tag="GH-EVENT3-TITLE" isDark={isDark}>
-                  <input
-                    className={inputClass}
-                    value={preview.ghThirdEventTitle}
-                    onChange={(e) => onChange("ghThirdEventTitle", e.target.value)}
-                    placeholder="Tiệc Nhà Gái"
-                  />
-                </PanelFieldBlock>
-                <PanelFieldBlock label="Thời gian" tag="GH-EVENT3-TIME" isDark={isDark}>
-                  <input
-                    className={inputClass}
-                    value={preview.ghThirdEventTime}
-                    onChange={(e) => onChange("ghThirdEventTime", e.target.value)}
-                    placeholder={preview.partyTime}
-                  />
-                </PanelFieldBlock>
-                <PanelFieldBlock label="Địa điểm" tag="GH-EVENT3-VENUE" isDark={isDark}>
-                  <input
-                    className={inputClass}
-                    value={preview.ghThirdEventVenue}
-                    onChange={(e) => onChange("ghThirdEventVenue", e.target.value)}
-                    placeholder={preview.venue}
-                  />
-                </PanelFieldBlock>
-              </div>
-            </SlideFlexWorkspaceSection>
-          )}
-
-          {isSlideFlex ? (
+          )}          {isSlideFlex ? (
             <div
               className={`flex min-w-0 flex-col gap-5 border-t pt-5 ${isDark ? "border-white/10" : "border-[var(--color-ink)]/10"}`}
             >
@@ -3224,6 +3500,39 @@ export default function TemplateWorkspace({
     [revokeObjectUrlIfBlob],
   );
 
+  const handleCoverImage2Change = useCallback(
+    (file: File | null) => {
+      setImages((current) => {
+        revokeObjectUrlIfBlob(current.coverImage2);
+        if (!file) return { ...current, coverImage2: "" };
+        return { ...current, coverImage2: URL.createObjectURL(file) };
+      });
+    },
+    [revokeObjectUrlIfBlob],
+  );
+
+  const handleCoverImage3Change = useCallback(
+    (file: File | null) => {
+      setImages((current) => {
+        revokeObjectUrlIfBlob(current.coverImage3);
+        if (!file) return { ...current, coverImage3: "" };
+        return { ...current, coverImage3: URL.createObjectURL(file) };
+      });
+    },
+    [revokeObjectUrlIfBlob],
+  );
+
+  const handleCoverImage4Change = useCallback(
+    (file: File | null) => {
+      setImages((current) => {
+        revokeObjectUrlIfBlob(current.coverImage4);
+        if (!file) return { ...current, coverImage4: "" };
+        return { ...current, coverImage4: URL.createObjectURL(file) };
+      });
+    },
+    [revokeObjectUrlIfBlob],
+  );
+
   const previewProps = useMemo(
     () => ({
       template,
@@ -3258,6 +3567,9 @@ export default function TemplateWorkspace({
         onBbInvitationBgChange={handleBbInvitationBgChange}
         onBbEventsBgChange={handleBbEventsBgChange}
         onBbFooterBgChange={handleBbFooterBgChange}
+        onCoverImage2Change={handleCoverImage2Change}
+        onCoverImage3Change={handleCoverImage3Change}
+        onCoverImage4Change={handleCoverImage4Change}
         isCollapsed={isConfiguratorCollapsed}
         onToggleCollapsed={() =>
           setIsConfiguratorCollapsed((current) => !current)
