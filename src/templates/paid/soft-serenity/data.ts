@@ -58,8 +58,10 @@ export const softSerenityWorkspaceInitialPreview: Partial<PreviewData> = {
   groomParentLine2: "Bà Nguyễn Thị B",
   brideParentLine1: "Ông Lê Văn C",
   brideParentLine2: "Bà Phạm Thị D",
-  groomBio: "Một người đàn ông điềm đạm, yêu thích sự giản đơn và luôn sẵn sàng che chở cho người mình thương.",
-  brideBio: "Cô gái nhẹ nhàng, yêu hoa cỏ và luôn mang lại năng lượng tích cực cho mọi người xung quanh.",
+  groomBio: "Một người đàn ông điềm đạm, yêu thích sự giản đơn and luôn sẵn sàng che chở cho người mình thương.",
+  brideBio: "Cô gái nhẹ nhàng, yêu hoa cỏ and luôn mang lại năng lượng tích cực cho mọi người xung quanh.",
+  ghFooterThanks: "Cảm ơn vì sự hiện diện của bạn là món quà lớn nhất cho chúng mình.",
+  ghFooterTagline: "See you there",
   ...softSerenityStoryVi.reduce(
     (acc, row, i) => {
       const n = i + 1;

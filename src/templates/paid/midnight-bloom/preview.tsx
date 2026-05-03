@@ -31,11 +31,11 @@ export function MidnightBloomPreview({
     dateLabel = "18 tháng 12 năm 2026",
   } = preview;
 
-  const fadeIn = {
+  const fadeIn: import("framer-motion").HTMLMotionProps<"div"> = {
     initial: { opacity: 0, y: 50 },
     whileInView: { opacity: 1, y: 0 },
     viewport: { once: true },
-    transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 1.2, ease: "easeInOut" },
   };
 
   return (
@@ -56,7 +56,7 @@ export function MidnightBloomPreview({
               <div 
                 className={styles.heroBg} 
                 style={{ 
-                  backgroundImage: `url(${images.heroImage || "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1920&q=80"})` 
+                  backgroundImage: `url(${images.coverImage || "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1920&q=80"})` 
                 }} 
               />
               <div className={styles.heroOverlay} />

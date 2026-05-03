@@ -3,9 +3,9 @@ import { motion } from "framer-motion";
 import { serif, sans } from "./SharedFonts";
 
 export function Story({ preview }: { preview: any }) {
-  const fadeUp = {
+  const fadeUp: import("framer-motion").Variants = {
     hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { duration: 1.2, ease: [0.2, 0.65, 0.3, 0.9] } }
+    visible: { opacity: 1, y: 0, transition: { duration: 1.2, ease: "easeInOut" } }
   };
 
   return (

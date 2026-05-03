@@ -5,9 +5,10 @@ export const modernPulseMeta: WeddingTemplate = {
   name: "Modern Pulse",
   style: "Editorial & Sophisticated: Minimalist layout with cinematic frames and premium glassmorphism.",
   tier: "Miễn phí",
-  family: "minimalist",
-  mood: "vibrant",
+  family: "minimal",
+  mood: "minimal",
   badge: "Free",
+  countdownVariant: "minimal",
   description:
     "Mẫu thiệp hiện đại mang phong cách editorial cao cấp. Sự kết hợp giữa typography mạnh mẽ và các hiệu ứng kính mờ tinh tế, mang lại cảm giác sang trọng và chuyên nghiệp.",
   image:

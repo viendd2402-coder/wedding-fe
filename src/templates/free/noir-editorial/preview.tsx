@@ -22,11 +22,12 @@ const montserrat = Montserrat({
   variable: "--font-ne-sans",
 });
 
-const fadeInUp = {
+import type { HTMLMotionProps } from "framer-motion";
+const fadeInUp: HTMLMotionProps<"div"> = {
   initial: { opacity: 0, y: 40 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true },
-  transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
+  transition: { duration: 0.8, ease: "easeInOut" }
 };
 
 export default function NoirEditorialPreview({
@@ -151,7 +152,7 @@ export default function NoirEditorialPreview({
               {[
                 { title: copy.ceremony, time: preview.ghCeremonyTime || preview.ceremonyTime, venue: preview.ghCeremonyVenue || preview.venue, location: preview.ghCeremonyLocation || preview.location },
                 { title: "Groom's Reception", time: preview.ghGroomPartyTime || preview.partyTime, venue: preview.ghGroomPartyVenue || preview.venue, location: preview.ghGroomPartyLocation || preview.location },
-                { title: "Bride's Reception", time: preview.ghBridePartyTime || (preview.ghThirdEventTime || preview.partyTime), venue: preview.ghBridePartyVenue || preview.venue, location: preview.ghBridePartyLocation || preview.location },
+                { title: "Bride's Reception", time: preview.ghBridePartyTime || preview.partyTime, venue: preview.ghBridePartyVenue || preview.venue, location: preview.ghBridePartyLocation || preview.location },
               ].map((event, i) => (
                 <motion.div 
                    key={i} 
@@ -202,7 +203,7 @@ export default function NoirEditorialPreview({
         <section className={styles.giftSection}>
           <div className={styles.container}>
             <motion.div style={{ textAlign: 'center', marginBottom: '5rem' }} {...fadeInUp}>
-              <h2 className={styles.sectionTitle}>{copy.giftTitle || "Mừng Cưới"}</h2>
+              <h2 className={styles.sectionTitle}>Mừng Cưới</h2>
             </motion.div>
             
             <div className={styles.bankGrid}>

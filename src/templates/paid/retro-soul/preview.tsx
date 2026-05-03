@@ -31,7 +31,7 @@ export function RetroSoulPreview({
     dateLabel = "10 tháng 10 năm 2026",
   } = preview;
 
-  const fadeIn = {
+  const fadeIn: import("framer-motion").HTMLMotionProps<"div"> = {
     initial: { opacity: 0, scale: 0.9 },
     whileInView: { opacity: 1, scale: 1 },
     viewport: { once: true },

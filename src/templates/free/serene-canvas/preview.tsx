@@ -22,11 +22,12 @@ const outfit = Outfit({
   variable: "--font-sc-sans",
 });
 
-const fadeInUp = {
+import type { HTMLMotionProps } from "framer-motion";
+const fadeInUp: HTMLMotionProps<"div"> = {
   initial: { opacity: 0, y: 60 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true, margin: "-100px" },
-  transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] }
+  transition: { duration: 1.2, ease: "easeInOut" }
 };
 
 export default function SereneCanvasPreview({
@@ -152,7 +153,7 @@ export default function SereneCanvasPreview({
               {[
                 { title: copy.ceremony, time: preview.ghCeremonyTime || preview.ceremonyTime, venue: preview.ghCeremonyVenue || preview.venue, location: preview.ghCeremonyLocation || preview.location },
                 { title: "Groom's Celebration", time: preview.ghGroomPartyTime || preview.partyTime, venue: preview.ghGroomPartyVenue || preview.venue, location: preview.ghGroomPartyLocation || preview.location },
-                { title: "Bride's Celebration", time: preview.ghBridePartyTime || (preview.ghThirdEventTime || preview.partyTime), venue: preview.ghBridePartyVenue || preview.venue, location: preview.ghBridePartyLocation || preview.location },
+                { title: "Bride's Celebration", time: preview.ghBridePartyTime || preview.partyTime, venue: preview.ghBridePartyVenue || preview.venue, location: preview.ghBridePartyLocation || preview.location },
               ].map((event, i) => (
                 <motion.div 
                    key={i} 
@@ -210,8 +211,8 @@ export default function SereneCanvasPreview({
         <section className={styles.section}>
           <div className={styles.container}>
             <div className={styles.sectionHeader}>
-              <span className={styles.sectionEyebrow}>{copy.giftTitle || "Mừng Cưới"}</span>
-              <h2 className={styles.sectionTitle}>{copy.giftLead || "Sự hiện diện của bạn là món quà lớn nhất."}</h2>
+              <span className={styles.sectionEyebrow}>{"Mừng Cưới"}</span>
+              <h2 className={styles.sectionTitle}>{"Sự hiện diện của bạn là món quà lớn nhất."}</h2>
             </div>
             
             <div className={styles.bankGrid}>

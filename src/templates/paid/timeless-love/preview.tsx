@@ -695,7 +695,7 @@ export function TimelessLovePreview({
             <div className="grid md:grid-cols-2 gap-8 md:gap-12">
               <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="bg-[#FAF9F6] p-12 md:p-16 border border-[#E8E4DA] flex flex-col items-center relative overflow-hidden group">
                 <div className="absolute inset-0 border-4 border-white m-2 pointer-events-none"></div>
-                <span className="text-[10px] uppercase tracking-[0.3em] text-[#B99A5B] mb-8 relative z-10">{copy.giftGroom}</span>
+                <span className="text-[10px] uppercase tracking-[0.3em] text-[#B99A5B] mb-8 relative z-10">Mừng Cưới Chú Rể</span>
                 <p className="text-2xl font-serif text-[#3D3935] mb-2 relative z-10" style={{ fontFamily: "var(--font-tl-serif)" }}>{preview.bankName}</p>
                 <p className="text-[#7A756D] font-light mb-8 text-sm relative z-10">{preview.accountName}</p>
                 <p className="text-xl md:text-2xl font-light text-[#3D3935] mb-12 tracking-[0.2em] relative z-10">{preview.accountNumber}</p>
@@ -706,7 +706,7 @@ export function TimelessLovePreview({
 
               <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} className="bg-[#FAF9F6] p-12 md:p-16 border border-[#E8E4DA] flex flex-col items-center relative overflow-hidden group">
                 <div className="absolute inset-0 border-4 border-white m-2 pointer-events-none"></div>
-                <span className="text-[10px] uppercase tracking-[0.3em] text-[#B99A5B] mb-8 relative z-10">{copy.giftBride}</span>
+                <span className="text-[10px] uppercase tracking-[0.3em] text-[#B99A5B] mb-8 relative z-10">Mừng Cưới Cô Dâu</span>
                 <p className="text-2xl font-serif text-[#3D3935] mb-2 relative z-10" style={{ fontFamily: "var(--font-tl-serif)" }}>{brideGift.bankName}</p>
                 <p className="text-[#7A756D] font-light mb-8 text-sm relative z-10">{brideGift.accountName}</p>
                 <p className="text-xl md:text-2xl font-light text-[#3D3935] mb-12 tracking-[0.2em] relative z-10">{brideGift.accountNumber}</p>

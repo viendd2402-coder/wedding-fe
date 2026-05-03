@@ -240,10 +240,12 @@ export type EtherealWhisperPreviewExtra = {
   ewGiftTitle: string;
   ewGiftLead: string;
   ewFooterThanks: string;
-  /** Lễ vu quy — giờ & địa điểm (trống = giờ lễ / địa điểm tiệc chung). */
   ewCeremonyTime: string;
   ewCeremonyVenue: string;
   ewCeremonyLocation: string;
+  ewEngagementTime: string;
+  ewEngagementVenue: string;
+  ewEngagementLocation: string;
   /** Tiệc cưới — giờ & địa điểm (trống = giờ tiệc / địa điểm chung). */
   ewReceptionTime: string;
   ewReceptionVenue: string;
@@ -311,6 +313,11 @@ export type MidnightBloomPreviewExtra = {
   mbGroomParent2: string;
   mbBrideParent1: string;
   mbBrideParent2: string;
+  mbEngagementTime: string;
+  mbEngagementVenue: string;
+  mbBrideBankName: string;
+  mbBrideAccountName: string;
+  mbBrideAccountNumber: string;
 };
 
 /** Tuỳ chỉnh copy mẫu retro-soul (để trống = fallback i18n / data mẫu). */
@@ -330,6 +337,9 @@ export type RetroSoulPreviewExtra = {
   rsFooterThanks: string;
   rsGroomBio: string;
   rsBrideBio: string;
+  rsBrideBankName: string;
+  rsBrideAccountName: string;
+  rsBrideAccountNumber: string;
 };
 
 /** Tuỳ chỉnh copy mẫu santorini-dream (để trống = fallback i18n / data mẫu). */
@@ -368,10 +378,18 @@ export type GentleHarmonyPreviewExtra = {
   ghBridePartyLocation: string;
   /** Số lượng ảnh thư viện hiển thị (mặc định "9"). */
   ghGalleryCount: string;
+  ghAlbumVisibleCount?: string;
   /** Dòng chữ nhỏ dưới cùng footer. */
+  ghFooterThanks?: string;
   ghFooterTagline: string;
   ghGroomBio: string;
   ghBrideBio: string;
+  ghGroomBankName?: string;
+  ghGroomAccountName?: string;
+  ghGroomAccountNumber?: string;
+  ghBrideBankName?: string;
+  ghBrideAccountName?: string;
+  ghBrideAccountNumber?: string;
 };
 
 export type RusticBreezePreviewExtra = GentleHarmonyPreviewExtra;
@@ -530,6 +548,9 @@ export const emptyEtherealWhisperPreviewExtra: EtherealWhisperPreviewExtra = {
   ewCeremonyTime: "",
   ewCeremonyVenue: "",
   ewCeremonyLocation: "",
+  ewEngagementTime: "",
+  ewEngagementVenue: "",
+  ewEngagementLocation: "",
   ewReceptionTime: "",
   ewReceptionVenue: "",
   ewReceptionLocation: "",
@@ -595,6 +616,11 @@ export const emptyMidnightBloomPreviewExtra: MidnightBloomPreviewExtra = {
   mbGroomParent2: "",
   mbBrideParent1: "",
   mbBrideParent2: "",
+  mbEngagementTime: "",
+  mbEngagementVenue: "",
+  mbBrideBankName: "",
+  mbBrideAccountName: "",
+  mbBrideAccountNumber: "",
 };
 
 export const emptyRetroSoulPreviewExtra: RetroSoulPreviewExtra = {
@@ -613,6 +639,9 @@ export const emptyRetroSoulPreviewExtra: RetroSoulPreviewExtra = {
   rsFooterThanks: "",
   rsGroomBio: "",
   rsBrideBio: "",
+  rsBrideBankName: "",
+  rsBrideAccountName: "",
+  rsBrideAccountNumber: "",
 };
 
 export const emptySantoriniDreamPreviewExtra: SantoriniDreamPreviewExtra = {
@@ -646,10 +675,17 @@ export const defaultGentleHarmonyPreviewExtra: GentleHarmonyPreviewExtra = {
   ghBridePartyVenue: "White Palace",
   ghBridePartyLocation: "https://www.google.com/maps/place/White+Palace",
   ghGalleryCount: "9",
+  ghAlbumVisibleCount: "6",
   ghFooterThanks: "Cảm ơn bạn đã luôn đồng hành và chia sẻ niềm vui cùng chúng mình trong suốt thời gian qua!",
   ghFooterTagline: "Building our future together",
   ghGroomBio: "Là một người yêu thích nghệ thuật và sự sáng tạo. Anh luôn tin rằng tình yêu là nguồn cảm hứng lớn nhất trong cuộc đời.",
   ghBrideBio: "Một tâm hồn lãng mạn, yêu thiên nhiên và những điều giản dị. Cô luôn mang đến sự ấm áp và lạc quan cho mọi người xung quanh.",
+  ghGroomBankName: "",
+  ghGroomAccountName: "",
+  ghGroomAccountNumber: "",
+  ghBrideBankName: "",
+  ghBrideAccountName: "",
+  ghBrideAccountNumber: "",
 };
 
 export const emptyGentleHarmonyPreviewExtra: GentleHarmonyPreviewExtra = {
@@ -665,10 +701,17 @@ export const emptyGentleHarmonyPreviewExtra: GentleHarmonyPreviewExtra = {
   ghBridePartyVenue: "",
   ghBridePartyLocation: "",
   ghGalleryCount: "9",
+  ghAlbumVisibleCount: "",
   ghFooterThanks: "",
   ghFooterTagline: "",
   ghGroomBio: "",
   ghBrideBio: "",
+  ghGroomBankName: "",
+  ghGroomAccountName: "",
+  ghGroomAccountNumber: "",
+  ghBrideBankName: "",
+  ghBrideAccountName: "",
+  ghBrideAccountNumber: "",
 };
 
 export const emptyRusticBreezePreviewExtra: RusticBreezePreviewExtra = emptyGentleHarmonyPreviewExtra;

@@ -5,9 +5,10 @@ export const rusticBreezeMeta: WeddingTemplate = {
   name: "Rustic Breeze",
   style: "Organic & Warm: Earthy tones, handwritten accents, and botanical elements.",
   tier: "Miễn phí",
-  family: "rustic",
-  mood: "natural",
+  family: "minimal",
+  mood: "classic",
   badge: "Free",
+  countdownVariant: "minimal",
   description:
     "Mẫu thiệp miễn phí mang phong cách mộc mạc, ấm áp. Sử dụng tone màu đất và phông chữ viết tay nhẹ nhàng, tạo cảm giác gần gũi và tự nhiên.",
   image:

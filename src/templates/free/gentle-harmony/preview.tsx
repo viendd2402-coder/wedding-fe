@@ -260,8 +260,8 @@ export default function GentleHarmonyPreview({
         <section className={`${styles.compactSection} ${styles.bgLight}`}>
           <div className={styles.container}>
             <motion.div className={styles.sectionHeaderCompact} {...fadeInUp}>
-              <h2 className={styles.sectionTitleSmall}>{copy.giftTitle || "Mừng Cưới"}</h2>
-              <p className={styles.introText}>{copy.giftLead || "Sự hiện diện của bạn là món quà lớn nhất, nhưng nếu bạn muốn gửi lời chúc bằng hình thức khác..."}</p>
+              <h2 className={styles.sectionTitleSmall}>Mừng Cưới</h2>
+              <p className={styles.introText}>Sự hiện diện của bạn là món quà lớn nhất, nhưng nếu bạn muốn gửi lời chúc bằng hình thức khác...</p>
             </motion.div>
             
             <div className={styles.bankGrid}>

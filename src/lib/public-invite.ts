@@ -6,9 +6,10 @@ import type {
   PublicInvitePersonalization,
 } from "@/lib/public-invite-types";
 import {
-  emptyBrightlyBasicPreviewExtra,
-  emptyGentleDriftPreviewExtra,
+  defaultPreviewData,
   emptySlideFlexPreviewExtra,
+  emptyGentleDriftPreviewExtra,
+  emptyBrightlyBasicPreviewExtra,
   emptyTimelessLovePreviewExtra,
   emptyRadiantBloomPreviewExtra,
   emptyEtherealWhisperPreviewExtra,
@@ -208,6 +209,9 @@ function collectImageUrls(candidates: Record<string, unknown>[]): PreviewImages 
       }
       return {
         coverImage: coverDirect,
+        coverImage2: "",
+        coverImage3: "",
+        coverImage4: "",
         galleryImages: gallery,
         introBannerImage,
         groomPortraitImage: portraits.groomPortraitImage,
@@ -231,6 +235,9 @@ function collectImageUrls(candidates: Record<string, unknown>[]): PreviewImages 
       if (urls.length) {
         return {
           coverImage: urls[0] ?? "",
+          coverImage2: "",
+          coverImage3: "",
+          coverImage4: "",
           galleryImages: urls.slice(1),
           introBannerImage,
           groomPortraitImage: portraits.groomPortraitImage,
@@ -243,6 +250,9 @@ function collectImageUrls(candidates: Record<string, unknown>[]): PreviewImages 
   }
   return {
     coverImage: "",
+    coverImage2: "",
+    coverImage3: "",
+    coverImage4: "",
     galleryImages: [],
     introBannerImage,
     groomPortraitImage: portraits.groomPortraitImage,
@@ -397,6 +407,7 @@ export function parsePublicInviteBody(body: unknown): ParsedPublicInvite | null 
   const partyResolved = partyTime || ceremonyResolved;
 
   const preview: PreviewData = {
+    ...defaultPreviewData,
     bride,
     groom,
     dateLabel: dateLabelResolved || "—",
@@ -408,12 +419,6 @@ export function parsePublicInviteBody(body: unknown): ParsedPublicInvite | null 
     bankName: bankName || "—",
     accountName: accountName || "—",
     accountNumber: accountNumber || "—",
-    ...emptySlideFlexPreviewExtra,
-    ...emptyGentleDriftPreviewExtra,
-    ...emptyBrightlyBasicPreviewExtra,
-    ...emptyTimelessLovePreviewExtra,
-    ...emptyRadiantBloomPreviewExtra,
-    ...emptyEtherealWhisperPreviewExtra,
   };
 
   overlaySlideFlexExtraFromCandidates(preview, candidates);

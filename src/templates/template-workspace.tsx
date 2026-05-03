@@ -89,7 +89,7 @@ function SlideFlexWorkspaceSection({
   children,
 }: {
   title: string;
-  inventory: string;
+  inventory?: string;
   isDark: boolean;
   children: React.ReactNode;
 }) {
@@ -104,11 +104,13 @@ function SlideFlexWorkspaceSection({
       >
         {title}
       </h3>
-      <p
-        className={`whitespace-pre-line text-[11px] font-medium leading-relaxed ${isDark ? "text-white/68" : "text-[var(--color-sage)]"}`}
-      >
-        {inventory}
-      </p>
+      {inventory && (
+        <p
+          className={`whitespace-pre-line text-[11px] font-medium leading-relaxed ${isDark ? "text-white/68" : "text-[var(--color-sage)]"}`}
+        >
+          {inventory}
+        </p>
+      )}
       <div className="flex min-w-0 flex-col gap-4">{children}</div>
     </section>
   );
@@ -685,7 +687,15 @@ function PreviewConfigurator({
   const isModernPulse = template.slug === "modern-pulse";
   const isNoirEditorial = template.slug === "noir-editorial";
   const isSereneCanvas = template.slug === "serene-canvas";
-  const isFreeMinimalist = isGentleHarmony || isRusticBreeze || isModernPulse || isNoirEditorial || isSereneCanvas;
+  const isSoftSerenity = template.slug === "soft-serenity";
+  const isFreeMinimalist =
+    isGentleHarmony ||
+    isRusticBreeze ||
+    isModernPulse ||
+    isNoirEditorial ||
+    isSereneCanvas ||
+    isSoftSerenity;
+
 
   const sf = copy.slideFlex;
   const gd = copy.gentleDrift;
@@ -702,9 +712,9 @@ function PreviewConfigurator({
   const freeAlbumSlotCount = useMemo(() => {
     if (!isFreeMinimalist) return 15;
     const n = Number.parseInt(preview.ghAlbumVisibleCount?.trim() ?? "", 10);
-    if (!Number.isFinite(n)) return 6; 
+    if (!Number.isFinite(n)) return isSoftSerenity ? 10 : 6; 
     return Math.min(30, Math.max(1, n));
-  }, [isFreeMinimalist, preview.ghAlbumVisibleCount]);
+  }, [isFreeMinimalist, isSoftSerenity, preview.ghAlbumVisibleCount]);
   const gallerySlotTags = useMemo((): readonly string[] => {
     const six = [
       copy.tagGallerySlot1,
@@ -2576,6 +2586,26 @@ function PreviewConfigurator({
                         rows={2}
                       />
                     </PanelFieldBlock>
+                    {isSoftSerenity && (
+                      <div className="mt-3 flex flex-col gap-3">
+                        <PanelFieldBlock label="Thông tin Cha mẹ Chú rể (Dòng 1)" tag="" isDark={isDark}>
+                          <input
+                            className={inputClass}
+                            value={preview.ssGroomParentLine1}
+                            onChange={(e) => onChange("ssGroomParentLine1", e.target.value)}
+                            placeholder="Trưởng nam của Ông Trần Văn A"
+                          />
+                        </PanelFieldBlock>
+                        <PanelFieldBlock label="Thông tin Cha mẹ Chú rể (Dòng 2)" tag="" isDark={isDark}>
+                          <input
+                            className={inputClass}
+                            value={preview.ssGroomParentLine2}
+                            onChange={(e) => onChange("ssGroomParentLine2", e.target.value)}
+                            placeholder="& Bà Nguyễn Thị B"
+                          />
+                        </PanelFieldBlock>
+                      </div>
+                    )}
                   </div>
 
                   <div>
@@ -2602,9 +2632,90 @@ function PreviewConfigurator({
                         rows={2}
                       />
                     </PanelFieldBlock>
+                    {isSoftSerenity && (
+                      <div className="mt-3 flex flex-col gap-3">
+                        <PanelFieldBlock label="Thông tin Cha mẹ Cô dâu (Dòng 1)" tag="" isDark={isDark}>
+                          <input
+                            className={inputClass}
+                            value={preview.ssBrideParentLine1}
+                            onChange={(e) => onChange("ssBrideParentLine1", e.target.value)}
+                            placeholder="Út nữ của Ông Lê Văn C"
+                          />
+                        </PanelFieldBlock>
+                        <PanelFieldBlock label="Thông tin Cha mẹ Cô dâu (Dòng 2)" tag="" isDark={isDark}>
+                          <input
+                            className={inputClass}
+                            value={preview.ssBrideParentLine2}
+                            onChange={(e) => onChange("ssBrideParentLine2", e.target.value)}
+                            placeholder="& Bà Phạm Thị D"
+                          />
+                        </PanelFieldBlock>
+                      </div>
+                    )}
                   </div>
                 </div>
               </SlideFlexWorkspaceSection>
+
+              {isSoftSerenity && (
+                <SlideFlexWorkspaceSection
+                  title="Chương Tiếp Theo"
+                  isDark={isDark}
+                >
+                  <PanelFieldBlock label="Mô tả Chương Tiếp Theo" tag="" isDark={isDark}>
+                    <textarea
+                      className={textareaClass}
+                      value={preview.ssStoryLead}
+                      onChange={(e) => onChange("ssStoryLead", e.target.value)}
+                      rows={2}
+                      placeholder="Nhập mô tả cho chương tiếp theo..."
+                    />
+                  </PanelFieldBlock>
+                  <div className="grid gap-4 mt-2">
+                    <div className={`p-3 rounded-xl border ${isDark ? "border-white/10 bg-white/4" : "border-[var(--color-ink)]/10 bg-white/60"}`}>
+                      <p className="text-xs font-bold text-[#c5a059] mb-2">Sự kiện 1</p>
+                      <div className="grid gap-2">
+                        <PanelFieldBlock label="Năm" tag="" isDark={isDark}>
+                          <input className={inputClass} value={preview.timeline1Title} onChange={(e) => onChange("timeline1Title", e.target.value)} placeholder="2020" />
+                        </PanelFieldBlock>
+                        <PanelFieldBlock label="Tiêu đề" tag="" isDark={isDark}>
+                          <input className={inputClass} value={preview.timeline1Date} onChange={(e) => onChange("timeline1Date", e.target.value)} placeholder="Tiêu đề sự kiện" />
+                        </PanelFieldBlock>
+                        <PanelFieldBlock label="Nội dung" tag="" isDark={isDark}>
+                          <textarea className={textareaClass} value={preview.timeline1Body} onChange={(e) => onChange("timeline1Body", e.target.value)} rows={2} placeholder="Nội dung sự kiện..." />
+                        </PanelFieldBlock>
+                      </div>
+                    </div>
+                    <div className={`p-3 rounded-xl border ${isDark ? "border-white/10 bg-white/4" : "border-[var(--color-ink)]/10 bg-white/60"}`}>
+                      <p className="text-xs font-bold text-[#c5a059] mb-2">Sự kiện 2</p>
+                      <div className="grid gap-2">
+                        <PanelFieldBlock label="Năm" tag="" isDark={isDark}>
+                          <input className={inputClass} value={preview.timeline2Title} onChange={(e) => onChange("timeline2Title", e.target.value)} placeholder="2022" />
+                        </PanelFieldBlock>
+                        <PanelFieldBlock label="Tiêu đề" tag="" isDark={isDark}>
+                          <input className={inputClass} value={preview.timeline2Date} onChange={(e) => onChange("timeline2Date", e.target.value)} placeholder="Tiêu đề sự kiện" />
+                        </PanelFieldBlock>
+                        <PanelFieldBlock label="Nội dung" tag="" isDark={isDark}>
+                          <textarea className={textareaClass} value={preview.timeline2Body} onChange={(e) => onChange("timeline2Body", e.target.value)} rows={2} placeholder="Nội dung sự kiện..." />
+                        </PanelFieldBlock>
+                      </div>
+                    </div>
+                    <div className={`p-3 rounded-xl border ${isDark ? "border-white/10 bg-white/4" : "border-[var(--color-ink)]/10 bg-white/60"}`}>
+                      <p className="text-xs font-bold text-[#c5a059] mb-2">Sự kiện 3</p>
+                      <div className="grid gap-2">
+                        <PanelFieldBlock label="Năm" tag="" isDark={isDark}>
+                          <input className={inputClass} value={preview.timeline3Title} onChange={(e) => onChange("timeline3Title", e.target.value)} placeholder="2026" />
+                        </PanelFieldBlock>
+                        <PanelFieldBlock label="Tiêu đề" tag="" isDark={isDark}>
+                          <input className={inputClass} value={preview.timeline3Date} onChange={(e) => onChange("timeline3Date", e.target.value)} placeholder="Tiêu đề sự kiện" />
+                        </PanelFieldBlock>
+                        <PanelFieldBlock label="Nội dung" tag="" isDark={isDark}>
+                          <textarea className={textareaClass} value={preview.timeline3Body} onChange={(e) => onChange("timeline3Body", e.target.value)} rows={2} placeholder="Nội dung sự kiện..." />
+                        </PanelFieldBlock>
+                      </div>
+                    </div>
+                  </div>
+                </SlideFlexWorkspaceSection>
+              )}
 
               <SlideFlexWorkspaceSection
                 title="Sự kiện"
@@ -2658,7 +2769,7 @@ function PreviewConfigurator({
                     <p className={`mb-3 text-xs font-bold uppercase tracking-wider ${isDark ? "text-white/88" : "text-[var(--color-ink)]/80"}`}>03. Tiệc Nhà Gái (Bride's Party)</p>
                     <div className="grid gap-3">
                       <PanelFieldBlock label="Thời gian" tag="" isDark={isDark}>
-                        <input className={inputClass} value={preview.ghBridePartyTime || (preview.ghThirdEventTime || preview.partyTime)} onChange={(e) => onChange("ghBridePartyTime", e.target.value)} placeholder="18:00 - 21/10/2026" />
+                        <input className={inputClass} value={preview.ghBridePartyTime || preview.partyTime} onChange={(e) => onChange("ghBridePartyTime", e.target.value)} placeholder="18:00 - 21/10/2026" />
                       </PanelFieldBlock>
                       <PanelFieldBlock label="Tên địa điểm" tag="" isDark={isDark}>
                         <input className={inputClass} value={preview.ghBridePartyVenue || preview.venue} onChange={(e) => onChange("ghBridePartyVenue", e.target.value)} placeholder="Tư gia nhà gái" />
@@ -2784,16 +2895,18 @@ function PreviewConfigurator({
                 <PanelFieldBlock label="Lời cảm ơn footer" tag="" isDark={isDark}>
                   <textarea
                     className={textareaClass}
-                    value={preview.ghFooterThanks}
+                    value={preview.ghFooterThanks || ""}
                     onChange={(e) => onChange("ghFooterThanks", e.target.value)}
                     rows={2}
+                    placeholder="VD: Cảm ơn vì sự hiện diện của bạn là món quà lớn nhất cho chúng mình."
                   />
                 </PanelFieldBlock>
                 <PanelFieldBlock label="Tagline footer" tag="" isDark={isDark}>
                   <input
                     className={inputClass}
-                    value={preview.ghFooterTagline}
+                    value={preview.ghFooterTagline || ""}
                     onChange={(e) => onChange("ghFooterTagline", e.target.value)}
+                    placeholder="VD: See you there"
                   />
                 </PanelFieldBlock>
               </SlideFlexWorkspaceSection>

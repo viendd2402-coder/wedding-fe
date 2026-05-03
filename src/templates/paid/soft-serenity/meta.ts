@@ -5,8 +5,8 @@ export const softSerenityMeta: WeddingTemplate = {
   name: "Soft Serenity",
   style: "Clean & Minimalist: Soft pink accents, elegant serif typography, spacious layouts.",
   tier: "Trả phí",
-  family: "minimalist",
-  mood: "romantic",
+  family: "minimal",
+  mood: "classic",
   badge: "VIP",
   description:
     "Mẫu thiết kế hướng đến sự nhẹ nhàng, tinh tế với khoảng trắng rộng rãi, font chữ Serif sang trọng và các hiệu ứng chuyển động mượt mà. Phù hợp cho những cặp đôi yêu thích phong cách tối giản hiện đại.",
@@ -18,7 +18,7 @@ export const softSerenityMeta: WeddingTemplate = {
   previewLabel: "Minimalist Soft — Nhẹ nhàng & Tinh khôi",
   sectionProfile:
     "Màn chào → Hero → Đếm ngược → Cặp đôi → Câu chuyện → Sự kiện → Album → Lời chúc → Quà tặng.",
-  countdownVariant: "softSerenity",
+  countdownVariant: "gentleDrift",
   sections: [
     "Màn chào tinh khôi",
     "Hero ảnh rộng + Typo sang trọng",

@@ -27,7 +27,8 @@ const inter = Inter({
   variable: "--font-rb-sans",
 });
 
-const fadeInUp = {
+import type { HTMLMotionProps } from "framer-motion";
+const fadeInUp: HTMLMotionProps<"div"> = {
   initial: { opacity: 0, y: 30 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true },
@@ -138,7 +139,7 @@ export default function RusticBreezePreview({
               {[
                 { title: copy.ceremony, time: preview.ghCeremonyTime || preview.ceremonyTime, venue: preview.ghCeremonyVenue || preview.venue, location: preview.ghCeremonyLocation || preview.location, label: "01" },
                 { title: "Tiệc Nhà Trai", time: preview.ghGroomPartyTime || preview.partyTime, venue: preview.ghGroomPartyVenue || preview.venue, location: preview.ghGroomPartyLocation || preview.location, label: "02" },
-                { title: "Tiệc Nhà Gái", time: preview.ghBridePartyTime || (preview.ghThirdEventTime || preview.partyTime), venue: preview.ghBridePartyVenue || preview.venue, location: preview.ghBridePartyLocation || preview.location, label: "03" },
+                { title: "Tiệc Nhà Gái", time: preview.ghBridePartyTime || preview.partyTime, venue: preview.ghBridePartyVenue || preview.venue, location: preview.ghBridePartyLocation || preview.location, label: "03" },
               ].map((event, i) => (
                 <motion.div key={i} className={styles.eventItem} {...fadeInUp} transition={{ delay: i * 0.1 }}>
                   <div className={styles.eventLabel}>{event.label}</div>
@@ -185,7 +186,7 @@ export default function RusticBreezePreview({
         <section className={`${styles.section} ${styles.bgCream}`}>
           <div className={styles.container}>
             <motion.div className={styles.sectionTitle} {...fadeInUp}>
-              {copy.giftTitle || "Mừng Cưới"}
+              Mừng Cưới
             </motion.div>
             
             <div className={styles.bankGrid}>

@@ -5,9 +5,10 @@ export const gentleHarmonyMeta: WeddingTemplate = {
   name: "Gentle Harmony",
   style: "Compact & Modern: Clean lines, circular portraits, neat grids, and focused sections.",
   tier: "Miễn phí",
-  family: "minimalist",
-  mood: "romantic",
+  family: "minimal",
+  mood: "classic",
   badge: "Free",
+  countdownVariant: "minimal",
   description:
     "Mẫu thiệp miễn phí với phong cách Compact & Modern. Thiết kế gọn gàng, hiện đại, tối ưu hóa không gian hiển thị để khách mời dễ dàng nắm bắt thông tin quan trọng nhất.",
   image:

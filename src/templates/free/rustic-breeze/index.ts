@@ -1,7 +1,7 @@
 import RusticBreezePreview from "./preview";
 import { rusticBreezeMeta } from "./meta";
 import { rusticBreezeDefaultGallery } from "./data";
-import { type TemplateModule } from "@/lib/templates/types";
+import { type TemplateModule } from "@/templates/template-registry";
 
 export const rusticBreezeModule: TemplateModule = {
   meta: rusticBreezeMeta,

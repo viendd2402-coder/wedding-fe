@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { serif, script, sans } from "./SharedFonts";
 
 export function Couple({ preview, images }: { preview: any, images: any }) {
-  const fadeUp = {
+  const fadeUp: import("framer-motion").Variants = {
     hidden: { opacity: 0, y: 30 },
     visible: { opacity: 1, y: 0, transition: { duration: 1.2, ease: "easeOut" } }
   };

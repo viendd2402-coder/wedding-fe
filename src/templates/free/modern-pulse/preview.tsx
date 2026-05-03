@@ -22,11 +22,12 @@ const inter = Inter({
   variable: "--font-mp-sans",
 });
 
-const fadeInUp = {
+import type { HTMLMotionProps } from "framer-motion";
+const fadeInUp: HTMLMotionProps<"div"> = {
   initial: { opacity: 0, y: 30 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true },
-  transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
+  transition: { duration: 0.8, ease: "easeInOut" }
 };
 
 export default function ModernPulsePreview({
@@ -149,7 +150,7 @@ export default function ModernPulsePreview({
               {[
                 { title: copy.ceremony, time: preview.ghCeremonyTime || preview.ceremonyTime, venue: preview.ghCeremonyVenue || preview.venue, location: preview.ghCeremonyLocation || preview.location, icon: "⚡" },
                 { title: "Tiệc Nhà Trai", time: preview.ghGroomPartyTime || preview.partyTime, venue: preview.ghGroomPartyVenue || preview.venue, location: preview.ghGroomPartyLocation || preview.location, icon: "⦿" },
-                { title: "Tiệc Nhà Gái", time: preview.ghBridePartyTime || (preview.ghThirdEventTime || preview.partyTime), venue: preview.ghBridePartyVenue || preview.venue, location: preview.ghBridePartyLocation || preview.location, icon: "◈" },
+                { title: "Tiệc Nhà Gái", time: preview.ghBridePartyTime || preview.partyTime, venue: preview.ghBridePartyVenue || preview.venue, location: preview.ghBridePartyLocation || preview.location, icon: "◈" },
               ].map((event, i) => (
                 <motion.div 
                    key={i} 
@@ -208,9 +209,9 @@ export default function ModernPulsePreview({
         <section className={styles.giftSection}>
           <div className={styles.container}>
             <motion.div style={{ textAlign: 'center', marginBottom: '4rem' }} {...fadeInUp}>
-              <h2 className={styles.boldTitle}>{copy.giftTitle || "Mừng Cưới"}</h2>
+              <h2 className={styles.boldTitle}>Mừng Cưới</h2>
               <p style={{ opacity: 0.7, maxWidth: '600px', margin: '0 auto' }}>
-                {copy.giftLead || "Sự hiện diện của bạn là món quà lớn nhất đối với chúng tôi."}
+                Sự hiện diện của bạn là món quà lớn nhất đối với chúng tôi.
               </p>
             </motion.div>
             
