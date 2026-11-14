@@ -1,11 +1,8 @@
 export const homeVi = {
-heroEyebrow: "Thiệp mời online, tinh tế và đúng gu",
-heroTitle:
-  "Website cưới thanh lịch — từ những mẫu tinh giản đến bản thiết kế dành riêng hai bạn.",
-heroBody:
-  "Mỗi bộ sưu tập được chọn lọc theo phong cách: tối giản, hoa lá, editorial, sang trọng tối hay tiệc xa. Hai bạn có thể bắt đầu với mẫu miễn phí; khi muốn thêm chiều sâu, hãy chọn bản cao cấp với trải nghiệm trọn vẹn hơn.",
-heroTagline:
-  "Một link cho ngày trọng đại — gửi như thiệp, chỉnh theo gu hai bạn.",
+heroEyebrow: "Thiệp cưới online",
+heroTitle: "Website cưới đẹp, gửi khách chỉ bằng một đường link.",
+heroBody: "Chọn mẫu, điền thông tin, chia sẻ qua Zalo hoặc mã QR — xong trong vài phút.",
+heroTagline: "Miễn phí để bắt đầu. Nâng cấp Premium khi cần.",
 heroPrimaryCta: "Xem mẫu giao diện",
 heroSecondaryCta: "Nhận tư vấn ngay",
 statTemplates: "Mẫu có sẵn",
@@ -13,8 +10,7 @@ statDelivery: "Bàn giao",
 statDeliveryValue: "1 vài phút",
 statMobile: "Mọi thiết bị",
 templatesEyebrow: "Mẫu giao diện",
-templatesTitle:
-  "Dạo qua các phong cách, chọn điều gần gũi nhất — rồi tùy chỉnh cho ngày trọng đại của hai bạn.",
+templatesTitle: "Chọn mẫu bạn thích",
 freeEyebrow: "Mẫu miễn phí",
 freeTitle: "Mẫu miễn phí",
 freeDescription:
@@ -27,61 +23,53 @@ premiumTitle: "Mẫu trả phí",
 premiumDescription:
   "Dành cho cặp đôi muốn thêm chiều sâu: bố cục ấn tượng, thư viện ảnh phong phú và những chi tiết khiến trang mời cưới giống một lời mời thật sự.",
 premiumCta: "Xem tất cả mẫu trả phí",
-whyUsEyebrow: "Vì sao chọn chúng tôi",
-whyUsTitle: "Tại sao nên làm thiệp mời online & website cưới với Lumiere?",
-whyUsBody:
-  "Đủ tính năng cho một lời mời hiện đại — gọn trên điện thoại, dễ gửi Zalo hay in QR, và thể hiện đúng phong cách của hai bạn.",
+whyUsEyebrow: "Tính năng",
+whyUsTitle: "Mọi thứ khách mời cần, trong một trang",
+whyUsBody: "Gọn trên điện thoại, dễ gửi, dễ xem.",
 whyUsImageAlt: "Ảnh minh hoạ nhẫn cưới và chi tiết trang trí thanh lịch",
 whyUsLeft: [
   {
     icon: "envelope",
     tone: "amber",
-    title: "Thiệp mời online & website cưới",
-    description:
-      "Chọn mẫu chỉn chu hoặc nâng cấp lên gói Premium — tiết kiệm thời gian in ấn, vẫn trang trọng và ấm áp với khách mời.",
+    title: "Thiệp mời online",
+    description: "Thay thiệp giấy, gửi tức thì mà vẫn trang trọng.",
   },
   {
     icon: "users",
     tone: "rose",
-    title: "Xác nhận tham dự (RSVP)",
-    description:
-      "Khách ghi nhận nhanh ngay trên trang; hai bạn hình dung số người tham dự thuận tiện hơn cho khâu lên kế hoạch tiệc.",
+    title: "Xác nhận tham dự",
+    description: "Khách xác nhận ngay trên trang, bạn biết trước số người dự.",
   },
   {
     icon: "list",
     tone: "blush",
     title: "Lịch lễ & địa điểm",
-    description:
-      "Thời gian lễ, tiệc, bản đồ và gợi ý chỉ đường được trình bày rõ — mọi người mở một lần là nắm được toàn bộ hành trình trong ngày.",
+    description: "Giờ lễ, giờ tiệc và bản đồ chỉ đường rõ ràng.",
   },
 ],
 whyUsRight: [
   {
     icon: "globe",
     tone: "champagne",
-    title: "Trang thông tin cưới trọn vẹn",
-    description:
-      "Giới thiệu hai bạn, câu chuyện, album ảnh và các sự kiện — một nơi lưu kỷ niệm và chia sẻ với bạn bè, người thân.",
+    title: "Album & câu chuyện",
+    description: "Ảnh cưới và câu chuyện của hai bạn ở cùng một nơi.",
   },
   {
     icon: "pricing",
     tone: "sage",
-    title: "Gói dịch vụ rõ ràng",
-    description:
-      "Miễn phí để bắt đầu; một gói Premium gộp đủ tính năng trả phí — ngân sách rõ ràng, không lắt léo.",
+    title: "Giá rõ ràng",
+    description: "Miễn phí hoặc Premium 199.000đ — không phí ẩn.",
   },
   {
     icon: "heart",
     tone: "warmRose",
-    title: "Sổ lưu lời chúc",
-    description:
-      "Ở gói Premium, khách để lại lời chúc trên trang — những dòng kỷ niệm hai bạn có thể mở lại sau nhiều năm.",
+    title: "Sổ lời chúc",
+    description: "Khách gửi lời chúc, bạn giữ lại làm kỷ niệm.",
   },
 ],
-featuresEyebrow: "Trải nghiệm",
-featuresTitle: "Bảng so sánh tính năng đầy đủ — Miễn phí & Premium",
-featuresBody:
-  "Lựa chọn gói phù hợp nhu cầu và ngân sách: dưới đây là danh sách chi tiết từng hạng mục cho thiệp mời online và website cưới, tương tự cách bạn đối chiếu trên các nền tảng chuyên dụng — Lumiere gói gọn trong hai mức Miễn phí và Premium.",
+featuresEyebrow: "So sánh gói",
+featuresTitle: "Miễn phí & Premium",
+featuresBody: "Chi tiết tính năng của từng gói.",
 featuresExpand: "Xem thêm toàn bộ bảng so sánh",
 featuresCollapse: "Thu gọn bảng",
 featureTableHeaders: ["Tính năng", "Miễn phí", "Premium"],
@@ -218,33 +206,28 @@ featureRows: [
   },
 ],
 processEyebrow: "Quy trình",
-processTitle: "Bốn bước gọn, rõ ràng",
-processBody:
-  "Chọn mẫu → chỉnh nội dung cá nhân trong trình xem thử → thanh toán khi chọn Premium hoặc tạo bản miễn phí → nhận link để gửi khách.",
+processTitle: "4 bước là xong",
+processBody: "Chọn mẫu, điền thông tin, kích hoạt và gửi khách.",
 process: [
   {
     step: "01",
     title: "Chọn mẫu",
-    description:
-      "Dạo bộ sưu tập, chọn mẫu miễn phí hoặc trả phí gần gu nhất với ngày trọng đại của hai bạn.",
+    description: "Chọn mẫu miễn phí hoặc Premium.",
   },
   {
     step: "02",
-    title: "Chỉnh sửa nội dung cá nhân",
-    description:
-      "Tên, lịch, địa điểm, ảnh, lời mời và mọi dòng hiển thị trên thiệp — chỉnh trực tiếp trong giao diện xem thử.",
+    title: "Điền thông tin",
+    description: "Tên, ngày cưới, địa điểm, ảnh — chỉnh trực tiếp trên mẫu.",
   },
   {
     step: "03",
-    title: "Thanh toán hoặc tạo mẫu miễn phí",
-    description:
-      "Mẫu Premium: thanh toán trực tuyến (VNPay) để kích hoạt. Mẫu miễn phí: tạo thiệp ngay, không cần thanh toán.",
+    title: "Kích hoạt",
+    description: "Mẫu miễn phí tạo ngay; Premium thanh toán qua VNPay.",
   },
   {
     step: "04",
-    title: "Bàn giao và chia sẻ",
-    description:
-      "Nhận link thiệp để gửi Zalo, Messenger, Instagram hoặc in kèm mã QR trên thiệp giấy.",
+    title: "Gửi khách",
+    description: "Chia sẻ link qua Zalo, Messenger hoặc in mã QR.",
   },
 ],
 valueEyebrow: "Điểm nhấn",
@@ -262,33 +245,29 @@ positioningQuote:
 positioningBody:
   "Chúng tôi tin trải nghiệm mời cưới nên chừng mực, ấm áp và trung thực với câu chuyện của hai bạn.",
 pricingEyebrow: "Bảng giá",
-pricingTitle: "Bảng giá thiệp mời online & website cưới Lumiere",
-pricingBody:
-  "Lựa chọn gói dịch vụ phù hợp với nhu cầu và ngân sách để có một thiệp mời online và website cưới rõ ràng, dễ gửi và đúng phong cách hai bạn. Gói Miễn phí để bắt đầu; gói Premium gộp toàn bộ tính năng trả phí — chi tiết từng hạng mục nằm ở bảng so sánh phía trên.",
-pricingCompareCta: "Cuộn lên xem bảng so sánh Miễn phí & Premium",
+pricingTitle: "Giá rõ ràng, không phí ẩn",
+pricingBody: "Thanh toán một lần cho mỗi thiệp.",
+pricingCompareCta: "Xem bảng so sánh chi tiết",
 pricingPopularBadge: "Phổ biến",
 pricing: [
   {
     name: "Miễn phí",
-    tagline: "Bắt đầu không tốn phí — đủ để mời khách xem thông tin cốt lõi",
+    tagline: "Đủ để mời khách",
     price: "0đ",
-    note:
-      "Dùng mẫu trong kho miễn phí: giới thiệu, lịch, bản đồ, album nhỏ và RSVP đơn giản — phù hợp thử nghiệm hoặc tiệc gọn.",
+    note: "Mẫu miễn phí, lịch cưới, bản đồ và album nhỏ.",
     featured: false,
   },
   {
     name: "Premium",
-    tagline: "Trải nghiệm nâng cao — gộp mọi tính năng trả phí",
+    tagline: "Đầy đủ tính năng",
     price: "199.000đ",
-    note:
-      "Gồm toàn bộ hạng mục đánh dấu Có / nâng cao ở cột Premium trong bảng so sánh: thời hạn dài, album lớn, không quảng cáo chen ngang, thống kê truy cập, photobook đẹp hơn, sổ chúc & phản hồi, QR mừng cưới, song thân, nhạc nền, đổi giao diện linh hoạt, gỡ branding, QR tuỳ chỉnh, Save the Date, mẫu cao cấp, hiệu ứng, favicon/logo, tên miền (tuỳ chọn), RSVP sâu, chỉ đường nhà, song ngữ, tuỳ chỉnh sâu & hỗ trợ ưu tiên.",
+    note: "Mẫu cao cấp, xác nhận tham dự, sổ lời chúc, QR mừng cưới, nhạc nền, song ngữ, không quảng cáo. Hiển thị 24 tháng.",
     featured: true,
   },
 ],
 testimonialsEyebrow: "Phản hồi",
-testimonialsTitle: "Khách hàng chia sẻ",
-testimonialsBody:
-  "Vài dòng cảm ơn sau khi hai bạn nhận bàn giao website mời cưới. Dùng nút hai bên hoặc vuốt ngang khi có nhiều phản hồi.",
+testimonialsTitle: "Cặp đôi nói gì về Lumiere",
+testimonialsBody: "",
 feedbackScrollPrev: "Xem phản hồi trước",
 feedbackScrollNext: "Xem phản hồi sau",
 testimonials: [
@@ -302,13 +281,13 @@ testimonials: [
     quote:
       "Chúng tôi thích mẫu tối giản, chỉnh màu theo tone tiệc xong là gửi Zalo cho bạn bè rất nhanh.",
     name: "Hùng & Thu",
-    detail: "Gentle Drift · TP.HCM",
+    detail: "Gói Premium · TP.HCM",
   },
   {
     quote:
       "Bạn thân bảo trang mời cưới nhìn như tạp chí — đúng gu editorial chúng tôi mong muốn từ đầu.",
     name: "An & Chi",
-    detail: "Neela Classic (Premium) · Đà Nẵng",
+    detail: "Gói Premium · Đà Nẵng",
   },
   {
     quote:
@@ -326,7 +305,7 @@ testimonials: [
     quote:
       "Chúng tôi in QR lên thiệp giấy, đám bạn quét ra là vào đúng trang RSVP — đếm số người đi tiệc gọn hẳn.",
     name: "Khoa & Vy",
-    detail: "Slide Flex (Premium) · Nha Trang",
+    detail: "Gói Premium · Nha Trang",
   },
   {
     quote:
@@ -338,7 +317,7 @@ testimonials: [
     quote:
       "Làm gấp trong tuần mà vẫn chỉnh được font, màu và lời mời — gửi link cho sếp và team cũng không ngại.",
     name: "Nam & Phương",
-    detail: "Gentle Drift · Hà Nội",
+    detail: "Gói Premium · Hà Nội",
   },
   {
     quote:
@@ -354,8 +333,16 @@ testimonials: [
   },
 ],
 contactEyebrow: "Liên hệ",
-contactTitle: "Chúng tôi lắng nghe",
-contactBody:
-  "Để lại thông tin — đội ngũ sẽ liên hệ tư vấn mẫu phù hợp và thời gian triển khai.",
+contactTitle: "Cần tư vấn?",
+contactBody: "Để lại thông tin, chúng tôi sẽ liên hệ lại.",
+galleryFilterAll: "Tất cả",
+galleryFilterTierAria: "Lọc theo gói",
+galleryHoverHint: "Rê chuột vào từng mẫu để xem trước toàn bộ thiệp",
+galleryTapHint: "Chạm vào mẫu để xem demo đầy đủ",
+galleryShowMore: "Xem thêm mẫu",
+galleryShowLess: "Thu gọn",
+galleryEmpty: "Chưa có mẫu phù hợp bộ lọc này.",
+galleryFreePrice: "0đ",
+galleryPremiumPrice: "199.000đ",
 };
 export type HomeMessages = typeof homeVi;

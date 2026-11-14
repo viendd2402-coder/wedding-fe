@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import TemplateWorkspace from "@/templates/template-workspace";
 import { templateModuleMap, weddingTemplates } from "@/templates/template-registry";
+import {
+  getTemplateDisplayName,
+  getTemplateHref,
+  getTemplatePublicSlug,
+  resolveTemplateSlug,
+} from "@/lib/templates/display-name";
 
 type TemplatePageProps = {
   params: Promise<{
@@ -9,9 +15,10 @@ type TemplatePageProps = {
   }>;
 };
 
+/** URL công khai: /templates/mau-premium-so-01. Slug cũ (vd. /templates/soft-serenity) vẫn vào được và được chuyển hướng. */
 export async function generateStaticParams() {
   return weddingTemplates.map((template) => ({
-    slug: template.slug,
+    slug: getTemplatePublicSlug(template),
   }));
 }
 
@@ -19,7 +26,8 @@ export async function generateMetadata({
   params,
 }: TemplatePageProps): Promise<Metadata> {
   const { slug } = await params;
-  const template = weddingTemplates.find((item) => item.slug === slug);
+  const resolved = resolveTemplateSlug(slug);
+  const template = resolved ? templateModuleMap.get(resolved.slug)?.meta : undefined;
 
   if (!template) {
     return {
@@ -28,17 +36,23 @@ export async function generateMetadata({
   }
 
   return {
-    title: `Demo ${template.name} | Lumiere Wedding Websites`,
-    description: `Xem và chỉnh thử mẫu ${template.name} trên Lumiere Wedding Websites.`,
+    title: `Demo ${getTemplateDisplayName(template)} | Lumiere Wedding Websites`,
+    description: `Xem và chỉnh thử ${getTemplateDisplayName(template)} trên Lumiere Wedding Websites.`,
+    alternates: { canonical: getTemplateHref(template) },
   };
 }
 
 export default async function TemplateDemoPage({ params }: TemplatePageProps) {
   const { slug } = await params;
-  const templateModule = templateModuleMap.get(slug);
+  const resolved = resolveTemplateSlug(slug);
+  const templateModule = resolved ? templateModuleMap.get(resolved.slug) : undefined;
 
   if (!templateModule) {
     notFound();
+  }
+
+  if (resolved?.legacy) {
+    permanentRedirect(getTemplateHref(templateModule.meta));
   }
 
   return (

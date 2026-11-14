@@ -19,6 +19,7 @@ import {
   type HomeHeroSpotlightMessages,
 } from "@/i18n/messages/home-hero";
 import { profileMessages, type ProfileMessages } from "@/i18n/messages/profile";
+import { accountUiMessages, type AccountUiMessages } from "@/i18n/messages/account-ui";
 import {
   templatesGalleryFree,
   templatesGalleryPremium,
@@ -58,6 +59,7 @@ export type Messages = {
   myInvitations: MyInvitationsMessages;
   inviteSnapshot: InviteSnapshotMessages;
   savedTemplates: SavedTemplatesMessages;
+  account: AccountUiMessages;
 };
 
 export const messagesByLocale: Record<AppLanguage, Messages> = {
@@ -76,6 +78,7 @@ export const messagesByLocale: Record<AppLanguage, Messages> = {
     myInvitations: myInvitationsMessages.vi,
     inviteSnapshot: inviteSnapshotMessages.vi,
     savedTemplates: savedTemplatesMessages.vi,
+    account: accountUiMessages.vi,
   },
   en: {
     home: homeEn,
@@ -92,5 +95,6 @@ export const messagesByLocale: Record<AppLanguage, Messages> = {
     myInvitations: myInvitationsMessages.en,
     inviteSnapshot: inviteSnapshotMessages.en,
     savedTemplates: savedTemplatesMessages.en,
+    account: accountUiMessages.en,
   },
 };

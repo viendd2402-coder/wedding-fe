@@ -1,5 +1,8 @@
 /* SlideFlex — tokens từ iWedding theme.css (cyan / tím / #df4759), không bundle Bootstrap */
 .root {
+  /* Hiệu ứng "trượt vào từ phải" (…PendingRight) dịch khối sang phải trước khi hiện —
+     cắt phần tràn để trang không bị rộng hơn màn hình điện thoại (dải trắng bên phải). */
+  overflow-x: clip;
   --sf-cyan: #1dcffc;
   --sf-purple: #ac01ff;
   --sf-pink: #df4759;

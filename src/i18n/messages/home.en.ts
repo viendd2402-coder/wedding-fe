@@ -1,13 +1,10 @@
 import type { HomeMessages } from "./home.vi";
 
 export const homeEn: HomeMessages = {
-heroEyebrow: "Refined online wedding invitations",
-heroTitle:
-  "Elegant wedding websites—from understated layouts to a design that feels unmistakably yours.",
-heroBody:
-  "Each collection is curated around a mood: minimal, floral, editorial, dark luxury, or destination. Start with a complimentary template, then move to a premium experience when you want more depth and polish.",
-heroTagline:
-  "One link for your day—shared like a proper invitation, tailored to both of you.",
+heroEyebrow: "Online wedding invitations",
+heroTitle: "Beautiful wedding websites, shared with a single link.",
+heroBody: "Pick a template, add your details, share via chat or QR code — done in minutes.",
+heroTagline: "Free to start. Upgrade to Premium when you need more.",
 heroPrimaryCta: "Browse templates",
 heroSecondaryCta: "Get consultation",
 statTemplates: "Ready-made designs",
@@ -15,8 +12,7 @@ statDelivery: "Handoff",
 statDeliveryValue: "Instant",
 statMobile: "Every device",
 templatesEyebrow: "Templates",
-templatesTitle:
-  "Explore the moods, choose what feels closest to you, then tailor it for your celebration.",
+templatesTitle: "Pick a template you love",
 freeEyebrow: "Free templates",
 freeTitle: "Free templates",
 freeDescription:
@@ -29,61 +25,53 @@ premiumTitle: "Premium templates",
 premiumDescription:
   "For couples who want more presence: striking layouts, a richer gallery, and details that make your page feel like a true invitation.",
 premiumCta: "View all premium templates",
-whyUsEyebrow: "Why Lumiere",
-whyUsTitle: "Why build your online invitation and wedding website with Lumiere?",
-whyUsBody:
-  "Everything you need for a modern invitation—mobile-friendly, easy to share on chat or with a QR code, and true to your style.",
+whyUsEyebrow: "Features",
+whyUsTitle: "Everything your guests need, on one page",
+whyUsBody: "Mobile-friendly, easy to share, easy to read.",
 whyUsImageAlt: "Wedding rings and elegant celebration details—illustrative photo",
 whyUsLeft: [
   {
     icon: "envelope",
     tone: "amber",
-    title: "Online invitation & wedding site",
-    description:
-      "Start from polished templates or go premium—save printing time while keeping the moment respectful and warm for every guest.",
+    title: "Online invitation",
+    description: "Replaces paper cards — instant to send, still elegant.",
   },
   {
     icon: "users",
     tone: "rose",
-    title: "RSVP on the page",
-    description:
-      "Guests respond in a few taps so you can estimate attendance more calmly when planning seating and catering.",
+    title: "RSVP",
+    description: "Guests confirm on the page, so you know the headcount early.",
   },
   {
     icon: "list",
     tone: "blush",
     title: "Schedule & venues",
-    description:
-      "Ceremony, reception, maps, and directions in one place—family and friends understand the full day at a single glance.",
+    description: "Ceremony, reception times and map directions, all clear.",
   },
 ],
 whyUsRight: [
   {
     icon: "globe",
     tone: "champagne",
-    title: "A complete wedding story page",
-    description:
-      "Introductions, your story, gallery, and events—a single link to remember and share with people you love.",
+    title: "Gallery & story",
+    description: "Your photos and your story in one place.",
   },
   {
     icon: "pricing",
     tone: "sage",
-    title: "Transparent packages",
-    description:
-      "Start free; one Premium tier bundles every paid feature—clear budgeting without surprise add-ons.",
+    title: "Clear pricing",
+    description: "Free or Premium at 199.000đ — no hidden fees.",
   },
   {
     icon: "heart",
     tone: "warmRose",
-    title: "Guest book of wishes",
-    description:
-      "On premium, guests can leave wishes on your page—lines you can reopen years later.",
+    title: "Guest book",
+    description: "Guests leave wishes you can keep forever.",
   },
 ],
-featuresEyebrow: "Experience",
-featuresTitle: "Full feature comparison — Free & Premium",
-featuresBody:
-  "Pick the plan that fits your needs and budget. Below is a line-by-line checklist for your online invitation and wedding site—similar to dedicated invitation platforms—summarized in two tiers: Free and Premium.",
+featuresEyebrow: "Compare plans",
+featuresTitle: "Free & Premium",
+featuresBody: "What each plan includes.",
 featuresExpand: "Show full comparison table",
 featuresCollapse: "Collapse table",
 featureTableHeaders: ["Feature", "Free", "Premium"],
@@ -230,33 +218,28 @@ featureRows: [
   },
 ],
 processEyebrow: "Process",
-processTitle: "Four calm, transparent steps",
-processBody:
-  "Choose a template → edit your personal content in the live preview → pay for Premium or create a free invite → get your link to share.",
+processTitle: "Done in 4 steps",
+processBody: "Pick a template, add details, activate, share.",
 process: [
   {
     step: "01",
-    title: "Choose a template",
-    description:
-      "Browse the gallery and pick a free or paid design that matches the tone of your celebration.",
+    title: "Pick a template",
+    description: "Choose a free or Premium design.",
   },
   {
     step: "02",
-    title: "Edit your personal content",
-    description:
-      "Names, schedule, venues, photos, wording—everything guests see, updated right in the preview.",
+    title: "Add your details",
+    description: "Names, date, venue, photos — edit right on the template.",
   },
   {
     step: "03",
-    title: "Checkout or create a free invite",
-    description:
-      "Premium: pay online (VNPay) to activate. Free tier: create your invite with no payment step.",
+    title: "Activate",
+    description: "Free templates go live instantly; Premium pays via VNPay.",
   },
   {
     step: "04",
-    title: "Handoff and share",
-    description:
-      "Use your invitation link on chat apps, social posts, or print a QR on paper cards.",
+    title: "Share",
+    description: "Send the link via chat apps or print the QR code.",
   },
 ],
 valueEyebrow: "Highlights",
@@ -274,33 +257,29 @@ positioningQuote:
 positioningBody:
   "We believe the experience should feel restrained, warm, and true to your story.",
 pricingEyebrow: "Pricing",
-pricingTitle: "Lumiere online invitation & wedding website pricing",
-pricingBody:
-  "Choose a plan that matches your needs and budget for a clear, shareable invitation experience. Start on Free; Premium bundles every paid feature in one upgrade. For a line-by-line breakdown, use the comparison table in the section above.",
-pricingCompareCta: "Scroll up to the Free & Premium comparison",
+pricingTitle: "Simple pricing, no hidden fees",
+pricingBody: "One-time payment per invitation.",
+pricingCompareCta: "See the detailed comparison",
 pricingPopularBadge: "Popular",
 pricing: [
   {
     name: "Free",
-    tagline: "No cost to start—enough for a clear, shareable invite",
+    tagline: "Enough to invite guests",
     price: "0đ",
-    note:
-      "Use free templates with introductions, schedule, maps, a small gallery, and simple RSVP—ideal to try the flow or for a minimal celebration.",
+    note: "Free templates, schedule, map and a small gallery.",
     featured: false,
   },
   {
     name: "Premium",
-    tagline: "Advanced experience—all paid features in one tier",
+    tagline: "Every feature",
     price: "199.000đ",
-    note:
-      "Every row marked Yes or advanced in the Premium column: longer hosting, large gallery, clean guest experience without third-party ads, analytics, richer photobook, wishes + replies, gift QR, parents section, custom music, flexible theme changes, remove Lumiere branding, custom QR, Save the Date, premium templates, motion effects, logo/favicon options, optional domain & custom code, deeper RSVP, family-home maps, bilingual support, deep layout tuning, and priority support.",
+    note: "Premium templates, RSVP, guest book, gift QR, background music, bilingual, no ads. Live for 24 months.",
     featured: true,
   },
 ],
 testimonialsEyebrow: "Feedback",
-testimonialsTitle: "What couples say",
-testimonialsBody:
-  "Short notes from couples after their invitation websites went live. Use the side arrows or swipe when there are more stories.",
+testimonialsTitle: "What couples say about Lumiere",
+testimonialsBody: "",
 feedbackScrollPrev: "Previous testimonial",
 feedbackScrollNext: "Next testimonial",
 testimonials: [
@@ -314,13 +293,13 @@ testimonials: [
     quote:
       "We wanted something minimal, matched the palette to our reception, and shared it on chat in minutes.",
     name: "Hùng & Thu",
-    detail: "Gentle Drift · Ho Chi Minh City",
+    detail: "Premium · Ho Chi Minh City",
   },
   {
     quote:
       "Friends told us it felt like a magazine—exactly the editorial mood we had in mind from day one.",
     name: "An & Chi",
-    detail: "Neela Classic (Premium) · Da Nang",
+    detail: "Premium · Da Nang",
   },
   {
     quote:
@@ -338,7 +317,7 @@ testimonials: [
     quote:
       "We printed a QR on paper cards; friends scanned straight into RSVP—headcount for the reception got much easier.",
     name: "Khoa & Vy",
-    detail: "Slide Flex (Premium) · Nha Trang",
+    detail: "Premium · Nha Trang",
   },
   {
     quote:
@@ -350,7 +329,7 @@ testimonials: [
     quote:
       "We had a tight week but still tuned fonts, colors, and wording—sharing the link with colleagues felt effortless.",
     name: "Nam & Phuong",
-    detail: "Gentle Drift · Hanoi",
+    detail: "Premium · Hanoi",
   },
   {
     quote:
@@ -366,7 +345,15 @@ testimonials: [
   },
 ],
 contactEyebrow: "Contact",
-contactTitle: "We would love to hear from you",
-contactBody:
-  "Leave your details—we will follow up with template suggestions and a realistic timeline.",
+contactTitle: "Need advice?",
+contactBody: "Leave your details and we will get back to you.",
+galleryFilterAll: "All",
+galleryFilterTierAria: "Filter by plan",
+galleryHoverHint: "Hover over a template to preview the whole invitation",
+galleryTapHint: "Tap a template to open the full demo",
+galleryShowMore: "Show more templates",
+galleryShowLess: "Show less",
+galleryEmpty: "No templates match this filter yet.",
+galleryFreePrice: "Free",
+galleryPremiumPrice: "199.000đ",
 };

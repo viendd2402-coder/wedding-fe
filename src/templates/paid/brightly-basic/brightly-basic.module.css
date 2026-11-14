@@ -1,5 +1,8 @@
 /* Neela / iWedding template19 — scoped CSS Module */
 .root {
+  /* Hiệu ứng "trượt vào từ phải" (…PendingRight) dịch khối sang phải trước khi hiện —
+     cắt phần tràn để trang không bị rộng hơn màn hình điện thoại (dải trắng bên phải). */
+  overflow-x: clip;
   --neela: #8eaeba;
   --neela-dark: #6d8e9c;
   --neela-overlay: rgba(61, 89, 99, 0.82);

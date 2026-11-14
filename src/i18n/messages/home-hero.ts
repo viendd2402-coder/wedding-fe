@@ -15,7 +15,7 @@ export type HomeHeroSpotlightMessages = {
 const vi: HomeHeroSpotlightMessages = {
   eyebrow: "Phổ biến",
   title: "Mẫu được chọn nhiều nhất",
-  body: "Thứ hạng theo lượt cặp đôi chọn mẫu — mở thẻ để xem demo đầy đủ.",
+  body: "Theo lượt chọn của các cặp đôi.",
   openLabel: "Xem mẫu",
   viewAll: "Xem tất cả mẫu giao diện",
   tierFree: "Miễn phí",
@@ -26,7 +26,7 @@ const vi: HomeHeroSpotlightMessages = {
 const en: HomeHeroSpotlightMessages = {
   eyebrow: "Popular",
   title: "Most-chosen templates",
-  body: "Ranked by how often couples pick each design — open a card for the full demo.",
+  body: "Ranked by couples' choices.",
   openLabel: "Open",
   viewAll: "Browse all templates",
   tierFree: "Free",

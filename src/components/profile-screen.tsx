@@ -11,6 +11,7 @@ import {
   type FormEvent,
 } from "react";
 import { useAuthSession, useLogout } from "@/components/auth-session";
+import AccountPageShell, { AccountEmptyState } from "@/components/account-page-shell";
 import { FullscreenLoading } from "@/components/common/fullscreen-loading";
 import { useGlobalPreferences } from "@/components/global-preferences-provider";
 import { useMessages } from "@/i18n/use-messages";
@@ -44,7 +45,7 @@ export default function ProfileScreen() {
   const { signedIn } = useAuthSession();
   const logout = useLogout();
   const { theme } = useGlobalPreferences();
-  const { profile: copy } = useMessages();
+  const { profile: copy, account } = useMessages();
   const isDark = theme === "dark";
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -88,65 +89,28 @@ export default function ProfileScreen() {
     void loadProfile();
   }, [clientReady, signedIn, router, loadProfile]);
 
-  const muted = isDark ? "text-white/62" : "text-[var(--color-ink)]/62";
-  const mutedSoft = isDark ? "text-white/48" : "text-[var(--color-ink)]/48";
-  const fieldErrorText = isDark ? "mt-2 text-xs text-amber-200/95" : "mt-2 text-xs text-amber-900";
+  // Style theo design token (sáng/tối tự đổi qua biến CSS — không cần nhánh isDark)
+  const muted = "text-[var(--color-muted)]";
+  const mutedSoft = "text-[var(--color-muted)] opacity-80";
+  const fieldErrorText = "mt-2 text-xs text-[var(--color-rose)]";
 
-  /** Ô nhập dạng “sheet”: nhãn trái — điều khiển phải */
+  /** Ô nhập — nhãn đặt phía trên */
   const inputSheet =
-    `w-full rounded-2xl border px-4 py-3 text-[15px] outline-none transition duration-200 ` +
-    `focus:border-[var(--color-rose)]/55 focus:ring-[3px] focus:ring-[var(--color-rose)]/14 ` +
-    (isDark
-      ? "border-white/10 bg-white/[0.05] text-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)] placeholder:text-white/26"
-      : "border-[var(--color-ink)]/[0.07] bg-white text-[var(--color-ink)] shadow-[0_1px_2px_rgba(49,42,40,0.04)] placeholder:text-[var(--color-ink)]/30");
+    "w-full rounded-xl border border-[var(--color-line-strong)] bg-[var(--color-surface)] px-4 py-3 text-[15px] text-[var(--color-ink)] outline-none transition duration-200 placeholder:text-[var(--color-muted)] focus:border-[var(--color-gold)] focus:ring-4 focus:ring-[color-mix(in_srgb,var(--color-gold)_16%,transparent)]";
 
-  const rowLabel = `text-[15px] font-semibold tracking-tight ${isDark ? "text-white/90" : "text-[var(--color-ink)]"}`;
-  const rowHint = `mt-1 text-xs leading-snug ${mutedSoft}`;
+  const fieldLabel = "mb-2 block text-sm font-medium text-[var(--color-ink)]";
+  const fieldHint = `mt-2 text-xs leading-snug ${mutedSoft}`;
 
-  const formSheetBorder = isDark ? "border-white/[0.1]" : "border-[var(--color-ink)]/[0.07]";
-  const formSheetBg = isDark
-    ? "bg-[linear-gradient(180deg,rgba(255,255,255,0.04)_0%,rgba(255,255,255,0.02)_100%)]"
-    : "bg-[linear-gradient(180deg,rgba(255,255,255,0.92)_0%,rgba(255,252,248,0.75)_100%)]";
-  const formSheetRing = isDark ? "shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]" : "shadow-[inset_0_1px_0_0_rgba(255,255,255,0.95)]";
-  const formDivide = isDark ? "divide-white/[0.07]" : "divide-[var(--color-ink)]/[0.07]";
-
-  const formRowGrid =
-    "grid gap-3 py-4 sm:grid-cols-[minmax(0,11rem)_minmax(0,1fr)] sm:gap-10 sm:py-5 sm:items-start lg:grid-cols-[minmax(0,13.5rem)_minmax(0,1fr)] lg:gap-12 xl:grid-cols-[minmax(0,14rem)_minmax(0,1fr)] xl:gap-14 2xl:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] 2xl:gap-16";
-  const formRowPad = "px-5 sm:px-6 lg:px-8 xl:px-9 2xl:px-10 min-[1800px]:px-12";
-
-  const panelOuter = isDark
-    ? "border border-white/[0.09] shadow-[0_4px_0_0_rgba(0,0,0,0.2),0_32px_80px_rgba(0,0,0,0.42),inset_0_1px_0_0_rgba(255,255,255,0.06)]"
-    : "border border-[var(--color-ink)]/[0.06] shadow-[0_4px_0_0_rgba(49,42,40,0.03),0_28px_70px_rgba(49,42,40,0.09),inset_0_1px_0_0_rgba(255,255,255,0.85)]";
-
-  const panelInner = isDark
-    ? "bg-[linear-gradient(168deg,rgba(255,255,255,0.09)_0%,rgba(255,255,255,0.03)_38%,rgba(22,22,24,0.96)_72%)] backdrop-blur-xl"
-    : "bg-[linear-gradient(168deg,rgba(255,255,255,0.98)_0%,rgba(255,252,248,0.96)_35%,rgba(247,242,236,0.92)_100%)] backdrop-blur-sm";
-
-  const profileBanner = isDark
-    ? "bg-[linear-gradient(135deg,rgba(232,196,190,0.38)_0%,rgba(125,140,121,0.22)_38%,rgba(30,28,32,0.95)_78%,#121214_100%)]"
-    : "bg-[linear-gradient(135deg,rgba(214,180,174,0.55)_0%,rgba(255,245,238,0.75)_35%,rgba(252,248,242,0.95)_70%,#faf6f1_100%)]";
-
-  const profileBannerShine = isDark
-    ? "bg-[linear-gradient(105deg,transparent_40%,rgba(255,255,255,0.06)_48%,transparent_56%)]"
-    : "bg-[linear-gradient(105deg,transparent_35%,rgba(255,255,255,0.65)_50%,transparent_65%)]";
-
-  const avatarRingOuter = isDark
-    ? "bg-gradient-to-br from-[var(--color-rose)]/75 via-white/15 to-[var(--color-sage)]/55 p-[3px] shadow-[0_20px_50px_rgba(0,0,0,0.35),0_0_0_1px_rgba(255,255,255,0.06)]"
-    : "bg-gradient-to-br from-[var(--color-rose)]/55 via-[#fff8f5] to-[var(--color-sage)]/45 p-[3px] shadow-[0_18px_44px_rgba(49,42,40,0.12),0_0_0_1px_rgba(255,255,255,0.8)]";
-
-  const avatarRingInner = isDark ? "bg-[#161618] p-1" : "bg-[linear-gradient(180deg,#fffefb,#f7f2ec)] p-1";
-
-  const sectionHead = `flex items-center gap-3`;
-  const sectionAccent = `h-9 w-1 shrink-0 rounded-full bg-gradient-to-b from-[var(--color-rose)] to-[var(--color-sage)]/80 shadow-[0_2px_8px_rgba(197,167,161,0.35)]`;
+  const panelOuter = "lux-card";
 
   const genderPillBase =
-    "rounded-full px-4 py-2.5 text-sm font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-45";
-  const genderPillOff = isDark
-    ? "border border-white/12 bg-white/[0.04] text-white/78 hover:border-white/20 hover:bg-white/[0.07] focus-visible:outline-white/40"
-    : "border border-[var(--color-ink)]/8 bg-white/80 text-[var(--color-ink)]/80 hover:border-[var(--color-ink)]/14 hover:bg-white focus-visible:outline-[var(--color-rose)]/40";
-  const genderPillOn = isDark
-    ? "border border-[var(--color-rose)]/50 bg-[var(--color-rose)]/22 text-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08),0_4px_14px_rgba(0,0,0,0.2)] focus-visible:outline-[var(--color-rose)]/55"
-    : "border border-[var(--color-rose)]/45 bg-[var(--color-rose)]/14 text-[var(--color-ink)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.85),0_6px_18px_rgba(197,167,161,0.2)] focus-visible:outline-[var(--color-rose)]/45";
+    "cursor-pointer rounded-full border px-4 py-2 text-sm font-medium transition disabled:opacity-45";
+  const genderPillOff =
+    "border-[var(--color-line-strong)] text-[var(--color-muted)] hover:border-[var(--color-ink)] hover:text-[var(--color-ink)]";
+  const genderPillOn =
+    "border-[color-mix(in_srgb,var(--color-gold)_60%,transparent)] bg-[var(--color-gold-soft)] text-[var(--color-ink)]";
+
+  const skeleton = "rounded-lg bg-[color-mix(in_srgb,var(--color-ink)_7%,transparent)]";
 
   const onAvatarFile = (e: ChangeEvent<HTMLInputElement>) => {
     setFormError(null);
@@ -270,215 +234,155 @@ export default function ProfileScreen() {
 
   if (!clientReady) {
     return (
-      <main className={`relative isolate min-h-screen ${isDark ? "bg-[#090909]" : "bg-[var(--color-cream)]"}`}>
-        <div className="mx-auto flex max-w-md flex-col items-center justify-center gap-4 px-6 py-28 text-center">
-          <p className={`text-sm font-medium ${isDark ? "text-white/70" : "text-[var(--color-ink)]/70"}`}>
-            {copy.loading}
-          </p>
-        </div>
+      <main className="lux-page-bg min-h-screen flex-1">
+        <p className="lux-muted px-6 py-28 text-center text-sm font-medium">{copy.loading}</p>
       </main>
     );
   }
 
   if (!signedIn) {
     return (
-      <main className={`relative isolate min-h-screen ${isDark ? "bg-[#090909]" : "bg-[var(--color-cream)]"}`}>
-        <div className="mx-auto flex max-w-md flex-col items-center justify-center gap-6 px-6 py-28 text-center">
-          <p className={`font-display text-2xl ${isDark ? "text-white/88" : "text-[var(--color-ink)]"}`}>
-            {copy.needLogin}
-          </p>
-          <Link href="/login" className="btn-primary rounded-full px-8 py-3.5 text-sm font-medium">
-            {copy.goLogin}
-          </Link>
-        </div>
+      <main className="lux-page-bg min-h-screen flex-1 px-4 py-24">
+        <AccountEmptyState
+          icon={
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-7 w-7" aria-hidden="true">
+              <circle cx="12" cy="9" r="3.25" />
+              <path strokeLinecap="round" d="M6.5 19.25c.84-2.8 3.53-4.5 5.5-4.5s4.66 1.7 5.5 4.5" />
+            </svg>
+          }
+          title={copy.needLogin}
+          body=""
+          action={
+            <Link href="/login" className="btn-primary inline-flex rounded-full px-8 py-3.5 text-sm font-medium">
+              {copy.goLogin}
+            </Link>
+          }
+        />
       </main>
     );
   }
 
+  // Mức độ hoàn thiện hồ sơ + trường còn thiếu (gợi ý thân thiện cho khách)
+  const completionChecks = draft
+    ? [
+        { done: Boolean(draft.name?.trim()), label: copy.name },
+        { done: Boolean(draft.avatarUrl), label: account.fieldAvatar },
+        { done: Boolean(draft.phone?.trim()), label: copy.phone },
+        { done: draft.age !== null, label: copy.age },
+        { done: Boolean(draft.gender && draft.gender !== "unspecified"), label: copy.gender },
+        { done: Boolean(draft.additionalContact?.trim()), label: copy.additionalContact },
+      ]
+    : [];
+  const completionPct = completionChecks.length
+    ? Math.round((completionChecks.filter((c) => c.done).length / completionChecks.length) * 100)
+    : 0;
+  const missingLabels = completionChecks
+    .filter((c) => !c.done)
+    .slice(0, 2)
+    .map((c) => c.label.toLocaleLowerCase());
+  const isDirty = Boolean(profile && draft && JSON.stringify(profileToDraft(profile)) !== JSON.stringify(draft));
+
+  /** Cập nhật draft + kiểm tra lại riêng trường vừa sửa. */
+  const patchDraft = (patch: Partial<UserProfile>, field: ProfileField) =>
+    setDraft((d) => {
+      if (!d) return d;
+      const next = { ...d, ...patch };
+      setFormError(null);
+      setFieldErrors((prev) => setOrClearFieldError(prev, field, validateField(field, next)));
+      return next;
+    });
+
+  const sectionTitle = (title: string, hint: string) => (
+    <div className="mb-6">
+      <p className="font-display text-2xl font-medium">{title}</p>
+      <p className={`mt-1 text-sm ${muted}`}>{hint}</p>
+    </div>
+  );
+
+  const errorText = (id: string, msg?: string) =>
+    msg ? (
+      <p id={id} className={fieldErrorText}>
+        {msg}
+      </p>
+    ) : null;
+
   return (
-    <main
-      className={`relative isolate min-h-screen overflow-hidden transition-colors ${
-        isDark ? "bg-[#090909]" : "bg-[var(--color-cream)]"
-      }`}
-    >
+    <AccountPageShell backLabel={copy.backHome} title={copy.title} subtitle={account.profileSubtitle}>
       <FullscreenLoading
         show={loadState === "loading" || saveState === "saving"}
         isDark={isDark}
         label={saveState === "saving" ? copy.saving : copy.loading}
       />
-      <div
-        className={`pointer-events-none absolute inset-0 ${
-          isDark
-            ? "bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(209,177,171,0.14),transparent),radial-gradient(circle_at_100%_0%,rgba(125,140,121,0.08),transparent_40%),linear-gradient(180deg,#0a0a0b,#111113)]"
-            : "bg-[radial-gradient(ellipse_70%_55%_at_50%_-15%,rgba(197,167,161,0.45),transparent),radial-gradient(circle_at_90%_10%,rgba(255,255,255,0.9),transparent_45%),linear-gradient(180deg,#fffcf8,#f7f2ec)]"
-        }`}
-      />
-      <div
-        className={`pointer-events-none absolute -top-24 right-[-18%] h-72 w-72 rounded-full blur-3xl ${
-          isDark ? "bg-[var(--color-rose)]/10" : "bg-white/60"
-        }`}
-      />
-      <div
-        className={`pointer-events-none absolute bottom-[-10%] left-[-12%] h-80 w-80 rounded-full blur-3xl ${
-          isDark ? "bg-[var(--color-sage)]/8" : "bg-[var(--color-sage)]/12"
-        }`}
-      />
 
-      <div className="relative mx-auto w-full max-w-lg px-5 py-10 sm:max-w-3xl sm:px-8 lg:max-w-[58rem] lg:px-10 xl:max-w-[76rem] xl:px-12 2xl:max-w-[min(calc(100vw-4rem),96rem)] 2xl:px-16 min-[1800px]:max-w-[min(calc(100vw-5rem),112rem)] min-[1800px]:px-20 sm:py-16">
-        <div className="mb-8 flex flex-col gap-5 sm:mb-10">
-          <Link
-            href="/"
-            className={`inline-flex w-fit items-center gap-2 text-sm font-medium transition hover:opacity-80 ${muted}`}
-          >
-            <span aria-hidden="true" className="text-base opacity-70">
-              ←
-            </span>
-            {copy.backHome}
-          </Link>
-          <div className="flex flex-wrap items-center gap-3">
-            <h1 className="font-display text-3xl tracking-tight sm:text-4xl">{copy.title}</h1>
+      {loadState === "loading" ? (
+        <div className="flex flex-col gap-6" aria-hidden="true">
+          <div className={`${panelOuter} flex items-center gap-6 rounded-[2rem] p-8`}>
+            <div className={`h-28 w-28 shrink-0 rounded-full ${skeleton}`} />
+            <div className="flex-1">
+              <div className={`h-7 w-48 ${skeleton}`} />
+              <div className={`mt-3 h-4 w-64 ${skeleton}`} />
+            </div>
           </div>
-          <p className={`text-sm leading-relaxed ${muted}`}>{copy.subtitle}</p>
+          <div className={`${panelOuter} grid gap-5 rounded-[1.75rem] p-8 sm:grid-cols-2`}>
+            {[0, 1, 2, 3].map((i) => (
+              <div key={i}>
+                <div className={`h-4 w-24 ${skeleton}`} />
+                <div className={`mt-3 h-12 rounded-xl ${skeleton}`} />
+              </div>
+            ))}
+          </div>
         </div>
+      ) : null}
 
-        {loadState === "loading" ? (
-          <div
-            className={`overflow-hidden rounded-[2rem] lg:rounded-[2.25rem] ${panelOuter} ${panelInner} lg:grid lg:min-h-[28rem] lg:grid-cols-[minmax(15rem,26%)_1fr] xl:grid-cols-[minmax(16rem,22%)_1fr] 2xl:grid-cols-[minmax(17rem,17%)_1fr] min-[1800px]:grid-cols-[minmax(18rem,15%)_1fr]`}
+      {loadState === "error" && errorMessage ? (
+        <div className={`${panelOuter} rounded-[1.75rem] px-6 py-8 sm:px-8`}>
+          <p role="alert" className="text-sm leading-relaxed text-[var(--color-rose)]">
+            {errorMessage}
+          </p>
+          <button
+            type="button"
+            onClick={() => void loadProfile()}
+            className="btn-secondary mt-6 inline-flex cursor-pointer rounded-full px-6 py-3 text-sm font-medium"
           >
-            <div className="relative flex flex-col lg:h-full lg:min-h-[22rem]">
-              <div
-                className={`relative h-36 shrink-0 overflow-hidden sm:h-44 lg:absolute lg:inset-0 lg:h-full lg:rounded-none ${profileBanner}`}
-              >
-                <div className={`absolute inset-0 ${profileBannerShine}`} />
-              </div>
-              <div className="relative z-[1] flex flex-col items-center px-6 pb-8 pt-0 sm:px-8 lg:flex-1 lg:justify-center lg:px-6 lg:pb-12 lg:pt-12">
-                <div
-                  className={`-mt-[4.25rem] flex h-[8rem] w-[8rem] items-center justify-center rounded-full lg:mt-0 lg:h-[9.25rem] lg:w-[9.25rem] ${avatarRingOuter}`}
-                >
-                  <div className={`flex h-full w-full rounded-full ${avatarRingInner}`}>
-                    <div
-                      className={`h-full w-full rounded-full ${isDark ? "bg-white/10" : "bg-[var(--color-ink)]/8"}`}
-                    />
-                  </div>
-                </div>
-                <div className={`mt-6 h-7 w-44 rounded-lg lg:mt-8 ${isDark ? "bg-white/10" : "bg-[var(--color-ink)]/8"}`} />
-                <div className={`mt-2.5 h-4 w-56 rounded-lg ${isDark ? "bg-white/8" : "bg-[var(--color-ink)]/6"}`} />
-              </div>
-            </div>
+            {copy.retry}
+          </button>
+        </div>
+      ) : null}
+
+      {loadState === "idle" && draft ? (
+        <form onSubmit={onSubmit} className="flex flex-col gap-6">
+          {/* ── Thẻ hồ sơ ngang ── */}
+          <section className={`${panelOuter} overflow-hidden rounded-[2rem]`}>
             <div
-              className={`border-t px-6 py-7 sm:px-8 lg:border-l lg:border-t-0 lg:px-10 lg:py-10 xl:px-12 2xl:px-16 min-[1800px]:px-20 ${
-                isDark ? "border-white/[0.08]" : "border-[var(--color-ink)]/[0.07]"
-              }`}
-            >
-              <div className={`overflow-hidden rounded-2xl border ${formSheetBorder} ${formSheetBg} ${formSheetRing}`}>
-                <div className={`divide-y ${formDivide}`}>
-                  <div className={`${formRowGrid} ${formRowPad}`}>
-                    <div className={`h-4 w-28 rounded-md ${isDark ? "bg-white/12" : "bg-[var(--color-ink)]/10"}`} />
-                    <div className={`h-11 rounded-2xl ${isDark ? "bg-white/8" : "bg-[var(--color-ink)]/6"}`} />
-                  </div>
-                  <div className={`${formRowGrid} ${formRowPad}`}>
-                    <div className={`h-4 w-24 rounded-md ${isDark ? "bg-white/12" : "bg-[var(--color-ink)]/10"}`} />
-                    <div className={`h-11 rounded-2xl ${isDark ? "bg-white/8" : "bg-[var(--color-ink)]/6"}`} />
-                  </div>
-                  <div className={`${formRowGrid} ${formRowPad}`}>
-                    <div className={`h-4 w-20 rounded-md ${isDark ? "bg-white/12" : "bg-[var(--color-ink)]/10"}`} />
-                    <div className={`h-11 max-w-[7.5rem] rounded-2xl ${isDark ? "bg-white/8" : "bg-[var(--color-ink)]/6"}`} />
-                  </div>
-                  <div className={`${formRowGrid} ${formRowPad}`}>
-                    <div className={`h-4 w-32 rounded-md ${isDark ? "bg-white/12" : "bg-[var(--color-ink)]/10"}`} />
-                    <div className="flex flex-wrap gap-2">
-                      <div className={`h-9 w-[4.25rem] rounded-full ${isDark ? "bg-white/8" : "bg-[var(--color-ink)]/6"}`} />
-                      <div className={`h-9 w-[4.25rem] rounded-full ${isDark ? "bg-white/8" : "bg-[var(--color-ink)]/6"}`} />
-                    </div>
-                  </div>
-                  <div className={`${formRowGrid} ${formRowPad}`}>
-                    <div className={`h-4 w-36 rounded-md ${isDark ? "bg-white/12" : "bg-[var(--color-ink)]/10"}`} />
-                    <div className={`h-11 rounded-2xl ${isDark ? "bg-white/8" : "bg-[var(--color-ink)]/6"}`} />
+              className="h-24 bg-[linear-gradient(120deg,var(--color-gold-soft),color-mix(in_srgb,var(--color-rose)_14%,var(--color-surface-2)))] sm:h-28"
+              aria-hidden="true"
+            />
+            <div className="flex flex-col gap-6 px-6 pb-7 sm:px-8 md:flex-row md:items-end md:justify-between">
+              <div className="flex flex-col items-center gap-5 text-center sm:flex-row sm:items-end sm:text-left">
+                <div className="-mt-14 shrink-0 rounded-full border-4 border-[var(--color-surface)] bg-[var(--color-surface)] shadow-[var(--shadow-soft)] sm:-mt-16">
+                  <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full bg-[var(--color-gold-soft)] sm:h-32 sm:w-32">
+                    {draft.avatarUrl ? (
+                      <img src={draft.avatarUrl} alt="" className="h-full w-full object-cover" />
+                    ) : (
+                      <span className="font-display text-5xl italic text-[var(--color-gold)]" aria-hidden="true">
+                        {(draft.name?.trim()?.[0] ?? draft.email?.[0] ?? "?").toUpperCase()}
+                      </span>
+                    )}
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        ) : null}
-
-        {loadState === "error" && errorMessage ? (
-          <div
-            className={`rounded-[2rem] px-6 py-8 sm:px-8 ${panelOuter} ${panelInner} ${
-              isDark ? "ring-1 ring-red-400/20" : "ring-1 ring-red-200/50"
-            }`}
-          >
-            <p
-              role="alert"
-              className={`text-sm leading-relaxed ${isDark ? "text-red-200/95" : "text-red-800"}`}
-            >
-              {errorMessage}
-            </p>
-            <button
-              type="button"
-              onClick={() => void loadProfile()}
-              className="btn-secondary mt-6 inline-flex rounded-full px-6 py-3 text-sm font-medium"
-            >
-              {copy.retry}
-            </button>
-          </div>
-        ) : null}
-
-        {loadState === "idle" && draft ? (
-          <form onSubmit={onSubmit}>
-            <div
-              className={`overflow-hidden rounded-[2rem] lg:rounded-[2.25rem] ${panelOuter} ${panelInner} lg:grid lg:grid-cols-[minmax(15rem,26%)_1fr] xl:grid-cols-[minmax(16rem,22%)_1fr] 2xl:grid-cols-[minmax(17rem,17%)_1fr] min-[1800px]:grid-cols-[minmax(18rem,15%)_1fr]`}
-            >
-              <div className="relative flex flex-col lg:h-full lg:min-h-[22rem]">
-                <div
-                  className={`relative h-36 shrink-0 overflow-hidden sm:h-44 lg:absolute lg:inset-0 lg:h-full ${profileBanner}`}
-                  aria-hidden="true"
-                >
-                  <div className={`pointer-events-none absolute inset-0 ${profileBannerShine}`} />
-                  <div
-                    className={`pointer-events-none absolute -bottom-16 left-1/2 h-32 w-[140%] -translate-x-1/2 rounded-[100%] blur-2xl lg:opacity-80 ${
-                      isDark ? "bg-[var(--color-rose)]/15" : "bg-white/70"
-                    }`}
-                  />
-                </div>
-
-                <div className="relative z-[1] flex flex-col items-center px-6 pb-2 pt-0 sm:px-8 lg:flex-1 lg:justify-center lg:px-6 lg:pb-10 lg:pt-10">
-                  <div
-                    className={`pointer-events-none absolute left-1/2 top-0 h-36 w-36 -translate-x-1/2 -translate-y-[55%] rounded-full blur-3xl lg:h-44 lg:w-44 lg:-translate-y-[40%] ${
-                      isDark ? "bg-[var(--color-rose)]/12" : "bg-[var(--color-rose)]/20"
-                    }`}
-                  />
-                  <div className="relative -mt-[4.25rem] sm:-mt-[4.5rem] lg:mt-0">
-                    <div className={`rounded-full ${avatarRingOuter}`}>
-                      <div className={`rounded-full ${avatarRingInner}`}>
-                        <div className="flex h-[7.5rem] w-[7.5rem] items-center justify-center overflow-hidden rounded-full sm:h-[8.5rem] sm:w-[8.5rem] lg:h-[9.25rem] lg:w-[9.25rem]">
-                          <div
-                            className={`flex h-full w-full items-center justify-center ${
-                              isDark ? "bg-[#1c1c1f]" : "bg-[linear-gradient(160deg,#fffefb,#f0ebe4)]"
-                            }`}
-                          >
-                            {draft.avatarUrl ? (
-                              <img src={draft.avatarUrl} alt="" className="h-full w-full object-cover" />
-                            ) : (
-                              <span className={`font-display text-4xl sm:text-5xl lg:text-6xl ${mutedSoft}`} aria-hidden="true">
-                                {(draft.name?.trim()?.[0] ?? draft.email?.[0] ?? "?").toUpperCase()}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                <div className="min-w-0 pb-1">
+                  <p className="font-display text-3xl font-medium leading-tight sm:text-4xl">{displayName}</p>
+                  <p className={`mt-1 break-all text-sm ${muted}`}>{draft.email ?? "—"}</p>
+                  <div className="mt-4 flex flex-wrap justify-center gap-2 sm:justify-start">
                     <label
-                      className={`absolute bottom-2 right-2 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border shadow-lg transition hover:scale-[1.06] active:scale-95 lg:bottom-3 lg:right-3 lg:h-12 lg:w-12 ${
-                        isDark
-                          ? "border-white/12 bg-[var(--color-rose)] text-white shadow-[0_8px_24px_rgba(0,0,0,0.35)]"
-                          : "border-white/90 bg-[var(--color-rose)] text-white shadow-[0_10px_28px_rgba(197,167,161,0.45)]"
-                      }`}
+                      className="btn-secondary inline-flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-sm font-medium"
                       title={copy.changeAvatarShort}
                     >
-                      <span className="sr-only">{copy.changePhoto}</span>
-                      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2l1.5-2h6l1.5 2h2A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5v-9Z" />
+                        <circle cx="12" cy="13" r="3.25" />
                       </svg>
+                      {copy.changePhoto}
                       <input
                         type="file"
                         accept="image/*"
@@ -487,332 +391,256 @@ export default function ProfileScreen() {
                         disabled={saveState === "saving"}
                       />
                     </label>
+                    <button
+                      type="button"
+                      onClick={() => void logout()}
+                      className="inline-flex cursor-pointer items-center rounded-full px-4 py-2 text-sm font-medium text-[var(--color-muted)] transition hover:bg-[var(--color-surface-2)] hover:text-[var(--color-ink)]"
+                    >
+                      {copy.logout}
+                    </button>
                   </div>
-                  <p
-                    className={`mt-6 text-center font-display text-[1.65rem] tracking-tight sm:text-[1.85rem] lg:mt-8 lg:text-[2rem] ${
-                      isDark ? "text-white/[0.96]" : "text-[var(--color-ink)]"
-                    }`}
-                  >
-                    {displayName}
-                  </p>
-                  {draft.email ? (
-                    <p className={`mt-1.5 text-center text-[15px] lg:text-base ${muted}`}>{draft.email}</p>
-                  ) : (
-                    <p className={`mt-1.5 text-center text-[15px] italic ${mutedSoft}`}>—</p>
-                  )}
-                  <p className={`mt-3 max-w-[20rem] text-center text-[11px] leading-relaxed lg:text-xs ${mutedSoft}`}>
-                    {copy.previewHint}
-                  </p>
                 </div>
               </div>
 
-              <div
-                className={`space-y-6 border-t px-6 py-8 sm:space-y-7 sm:px-8 sm:py-9 lg:border-l lg:border-t-0 lg:px-10 lg:py-10 xl:space-y-8 xl:px-12 xl:py-11 2xl:px-16 2xl:py-12 min-[1800px]:px-20 min-[1800px]:py-14 ${
-                  isDark ? "border-white/[0.08]" : "border-[var(--color-ink)]/[0.07]"
-                }`}
-              >
-                <div className={sectionHead}>
-                  <span className={sectionAccent} aria-hidden="true" />
-                  <div className="min-w-0 flex-1">
-                    <p
-                      className={`font-display text-lg tracking-tight lg:text-xl ${isDark ? "text-white/92" : "text-[var(--color-ink)]"}`}
-                    >
-                      {copy.sectionDetails}
-                    </p>
-                    <p className={`mt-1.5 max-w-prose text-xs leading-relaxed lg:text-[13px] ${mutedSoft}`}>
-                      {copy.body}
-                    </p>
-                  </div>
-                </div>
-
-                <div className={`overflow-hidden rounded-2xl border ${formSheetBorder} ${formSheetBg} ${formSheetRing}`}>
-                  <div className={`divide-y ${formDivide}`}>
-                    <div className={`${formRowGrid} ${formRowPad}`}>
-                      <div>
-                        <label className={rowLabel} htmlFor="profile-name">
-                          {copy.name}
-                        </label>
-                      </div>
-                      <input
-                        id="profile-name"
-                        type="text"
-                        value={draft.name ?? ""}
-                        onChange={(e) =>
-                          setDraft((d) => {
-                            if (!d) return d;
-                            const next = { ...d, name: e.target.value };
-                            setFormError(null);
-                            setFieldErrors((prev) =>
-                              setOrClearFieldError(prev, "name", validateField("name", next)),
-                            );
-                            return next;
-                          })
-                        }
-                        disabled={saveState === "saving"}
-                        className={inputSheet}
-                        maxLength={PROFILE_FULL_NAME_MAX}
-                        autoComplete="name"
-                        aria-invalid={fieldErrors.name ? true : undefined}
-                        aria-describedby={fieldErrors.name ? "profile-name-error" : undefined}
-                      />
-                      {fieldErrors.name ? (
-                        <p id="profile-name-error" className={fieldErrorText}>
-                          {fieldErrors.name}
-                        </p>
-                      ) : null}
-                    </div>
-
-                    <div className={`${formRowGrid} ${formRowPad}`}>
-                      <div>
-                        <label className={rowLabel} htmlFor="profile-email">
-                          {copy.email}
-                        </label>
-                      </div>
-                      <input
-                        id="profile-email"
-                        type="email"
-                        value={draft.email ?? ""}
-                        disabled
-                        readOnly
-                        className={`${inputSheet} cursor-not-allowed opacity-70`}
-                        autoComplete="email"
-                      />
-                    </div>
-
-                    <div className={`${formRowGrid} ${formRowPad}`}>
-                      <div>
-                        <label className={rowLabel} htmlFor="profile-age">
-                          {copy.age}
-                        </label>
-                      </div>
-                      <input
-                        id="profile-age"
-                        type="number"
-                        min={PROFILE_AGE_MIN}
-                        max={PROFILE_AGE_MAX}
-                        value={draft.age ?? ""}
-                        onChange={(e) => {
-                          const v = e.target.value;
-                          setDraft((d) =>
-                            d
-                              ? (() => {
-                                  const next = {
-                                    ...d,
-                                    age:
-                                      v === ""
-                                        ? null
-                                        : Math.min(
-                                            PROFILE_AGE_MAX,
-                                            Math.max(PROFILE_AGE_MIN, parseInt(v, 10) || 0),
-                                          ),
-                                  };
-                                  setFormError(null);
-                                  setFieldErrors((prev) =>
-                                    setOrClearFieldError(prev, "age", validateField("age", next)),
-                                  );
-                                  return next;
-                                })()
-                              : d,
-                          );
-                        }}
-                        disabled={saveState === "saving"}
-                        className={`${inputSheet} max-w-full sm:max-w-[8rem]`}
-                        aria-invalid={fieldErrors.age ? true : undefined}
-                        aria-describedby={fieldErrors.age ? "profile-age-error" : undefined}
-                      />
-                      {fieldErrors.age ? (
-                        <p id="profile-age-error" className={fieldErrorText}>
-                          {fieldErrors.age}
-                        </p>
-                      ) : null}
-                    </div>
-
-                    <div className={`${formRowGrid} ${formRowPad}`}>
-                      <div>
-                        <p className={rowLabel} id="profile-gender-label">
-                          {copy.gender}
-                        </p>
-                      </div>
-                      <div
-                        className="flex flex-wrap gap-2.5"
-                        role="group"
-                        aria-labelledby="profile-gender-label"
-                      >
-                        {genderChoices.map(({ value: gv, label }) => {
-                          const on = (draft.gender ?? "unspecified") === gv;
-                          return (
-                            <button
-                              key={gv}
-                              type="button"
-                              aria-pressed={on}
-                              disabled={saveState === "saving"}
-                              onClick={() =>
-                                setDraft((d) => {
-                                  if (!d) return d;
-                                  const next = { ...d, gender: gv };
-                                  setFormError(null);
-                                  setFieldErrors((prev) =>
-                                    setOrClearFieldError(prev, "gender", validateField("gender", next)),
-                                  );
-                                  return next;
-                                })
-                              }
-                              className={`${genderPillBase} ${on ? genderPillOn : genderPillOff}`}
-                            >
-                              {label}
-                            </button>
-                          );
-                        })}
-                      </div>
-                      {fieldErrors.gender ? (
-                        <p id="profile-gender-error" className={fieldErrorText}>
-                          {fieldErrors.gender}
-                        </p>
-                      ) : null}
-                    </div>
-                  </div>
-                </div>
-
-                <div
-                  className={`overflow-hidden rounded-2xl border border-dashed ${formSheetBorder} ${formSheetBg} ${formSheetRing}`}
-                >
-                  <div className={`divide-y ${formDivide}`}>
-                    <div className={`${formRowGrid} ${formRowPad}`}>
-                      <div>
-                        <p className={rowLabel}>{copy.phone}</p>
-                        <p className={rowHint}>{copy.optionalFieldHint}</p>
-                      </div>
-                      <div>
-                        <label className="sr-only" htmlFor="profile-phone">
-                          {copy.phone}
-                        </label>
-                        <input
-                          id="profile-phone"
-                          type="tel"
-                          value={draft.phone ?? ""}
-                          onChange={(e) =>
-                            setDraft((d) => {
-                              if (!d) return d;
-                              const next = { ...d, phone: e.target.value };
-                              setFormError(null);
-                              setFieldErrors((prev) =>
-                                setOrClearFieldError(prev, "phone", validateField("phone", next)),
-                              );
-                              return next;
-                            })
-                          }
-                          disabled={saveState === "saving"}
-                          className={inputSheet}
-                          maxLength={PROFILE_PHONE_MAX}
-                          autoComplete="tel"
-                          placeholder={copy.phone}
-                          aria-invalid={fieldErrors.phone ? true : undefined}
-                          aria-describedby={fieldErrors.phone ? "profile-phone-error" : undefined}
-                        />
-                        {fieldErrors.phone ? (
-                          <p id="profile-phone-error" className={fieldErrorText}>
-                            {fieldErrors.phone}
-                          </p>
-                        ) : null}
-                      </div>
-                    </div>
-                    <div className={`${formRowGrid} ${formRowPad}`}>
-                      <div>
-                        <p className={rowLabel}>{copy.additionalContact}</p>
-                        <p className={rowHint}>{copy.messengerExampleHint}</p>
-                      </div>
-                      <div>
-                        <label className="sr-only" htmlFor="profile-additional-contact">
-                          {copy.additionalContact}
-                        </label>
-                        <input
-                          id="profile-additional-contact"
-                          type="text"
-                          value={draft.additionalContact ?? ""}
-                          onChange={(e) =>
-                            setDraft((d) =>
-                              d
-                                ? (() => {
-                                    const next = {
-                                      ...d,
-                                      additionalContact: e.target.value.trim() || null,
-                                    };
-                                    setFormError(null);
-                                    setFieldErrors((prev) =>
-                                      setOrClearFieldError(
-                                        prev,
-                                        "additionalContact",
-                                        validateField("additionalContact", next),
-                                      ),
-                                    );
-                                    return next;
-                                  })()
-                                : d,
-                            )
-                          }
-                          disabled={saveState === "saving"}
-                          className={inputSheet}
-                          maxLength={PROFILE_ADDITIONAL_CONTACT_MAX}
-                          autoComplete="off"
-                          placeholder={copy.additionalContact}
-                          aria-invalid={fieldErrors.additionalContact ? true : undefined}
-                          aria-describedby={
-                            fieldErrors.additionalContact ? "profile-additional-contact-error" : undefined
-                          }
-                        />
-                        {fieldErrors.additionalContact ? (
-                          <p id="profile-additional-contact-error" className={fieldErrorText}>
-                            {fieldErrors.additionalContact}
-                          </p>
-                        ) : null}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {formError ? (
-                  <p
-                    role="alert"
-                    className={`rounded-2xl border px-4 py-3.5 text-sm lg:px-5 ${
-                      isDark
-                        ? "border-amber-400/28 bg-amber-500/[0.1] text-amber-50"
-                        : "border-amber-200/90 bg-amber-50/95 text-amber-950"
-                    }`}
-                  >
-                    {formError}
+              {/* Mức độ hoàn thiện */}
+              <div className="w-full rounded-2xl bg-[var(--color-surface-2)] p-4 md:mt-7 md:w-80 md:self-center">
+                <div className="flex items-baseline justify-between">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-muted)]">
+                    {account.completionTitle}
                   </p>
-                ) : null}
-
-                <div
-                  className={`flex flex-wrap items-center gap-3 border-t pt-6 sm:pt-7 lg:gap-4 lg:pt-8 ${
-                    isDark ? "border-white/[0.06]" : "border-[var(--color-ink)]/[0.06]"
-                  }`}
-                >
-                  <button
-                    type="submit"
-                    disabled={saveState === "saving"}
-                    className="btn-primary inline-flex min-w-[10rem] cursor-pointer items-center justify-center rounded-full px-10 py-3.5 text-sm font-semibold shadow-[0_14px_36px_rgba(197,167,161,0.38)] transition hover:brightness-[1.03] disabled:cursor-not-allowed disabled:pointer-events-none disabled:opacity-55 dark:shadow-[0_16px_40px_rgba(0,0,0,0.38)]"
-                  >
-                    {copy.save}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={resetDraft}
-                    disabled={saveState === "saving"}
-                    className={`inline-flex cursor-pointer rounded-full border px-9 py-3.5 text-sm font-medium transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-45 ${
-                      isDark
-                        ? "border-white/14 bg-white/[0.06] text-white/92"
-                        : "border-[var(--color-ink)]/10 bg-white text-[var(--color-ink)] shadow-sm"
-                    }`}
-                  >
-                    {copy.reset}
-                  </button>
+                  <p className="font-display text-2xl font-medium text-[var(--color-gold)]">{completionPct}%</p>
                 </div>
+                <div
+                  className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-[color-mix(in_srgb,var(--color-ink)_8%,transparent)]"
+                  role="progressbar"
+                  aria-valuenow={completionPct}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-label={account.completionTitle}
+                >
+                  <div
+                    className="h-full rounded-full bg-[var(--color-gold)] transition-[width] duration-700"
+                    style={{ width: `${completionPct}%` }}
+                  />
+                </div>
+                <p className={`mt-2.5 text-xs leading-relaxed ${muted}`}>
+                  {completionPct === 100
+                    ? account.completionDone
+                    : account.completionHintTpl.replace("__FIELDS__", missingLabels.join(", "))}
+                </p>
               </div>
             </div>
-          </form>
-        ) : null}
-      </div>
-    </main>
+          </section>
+
+          {/* ── Form thông tin ── */}
+          <section className={`${panelOuter} rounded-[1.75rem] p-6 sm:p-8`}>
+            {sectionTitle(account.groupPersonal, account.groupPersonalHint)}
+            <div className="grid gap-5 sm:grid-cols-2">
+              <div>
+                <label className={fieldLabel} htmlFor="profile-name">
+                  {copy.name}
+                </label>
+                <input
+                  id="profile-name"
+                  type="text"
+                  value={draft.name ?? ""}
+                  onChange={(e) => patchDraft({ name: e.target.value }, "name")}
+                  disabled={saveState === "saving"}
+                  className={inputSheet}
+                  maxLength={PROFILE_FULL_NAME_MAX}
+                  autoComplete="name"
+                  aria-invalid={fieldErrors.name ? true : undefined}
+                  aria-describedby={fieldErrors.name ? "profile-name-error" : undefined}
+                />
+                {errorText("profile-name-error", fieldErrors.name)}
+              </div>
+
+              <div>
+                <label className={fieldLabel} htmlFor="profile-email">
+                  {copy.email}
+                </label>
+                <div className="relative">
+                  <input
+                    id="profile-email"
+                    type="email"
+                    value={draft.email ?? ""}
+                    disabled
+                    readOnly
+                    className={`${inputSheet} cursor-not-allowed bg-[var(--color-surface-2)] pr-11 text-[var(--color-muted)]`}
+                    autoComplete="email"
+                  />
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-muted)]"
+                    aria-hidden="true"
+                  >
+                    <rect x="5" y="11" width="14" height="9" rx="2" />
+                    <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+                  </svg>
+                </div>
+              </div>
+
+              <div>
+                <label className={fieldLabel} htmlFor="profile-age">
+                  {copy.age}
+                </label>
+                <input
+                  id="profile-age"
+                  type="number"
+                  inputMode="numeric"
+                  min={PROFILE_AGE_MIN}
+                  max={PROFILE_AGE_MAX}
+                  value={draft.age ?? ""}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    patchDraft(
+                      {
+                        age:
+                          v === "" ? null : Math.min(PROFILE_AGE_MAX, Math.max(PROFILE_AGE_MIN, parseInt(v, 10) || 0)),
+                      },
+                      "age",
+                    );
+                  }}
+                  disabled={saveState === "saving"}
+                  className={inputSheet}
+                  aria-invalid={fieldErrors.age ? true : undefined}
+                  aria-describedby={fieldErrors.age ? "profile-age-error" : undefined}
+                />
+                {errorText("profile-age-error", fieldErrors.age)}
+              </div>
+
+              <div>
+                <p className={fieldLabel} id="profile-gender-label">
+                  {copy.gender}
+                </p>
+                <div className="flex flex-wrap gap-2" role="group" aria-labelledby="profile-gender-label">
+                  {genderChoices.map(({ value: gv, label }) => {
+                    const on = (draft.gender ?? "unspecified") === gv;
+                    return (
+                      <button
+                        key={gv}
+                        type="button"
+                        aria-pressed={on}
+                        disabled={saveState === "saving"}
+                        onClick={() => patchDraft({ gender: gv }, "gender")}
+                        className={`${genderPillBase} py-2.5 ${on ? genderPillOn : genderPillOff}`}
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
+                </div>
+                {errorText("profile-gender-error", fieldErrors.gender)}
+              </div>
+            </div>
+
+            <div className="my-8 h-px bg-[var(--color-line)]" />
+
+            {sectionTitle(account.groupContact, account.groupContactHint)}
+            <div className="grid gap-5 sm:grid-cols-2">
+              <div>
+                <label className={fieldLabel} htmlFor="profile-phone">
+                  {copy.phone}
+                </label>
+                <input
+                  id="profile-phone"
+                  type="tel"
+                  inputMode="tel"
+                  value={draft.phone ?? ""}
+                  onChange={(e) => patchDraft({ phone: e.target.value }, "phone")}
+                  disabled={saveState === "saving"}
+                  className={inputSheet}
+                  maxLength={PROFILE_PHONE_MAX}
+                  autoComplete="tel"
+                  placeholder="0901 234 567"
+                  aria-invalid={fieldErrors.phone ? true : undefined}
+                  aria-describedby={fieldErrors.phone ? "profile-phone-error" : "profile-phone-hint"}
+                />
+                {fieldErrors.phone ? (
+                  errorText("profile-phone-error", fieldErrors.phone)
+                ) : (
+                  <p id="profile-phone-hint" className={fieldHint}>
+                    {copy.optionalFieldHint}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className={fieldLabel} htmlFor="profile-additional-contact">
+                  {copy.additionalContact}
+                </label>
+                <input
+                  id="profile-additional-contact"
+                  type="text"
+                  value={draft.additionalContact ?? ""}
+                  onChange={(e) => patchDraft({ additionalContact: e.target.value.trim() || null }, "additionalContact")}
+                  disabled={saveState === "saving"}
+                  className={inputSheet}
+                  maxLength={PROFILE_ADDITIONAL_CONTACT_MAX}
+                  autoComplete="off"
+                  placeholder={copy.additionalContact}
+                  aria-invalid={fieldErrors.additionalContact ? true : undefined}
+                  aria-describedby={
+                    fieldErrors.additionalContact ? "profile-additional-contact-error" : "profile-additional-contact-hint"
+                  }
+                />
+                {fieldErrors.additionalContact ? (
+                  errorText("profile-additional-contact-error", fieldErrors.additionalContact)
+                ) : (
+                  <p id="profile-additional-contact-hint" className={fieldHint}>
+                    {copy.messengerExampleHint}
+                  </p>
+                )}
+              </div>
+            </div>
+          </section>
+
+          {formError ? (
+            <p
+              role="alert"
+              className="rounded-xl border border-[color-mix(in_srgb,var(--color-rose)_45%,transparent)] bg-[color-mix(in_srgb,var(--color-rose)_10%,var(--color-surface))] px-4 py-3.5 text-sm"
+            >
+              {formError}
+            </p>
+          ) : null}
+
+          {/* Thanh lưu — dính đáy màn hình khi có thay đổi chưa lưu */}
+          <div
+            className={`z-20 flex flex-wrap items-center justify-end gap-3 transition-all duration-300 ${
+              isDirty ? "lux-card sticky bottom-4 rounded-full py-2 pl-5 pr-2 shadow-[var(--shadow-lift)]" : ""
+            }`}
+          >
+            {isDirty ? (
+              <span className="mr-auto flex items-center gap-2 text-sm font-medium">
+                <span className="h-2 w-2 animate-pulse rounded-full bg-[var(--color-gold)]" aria-hidden="true" />
+                {account.unsavedChanges}
+              </span>
+            ) : saveState === "saved" ? (
+              <span className="mr-auto text-sm font-medium text-[var(--color-sage)]" role="status">
+                ✓ {copy.saved}
+              </span>
+            ) : null}
+            <button
+              type="button"
+              onClick={resetDraft}
+              disabled={saveState === "saving" || !isDirty}
+              className="btn-secondary inline-flex cursor-pointer rounded-full px-7 py-3 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-45"
+            >
+              {copy.reset}
+            </button>
+            <button
+              type="submit"
+              disabled={saveState === "saving" || !isDirty}
+              className="btn-primary inline-flex min-w-[9rem] cursor-pointer items-center justify-center rounded-full px-9 py-3 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-45"
+            >
+              {copy.save}
+            </button>
+          </div>
+        </form>
+      ) : null}
+    </AccountPageShell>
   );
 }

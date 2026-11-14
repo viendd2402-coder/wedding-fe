@@ -79,15 +79,12 @@ export default function HeaderAccountMenu({
     return () => document.removeEventListener("keydown", onKey);
   }, [open]);
 
-  const btnClass = `relative flex h-11 w-11 shrink-0 touch-manipulation items-center justify-center overflow-hidden rounded-full border transition sm:h-10 sm:w-10 ${
-    isDark
-      ? "border-white/16 bg-white/[0.08] text-white shadow-[0_4px_16px_rgba(0,0,0,0.25)] hover:border-white/24 hover:bg-white/[0.12]"
-      : "border-[var(--color-ink)]/16 bg-white text-[var(--color-ink)] shadow-[0_2px_8px_rgba(49,42,40,0.1)] hover:border-[var(--color-ink)]/22 max-lg:border-[var(--color-ink)]/22 max-lg:shadow-[0_3px_12px_rgba(49,42,40,0.14)]"
-  } ${open ? (isDark ? "ring-2 ring-white/25" : "ring-2 ring-[var(--color-rose)]/45") : ""}`;
+  const btnClass = `relative flex h-10 w-10 shrink-0 cursor-pointer touch-manipulation items-center justify-center overflow-hidden rounded-full border border-[color-mix(in_srgb,var(--color-gold)_50%,transparent)] bg-[var(--color-gold-soft)] text-[var(--color-gold)] transition hover:border-[var(--color-gold)] ${
+    open ? "ring-4 ring-[color-mix(in_srgb,var(--color-gold)_18%,transparent)]" : ""
+  }`;
 
-  const panelClass = isDark
-    ? "border border-white/12 bg-[linear-gradient(180deg,rgba(28,28,30,0.98),rgba(18,18,20,0.98))] text-white shadow-[0_20px_50px_rgba(0,0,0,0.45)]"
-    : "border border-[var(--color-ink)]/14 bg-white text-[var(--color-ink)] shadow-[0_16px_40px_rgba(49,42,40,0.14)] max-lg:border-[var(--color-ink)]/18 max-lg:shadow-[0_12px_32px_rgba(49,42,40,0.16)]";
+  const panelClass =
+    "border border-[var(--color-line)] bg-[var(--color-surface)] text-[var(--color-ink)] shadow-[var(--shadow-lift)]";
 
   return (
     <div className={`relative ${className}`.trim()} ref={wrapRef}>

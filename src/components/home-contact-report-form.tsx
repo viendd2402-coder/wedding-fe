@@ -164,21 +164,13 @@ export function HomeContactReportForm({ fieldClassName }: HomeContactReportFormP
   if (status === "success") {
     return (
       <div
-        className={`mx-auto mt-8 w-full min-w-0 max-w-3xl sm:mt-10 ${
-          isDark
-            ? "rounded-[1.25rem] border border-emerald-400/25 bg-[linear-gradient(145deg,rgba(52,211,153,0.12)_0%,rgba(24,24,26,0.95)_55%)] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.35)] sm:rounded-[1.5rem] sm:p-8"
-            : "rounded-[1.25rem] border border-[color-mix(in_srgb,var(--color-sage)_45%,transparent)] bg-[linear-gradient(145deg,rgba(125,140,121,0.14)_0%,rgba(255,252,248,0.98)_48%,#faf6f1_100%)] p-6 shadow-[0_16px_40px_rgba(49,42,40,0.08)] sm:rounded-[1.5rem] sm:p-8"
-        }`}
+        className="mx-auto mt-8 w-full min-w-0 max-w-3xl rounded-[1.5rem] border border-[color-mix(in_srgb,var(--color-gold)_35%,var(--color-line))] bg-[var(--color-gold-soft)] p-6 sm:mt-10 sm:p-8"
         role="status"
         aria-live="polite"
       >
         <div className="flex flex-col items-center text-center sm:flex-row sm:items-start sm:text-left sm:gap-6">
           <div
-            className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${
-              isDark
-                ? "bg-emerald-500/20 text-emerald-200"
-                : "bg-[var(--color-sage)]/20 text-[var(--color-sage)]"
-            }`}
+            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-[color-mix(in_srgb,var(--color-gold)_50%,transparent)] text-[var(--color-gold)]"
             aria-hidden
           >
             <svg

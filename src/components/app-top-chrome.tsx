@@ -2,15 +2,13 @@
 
 import { usePathname } from "next/navigation";
 import GlobalDashboardControls from "@/components/global-dashboard-controls";
-import { weddingTemplates } from "@/lib/templates";
-
-const templateDemoSlugs = new Set(weddingTemplates.map((t) => t.slug));
+import { resolveTemplateSlug } from "@/lib/templates";
 
 function pathnameIsTemplateDemo(pathname: string | null): boolean {
   if (!pathname?.startsWith("/templates/")) return false;
   const slug = pathname.slice("/templates/".length).split("/")[0];
   if (!slug) return false;
-  return templateDemoSlugs.has(slug);
+  return resolveTemplateSlug(slug) !== null;
 }
 
 /** Thiệp xem bản lưu (không phải studio chỉnh mẫu). */
@@ -27,10 +25,10 @@ export default function AppTopChrome() {
 
   return (
     <header
-      className="sticky top-0 z-[70] pt-[max(0.65rem,env(safe-area-inset-top))] pb-2 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:pb-3 sm:pl-6 sm:pr-6 lg:px-8"
+      className="sticky top-0 z-[70] border-b border-[var(--color-line)] bg-[color-mix(in_srgb,var(--background)_82%,transparent)] pt-[env(safe-area-inset-top)] pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] backdrop-blur-xl backdrop-saturate-150 sm:pl-6 sm:pr-6 lg:px-10"
       role="banner"
     >
-      <div className="mx-auto w-full max-w-7xl">
+      <div className="mx-auto w-full max-w-[88rem]">
         <GlobalDashboardControls />
       </div>
     </header>

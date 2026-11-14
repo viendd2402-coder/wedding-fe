@@ -15,6 +15,7 @@ export type SavedTemplatesMessages = {
   unknownTemplateTitle: string;
   unknownTemplateBody: string;
   toastAdded: string;
+  toastRemoved: string;
   countSuffix: string;
   localStorageNote: string;
 };
@@ -35,6 +36,7 @@ const vi: SavedTemplatesMessages = {
   unknownTemplateTitle: "Mẫu không còn trong danh mục",
   unknownTemplateBody: "Bạn vẫn có thể bỏ khỏi danh sách đã lưu.",
   toastAdded: "Đã lưu",
+  toastRemoved: "Đã bỏ lưu",
   countSuffix: "mẫu",
   localStorageNote:
     "Dữ liệu chỉ nằm trên trình duyệt này — xóa cookie hoặc dùng chế độ ẩn danh sẽ làm mất danh sách.",
@@ -56,6 +58,7 @@ const en: SavedTemplatesMessages = {
   unknownTemplateTitle: "Template no longer listed",
   unknownTemplateBody: "You can still remove it from your saved list.",
   toastAdded: "Saved",
+  toastRemoved: "Removed",
   countSuffix: "templates",
   localStorageNote:
     "Data stays in this browser only—clearing site data or using a private window will remove this list.",

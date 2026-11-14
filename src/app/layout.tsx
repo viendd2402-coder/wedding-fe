@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import AppTopChrome from "@/components/app-top-chrome";
 import FloatingContactRail from "@/components/floating-contact-rail";
+import SocialProofToast from "@/components/social-proof-toast";
 import SiteFooter from "@/components/site-footer";
 import {
   GlobalPreferencesProvider,
@@ -14,13 +15,14 @@ import "./globals.css";
 
 const inter = Inter({
   variable: "--font-inter",
-  subsets: ["latin"],
+  subsets: ["latin", "vietnamese"],
 });
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
-  subsets: ["latin"],
+  subsets: ["latin", "vietnamese"],
   weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
 });
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -67,6 +69,7 @@ export default async function RootLayout({
           <div className="flex min-h-0 flex-1 flex-col">{children}</div>
           <SiteFooter />
           <FloatingContactRail />
+          <SocialProofToast />
         </GlobalPreferencesProvider>
       </body>
     </html>

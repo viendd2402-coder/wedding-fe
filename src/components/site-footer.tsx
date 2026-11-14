@@ -2,21 +2,20 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCallback, useMemo, type MouseEvent } from "react";
-import { useGlobalPreferences } from "@/components/global-preferences-provider";
+import { useCallback, useMemo, type MouseEvent, type ReactNode } from "react";
 import { useMessages } from "@/i18n/use-messages";
 import { IconTiktokBrand, IconZaloBrand } from "@/components/icons-social-brands";
 import { forceDocumentScrollTop } from "@/lib/force-document-scroll-top";
 import { isTemplateDetailPath } from "@/lib/is-template-detail-path";
+import { siteContact, siteTiktokUrl, siteZaloUrl } from "@/lib/site-contact";
 
 function isPublicInviteSharePath(pathname: string | null): boolean {
   return Boolean(pathname?.startsWith("/invite/"));
 }
-import { siteContact, siteTiktokUrl, siteZaloUrl } from "@/lib/site-contact";
 
 function IconMail({ className }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
       <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16v12H4V6Z" />
       <path strokeLinecap="round" strokeLinejoin="round" d="m4 7 8 6 8-6" />
     </svg>
@@ -25,7 +24,7 @@ function IconMail({ className }: { className?: string }) {
 
 function IconPhone({ className }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -37,9 +36,7 @@ function IconPhone({ className }: { className?: string }) {
 
 export default function SiteFooter() {
   const pathname = usePathname();
-  const { theme } = useGlobalPreferences();
   const { footer: copy } = useMessages();
-  const isDark = theme === "dark";
 
   const exploreLinks = useMemo(
     () =>
@@ -85,162 +82,83 @@ export default function SiteFooter() {
 
   const year = new Date().getFullYear();
 
-  const panelMuted = isDark
-    ? "border-white/[0.08] bg-white/[0.03] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)]"
-    : "border-[var(--color-ink)]/[0.06] bg-white/55 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.85)]";
-
-  const navLinkClass = `group inline-flex items-center gap-1.5 text-xs font-medium tracking-[0.02em] transition sm:text-[13px] ${
-    isDark
-      ? "text-white/65 hover:text-white"
-      : "text-[var(--color-ink)]/62 hover:text-[var(--color-ink)]"
-  }`;
-
-  const contactCardClass = `group flex min-w-0 items-start gap-3 rounded-2xl border px-3.5 py-3 transition duration-300 sm:gap-3.5 sm:px-4 sm:py-3.5 ${panelMuted} ${
-    isDark
-      ? "hover:border-[var(--color-sage)]/35 hover:bg-white/[0.06]"
-      : "hover:border-[var(--color-sage)]/30 hover:bg-white/80"
-  }`;
-
-  const iconWrap = `flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition duration-300 ${
-    isDark
-      ? "border-white/10 bg-white/[0.06] text-[var(--color-sage)] group-hover:border-[var(--color-sage)]/40 group-hover:text-[var(--color-sage)]"
-      : "border-[var(--color-ink)]/8 bg-[var(--color-cream)]/80 text-[var(--color-sage)] group-hover:border-[var(--color-sage)]/35"
-  }`;
-
   const renderNavLink = (href: string, label: string) => (
     <li key={href + label}>
       <Link
         href={href}
-        className={navLinkClass}
+        className="text-sm text-[var(--color-muted)] transition-colors hover:text-[var(--color-ink)]"
         onClick={href === "/" ? handleHomeLinkClick : undefined}
       >
-        <span className="h-px w-0 bg-current transition-all duration-300 group-hover:w-3" aria-hidden="true" />
         {label}
       </Link>
     </li>
   );
 
-  return (
-    <footer
-      className={`relative mt-auto overflow-hidden border-t ${isDark ? "border-white/10 bg-[#080808]" : "border-[var(--color-ink)]/8 bg-[var(--color-cream)]"}`}
-    >
-      <div
-        className={`pointer-events-none absolute inset-0 ${
-          isDark
-            ? "bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(209,177,171,0.12),transparent),radial-gradient(ellipse_60%_40%_at_100%_100%,rgba(125,140,121,0.08),transparent)]"
-            : "bg-[radial-gradient(ellipse_90%_55%_at_50%_-30%,rgba(197,167,161,0.22),transparent),radial-gradient(ellipse_50%_45%_at_0%_100%,rgba(125,140,121,0.12),transparent)]"
-        }`}
-        aria-hidden="true"
-      />
+  const contactItems: { href: string; label: string; value: string; icon: ReactNode; external?: boolean }[] = [
+    { href: siteZaloUrl, label: copy.labelZalo, value: siteContact.phoneDisplay, icon: <IconZaloBrand className="h-[1.1rem] w-[1.1rem]" />, external: true },
+    ...(siteTiktokUrl
+      ? [{ href: siteTiktokUrl, label: copy.labelTiktok, value: siteContact.tiktokDisplay, icon: <IconTiktokBrand className="h-[1.1rem] w-[1.1rem]" />, external: true }]
+      : []),
+    { href: `mailto:${siteContact.email}`, label: copy.labelEmail, value: siteContact.email, icon: <IconMail className="h-[1.1rem] w-[1.1rem]" /> },
+    { href: `tel:${siteContact.phoneE164}`, label: copy.labelPhone, value: siteContact.phoneDisplay, icon: <IconPhone className="h-[1.1rem] w-[1.1rem]" /> },
+  ];
 
-      <div className="relative mx-auto w-full max-w-7xl px-4 py-12 sm:px-10 sm:py-20 lg:px-16">
-        <div className="grid gap-10 sm:gap-12 lg:grid-cols-12 lg:gap-10 xl:gap-14">
-          <div className="lg:col-span-5">
-            <div className="flex items-start gap-5">
-              <span
-                className="mt-1.5 hidden h-12 w-1 shrink-0 rounded-full sm:block"
-                style={{
-                  background: isDark
-                    ? "linear-gradient(180deg, rgba(155,168,150,0.85), rgba(209,177,171,0.45))"
-                    : "linear-gradient(180deg, rgba(125,140,121,0.75), rgba(197,167,161,0.5))",
-                }}
-                aria-hidden="true"
-              />
-              <div className="min-w-0">
-                <p className="text-[10px] uppercase tracking-[0.32em] text-[var(--color-sage)] sm:text-[11px] sm:tracking-[0.38em]">{copy.eyebrow}</p>
-                <p className="mt-2 font-display text-2xl tracking-[0.06em] sm:mt-3 sm:text-3xl md:text-4xl lg:text-5xl">{copy.brand}</p>
-                <p className={`mt-4 max-w-md text-sm leading-[1.7] sm:mt-6 sm:text-[15px] sm:leading-[1.75] ${isDark ? "text-white/66" : "text-[var(--color-ink)]/70"}`}>
-                  {copy.body}
-                </p>
-              </div>
-            </div>
+  const columnTitle = "text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[var(--color-gold)]";
+
+  return (
+    <footer className="relative mt-auto border-t border-[var(--color-line)] bg-[var(--color-surface-2)]">
+      <div className="mx-auto w-full max-w-[88rem] px-4 pb-10 pt-16 sm:px-6 sm:pt-20 lg:px-10">
+        <div className="grid gap-12 lg:grid-cols-12 lg:gap-10">
+          <div className="lg:col-span-4">
+            <p className="font-display text-4xl font-medium uppercase tracking-[0.16em] sm:text-5xl">{copy.brand}</p>
+            <p className="mt-2 text-[0.65rem] font-semibold uppercase tracking-[0.32em] text-[var(--color-muted)]">
+              {copy.eyebrow}
+            </p>
+            <p className="lux-muted mt-6 max-w-sm text-sm leading-[1.8]">{copy.body}</p>
           </div>
 
           <div className="lg:col-span-4">
-            <p className="text-[11px] uppercase tracking-[0.38em] text-[var(--color-sage)]">{copy.contactTitle}</p>
-            <div className="mt-5 flex flex-col gap-2.5 sm:mt-6 sm:gap-3">
-              <a href={siteZaloUrl} className={contactCardClass} target="_blank" rel="noopener noreferrer">
-                <span className={iconWrap}>
-                  <IconZaloBrand className="h-5 w-5" />
-                </span>
-                <div className="min-w-0 pt-0.5">
-                  <p className={`text-[10px] font-semibold uppercase tracking-[0.22em] ${isDark ? "text-white/42" : "text-[var(--color-ink)]/45"}`}>
-                    {copy.labelZalo}
-                  </p>
-                  <p className={`mt-1 text-sm font-medium ${isDark ? "text-white/88" : "text-[var(--color-ink)]/88"}`}>
-                    {siteContact.phoneDisplay}
-                  </p>
-                </div>
-              </a>
-              {siteTiktokUrl ? (
-                <a href={siteTiktokUrl} className={contactCardClass} target="_blank" rel="noopener noreferrer">
-                  <span className={iconWrap}>
-                    <IconTiktokBrand className="h-5 w-5" />
-                  </span>
-                  <div className="min-w-0 pt-0.5">
-                    <p className={`text-[10px] font-semibold uppercase tracking-[0.22em] ${isDark ? "text-white/42" : "text-[var(--color-ink)]/45"}`}>
-                      {copy.labelTiktok}
-                    </p>
-                    <p className={`mt-1 text-sm font-medium ${isDark ? "text-white/88" : "text-[var(--color-ink)]/88"}`}>
-                      {siteContact.tiktokDisplay}
-                    </p>
-                  </div>
-                </a>
-              ) : null}
-              <a href={`mailto:${siteContact.email}`} className={contactCardClass}>
-                <span className={iconWrap}>
-                  <IconMail className="h-5 w-5" />
-                </span>
-                <div className="min-w-0 pt-0.5">
-                  <p className={`text-[10px] font-semibold uppercase tracking-[0.22em] ${isDark ? "text-white/42" : "text-[var(--color-ink)]/45"}`}>
-                    {copy.labelEmail}
-                  </p>
-                  <p className={`mt-1 break-all text-sm font-medium ${isDark ? "text-white/88" : "text-[var(--color-ink)]/88"}`}>
-                    {siteContact.email}
-                  </p>
-                </div>
-              </a>
-              <a href={`tel:${siteContact.phoneE164}`} className={contactCardClass}>
-                <span className={iconWrap}>
-                  <IconPhone className="h-5 w-5" />
-                </span>
-                <div className="min-w-0 pt-0.5">
-                  <p className={`text-[10px] font-semibold uppercase tracking-[0.22em] ${isDark ? "text-white/42" : "text-[var(--color-ink)]/45"}`}>
-                    {copy.labelPhone}
-                  </p>
-                  <p className={`mt-1 text-sm font-medium ${isDark ? "text-white/88" : "text-[var(--color-ink)]/88"}`}>
-                    {siteContact.phoneDisplay}
-                  </p>
-                </div>
-              </a>
-            </div>
+            <p className={columnTitle}>{copy.contactTitle}</p>
+            <ul className="mt-6 space-y-1">
+              {contactItems.map((item) => (
+                <li key={item.label}>
+                  <a
+                    href={item.href}
+                    {...(item.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                    className="group -mx-3 flex items-center gap-4 rounded-xl px-3 py-2.5 transition-colors hover:bg-[var(--color-surface)]"
+                  >
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--color-line-strong)] text-[var(--color-ink)] transition group-hover:border-[var(--color-gold)] group-hover:text-[var(--color-gold)]">
+                      {item.icon}
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">
+                        {item.label}
+                      </span>
+                      <span className="block break-all text-sm font-medium">{item.value}</span>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 gap-y-10 sm:gap-10 sm:gap-y-12 lg:col-span-3">
+          <div className="grid grid-cols-2 gap-8 lg:col-span-4">
             <div>
-              <p className="text-[11px] uppercase tracking-[0.38em] text-[var(--color-sage)]">{copy.navExploreTitle}</p>
-              <ul className="mt-5 space-y-3">{exploreLinks.map(({ href, label }) => renderNavLink(href, label))}</ul>
+              <p className={columnTitle}>{copy.navExploreTitle}</p>
+              <ul className="mt-6 space-y-3.5">{exploreLinks.map(({ href, label }) => renderNavLink(href, label))}</ul>
             </div>
             <div>
-              <p className="text-[11px] uppercase tracking-[0.38em] text-[var(--color-sage)]">{copy.navSupportTitle}</p>
-              <ul className="mt-5 space-y-3">{supportLinks.map(({ href, label }) => renderNavLink(href, label))}</ul>
+              <p className={columnTitle}>{copy.navSupportTitle}</p>
+              <ul className="mt-6 space-y-3.5">{supportLinks.map(({ href, label }) => renderNavLink(href, label))}</ul>
             </div>
           </div>
         </div>
 
-        <div
-          className={`mt-16 flex flex-col gap-5 border-t pt-10 sm:flex-row sm:items-center sm:justify-between sm:gap-8 ${
-            isDark ? "border-white/[0.08]" : "border-[var(--color-ink)]/[0.08]"
-          }`}
-        >
-          <p className={`text-[13px] ${isDark ? "text-white/48" : "text-[var(--color-ink)]/48"}`}>
+        <div className="mt-16 flex flex-col gap-4 border-t border-[var(--color-line)] pt-8 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-xs text-[var(--color-muted)]">
             © {year} {copy.brand}. {copy.rights}
           </p>
-          <p
-            className={`font-display text-lg tracking-[0.04em] sm:text-right ${isDark ? "text-white/32" : "text-[var(--color-ink)]/38"}`}
-          >
-            {copy.tagline}
-          </p>
+          <p className="font-display text-lg italic text-[var(--color-muted)]">{copy.tagline}</p>
         </div>
       </div>
     </footer>
